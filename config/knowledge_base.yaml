@@ -1,0 +1,12 @@
+# Allowed knowledge-base document categories.
+# precedence: lower number wins when two sources conflict (SRS 1.8 item 10).
+document_types:
+  - {code: compliance,           name: Compliance guideline,        precedence: 1}
+  - {code: policy,               name: Company policy,              precedence: 2}
+  - {code: escalation_procedure, name: Escalation procedure,        precedence: 2}
+  - {code: routing_rules,        name: Department-routing rules,    precedence: 2}
+  - {code: sla,                  name: Service level agreement,     precedence: 2}
+  - {code: sop,                  name: Standard operating procedure, precedence: 3}
+  - {code: product_guide,        name: Product-support guideline,   precedence: 4}
+  - {code: response_template,    name: Response template,           precedence: 5}
+  - {code: faq,                  name: Frequently asked questions,  precedence: 6}

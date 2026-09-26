@@ -6,10 +6,12 @@ from decimal import Decimal
 from enum import StrEnum
 from typing import Any
 
+from pgvector.sqlalchemy import Vector
 from sqlalchemy import (
     BigInteger,
     Date,
     DateTime,
+    Float,
     ForeignKey,
     Index,
     Numeric,
@@ -22,6 +24,7 @@ from sqlalchemy.dialects.postgresql import JSONB
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 
 from database.base import Base, TimestampMixin, UUIDPrimaryKeyMixin
+from src.core.config import get_settings
 
 # Human-readable reference numbers (CMP-000123, CUST-000045) come from database sequences,
 # so they are unique even when several workers create records at the same time.
@@ -101,6 +104,11 @@ class Complaint(UUIDPrimaryKeyMixin, TimestampMixin, Base):
     preferred_contact_channel: Mapped[str | None] = mapped_column(String(20))
     requested_resolution: Mapped[str | None] = mapped_column(Text)
     previous_complaint_id: Mapped[uuid.UUID | None] = mapped_column(ForeignKey("complaints.id"))
+    # Near-duplicate / reworded repeat detection (SRS Steps 52-54).
+    duplicate_of_id: Mapped[uuid.UUID | None] = mapped_column(ForeignKey("complaints.id"))
+    related_complaint_id: Mapped[uuid.UUID | None] = mapped_column(ForeignKey("complaints.id"))
+    similarity: Mapped[float | None] = mapped_column(Float)
+    embedding: Mapped[list[float] | None] = mapped_column(Vector(get_settings().embedding_dim))
     source: Mapped[str] = mapped_column(String(20), default="portal")  # portal|dataset|evaluation
     # ID in an imported dataset or evaluation pack (e.g. DS-0042), for scoring against labels.
     external_ref: Mapped[str | None] = mapped_column(String(40), index=True)
@@ -124,6 +132,10 @@ class Complaint(UUIDPrimaryKeyMixin, TimestampMixin, Base):
     priority: Mapped[str | None] = mapped_column(String(4), index=True)
     sentiment: Mapped[str | None] = mapped_column(String(20))
     escalation_level: Mapped[int | None] = mapped_column()
+    supporting_departments: Mapped[list[str]] = mapped_column(JSONB, default=list)
+    verification: Mapped[str | None] = mapped_column(String(20), index=True)  # latest verdict
+    # The customer response a reviewer approved or edited; drafts stay in the analysis run.
+    approved_response: Mapped[str | None] = mapped_column(Text)
 
     customer: Mapped[Customer] = relationship(lazy="joined")
     order: Mapped[Order | None] = relationship(lazy="joined")

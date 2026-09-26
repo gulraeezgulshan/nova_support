@@ -22,6 +22,13 @@ from database.models.knowledge_base import (
 from database.models.rules import Rule, RuleType
 from database.models.taxonomy import Category, Department, SlaPolicy, Subcategory
 from database.models.user import Role, User
+from database.models.validation import (
+    ReviewAction,
+    ReviewerDecision,
+    ReviewStatus,
+    ReviewTask,
+    ValidationRun,
+)
 
 __all__ = [
     "COMPLAINT_REF_SEQ",
@@ -42,6 +49,10 @@ __all__ = [
     "LlmCall",
     "Order",
     "PromptVersion",
+    "ReviewAction",
+    "ReviewStatus",
+    "ReviewTask",
+    "ReviewerDecision",
     "Role",
     "Rule",
     "RuleType",
@@ -49,5 +60,6 @@ __all__ = [
     "SlaPolicy",
     "Subcategory",
     "User",
+    "ValidationRun",
     "VersionStatus",
 ]

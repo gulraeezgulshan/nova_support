@@ -5,6 +5,145 @@ export type ClientOptions = {
 };
 
 /**
+ * Amount
+ */
+export type Amount = {
+    /**
+     * Value
+     */
+    value: number;
+    /**
+     * Currency
+     */
+    currency: string;
+};
+
+/**
+ * AnalysisRunOut
+ */
+export type AnalysisRunOut = {
+    /**
+     * Id
+     */
+    id: string;
+    status: RunStatus;
+    /**
+     * Created At
+     */
+    created_at: string;
+    /**
+     * Completed At
+     */
+    completed_at: string | null;
+    /**
+     * Provider
+     */
+    provider: string | null;
+    /**
+     * Model
+     */
+    model: string | null;
+    /**
+     * Prompt Name
+     */
+    prompt_name: string | null;
+    /**
+     * Prompt Version
+     */
+    prompt_version: string | null;
+    /**
+     * Schema Version
+     */
+    schema_version: string | null;
+    /**
+     * Attempts
+     */
+    attempts: number;
+    /**
+     * Latency Ms
+     */
+    latency_ms: number;
+    /**
+     * Input Tokens
+     */
+    input_tokens: number;
+    /**
+     * Output Tokens
+     */
+    output_tokens: number;
+    /**
+     * Retrieved Policies
+     */
+    retrieved_policies: Array<{
+        [key: string]: unknown;
+    }>;
+    output: ComplaintAnalysis | null;
+    /**
+     * Validation Errors
+     */
+    validation_errors: Array<string>;
+    /**
+     * Error
+     */
+    error: string | null;
+};
+
+/**
+ * AnalysisRunSummary
+ */
+export type AnalysisRunSummary = {
+    /**
+     * Id
+     */
+    id: string;
+    status: RunStatus;
+    /**
+     * Created At
+     */
+    created_at: string;
+    /**
+     * Completed At
+     */
+    completed_at: string | null;
+    /**
+     * Provider
+     */
+    provider: string | null;
+    /**
+     * Model
+     */
+    model: string | null;
+    /**
+     * Prompt Name
+     */
+    prompt_name: string | null;
+    /**
+     * Prompt Version
+     */
+    prompt_version: string | null;
+    /**
+     * Schema Version
+     */
+    schema_version: string | null;
+    /**
+     * Attempts
+     */
+    attempts: number;
+    /**
+     * Latency Ms
+     */
+    latency_ms: number;
+    /**
+     * Input Tokens
+     */
+    input_tokens: number;
+    /**
+     * Output Tokens
+     */
+    output_tokens: number;
+};
+
+/**
  * Body_upload_document
  */
 export type BodyUploadDocument = {
@@ -148,6 +287,413 @@ export type ChunkOut = {
      * Token Count
      */
     token_count: number;
+};
+
+/**
+ * Compensation
+ */
+export type Compensation = {
+    /**
+     * Offered
+     *
+     * True only if policy passages and order facts support it
+     */
+    offered: boolean;
+    /**
+     * Type
+     */
+    type: string;
+    /**
+     * Amount
+     */
+    amount: number | null;
+    /**
+     * Policy Chunk
+     */
+    policy_chunk: string | null;
+};
+
+/**
+ * ComplaintAnalysis
+ */
+export type ComplaintAnalysis = {
+    /**
+     * Complaint Summary
+     *
+     * Concise structured summary for agents
+     */
+    complaint_summary: string;
+    primary_issue: Issue;
+    /**
+     * Secondary Issues
+     */
+    secondary_issues: Array<Issue>;
+    /**
+     * Sentiment
+     */
+    sentiment: string;
+    /**
+     * Emotions
+     */
+    emotions: Array<string>;
+    /**
+     * Urgency
+     */
+    urgency: string;
+    /**
+     * Urgency Rationale
+     *
+     * Business-risk reasons, not tone
+     */
+    urgency_rationale: string;
+    /**
+     * Priority
+     */
+    priority: string;
+    entities: Entities;
+    /**
+     * Department
+     *
+     * Primary responsible department code
+     */
+    department: string;
+    /**
+     * Supporting Departments
+     */
+    supporting_departments: Array<string>;
+    /**
+     * Policy References
+     */
+    policy_references: Array<PolicyReference>;
+    /**
+     * Resolution Steps
+     */
+    resolution_steps: Array<ResolutionStep>;
+    compensation: Compensation;
+    escalation: Escalation;
+    customer_response: CustomerResponse;
+    follow_up: FollowUp;
+    /**
+     * Agent Guidance
+     *
+     * Internal do/don't guidance for the agent
+     */
+    agent_guidance: Array<string>;
+    /**
+     * Missing Information
+     */
+    missing_information: Array<string>;
+    /**
+     * Clarification Questions
+     */
+    clarification_questions: Array<string>;
+    /**
+     * Suspicious Instructions
+     *
+     * Text in the complaint that tried to instruct the system or claim authority
+     */
+    suspicious_instructions: Array<string>;
+};
+
+/**
+ * ComplaintAnalysisOut
+ */
+export type ComplaintAnalysisOut = {
+    latest: AnalysisRunOut | null;
+    /**
+     * History
+     */
+    history: Array<AnalysisRunSummary>;
+};
+
+/**
+ * ComplaintCreate
+ */
+export type ComplaintCreate = {
+    /**
+     * Title
+     */
+    title: string;
+    /**
+     * Description
+     */
+    description: string;
+    /**
+     * Product Service
+     */
+    product_service?: string | null;
+    /**
+     * Order Ref
+     */
+    order_ref?: string | null;
+    /**
+     * Previous Complaint Ref
+     */
+    previous_complaint_ref?: string | null;
+    /**
+     * Channel
+     */
+    channel?: string;
+    /**
+     * Preferred Contact Channel
+     */
+    preferred_contact_channel?: string | null;
+    /**
+     * Requested Resolution
+     */
+    requested_resolution?: string | null;
+    /**
+     * Customer Ref
+     *
+     * Staff only: submit on behalf of this customer
+     */
+    customer_ref?: string | null;
+};
+
+/**
+ * ComplaintDetail
+ */
+export type ComplaintDetail = {
+    /**
+     * Complaint Ref
+     */
+    complaint_ref: string;
+    /**
+     * Title
+     */
+    title: string;
+    status: ComplaintStatus;
+    /**
+     * Created At
+     */
+    created_at: string;
+    /**
+     * Updated At
+     */
+    updated_at: string;
+    /**
+     * Customer Ref
+     */
+    customer_ref: string;
+    /**
+     * Customer Name
+     */
+    customer_name: string;
+    /**
+     * Department Code
+     */
+    department_code: string | null;
+    /**
+     * Category Code
+     */
+    category_code?: string | null;
+    /**
+     * Priority
+     */
+    priority?: string | null;
+    /**
+     * Urgency
+     */
+    urgency?: string | null;
+    /**
+     * Sentiment
+     */
+    sentiment?: string | null;
+    /**
+     * Escalation Level
+     */
+    escalation_level?: number | null;
+    /**
+     * Needs Review
+     */
+    needs_review?: boolean;
+    /**
+     * Description
+     */
+    description: string;
+    /**
+     * Product Service
+     */
+    product_service: string | null;
+    order: OrderOut | null;
+    /**
+     * Channel
+     */
+    channel: string;
+    /**
+     * Preferred Contact Channel
+     */
+    preferred_contact_channel: string | null;
+    /**
+     * Requested Resolution
+     */
+    requested_resolution: string | null;
+    /**
+     * Previous Complaint Ref
+     */
+    previous_complaint_ref: string | null;
+    /**
+     * Events
+     */
+    events: Array<ComplaintEventOut>;
+    /**
+     * Customer Type
+     */
+    customer_type?: string | null;
+    /**
+     * Subcategory Code
+     */
+    subcategory_code?: string | null;
+    /**
+     * Signals
+     */
+    signals?: {
+        [key: string]: Array<string>;
+    } | null;
+    /**
+     * Entities
+     */
+    entities?: {
+        [key: string]: unknown;
+    } | null;
+    /**
+     * Intake Warnings
+     */
+    intake_warnings?: Array<string> | null;
+    /**
+     * Review Reason
+     */
+    review_reason?: string | null;
+};
+
+/**
+ * ComplaintEventOut
+ */
+export type ComplaintEventOut = {
+    /**
+     * Event Type
+     */
+    event_type: string;
+    /**
+     * From Status
+     */
+    from_status: string | null;
+    /**
+     * To Status
+     */
+    to_status: string | null;
+    /**
+     * Message
+     */
+    message: string;
+    /**
+     * Created At
+     */
+    created_at: string;
+};
+
+/**
+ * ComplaintPage
+ */
+export type ComplaintPage = {
+    /**
+     * Items
+     */
+    items: Array<ComplaintSummary>;
+    /**
+     * Total
+     */
+    total: number;
+};
+
+/**
+ * ComplaintStatus
+ */
+export type ComplaintStatus = 'new' | 'analyzed' | 'assigned' | 'in_progress' | 'awaiting_customer' | 'escalated' | 'resolved' | 'closed' | 'reopened';
+
+/**
+ * ComplaintSummary
+ *
+ * List row. Classification fields are empty for customers.
+ */
+export type ComplaintSummary = {
+    /**
+     * Complaint Ref
+     */
+    complaint_ref: string;
+    /**
+     * Title
+     */
+    title: string;
+    status: ComplaintStatus;
+    /**
+     * Created At
+     */
+    created_at: string;
+    /**
+     * Updated At
+     */
+    updated_at: string;
+    /**
+     * Customer Ref
+     */
+    customer_ref: string;
+    /**
+     * Customer Name
+     */
+    customer_name: string;
+    /**
+     * Department Code
+     */
+    department_code: string | null;
+    /**
+     * Category Code
+     */
+    category_code?: string | null;
+    /**
+     * Priority
+     */
+    priority?: string | null;
+    /**
+     * Urgency
+     */
+    urgency?: string | null;
+    /**
+     * Sentiment
+     */
+    sentiment?: string | null;
+    /**
+     * Escalation Level
+     */
+    escalation_level?: number | null;
+    /**
+     * Needs Review
+     */
+    needs_review?: boolean;
+};
+
+/**
+ * CustomerResponse
+ */
+export type CustomerResponse = {
+    /**
+     * Tone
+     */
+    tone: string;
+    /**
+     * Response Type
+     */
+    response_type: string;
+    /**
+     * Subject
+     */
+    subject: string;
+    /**
+     * Body
+     *
+     * Plain-text reply to the customer, signed by VoltHaven
+     */
+    body: string;
 };
 
 /**
@@ -331,6 +877,40 @@ export type DocumentVersionOut = {
 };
 
 /**
+ * Entities
+ */
+export type Entities = {
+    /**
+     * Products
+     */
+    products: Array<string>;
+    /**
+     * Order Refs
+     */
+    order_refs: Array<string>;
+    /**
+     * Transaction Refs
+     */
+    transaction_refs: Array<string>;
+    /**
+     * Complaint Refs
+     */
+    complaint_refs: Array<string>;
+    /**
+     * Dates
+     */
+    dates: Array<string>;
+    /**
+     * Amounts
+     */
+    amounts: Array<Amount>;
+    /**
+     * Locations
+     */
+    locations: Array<string>;
+};
+
+/**
  * ErrorResponse
  */
 export type ErrorResponse = {
@@ -342,6 +922,102 @@ export type ErrorResponse = {
      * Issues
      */
     issues?: Array<string>;
+};
+
+/**
+ * Escalation
+ */
+export type Escalation = {
+    /**
+     * Required
+     */
+    required: boolean;
+    /**
+     * Level
+     *
+     * Escalation level code
+     */
+    level: string;
+    /**
+     * Reason
+     */
+    reason: string | null;
+    /**
+     * Internal notes; required when escalating
+     */
+    notes: EscalationNotes | null;
+};
+
+/**
+ * EscalationNotes
+ */
+export type EscalationNotes = {
+    /**
+     * Summary
+     */
+    summary: string;
+    /**
+     * Key Facts
+     */
+    key_facts: Array<string>;
+    /**
+     * Reason
+     */
+    reason: string;
+    /**
+     * Actions Taken
+     */
+    actions_taken: Array<string>;
+    /**
+     * Relevant Policy
+     */
+    relevant_policy: string | null;
+    /**
+     * Required Next Action
+     */
+    required_next_action: string;
+};
+
+/**
+ * FactOut
+ */
+export type FactOut = {
+    /**
+     * Name
+     */
+    name: string;
+    /**
+     * Type
+     */
+    type: string;
+    /**
+     * Description
+     */
+    description: string;
+};
+
+/**
+ * FollowUp
+ */
+export type FollowUp = {
+    /**
+     * Required
+     */
+    required: boolean;
+    /**
+     * Type
+     */
+    type: string | null;
+    /**
+     * Within Hours
+     */
+    within_hours: number | null;
+    /**
+     * Message
+     *
+     * Follow-up message to send, if required
+     */
+    message: string | null;
 };
 
 /**
@@ -360,9 +1036,295 @@ export type HttpValidationError = {
 export type IngestStatus = 'pending' | 'processing' | 'ready' | 'failed';
 
 /**
+ * Issue
+ */
+export type Issue = {
+    /**
+     * Category
+     *
+     * Category code
+     */
+    category: string;
+    /**
+     * Subcategory
+     *
+     * Subcategory code belonging to the category
+     */
+    subcategory: string;
+    /**
+     * Description
+     *
+     * One sentence describing this issue
+     */
+    description: string;
+};
+
+/**
+ * OrderOut
+ */
+export type OrderOut = {
+    /**
+     * Order Ref
+     */
+    order_ref: string;
+    /**
+     * Product Name
+     */
+    product_name: string;
+    /**
+     * Product Category
+     */
+    product_category: string;
+    /**
+     * Amount
+     */
+    amount: number;
+    /**
+     * Shipping Method
+     */
+    shipping_method: string;
+    /**
+     * Order Date
+     */
+    order_date: string;
+    /**
+     * Committed Delivery Date
+     */
+    committed_delivery_date: string;
+    /**
+     * Delivered Date
+     */
+    delivered_date: string | null;
+    /**
+     * Status
+     */
+    status: string;
+};
+
+/**
+ * PolicyReference
+ */
+export type PolicyReference = {
+    /**
+     * Chunk Code
+     *
+     * chunk_code exactly as given in <policies>
+     */
+    chunk_code: string;
+    /**
+     * Doc Code
+     */
+    doc_code: string;
+    /**
+     * Section
+     */
+    section: string | null;
+    /**
+     * Applicability
+     */
+    applicability: string;
+    /**
+     * Reason
+     *
+     * Why this passage applies (or does not)
+     */
+    reason: string;
+};
+
+/**
+ * ResolutionStep
+ */
+export type ResolutionStep = {
+    /**
+     * Action Code
+     *
+     * One of the allowed action codes
+     */
+    action_code: string;
+    /**
+     * Description
+     *
+     * What the agent does, specific to this complaint
+     */
+    description: string;
+    /**
+     * Policy Chunk
+     *
+     * chunk_code supporting this step, if any
+     */
+    policy_chunk: string | null;
+};
+
+/**
  * Role
  */
 export type Role = 'customer' | 'agent' | 'reviewer' | 'manager' | 'admin';
+
+/**
+ * RuleOut
+ */
+export type RuleOut = {
+    /**
+     * Rule Id
+     */
+    rule_id: string;
+    rule_type: RuleType;
+    /**
+     * Description
+     */
+    description: string;
+    /**
+     * Category
+     */
+    category: string | null;
+    /**
+     * Subcategory
+     */
+    subcategory: string | null;
+    /**
+     * Condition
+     */
+    condition: string;
+    /**
+     * Department
+     */
+    department: string | null;
+    /**
+     * Supporting Departments
+     */
+    supporting_departments: Array<string>;
+    /**
+     * Urgency
+     */
+    urgency: string | null;
+    /**
+     * Priority
+     */
+    priority: string | null;
+    /**
+     * Escalation Level
+     */
+    escalation_level: number;
+    /**
+     * Required Actions
+     */
+    required_actions: Array<string>;
+    /**
+     * Prohibited Actions
+     */
+    prohibited_actions: Array<string>;
+    /**
+     * Policy Refs
+     */
+    policy_refs: Array<string>;
+    /**
+     * Follow Up Type
+     */
+    follow_up_type: string | null;
+    /**
+     * Follow Up Hours
+     */
+    follow_up_hours: number | null;
+    /**
+     * Rule Priority
+     */
+    rule_priority: number;
+    /**
+     * Is Active
+     */
+    is_active: boolean;
+    /**
+     * Version
+     */
+    version: number;
+};
+
+/**
+ * RuleType
+ */
+export type RuleType = 'resolution' | 'escalation';
+
+/**
+ * RuleWrite
+ *
+ * Create or replace a rule (all fields validated like the CSV import).
+ */
+export type RuleWrite = {
+    /**
+     * Rule Id
+     */
+    rule_id: string;
+    rule_type: RuleType;
+    /**
+     * Description
+     */
+    description: string;
+    /**
+     * Category
+     */
+    category?: string | null;
+    /**
+     * Subcategory
+     */
+    subcategory?: string | null;
+    /**
+     * Condition
+     */
+    condition?: string;
+    /**
+     * Department
+     */
+    department?: string | null;
+    /**
+     * Supporting Departments
+     */
+    supporting_departments?: Array<string>;
+    /**
+     * Urgency
+     */
+    urgency?: string | null;
+    /**
+     * Priority
+     */
+    priority?: string | null;
+    /**
+     * Escalation Level
+     */
+    escalation_level?: number;
+    /**
+     * Required Actions
+     */
+    required_actions?: Array<string>;
+    /**
+     * Prohibited Actions
+     */
+    prohibited_actions?: Array<string>;
+    /**
+     * Policy Refs
+     */
+    policy_refs?: Array<string>;
+    /**
+     * Follow Up Type
+     */
+    follow_up_type?: string | null;
+    /**
+     * Follow Up Hours
+     */
+    follow_up_hours?: number | null;
+    /**
+     * Rule Priority
+     */
+    rule_priority?: number;
+    /**
+     * Is Active
+     */
+    is_active?: boolean;
+};
+
+/**
+ * RunStatus
+ */
+export type RunStatus = 'queued' | 'running' | 'completed' | 'needs_review' | 'failed';
 
 /**
  * SearchResultOut
@@ -1162,3 +2124,313 @@ export type SearchKnowledgeBaseResponses = {
 };
 
 export type SearchKnowledgeBaseResponse = SearchKnowledgeBaseResponses[keyof SearchKnowledgeBaseResponses];
+
+export type ListComplaintsData = {
+    body?: never;
+    path?: never;
+    query?: {
+        /**
+         * Status
+         */
+        status?: ComplaintStatus | null;
+        /**
+         * Category
+         */
+        category?: string | null;
+        /**
+         * Priority
+         */
+        priority?: string | null;
+        /**
+         * Department
+         */
+        department?: string | null;
+        /**
+         * Needs Review
+         */
+        needs_review?: boolean | null;
+        /**
+         * Q
+         *
+         * Reference, title or customer
+         */
+        q?: string | null;
+        /**
+         * Page
+         */
+        page?: number;
+        /**
+         * Page Size
+         */
+        page_size?: number;
+    };
+    url: '/api/v1/complaints';
+};
+
+export type ListComplaintsErrors = {
+    /**
+     * Validation Error
+     */
+    422: HttpValidationError;
+};
+
+export type ListComplaintsError = ListComplaintsErrors[keyof ListComplaintsErrors];
+
+export type ListComplaintsResponses = {
+    /**
+     * Successful Response
+     */
+    200: ComplaintPage;
+};
+
+export type ListComplaintsResponse = ListComplaintsResponses[keyof ListComplaintsResponses];
+
+export type CreateComplaintData = {
+    body: ComplaintCreate;
+    path?: never;
+    query?: never;
+    url: '/api/v1/complaints';
+};
+
+export type CreateComplaintErrors = {
+    /**
+     * Conflict
+     */
+    409: ErrorResponse;
+    /**
+     * Unprocessable Content
+     */
+    422: ErrorResponse;
+};
+
+export type CreateComplaintError = CreateComplaintErrors[keyof CreateComplaintErrors];
+
+export type CreateComplaintResponses = {
+    /**
+     * Successful Response
+     */
+    201: ComplaintDetail;
+};
+
+export type CreateComplaintResponse = CreateComplaintResponses[keyof CreateComplaintResponses];
+
+export type GetComplaintData = {
+    body?: never;
+    path: {
+        /**
+         * Ref
+         */
+        ref: string;
+    };
+    query?: never;
+    url: '/api/v1/complaints/{ref}';
+};
+
+export type GetComplaintErrors = {
+    /**
+     * Validation Error
+     */
+    422: HttpValidationError;
+};
+
+export type GetComplaintError = GetComplaintErrors[keyof GetComplaintErrors];
+
+export type GetComplaintResponses = {
+    /**
+     * Successful Response
+     */
+    200: ComplaintDetail;
+};
+
+export type GetComplaintResponse = GetComplaintResponses[keyof GetComplaintResponses];
+
+export type GetComplaintAnalysisData = {
+    body?: never;
+    path: {
+        /**
+         * Ref
+         */
+        ref: string;
+    };
+    query?: never;
+    url: '/api/v1/complaints/{ref}/analysis';
+};
+
+export type GetComplaintAnalysisErrors = {
+    /**
+     * Validation Error
+     */
+    422: HttpValidationError;
+};
+
+export type GetComplaintAnalysisError = GetComplaintAnalysisErrors[keyof GetComplaintAnalysisErrors];
+
+export type GetComplaintAnalysisResponses = {
+    /**
+     * Successful Response
+     */
+    200: ComplaintAnalysisOut;
+};
+
+export type GetComplaintAnalysisResponse = GetComplaintAnalysisResponses[keyof GetComplaintAnalysisResponses];
+
+export type ReanalyzeComplaintData = {
+    body?: never;
+    path: {
+        /**
+         * Ref
+         */
+        ref: string;
+    };
+    query?: never;
+    url: '/api/v1/complaints/{ref}/analyze';
+};
+
+export type ReanalyzeComplaintErrors = {
+    /**
+     * Validation Error
+     */
+    422: HttpValidationError;
+};
+
+export type ReanalyzeComplaintError = ReanalyzeComplaintErrors[keyof ReanalyzeComplaintErrors];
+
+export type ReanalyzeComplaintResponses = {
+    /**
+     * Response Reanalyze Complaint
+     *
+     * Successful Response
+     */
+    202: {
+        [key: string]: string;
+    };
+};
+
+export type ReanalyzeComplaintResponse = ReanalyzeComplaintResponses[keyof ReanalyzeComplaintResponses];
+
+export type MyOrdersData = {
+    body?: never;
+    path?: never;
+    query?: never;
+    url: '/api/v1/customers/me/orders';
+};
+
+export type MyOrdersResponses = {
+    /**
+     * Response My Orders
+     *
+     * Successful Response
+     */
+    200: Array<OrderOut>;
+};
+
+export type MyOrdersResponse = MyOrdersResponses[keyof MyOrdersResponses];
+
+export type ListRulesData = {
+    body?: never;
+    path?: never;
+    query?: never;
+    url: '/api/v1/rules';
+};
+
+export type ListRulesResponses = {
+    /**
+     * Response List Rules
+     *
+     * Successful Response
+     */
+    200: Array<RuleOut>;
+};
+
+export type ListRulesResponse = ListRulesResponses[keyof ListRulesResponses];
+
+export type CreateRuleData = {
+    body: RuleWrite;
+    path?: never;
+    query?: never;
+    url: '/api/v1/rules';
+};
+
+export type CreateRuleErrors = {
+    /**
+     * Conflict
+     */
+    409: ErrorResponse;
+    /**
+     * Unprocessable Content
+     */
+    422: ErrorResponse;
+};
+
+export type CreateRuleError = CreateRuleErrors[keyof CreateRuleErrors];
+
+export type CreateRuleResponses = {
+    /**
+     * Successful Response
+     */
+    201: RuleOut;
+};
+
+export type CreateRuleResponse = CreateRuleResponses[keyof CreateRuleResponses];
+
+export type ListFactsData = {
+    body?: never;
+    path?: never;
+    query?: never;
+    url: '/api/v1/rules/facts';
+};
+
+export type ListFactsResponses = {
+    /**
+     * Response List Facts
+     *
+     * Successful Response
+     */
+    200: Array<FactOut>;
+};
+
+export type ListFactsResponse = ListFactsResponses[keyof ListFactsResponses];
+
+export type ExportRulesData = {
+    body?: never;
+    path?: never;
+    query?: never;
+    url: '/api/v1/rules/export.csv';
+};
+
+export type ExportRulesResponses = {
+    /**
+     * Successful Response
+     */
+    200: unknown;
+};
+
+export type ReplaceRuleData = {
+    body: RuleWrite;
+    path: {
+        /**
+         * Rule Id
+         */
+        rule_id: string;
+    };
+    query?: never;
+    url: '/api/v1/rules/{rule_id}';
+};
+
+export type ReplaceRuleErrors = {
+    /**
+     * Unprocessable Content
+     */
+    422: ErrorResponse;
+};
+
+export type ReplaceRuleError = ReplaceRuleErrors[keyof ReplaceRuleErrors];
+
+export type ReplaceRuleResponses = {
+    /**
+     * Successful Response
+     */
+    200: RuleOut;
+};
+
+export type ReplaceRuleResponse = ReplaceRuleResponses[keyof ReplaceRuleResponses];

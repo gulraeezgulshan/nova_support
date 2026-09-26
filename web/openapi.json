@@ -1006,10 +1006,882 @@
           }
         }
       }
+    },
+    "/api/v1/complaints": {
+      "post": {
+        "tags": [
+          "complaints"
+        ],
+        "summary": "Create Complaint",
+        "operationId": "create_complaint",
+        "security": [
+          {
+            "HTTPBearer": []
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ComplaintCreate"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ComplaintDetail"
+                }
+              }
+            }
+          },
+          "409": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            },
+            "description": "Conflict"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            },
+            "description": "Unprocessable Content"
+          }
+        }
+      },
+      "get": {
+        "tags": [
+          "complaints"
+        ],
+        "summary": "List Complaints",
+        "operationId": "list_complaints",
+        "security": [
+          {
+            "HTTPBearer": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "status",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "$ref": "#/components/schemas/ComplaintStatus"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Status"
+            }
+          },
+          {
+            "name": "category",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Category"
+            }
+          },
+          {
+            "name": "priority",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Priority"
+            }
+          },
+          {
+            "name": "department",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Department"
+            }
+          },
+          {
+            "name": "needs_review",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "boolean"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Needs Review"
+            }
+          },
+          {
+            "name": "q",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string",
+                  "maxLength": 100
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "description": "Reference, title or customer",
+              "title": "Q"
+            },
+            "description": "Reference, title or customer"
+          },
+          {
+            "name": "page",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "minimum": 1,
+              "default": 1,
+              "title": "Page"
+            }
+          },
+          {
+            "name": "page_size",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "maximum": 100,
+              "minimum": 1,
+              "default": 25,
+              "title": "Page Size"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ComplaintPage"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/complaints/{ref}": {
+      "get": {
+        "tags": [
+          "complaints"
+        ],
+        "summary": "Get Complaint",
+        "operationId": "get_complaint",
+        "security": [
+          {
+            "HTTPBearer": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "ref",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "title": "Ref"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ComplaintDetail"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/complaints/{ref}/analysis": {
+      "get": {
+        "tags": [
+          "complaints"
+        ],
+        "summary": "Get Complaint Analysis",
+        "operationId": "get_complaint_analysis",
+        "security": [
+          {
+            "HTTPBearer": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "ref",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "title": "Ref"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ComplaintAnalysisOut"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/complaints/{ref}/analyze": {
+      "post": {
+        "tags": [
+          "complaints"
+        ],
+        "summary": "Reanalyze Complaint",
+        "operationId": "reanalyze_complaint",
+        "security": [
+          {
+            "HTTPBearer": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "ref",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "title": "Ref"
+            }
+          }
+        ],
+        "responses": {
+          "202": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "additionalProperties": {
+                    "type": "string"
+                  },
+                  "title": "Response Reanalyze Complaint"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/customers/me/orders": {
+      "get": {
+        "tags": [
+          "complaints"
+        ],
+        "summary": "My Orders",
+        "operationId": "my_orders",
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "items": {
+                    "$ref": "#/components/schemas/OrderOut"
+                  },
+                  "type": "array",
+                  "title": "Response My Orders"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "HTTPBearer": []
+          }
+        ]
+      }
+    },
+    "/api/v1/rules": {
+      "get": {
+        "tags": [
+          "rules"
+        ],
+        "summary": "List Rules",
+        "operationId": "list_rules",
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "items": {
+                    "$ref": "#/components/schemas/RuleOut"
+                  },
+                  "type": "array",
+                  "title": "Response List Rules"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "HTTPBearer": []
+          }
+        ]
+      },
+      "post": {
+        "tags": [
+          "rules"
+        ],
+        "summary": "Create Rule",
+        "operationId": "create_rule",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/RuleWrite"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "201": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/RuleOut"
+                }
+              }
+            }
+          },
+          "409": {
+            "description": "Conflict",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Unprocessable Content",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "HTTPBearer": []
+          }
+        ]
+      }
+    },
+    "/api/v1/rules/facts": {
+      "get": {
+        "tags": [
+          "rules"
+        ],
+        "summary": "List Facts",
+        "operationId": "list_facts",
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "items": {
+                    "$ref": "#/components/schemas/FactOut"
+                  },
+                  "type": "array",
+                  "title": "Response List Facts"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "HTTPBearer": []
+          }
+        ]
+      }
+    },
+    "/api/v1/rules/export.csv": {
+      "get": {
+        "tags": [
+          "rules"
+        ],
+        "summary": "Export Rules",
+        "operationId": "export_rules",
+        "responses": {
+          "200": {
+            "description": "Successful Response"
+          }
+        },
+        "security": [
+          {
+            "HTTPBearer": []
+          }
+        ]
+      }
+    },
+    "/api/v1/rules/{rule_id}": {
+      "put": {
+        "tags": [
+          "rules"
+        ],
+        "summary": "Replace Rule",
+        "operationId": "replace_rule",
+        "security": [
+          {
+            "HTTPBearer": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "rule_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "title": "Rule Id"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/RuleWrite"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/RuleOut"
+                }
+              }
+            }
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            },
+            "description": "Unprocessable Content"
+          }
+        }
+      }
     }
   },
   "components": {
     "schemas": {
+      "Amount": {
+        "properties": {
+          "value": {
+            "type": "number",
+            "title": "Value"
+          },
+          "currency": {
+            "type": "string",
+            "title": "Currency"
+          }
+        },
+        "additionalProperties": false,
+        "type": "object",
+        "required": [
+          "value",
+          "currency"
+        ],
+        "title": "Amount"
+      },
+      "AnalysisRunOut": {
+        "properties": {
+          "id": {
+            "type": "string",
+            "format": "uuid",
+            "title": "Id"
+          },
+          "status": {
+            "$ref": "#/components/schemas/RunStatus"
+          },
+          "created_at": {
+            "type": "string",
+            "format": "date-time",
+            "title": "Created At"
+          },
+          "completed_at": {
+            "anyOf": [
+              {
+                "type": "string",
+                "format": "date-time"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Completed At"
+          },
+          "provider": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Provider"
+          },
+          "model": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Model"
+          },
+          "prompt_name": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Prompt Name"
+          },
+          "prompt_version": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Prompt Version"
+          },
+          "schema_version": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Schema Version"
+          },
+          "attempts": {
+            "type": "integer",
+            "title": "Attempts"
+          },
+          "latency_ms": {
+            "type": "integer",
+            "title": "Latency Ms"
+          },
+          "input_tokens": {
+            "type": "integer",
+            "title": "Input Tokens"
+          },
+          "output_tokens": {
+            "type": "integer",
+            "title": "Output Tokens"
+          },
+          "retrieved_policies": {
+            "items": {
+              "additionalProperties": true,
+              "type": "object"
+            },
+            "type": "array",
+            "title": "Retrieved Policies"
+          },
+          "output": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/ComplaintAnalysis"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "validation_errors": {
+            "items": {
+              "type": "string"
+            },
+            "type": "array",
+            "title": "Validation Errors"
+          },
+          "error": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Error"
+          }
+        },
+        "type": "object",
+        "required": [
+          "id",
+          "status",
+          "created_at",
+          "completed_at",
+          "provider",
+          "model",
+          "prompt_name",
+          "prompt_version",
+          "schema_version",
+          "attempts",
+          "latency_ms",
+          "input_tokens",
+          "output_tokens",
+          "retrieved_policies",
+          "output",
+          "validation_errors",
+          "error"
+        ],
+        "title": "AnalysisRunOut"
+      },
+      "AnalysisRunSummary": {
+        "properties": {
+          "id": {
+            "type": "string",
+            "format": "uuid",
+            "title": "Id"
+          },
+          "status": {
+            "$ref": "#/components/schemas/RunStatus"
+          },
+          "created_at": {
+            "type": "string",
+            "format": "date-time",
+            "title": "Created At"
+          },
+          "completed_at": {
+            "anyOf": [
+              {
+                "type": "string",
+                "format": "date-time"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Completed At"
+          },
+          "provider": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Provider"
+          },
+          "model": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Model"
+          },
+          "prompt_name": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Prompt Name"
+          },
+          "prompt_version": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Prompt Version"
+          },
+          "schema_version": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Schema Version"
+          },
+          "attempts": {
+            "type": "integer",
+            "title": "Attempts"
+          },
+          "latency_ms": {
+            "type": "integer",
+            "title": "Latency Ms"
+          },
+          "input_tokens": {
+            "type": "integer",
+            "title": "Input Tokens"
+          },
+          "output_tokens": {
+            "type": "integer",
+            "title": "Output Tokens"
+          }
+        },
+        "type": "object",
+        "required": [
+          "id",
+          "status",
+          "created_at",
+          "completed_at",
+          "provider",
+          "model",
+          "prompt_name",
+          "prompt_version",
+          "schema_version",
+          "attempts",
+          "latency_ms",
+          "input_tokens",
+          "output_tokens"
+        ],
+        "title": "AnalysisRunSummary"
+      },
       "Body_upload_document": {
         "properties": {
           "file": {
@@ -1296,6 +2168,813 @@
           "token_count"
         ],
         "title": "ChunkOut"
+      },
+      "Compensation": {
+        "properties": {
+          "offered": {
+            "type": "boolean",
+            "title": "Offered",
+            "description": "True only if policy passages and order facts support it"
+          },
+          "type": {
+            "type": "string",
+            "title": "Type"
+          },
+          "amount": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Amount"
+          },
+          "policy_chunk": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Policy Chunk"
+          }
+        },
+        "additionalProperties": false,
+        "type": "object",
+        "required": [
+          "offered",
+          "type",
+          "amount",
+          "policy_chunk"
+        ],
+        "title": "Compensation"
+      },
+      "ComplaintAnalysis": {
+        "properties": {
+          "complaint_summary": {
+            "type": "string",
+            "title": "Complaint Summary",
+            "description": "Concise structured summary for agents"
+          },
+          "primary_issue": {
+            "$ref": "#/components/schemas/Issue"
+          },
+          "secondary_issues": {
+            "items": {
+              "$ref": "#/components/schemas/Issue"
+            },
+            "type": "array",
+            "title": "Secondary Issues"
+          },
+          "sentiment": {
+            "type": "string",
+            "title": "Sentiment"
+          },
+          "emotions": {
+            "items": {
+              "type": "string"
+            },
+            "type": "array",
+            "title": "Emotions"
+          },
+          "urgency": {
+            "type": "string",
+            "title": "Urgency"
+          },
+          "urgency_rationale": {
+            "type": "string",
+            "title": "Urgency Rationale",
+            "description": "Business-risk reasons, not tone"
+          },
+          "priority": {
+            "type": "string",
+            "title": "Priority"
+          },
+          "entities": {
+            "$ref": "#/components/schemas/Entities"
+          },
+          "department": {
+            "type": "string",
+            "title": "Department",
+            "description": "Primary responsible department code"
+          },
+          "supporting_departments": {
+            "items": {
+              "type": "string"
+            },
+            "type": "array",
+            "title": "Supporting Departments"
+          },
+          "policy_references": {
+            "items": {
+              "$ref": "#/components/schemas/PolicyReference"
+            },
+            "type": "array",
+            "title": "Policy References"
+          },
+          "resolution_steps": {
+            "items": {
+              "$ref": "#/components/schemas/ResolutionStep"
+            },
+            "type": "array",
+            "title": "Resolution Steps"
+          },
+          "compensation": {
+            "$ref": "#/components/schemas/Compensation"
+          },
+          "escalation": {
+            "$ref": "#/components/schemas/Escalation"
+          },
+          "customer_response": {
+            "$ref": "#/components/schemas/CustomerResponse"
+          },
+          "follow_up": {
+            "$ref": "#/components/schemas/FollowUp"
+          },
+          "agent_guidance": {
+            "items": {
+              "type": "string"
+            },
+            "type": "array",
+            "title": "Agent Guidance",
+            "description": "Internal do/don't guidance for the agent"
+          },
+          "missing_information": {
+            "items": {
+              "type": "string"
+            },
+            "type": "array",
+            "title": "Missing Information"
+          },
+          "clarification_questions": {
+            "items": {
+              "type": "string"
+            },
+            "type": "array",
+            "title": "Clarification Questions"
+          },
+          "suspicious_instructions": {
+            "items": {
+              "type": "string"
+            },
+            "type": "array",
+            "title": "Suspicious Instructions",
+            "description": "Text in the complaint that tried to instruct the system or claim authority"
+          }
+        },
+        "additionalProperties": false,
+        "type": "object",
+        "required": [
+          "complaint_summary",
+          "primary_issue",
+          "secondary_issues",
+          "sentiment",
+          "emotions",
+          "urgency",
+          "urgency_rationale",
+          "priority",
+          "entities",
+          "department",
+          "supporting_departments",
+          "policy_references",
+          "resolution_steps",
+          "compensation",
+          "escalation",
+          "customer_response",
+          "follow_up",
+          "agent_guidance",
+          "missing_information",
+          "clarification_questions",
+          "suspicious_instructions"
+        ],
+        "title": "ComplaintAnalysis"
+      },
+      "ComplaintAnalysisOut": {
+        "properties": {
+          "latest": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/AnalysisRunOut"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "history": {
+            "items": {
+              "$ref": "#/components/schemas/AnalysisRunSummary"
+            },
+            "type": "array",
+            "title": "History"
+          }
+        },
+        "type": "object",
+        "required": [
+          "latest",
+          "history"
+        ],
+        "title": "ComplaintAnalysisOut"
+      },
+      "ComplaintCreate": {
+        "properties": {
+          "title": {
+            "type": "string",
+            "maxLength": 200,
+            "title": "Title"
+          },
+          "description": {
+            "type": "string",
+            "maxLength": 6000,
+            "title": "Description"
+          },
+          "product_service": {
+            "anyOf": [
+              {
+                "type": "string",
+                "maxLength": 200
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Product Service"
+          },
+          "order_ref": {
+            "anyOf": [
+              {
+                "type": "string",
+                "maxLength": 20
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Order Ref"
+          },
+          "previous_complaint_ref": {
+            "anyOf": [
+              {
+                "type": "string",
+                "maxLength": 20
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Previous Complaint Ref"
+          },
+          "channel": {
+            "type": "string",
+            "title": "Channel",
+            "default": "web_form"
+          },
+          "preferred_contact_channel": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Preferred Contact Channel"
+          },
+          "requested_resolution": {
+            "anyOf": [
+              {
+                "type": "string",
+                "maxLength": 1000
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Requested Resolution"
+          },
+          "customer_ref": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Customer Ref",
+            "description": "Staff only: submit on behalf of this customer"
+          }
+        },
+        "type": "object",
+        "required": [
+          "title",
+          "description"
+        ],
+        "title": "ComplaintCreate"
+      },
+      "ComplaintDetail": {
+        "properties": {
+          "complaint_ref": {
+            "type": "string",
+            "title": "Complaint Ref"
+          },
+          "title": {
+            "type": "string",
+            "title": "Title"
+          },
+          "status": {
+            "$ref": "#/components/schemas/ComplaintStatus"
+          },
+          "created_at": {
+            "type": "string",
+            "format": "date-time",
+            "title": "Created At"
+          },
+          "updated_at": {
+            "type": "string",
+            "format": "date-time",
+            "title": "Updated At"
+          },
+          "customer_ref": {
+            "type": "string",
+            "title": "Customer Ref"
+          },
+          "customer_name": {
+            "type": "string",
+            "title": "Customer Name"
+          },
+          "department_code": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Department Code"
+          },
+          "category_code": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Category Code"
+          },
+          "priority": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Priority"
+          },
+          "urgency": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Urgency"
+          },
+          "sentiment": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Sentiment"
+          },
+          "escalation_level": {
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Escalation Level"
+          },
+          "needs_review": {
+            "type": "boolean",
+            "title": "Needs Review",
+            "default": false
+          },
+          "description": {
+            "type": "string",
+            "title": "Description"
+          },
+          "product_service": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Product Service"
+          },
+          "order": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/OrderOut"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "channel": {
+            "type": "string",
+            "title": "Channel"
+          },
+          "preferred_contact_channel": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Preferred Contact Channel"
+          },
+          "requested_resolution": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Requested Resolution"
+          },
+          "previous_complaint_ref": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Previous Complaint Ref"
+          },
+          "events": {
+            "items": {
+              "$ref": "#/components/schemas/ComplaintEventOut"
+            },
+            "type": "array",
+            "title": "Events"
+          },
+          "customer_type": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Customer Type"
+          },
+          "subcategory_code": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Subcategory Code"
+          },
+          "signals": {
+            "anyOf": [
+              {
+                "additionalProperties": {
+                  "items": {
+                    "type": "string"
+                  },
+                  "type": "array"
+                },
+                "type": "object"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Signals"
+          },
+          "entities": {
+            "anyOf": [
+              {
+                "additionalProperties": true,
+                "type": "object"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Entities"
+          },
+          "intake_warnings": {
+            "anyOf": [
+              {
+                "items": {
+                  "type": "string"
+                },
+                "type": "array"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Intake Warnings"
+          },
+          "review_reason": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Review Reason"
+          }
+        },
+        "type": "object",
+        "required": [
+          "complaint_ref",
+          "title",
+          "status",
+          "created_at",
+          "updated_at",
+          "customer_ref",
+          "customer_name",
+          "department_code",
+          "description",
+          "product_service",
+          "order",
+          "channel",
+          "preferred_contact_channel",
+          "requested_resolution",
+          "previous_complaint_ref",
+          "events"
+        ],
+        "title": "ComplaintDetail"
+      },
+      "ComplaintEventOut": {
+        "properties": {
+          "event_type": {
+            "type": "string",
+            "title": "Event Type"
+          },
+          "from_status": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "From Status"
+          },
+          "to_status": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "To Status"
+          },
+          "message": {
+            "type": "string",
+            "title": "Message"
+          },
+          "created_at": {
+            "type": "string",
+            "format": "date-time",
+            "title": "Created At"
+          }
+        },
+        "type": "object",
+        "required": [
+          "event_type",
+          "from_status",
+          "to_status",
+          "message",
+          "created_at"
+        ],
+        "title": "ComplaintEventOut"
+      },
+      "ComplaintPage": {
+        "properties": {
+          "items": {
+            "items": {
+              "$ref": "#/components/schemas/ComplaintSummary"
+            },
+            "type": "array",
+            "title": "Items"
+          },
+          "total": {
+            "type": "integer",
+            "title": "Total"
+          }
+        },
+        "type": "object",
+        "required": [
+          "items",
+          "total"
+        ],
+        "title": "ComplaintPage"
+      },
+      "ComplaintStatus": {
+        "type": "string",
+        "enum": [
+          "new",
+          "analyzed",
+          "assigned",
+          "in_progress",
+          "awaiting_customer",
+          "escalated",
+          "resolved",
+          "closed",
+          "reopened"
+        ],
+        "title": "ComplaintStatus"
+      },
+      "ComplaintSummary": {
+        "properties": {
+          "complaint_ref": {
+            "type": "string",
+            "title": "Complaint Ref"
+          },
+          "title": {
+            "type": "string",
+            "title": "Title"
+          },
+          "status": {
+            "$ref": "#/components/schemas/ComplaintStatus"
+          },
+          "created_at": {
+            "type": "string",
+            "format": "date-time",
+            "title": "Created At"
+          },
+          "updated_at": {
+            "type": "string",
+            "format": "date-time",
+            "title": "Updated At"
+          },
+          "customer_ref": {
+            "type": "string",
+            "title": "Customer Ref"
+          },
+          "customer_name": {
+            "type": "string",
+            "title": "Customer Name"
+          },
+          "department_code": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Department Code"
+          },
+          "category_code": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Category Code"
+          },
+          "priority": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Priority"
+          },
+          "urgency": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Urgency"
+          },
+          "sentiment": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Sentiment"
+          },
+          "escalation_level": {
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Escalation Level"
+          },
+          "needs_review": {
+            "type": "boolean",
+            "title": "Needs Review",
+            "default": false
+          }
+        },
+        "type": "object",
+        "required": [
+          "complaint_ref",
+          "title",
+          "status",
+          "created_at",
+          "updated_at",
+          "customer_ref",
+          "customer_name",
+          "department_code"
+        ],
+        "title": "ComplaintSummary",
+        "description": "List row. Classification fields are empty for customers."
+      },
+      "CustomerResponse": {
+        "properties": {
+          "tone": {
+            "type": "string",
+            "title": "Tone"
+          },
+          "response_type": {
+            "type": "string",
+            "title": "Response Type"
+          },
+          "subject": {
+            "type": "string",
+            "title": "Subject"
+          },
+          "body": {
+            "type": "string",
+            "title": "Body",
+            "description": "Plain-text reply to the customer, signed by VoltHaven"
+          }
+        },
+        "additionalProperties": false,
+        "type": "object",
+        "required": [
+          "tone",
+          "response_type",
+          "subject",
+          "body"
+        ],
+        "title": "CustomerResponse"
       },
       "DepartmentCreate": {
         "properties": {
@@ -1604,6 +3283,71 @@
         ],
         "title": "DocumentVersionOut"
       },
+      "Entities": {
+        "properties": {
+          "products": {
+            "items": {
+              "type": "string"
+            },
+            "type": "array",
+            "title": "Products"
+          },
+          "order_refs": {
+            "items": {
+              "type": "string"
+            },
+            "type": "array",
+            "title": "Order Refs"
+          },
+          "transaction_refs": {
+            "items": {
+              "type": "string"
+            },
+            "type": "array",
+            "title": "Transaction Refs"
+          },
+          "complaint_refs": {
+            "items": {
+              "type": "string"
+            },
+            "type": "array",
+            "title": "Complaint Refs"
+          },
+          "dates": {
+            "items": {
+              "type": "string"
+            },
+            "type": "array",
+            "title": "Dates"
+          },
+          "amounts": {
+            "items": {
+              "$ref": "#/components/schemas/Amount"
+            },
+            "type": "array",
+            "title": "Amounts"
+          },
+          "locations": {
+            "items": {
+              "type": "string"
+            },
+            "type": "array",
+            "title": "Locations"
+          }
+        },
+        "additionalProperties": false,
+        "type": "object",
+        "required": [
+          "products",
+          "order_refs",
+          "transaction_refs",
+          "complaint_refs",
+          "dates",
+          "amounts",
+          "locations"
+        ],
+        "title": "Entities"
+      },
       "ErrorResponse": {
         "properties": {
           "detail": {
@@ -1623,6 +3367,176 @@
           "detail"
         ],
         "title": "ErrorResponse"
+      },
+      "Escalation": {
+        "properties": {
+          "required": {
+            "type": "boolean",
+            "title": "Required"
+          },
+          "level": {
+            "type": "string",
+            "title": "Level",
+            "description": "Escalation level code"
+          },
+          "reason": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Reason"
+          },
+          "notes": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/EscalationNotes"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "description": "Internal notes; required when escalating"
+          }
+        },
+        "additionalProperties": false,
+        "type": "object",
+        "required": [
+          "required",
+          "level",
+          "reason",
+          "notes"
+        ],
+        "title": "Escalation"
+      },
+      "EscalationNotes": {
+        "properties": {
+          "summary": {
+            "type": "string",
+            "title": "Summary"
+          },
+          "key_facts": {
+            "items": {
+              "type": "string"
+            },
+            "type": "array",
+            "title": "Key Facts"
+          },
+          "reason": {
+            "type": "string",
+            "title": "Reason"
+          },
+          "actions_taken": {
+            "items": {
+              "type": "string"
+            },
+            "type": "array",
+            "title": "Actions Taken"
+          },
+          "relevant_policy": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Relevant Policy"
+          },
+          "required_next_action": {
+            "type": "string",
+            "title": "Required Next Action"
+          }
+        },
+        "additionalProperties": false,
+        "type": "object",
+        "required": [
+          "summary",
+          "key_facts",
+          "reason",
+          "actions_taken",
+          "relevant_policy",
+          "required_next_action"
+        ],
+        "title": "EscalationNotes"
+      },
+      "FactOut": {
+        "properties": {
+          "name": {
+            "type": "string",
+            "title": "Name"
+          },
+          "type": {
+            "type": "string",
+            "title": "Type"
+          },
+          "description": {
+            "type": "string",
+            "title": "Description"
+          }
+        },
+        "type": "object",
+        "required": [
+          "name",
+          "type",
+          "description"
+        ],
+        "title": "FactOut"
+      },
+      "FollowUp": {
+        "properties": {
+          "required": {
+            "type": "boolean",
+            "title": "Required"
+          },
+          "type": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Type"
+          },
+          "within_hours": {
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Within Hours"
+          },
+          "message": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Message",
+            "description": "Follow-up message to send, if required"
+          }
+        },
+        "additionalProperties": false,
+        "type": "object",
+        "required": [
+          "required",
+          "type",
+          "within_hours",
+          "message"
+        ],
+        "title": "FollowUp"
       },
       "HTTPValidationError": {
         "properties": {
@@ -1647,6 +3561,173 @@
         ],
         "title": "IngestStatus"
       },
+      "Issue": {
+        "properties": {
+          "category": {
+            "type": "string",
+            "title": "Category",
+            "description": "Category code"
+          },
+          "subcategory": {
+            "type": "string",
+            "title": "Subcategory",
+            "description": "Subcategory code belonging to the category"
+          },
+          "description": {
+            "type": "string",
+            "title": "Description",
+            "description": "One sentence describing this issue"
+          }
+        },
+        "additionalProperties": false,
+        "type": "object",
+        "required": [
+          "category",
+          "subcategory",
+          "description"
+        ],
+        "title": "Issue"
+      },
+      "OrderOut": {
+        "properties": {
+          "order_ref": {
+            "type": "string",
+            "title": "Order Ref"
+          },
+          "product_name": {
+            "type": "string",
+            "title": "Product Name"
+          },
+          "product_category": {
+            "type": "string",
+            "title": "Product Category"
+          },
+          "amount": {
+            "type": "number",
+            "title": "Amount"
+          },
+          "shipping_method": {
+            "type": "string",
+            "title": "Shipping Method"
+          },
+          "order_date": {
+            "type": "string",
+            "format": "date",
+            "title": "Order Date"
+          },
+          "committed_delivery_date": {
+            "type": "string",
+            "format": "date",
+            "title": "Committed Delivery Date"
+          },
+          "delivered_date": {
+            "anyOf": [
+              {
+                "type": "string",
+                "format": "date"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Delivered Date"
+          },
+          "status": {
+            "type": "string",
+            "title": "Status"
+          }
+        },
+        "type": "object",
+        "required": [
+          "order_ref",
+          "product_name",
+          "product_category",
+          "amount",
+          "shipping_method",
+          "order_date",
+          "committed_delivery_date",
+          "delivered_date",
+          "status"
+        ],
+        "title": "OrderOut"
+      },
+      "PolicyReference": {
+        "properties": {
+          "chunk_code": {
+            "type": "string",
+            "title": "Chunk Code",
+            "description": "chunk_code exactly as given in <policies>"
+          },
+          "doc_code": {
+            "type": "string",
+            "title": "Doc Code"
+          },
+          "section": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Section"
+          },
+          "applicability": {
+            "type": "string",
+            "title": "Applicability"
+          },
+          "reason": {
+            "type": "string",
+            "title": "Reason",
+            "description": "Why this passage applies (or does not)"
+          }
+        },
+        "additionalProperties": false,
+        "type": "object",
+        "required": [
+          "chunk_code",
+          "doc_code",
+          "section",
+          "applicability",
+          "reason"
+        ],
+        "title": "PolicyReference"
+      },
+      "ResolutionStep": {
+        "properties": {
+          "action_code": {
+            "type": "string",
+            "title": "Action Code",
+            "description": "One of the allowed action codes"
+          },
+          "description": {
+            "type": "string",
+            "title": "Description",
+            "description": "What the agent does, specific to this complaint"
+          },
+          "policy_chunk": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Policy Chunk",
+            "description": "chunk_code supporting this step, if any"
+          }
+        },
+        "additionalProperties": false,
+        "type": "object",
+        "required": [
+          "action_code",
+          "description",
+          "policy_chunk"
+        ],
+        "title": "ResolutionStep"
+      },
       "Role": {
         "type": "string",
         "enum": [
@@ -1657,6 +3738,341 @@
           "admin"
         ],
         "title": "Role"
+      },
+      "RuleOut": {
+        "properties": {
+          "rule_id": {
+            "type": "string",
+            "title": "Rule Id"
+          },
+          "rule_type": {
+            "$ref": "#/components/schemas/RuleType"
+          },
+          "description": {
+            "type": "string",
+            "title": "Description"
+          },
+          "category": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Category"
+          },
+          "subcategory": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Subcategory"
+          },
+          "condition": {
+            "type": "string",
+            "title": "Condition"
+          },
+          "department": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Department"
+          },
+          "supporting_departments": {
+            "items": {
+              "type": "string"
+            },
+            "type": "array",
+            "title": "Supporting Departments"
+          },
+          "urgency": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Urgency"
+          },
+          "priority": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Priority"
+          },
+          "escalation_level": {
+            "type": "integer",
+            "title": "Escalation Level"
+          },
+          "required_actions": {
+            "items": {
+              "type": "string"
+            },
+            "type": "array",
+            "title": "Required Actions"
+          },
+          "prohibited_actions": {
+            "items": {
+              "type": "string"
+            },
+            "type": "array",
+            "title": "Prohibited Actions"
+          },
+          "policy_refs": {
+            "items": {
+              "type": "string"
+            },
+            "type": "array",
+            "title": "Policy Refs"
+          },
+          "follow_up_type": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Follow Up Type"
+          },
+          "follow_up_hours": {
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Follow Up Hours"
+          },
+          "rule_priority": {
+            "type": "integer",
+            "title": "Rule Priority"
+          },
+          "is_active": {
+            "type": "boolean",
+            "title": "Is Active"
+          },
+          "version": {
+            "type": "integer",
+            "title": "Version"
+          }
+        },
+        "type": "object",
+        "required": [
+          "rule_id",
+          "rule_type",
+          "description",
+          "category",
+          "subcategory",
+          "condition",
+          "department",
+          "supporting_departments",
+          "urgency",
+          "priority",
+          "escalation_level",
+          "required_actions",
+          "prohibited_actions",
+          "policy_refs",
+          "follow_up_type",
+          "follow_up_hours",
+          "rule_priority",
+          "is_active",
+          "version"
+        ],
+        "title": "RuleOut"
+      },
+      "RuleType": {
+        "type": "string",
+        "enum": [
+          "resolution",
+          "escalation"
+        ],
+        "title": "RuleType"
+      },
+      "RuleWrite": {
+        "properties": {
+          "rule_id": {
+            "type": "string",
+            "title": "Rule Id"
+          },
+          "rule_type": {
+            "$ref": "#/components/schemas/RuleType"
+          },
+          "description": {
+            "type": "string",
+            "minLength": 3,
+            "title": "Description"
+          },
+          "category": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Category"
+          },
+          "subcategory": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Subcategory"
+          },
+          "condition": {
+            "type": "string",
+            "title": "Condition",
+            "default": ""
+          },
+          "department": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Department"
+          },
+          "supporting_departments": {
+            "items": {
+              "type": "string"
+            },
+            "type": "array",
+            "title": "Supporting Departments",
+            "default": []
+          },
+          "urgency": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Urgency"
+          },
+          "priority": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Priority"
+          },
+          "escalation_level": {
+            "type": "integer",
+            "title": "Escalation Level",
+            "default": 0
+          },
+          "required_actions": {
+            "items": {
+              "type": "string"
+            },
+            "type": "array",
+            "title": "Required Actions",
+            "default": []
+          },
+          "prohibited_actions": {
+            "items": {
+              "type": "string"
+            },
+            "type": "array",
+            "title": "Prohibited Actions",
+            "default": []
+          },
+          "policy_refs": {
+            "items": {
+              "type": "string"
+            },
+            "type": "array",
+            "title": "Policy Refs",
+            "default": []
+          },
+          "follow_up_type": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Follow Up Type"
+          },
+          "follow_up_hours": {
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Follow Up Hours"
+          },
+          "rule_priority": {
+            "type": "integer",
+            "title": "Rule Priority",
+            "default": 50
+          },
+          "is_active": {
+            "type": "boolean",
+            "title": "Is Active",
+            "default": true
+          }
+        },
+        "type": "object",
+        "required": [
+          "rule_id",
+          "rule_type",
+          "description"
+        ],
+        "title": "RuleWrite",
+        "description": "Create or replace a rule (all fields validated like the CSV import)."
+      },
+      "RunStatus": {
+        "type": "string",
+        "enum": [
+          "queued",
+          "running",
+          "completed",
+          "needs_review",
+          "failed"
+        ],
+        "title": "RunStatus"
       },
       "SearchResultOut": {
         "properties": {

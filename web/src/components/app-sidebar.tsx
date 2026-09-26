@@ -6,6 +6,7 @@ import {
   ClipboardList,
   FilePlus2,
   Inbox,
+  ListChecks,
   LayoutDashboard,
   type LucideIcon,
   Scale,
@@ -48,16 +49,14 @@ const NAV: { label: string; items: NavItem[] }[] = [
         href: "/complaints/new",
         icon: FilePlus2,
         roles: ["customer"],
-        soon: true,
       },
       {
         title: "My complaints",
         href: "/complaints",
         icon: ClipboardList,
         roles: ["customer"],
-        soon: true,
       },
-      { title: "Complaint queue", href: "/complaints", icon: Inbox, roles: STAFF, soon: true },
+      { title: "Complaint queue", href: "/complaints", icon: Inbox, roles: STAFF },
       {
         title: "Manual review",
         href: "/review",
@@ -82,10 +81,16 @@ const NAV: { label: string; items: NavItem[] }[] = [
     label: "Administration",
     items: [
       { title: "Taxonomy & SLAs", href: "/settings/taxonomy", icon: Tags, roles: STAFF },
+      { title: "Rule matrix", href: "/settings/rules", icon: ListChecks, roles: STAFF },
       { title: "Users & roles", href: "/settings/users", icon: Users, roles: ["manager", "admin"] },
     ],
   },
 ];
+
+function isActive(pathname: string, href: string) {
+  if (href === "/complaints") return pathname === href || /^\/complaints\/CMP-/i.test(pathname);
+  return pathname === href || pathname.startsWith(`${href}/`);
+}
 
 export function AppSidebar({ user }: { user: UserOut }) {
   const pathname = usePathname();
@@ -122,7 +127,7 @@ export function AppSidebar({ user }: { user: UserOut }) {
                   ) : (
                     <SidebarMenuButton
                       asChild
-                      isActive={pathname.startsWith(item.href)}
+                      isActive={isActive(pathname, item.href)}
                       tooltip={item.title}
                     >
                       <Link href={item.href}>

@@ -2,7 +2,7 @@
 
 import { type Client, type ClientMeta, formDataBodySerializer, type Options as Options2, type RequestResult, type TDataShape } from './client';
 import { client } from './client.gen';
-import type { ActivateVersionData, ActivateVersionErrors, ActivateVersionResponses, CreateCategoryData, CreateCategoryErrors, CreateCategoryResponses, CreateDepartmentData, CreateDepartmentErrors, CreateDepartmentResponses, CreateSubcategoryData, CreateSubcategoryErrors, CreateSubcategoryResponses, GetDocumentData, GetDocumentErrors, GetDocumentResponses, ListCategoriesData, ListCategoriesResponses, ListDepartmentsData, ListDepartmentsResponses, ListDocumentsData, ListDocumentsResponses, ListDocumentTypesData, ListDocumentTypesResponses, ListSlaPoliciesData, ListSlaPoliciesResponses, ListUsersData, ListUsersResponses, ListVersionChunksData, ListVersionChunksErrors, ListVersionChunksResponses, LivenessData, LivenessResponses, ReadinessData, ReadinessResponses, ReadMeData, ReadMeResponses, ReprocessVersionData, ReprocessVersionErrors, ReprocessVersionResponses, RetireVersionData, RetireVersionErrors, RetireVersionResponses, SearchKnowledgeBaseData, SearchKnowledgeBaseErrors, SearchKnowledgeBaseResponses, UpdateCategoryData, UpdateCategoryErrors, UpdateCategoryResponses, UpdateDepartmentData, UpdateDepartmentErrors, UpdateDepartmentResponses, UpdateSlaPolicyData, UpdateSlaPolicyErrors, UpdateSlaPolicyResponses, UpdateUserData, UpdateUserErrors, UpdateUserResponses, UploadDocumentData, UploadDocumentErrors, UploadDocumentResponses } from './types.gen';
+import type { ActivateVersionData, ActivateVersionErrors, ActivateVersionResponses, CreateCategoryData, CreateCategoryErrors, CreateCategoryResponses, CreateComplaintData, CreateComplaintErrors, CreateComplaintResponses, CreateDepartmentData, CreateDepartmentErrors, CreateDepartmentResponses, CreateRuleData, CreateRuleErrors, CreateRuleResponses, CreateSubcategoryData, CreateSubcategoryErrors, CreateSubcategoryResponses, ExportRulesData, ExportRulesResponses, GetComplaintAnalysisData, GetComplaintAnalysisErrors, GetComplaintAnalysisResponses, GetComplaintData, GetComplaintErrors, GetComplaintResponses, GetDocumentData, GetDocumentErrors, GetDocumentResponses, ListCategoriesData, ListCategoriesResponses, ListComplaintsData, ListComplaintsErrors, ListComplaintsResponses, ListDepartmentsData, ListDepartmentsResponses, ListDocumentsData, ListDocumentsResponses, ListDocumentTypesData, ListDocumentTypesResponses, ListFactsData, ListFactsResponses, ListRulesData, ListRulesResponses, ListSlaPoliciesData, ListSlaPoliciesResponses, ListUsersData, ListUsersResponses, ListVersionChunksData, ListVersionChunksErrors, ListVersionChunksResponses, LivenessData, LivenessResponses, MyOrdersData, MyOrdersResponses, ReadinessData, ReadinessResponses, ReadMeData, ReadMeResponses, ReanalyzeComplaintData, ReanalyzeComplaintErrors, ReanalyzeComplaintResponses, ReplaceRuleData, ReplaceRuleErrors, ReplaceRuleResponses, ReprocessVersionData, ReprocessVersionErrors, ReprocessVersionResponses, RetireVersionData, RetireVersionErrors, RetireVersionResponses, SearchKnowledgeBaseData, SearchKnowledgeBaseErrors, SearchKnowledgeBaseResponses, UpdateCategoryData, UpdateCategoryErrors, UpdateCategoryResponses, UpdateDepartmentData, UpdateDepartmentErrors, UpdateDepartmentResponses, UpdateSlaPolicyData, UpdateSlaPolicyErrors, UpdateSlaPolicyResponses, UpdateUserData, UpdateUserErrors, UpdateUserResponses, UploadDocumentData, UploadDocumentErrors, UploadDocumentResponses } from './types.gen';
 
 export type Options<TData extends TDataShape = TDataShape, ThrowOnError extends boolean = boolean, TResponse = unknown> = Options2<TData, ThrowOnError, TResponse> & {
     /**
@@ -252,4 +252,115 @@ export const searchKnowledgeBase = <ThrowOnError extends boolean = false>(option
     security: [{ scheme: 'bearer', type: 'http' }],
     url: '/api/v1/knowledge-base/search',
     ...options
+});
+
+/**
+ * List Complaints
+ */
+export const listComplaints = <ThrowOnError extends boolean = false>(options?: Options<ListComplaintsData, ThrowOnError>): RequestResult<ListComplaintsResponses, ListComplaintsErrors, ThrowOnError> => (options?.client ?? client).get<ListComplaintsResponses, ListComplaintsErrors, ThrowOnError>({
+    security: [{ scheme: 'bearer', type: 'http' }],
+    url: '/api/v1/complaints',
+    ...options
+});
+
+/**
+ * Create Complaint
+ */
+export const createComplaint = <ThrowOnError extends boolean = false>(options: Options<CreateComplaintData, ThrowOnError>): RequestResult<CreateComplaintResponses, CreateComplaintErrors, ThrowOnError> => (options.client ?? client).post<CreateComplaintResponses, CreateComplaintErrors, ThrowOnError>({
+    security: [{ scheme: 'bearer', type: 'http' }],
+    url: '/api/v1/complaints',
+    ...options,
+    headers: {
+        'Content-Type': 'application/json',
+        ...options.headers
+    }
+});
+
+/**
+ * Get Complaint
+ */
+export const getComplaint = <ThrowOnError extends boolean = false>(options: Options<GetComplaintData, ThrowOnError>): RequestResult<GetComplaintResponses, GetComplaintErrors, ThrowOnError> => (options.client ?? client).get<GetComplaintResponses, GetComplaintErrors, ThrowOnError>({
+    security: [{ scheme: 'bearer', type: 'http' }],
+    url: '/api/v1/complaints/{ref}',
+    ...options
+});
+
+/**
+ * Get Complaint Analysis
+ */
+export const getComplaintAnalysis = <ThrowOnError extends boolean = false>(options: Options<GetComplaintAnalysisData, ThrowOnError>): RequestResult<GetComplaintAnalysisResponses, GetComplaintAnalysisErrors, ThrowOnError> => (options.client ?? client).get<GetComplaintAnalysisResponses, GetComplaintAnalysisErrors, ThrowOnError>({
+    security: [{ scheme: 'bearer', type: 'http' }],
+    url: '/api/v1/complaints/{ref}/analysis',
+    ...options
+});
+
+/**
+ * Reanalyze Complaint
+ */
+export const reanalyzeComplaint = <ThrowOnError extends boolean = false>(options: Options<ReanalyzeComplaintData, ThrowOnError>): RequestResult<ReanalyzeComplaintResponses, ReanalyzeComplaintErrors, ThrowOnError> => (options.client ?? client).post<ReanalyzeComplaintResponses, ReanalyzeComplaintErrors, ThrowOnError>({
+    security: [{ scheme: 'bearer', type: 'http' }],
+    url: '/api/v1/complaints/{ref}/analyze',
+    ...options
+});
+
+/**
+ * My Orders
+ */
+export const myOrders = <ThrowOnError extends boolean = false>(options?: Options<MyOrdersData, ThrowOnError>): RequestResult<MyOrdersResponses, unknown, ThrowOnError> => (options?.client ?? client).get<MyOrdersResponses, unknown, ThrowOnError>({
+    security: [{ scheme: 'bearer', type: 'http' }],
+    url: '/api/v1/customers/me/orders',
+    ...options
+});
+
+/**
+ * List Rules
+ */
+export const listRules = <ThrowOnError extends boolean = false>(options?: Options<ListRulesData, ThrowOnError>): RequestResult<ListRulesResponses, unknown, ThrowOnError> => (options?.client ?? client).get<ListRulesResponses, unknown, ThrowOnError>({
+    security: [{ scheme: 'bearer', type: 'http' }],
+    url: '/api/v1/rules',
+    ...options
+});
+
+/**
+ * Create Rule
+ */
+export const createRule = <ThrowOnError extends boolean = false>(options: Options<CreateRuleData, ThrowOnError>): RequestResult<CreateRuleResponses, CreateRuleErrors, ThrowOnError> => (options.client ?? client).post<CreateRuleResponses, CreateRuleErrors, ThrowOnError>({
+    security: [{ scheme: 'bearer', type: 'http' }],
+    url: '/api/v1/rules',
+    ...options,
+    headers: {
+        'Content-Type': 'application/json',
+        ...options.headers
+    }
+});
+
+/**
+ * List Facts
+ */
+export const listFacts = <ThrowOnError extends boolean = false>(options?: Options<ListFactsData, ThrowOnError>): RequestResult<ListFactsResponses, unknown, ThrowOnError> => (options?.client ?? client).get<ListFactsResponses, unknown, ThrowOnError>({
+    security: [{ scheme: 'bearer', type: 'http' }],
+    url: '/api/v1/rules/facts',
+    ...options
+});
+
+/**
+ * Export Rules
+ */
+export const exportRules = <ThrowOnError extends boolean = false>(options?: Options<ExportRulesData, ThrowOnError>): RequestResult<ExportRulesResponses, unknown, ThrowOnError> => (options?.client ?? client).get<ExportRulesResponses, unknown, ThrowOnError>({
+    security: [{ scheme: 'bearer', type: 'http' }],
+    url: '/api/v1/rules/export.csv',
+    ...options
+});
+
+/**
+ * Replace Rule
+ */
+export const replaceRule = <ThrowOnError extends boolean = false>(options: Options<ReplaceRuleData, ThrowOnError>): RequestResult<ReplaceRuleResponses, ReplaceRuleErrors, ThrowOnError> => (options.client ?? client).put<ReplaceRuleResponses, ReplaceRuleErrors, ThrowOnError>({
+    security: [{ scheme: 'bearer', type: 'http' }],
+    url: '/api/v1/rules/{rule_id}',
+    ...options,
+    headers: {
+        'Content-Type': 'application/json',
+        ...options.headers
+    }
 });

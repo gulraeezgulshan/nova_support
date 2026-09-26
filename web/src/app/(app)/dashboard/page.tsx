@@ -25,6 +25,19 @@ export default async function DashboardPage() {
           <>
             <Card>
               <CardHeader>
+                <CardTitle>Complaint queue</CardTitle>
+                <CardDescription>
+                  Every complaint with its AI analysis, risk signals and review flags.
+                </CardDescription>
+              </CardHeader>
+              <CardContent>
+                <Button asChild>
+                  <Link href="/complaints">Open queue</Link>
+                </Button>
+              </CardContent>
+            </Card>
+            <Card>
+              <CardHeader>
                 <CardTitle>Knowledge base</CardTitle>
                 <CardDescription>
                   Versioned policies, SOPs and FAQs that ground every AI recommendation.
@@ -53,11 +66,20 @@ export default async function DashboardPage() {
         ) : (
           <Card>
             <CardHeader>
-              <CardTitle>Complaints</CardTitle>
+              <CardTitle>Have a problem with an order?</CardTitle>
               <CardDescription>
-                Complaint submission and tracking open in the next release.
+                Tell us what happened and track progress here. We acknowledge every complaint
+                immediately.
               </CardDescription>
             </CardHeader>
+            <CardContent className="flex gap-2">
+              <Button asChild>
+                <Link href="/complaints/new">Submit a complaint</Link>
+              </Button>
+              <Button asChild variant="outline">
+                <Link href="/complaints">My complaints</Link>
+              </Button>
+            </CardContent>
           </Card>
         )}
       </div>

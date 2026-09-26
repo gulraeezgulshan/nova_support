@@ -150,3 +150,45 @@ architecture and is documented in the project report, not here.
 | Team member | Modules reviewed | Date |
 |---|---|---|
 | _to be completed by the team_ | | |
+
+## Entry 4: Day 4 SLA tracking, dashboards, analytics, trends and reports
+
+| Field | Details |
+|---|---|
+| **Date** | 2026-09-26 |
+| **Tool** | Claude Code (Anthropic), model Claude Opus 5.5 |
+| **Purpose** | Build SLA tracking and risk detection, role-based dashboards, analytics, trend detection, the report suite with CSV/Excel/PDF export, extra search filters and the rule-editing screen |
+| **Type of assistance** | Design and code generation; running tests, lint, type checks and the production build; fixing the defects those checks found |
+
+### Files affected
+
+- Backend: `complaint_processing/{sla,tasks,review}.py`, `python_validation/{pipeline,triage}.py`, `src/analytics/**`, `src/api/routes/{analytics,complaints,taxonomy}.py`, `src/api/schemas.py`, `src/main.py`, `src/worker.py`, `src/core/domain.py`, `database/models/complaints.py`, migration `*_sla_tracking.py`, `comparison_engine/report.py`
+- Configuration: `config/analytics.yaml`, `docker-compose.yml` (Beat service), `Makefile`, `pyproject.toml` (openpyxl, reportlab)
+- Frontend: `web/src/components/{analytics,dashboard}/**`, `web/src/components/settings/{rule-editor,rules-table}.tsx`, `web/src/components/complaints/{complaints-table,complaint-view,badges}.tsx`, dashboard, analytics and reports pages, sidebar, chart component and colours
+- Tests: `tests/unit/test_{sla,report_export}.py`, `tests/integration/test_analytics.py`
+- Docs: `README.md`
+
+### Changes made
+
+- SLA deadlines, first-response and resolution clocks, six SLA states, and a Celery Beat scan that flags at-risk and breached complaints with timeline and audit entries.
+- Customer, agent and management dashboards; an analytics page; trend detection; nine reports exportable as CSV, Excel and PDF.
+- Complaint search by sentiment, escalation, SLA status and date range; latest update and resolution status for customers.
+- A rule editor for administrators and a vocabulary endpoint so the UI never hard-codes sentiments, priorities, channels or action codes.
+
+### Issues found and fixed during the session
+
+- A result column named `count` clashed with the row's built-in `count()` method, so distribution counts were wrong (found by mypy).
+- SQLAlchemy 2.1 deprecates `select().distinct(column)` and `Result.tuples()`; all uses (including earlier code) moved to `distinct_on`, and the suite now runs with those deprecations as errors.
+- CORS did not allow `PUT`, which the rule editor needs, and did not expose `Content-Disposition` for export file names.
+
+### Tests performed
+
+- 228 automated backend tests pass, including SLA state transitions, the scan alerting only once, validation starting the SLA clock, KPIs and distributions with filters, trend detection, dashboard permissions, the agent queue order and warnings, every report preview, CSV/Excel/PDF exports, the new complaint filters and the customer's latest update.
+- Ruff, mypy `--strict`, ESLint, `tsc` and `next build` pass. All nine reports were generated from the development database in all three formats and the PDF layout was checked visually.
+- Not yet verified: the new screens signed in (to be checked by the team in the browser), and dashboards on live GenAI output (no API key configured yet).
+
+### Verified by
+
+| Team member | Modules reviewed | Date |
+|---|---|---|
+| _to be completed by the team_ | | |

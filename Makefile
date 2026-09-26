@@ -1,5 +1,5 @@
 # Common development tasks. Run `make help` for the list.
-.PHONY: help setup infra migrate seed import-docs load-dataset analyze report-baseline report-comparison api worker web test lint format openapi check
+.PHONY: help setup infra migrate seed import-docs load-dataset analyze triage-python reports sla-scan report-baseline report-comparison api worker web test lint format openapi check
 
 help:           ## Show this help
 	@grep -E '^[a-z-]+:.*##' $(MAKEFILE_LIST) | awk -F':.*## ' '{printf "  %-18s %s\n", $$1, $$2}'
@@ -37,8 +37,17 @@ report-comparison: ## GenAI vs Python comparison report for analysed complaints
 api:            ## Run the FastAPI server (http://localhost:8000/docs)
 	uv run uvicorn src.main:app --reload --port 8000
 
-worker:         ## Run the Celery worker
-	uv run celery -A src.worker worker --loglevel INFO -Q default,ingest,analysis --concurrency 2
+worker:         ## Run the Celery worker with the SLA scan scheduler (Beat) embedded
+	uv run celery -A src.worker worker --beat --loglevel INFO -Q default,ingest,analysis --concurrency 2
+
+triage-python:  ## Python-only validation of 100 unvalidated dataset complaints (no GenAI; all go to review)
+	uv run python -m python_validation.triage --limit 100
+
+reports:        ## Write the Complaint Intelligence Report (PDF, Excel, CSV) to reports/
+	uv run python -m src.analytics.reports complaint_intelligence --format pdf xlsx csv
+
+sla-scan:       ## Run one SLA risk scan now
+	uv run python -m complaint_processing.sla
 
 web:            ## Run the Next.js app (http://localhost:3000)
 	pnpm --dir web dev

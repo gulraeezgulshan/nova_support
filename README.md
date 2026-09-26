@@ -5,10 +5,10 @@ e-commerce company). A Generative AI pipeline analyses each customer complaint; 
 Python ground-truth pipeline validates every recommendation against the Complaint Resolution
 Rule Matrix and approved, versioned company policy before anything reaches a customer.
 
-> Status: **Day 3 of 5**. Complaint intake, the Complaint Resolution Rule Matrix (111 rules), the
-> GenAI Complaint Intelligence Pipeline, the Python Ground-Truth Validation Pipeline, the
-> GenAI-vs-Python comparison, the manual review queue and the 536-complaint labelled dataset are
-> complete. Analytics, reports and deployment come on Days 4 and 5.
+> Status: **Day 4 of 5**. Complaint intake, the Complaint Resolution Rule Matrix (111 rules), the
+> GenAI Complaint Intelligence Pipeline, the Python Ground-Truth Validation Pipeline, manual
+> review, SLA tracking, role-based dashboards, analytics, trend detection and CSV/Excel/PDF
+> reports are complete. Deployment and the final evaluation reports come on Day 5.
 
 ## Architecture
 
@@ -23,7 +23,7 @@ Browser ─► Next.js 16 (web/) ──Bearer token (Clerk)──► FastAPI (sr
 | Frontend | Next.js 16 (App Router), React 19, TypeScript, Tailwind CSS 4, shadcn/ui, TanStack Query, typed client generated from OpenAPI (@hey-api/openapi-ts) |
 | Auth | Clerk (identity) + SupportNova roles in PostgreSQL (authorisation, enforced by FastAPI) |
 | Backend | Python 3.13, FastAPI, Pydantic 2, SQLAlchemy 2.1 (async), Alembic |
-| Jobs | Celery + Redis (document ingestion, complaint analysis; SLA scans later) |
+| Jobs | Celery + Redis (document ingestion, complaint analysis and validation), Celery Beat (SLA risk scan every 5 minutes) |
 | Knowledge base | PyMuPDF (PDF), python-docx (DOCX), section-aware chunking, fastembed (`bge-small-en-v1.5`), hybrid pgvector + full-text retrieval |
 | GenAI | Anthropic Claude API (`claude-opus-5`, configurable), JSON-schema structured outputs, prompt caching, server-side refusal fallbacks |
 | Quality | pytest, Ruff, mypy (strict), ESLint, Prettier, GitHub Actions, gitleaks |
@@ -66,7 +66,8 @@ The top-level folders follow the SRS deliverable structure.
 | `python_validation/` | Pipeline 2: independent classifier, 18 checks, scoring, verdicts, review tasks |
 | `hallucination_checks/` | Unsupported-promise and untraceable-fact detection in drafted responses |
 | `comparison_engine/` | GenAI vs Python comparison report and the Python-only baseline |
-| `reports/` | Generated CSV reports |
+| `src/analytics/` | Dashboards and analytics queries, trend detection, report builders and CSV/Excel/PDF exporters |
+| `reports/` | Generated reports |
 
 ## Local setup
 
@@ -87,7 +88,7 @@ Run each in its own terminal:
 
 ```bash
 make api      # http://localhost:8000/docs
-make worker   # Celery worker for uploads and complaint analysis
+make worker   # Celery worker (uploads, analysis) with the SLA scan scheduler
 make web      # http://localhost:3000
 ```
 
@@ -222,6 +223,71 @@ baseline scores category 94.9%, department 95.3%, urgency 97.0%, priority 97.0% 
 - **Policy updates**: activating a new version of a document flags every open complaint whose
   latest analysis relied on the superseded version for review.
 
+## SLA tracking
+
+Response and resolution targets per priority live in the `sla_policies` table (edit them under
+**Taxonomy & SLAs**). Deadlines are measured from submission and set as soon as a complaint has a
+priority; they move if the priority changes.
+
+| SLA status | Meaning |
+|---|---|
+| Awaiting triage | No priority yet (analysis pending) |
+| On track | Open and inside both targets |
+| At risk | Past the policy's at-risk share of a window (e.g. 75% of the resolution time) |
+| Breached | Past the first-response or resolution deadline |
+| Met / Missed | Resolved inside / after the resolution target |
+
+The first response is the first move to assigned, in progress, awaiting customer, escalated or
+resolved, or a reviewer approving the customer response. Celery Beat runs the SLA scan every
+5 minutes (`config/analytics.yaml`); a complaint that becomes at risk or breached gets a
+staff-only timeline entry and an audit event. `make sla-scan` runs one scan by hand.
+
+## Dashboards, analytics and reports
+
+| Who | Dashboard |
+|---|---|
+| Customer | Their complaints: ID, status, submitted date, department, latest update, resolution status |
+| Agent | Open complaints for their department (or all), most urgent SLA first, with category, priority, sentiment, the GenAI summary and steps, validation result, suggested response and escalation warnings |
+| Reviewer, manager, administrator | Totals, category, department, priority, escalation, resolution-status and SLA distributions, SLA risks, trends, GenAI/Python agreement and mismatches, manual-review cases |
+
+**Analytics** covers volume over time (day, week or month), category, subcategory, product line,
+department, urgency, sentiment, escalation level, channel, customer type, resolution time by
+priority, department performance, repeat complaints and policy usage. Every view has the same
+filters: date range, category, department, priority, sentiment and channel
+(`src/analytics/filters.py`; adding a filter is one field, one clause and one query parameter).
+
+**Trend detection** compares the last 7 days with the 7 days before and reports rising
+categories (delivery and billing are always watched), recurring product issues (same product
+line and subcategory at least 3 times), rising repeat complaints per department (repeated
+service failures) and escalation spikes. Thresholds are in `config/analytics.yaml`.
+
+**Reports** (screen **Reports**, or `uv run python -m src.analytics.reports <code> --format pdf xlsx csv`):
+
+| Report | Contents |
+|---|---|
+| Complaint Intelligence | Category, priority and sentiment distribution, department routing, escalations, repeat complaints, SLA risk, policy usage, GenAI/Python disagreements, manual-review cases, trends |
+| Complaint Analysis | Every complaint with its classification, plus breakdowns and weekly volume |
+| Department Performance | Workload, escalations, SLA compliance and resolution time per department |
+| Escalations | Escalated complaints by level |
+| SLA Status | Running SLAs, risks, breaches, resolution time against target |
+| Policy Usage | Documents retrieved, cited by the GenAI and required by the rules |
+| Resolution Compliance | Whether resolved complaints were validated, signed off and on time |
+| GenAI / Python Comparison | Field-by-field agreement with explanations |
+| Manual Reviews | Review cases, reasons and reviewer decisions |
+
+Each exports as **CSV** (UTF-8 with BOM, opens correctly in Excel), **Excel** (.xlsx, one sheet
+per table, filters and frozen headers) or **PDF** (landscape A4, repeated table headers). The
+filters on screen apply to the export.
+
+**Search and filtering** in the complaint queue: reference, title or customer, status, priority,
+sentiment, escalation, SLA status, date range and review flag. Administrators can add and edit
+rules in the **Rule matrix** screen; every save is validated like the CSV import, versioned and
+audited.
+
+Without an API key, `make triage-python` validates 100 dataset complaints with Python only (as
+happens during a GenAI outage), so the dashboards have data; every such complaint goes to
+manual review, and a later GenAI analysis re-validates it.
+
 ## Labelled complaint dataset
 
 `sample_complaints/generate_dataset.py` generates 536 complaints (523 unique + 5 intentional
@@ -266,7 +332,7 @@ product guide → response template → FAQ. `FAQ-GEN-01` intentionally contradi
 ## Testing and quality
 
 ```bash
-make test     # 199 backend tests (needs `make infra`; uses the supportnova_test database)
+make test     # 228 backend tests (needs `make infra`; uses the supportnova_test database)
 make lint     # ruff, mypy --strict, eslint, tsc
 ```
 

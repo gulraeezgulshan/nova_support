@@ -1,8 +1,8 @@
 # Common development tasks. Run `make help` for the list.
-.PHONY: help setup infra migrate seed import-docs load-dataset analyze api worker web test lint format openapi check
+.PHONY: help setup infra migrate seed import-docs load-dataset analyze report-baseline report-comparison api worker web test lint format openapi check
 
 help:           ## Show this help
-	@grep -E '^[a-z-]+:.*##' $(MAKEFILE_LIST) | awk -F':.*## ' '{printf "  %-12s %s\n", $$1, $$2}'
+	@grep -E '^[a-z-]+:.*##' $(MAKEFILE_LIST) | awk -F':.*## ' '{printf "  %-18s %s\n", $$1, $$2}'
 
 setup:          ## Install backend and frontend dependencies
 	uv sync
@@ -27,6 +27,12 @@ load-dataset:   ## Load the 536-complaint labelled dataset (customers, orders, c
 
 analyze:        ## Analyse 10 unanalysed dataset complaints with the configured model (needs ANTHROPIC_API_KEY)
 	uv run python -m genai_pipeline.analyze --limit 10
+
+report-baseline: ## Python-only validation of the dataset, scored on its labels (no GenAI)
+	uv run python -m comparison_engine.report baseline
+
+report-comparison: ## GenAI vs Python comparison report for analysed complaints
+	uv run python -m comparison_engine.report comparison
 
 api:            ## Run the FastAPI server (http://localhost:8000/docs)
 	uv run uvicorn src.main:app --reload --port 8000

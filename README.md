@@ -5,9 +5,10 @@ e-commerce company). A Generative AI pipeline analyses each customer complaint; 
 Python ground-truth pipeline validates every recommendation against the Complaint Resolution
 Rule Matrix and approved, versioned company policy before anything reaches a customer.
 
-> Status: **Day 2 of 5**. Complaint intake, the Complaint Resolution Rule Matrix (111 rules), the
-> GenAI Complaint Intelligence Pipeline and the 536-complaint labelled dataset are complete. The
-> Python Ground-Truth Validation Pipeline, comparison engine and manual review come on Day 3.
+> Status: **Day 3 of 5**. Complaint intake, the Complaint Resolution Rule Matrix (111 rules), the
+> GenAI Complaint Intelligence Pipeline, the Python Ground-Truth Validation Pipeline, the
+> GenAI-vs-Python comparison, the manual review queue and the 536-complaint labelled dataset are
+> complete. Analytics, reports and deployment come on Days 4 and 5.
 
 ## Architecture
 
@@ -62,7 +63,10 @@ The top-level folders follow the SRS deliverable structure.
 | `sample_complaints/` | Dataset generator, 536 labelled complaints, 504 customers, 404 orders, loader |
 | `tests/` | Unit and integration tests |
 | `web/` | Next.js frontend |
-| `python_validation/`, `comparison_engine/`, `hallucination_checks/` | Day 3 modules |
+| `python_validation/` | Pipeline 2: independent classifier, 18 checks, scoring, verdicts, review tasks |
+| `hallucination_checks/` | Unsupported-promise and untraceable-fact detection in drafted responses |
+| `comparison_engine/` | GenAI vs Python comparison report and the Python-only baseline |
+| `reports/` | Generated CSV reports |
 
 ## Local setup
 
@@ -83,7 +87,7 @@ Run each in its own terminal:
 
 ```bash
 make api      # http://localhost:8000/docs
-make worker   # Celery worker for uploads
+make worker   # Celery worker for uploads and complaint analysis
 make web      # http://localhost:3000
 ```
 
@@ -152,6 +156,72 @@ Conditions are parsed with Python's `ast` against a whitelist (never `eval`). Un
 action codes, departments or malformed policy references are rejected on save. A test proves
 every policy reference in the matrix points to a real section of a real document.
 
+## Ground-truth validation (Pipeline 2)
+
+After every GenAI analysis (and whenever the GenAI is unavailable), Python validates the
+recommendation **without using any AI**. The GenAI output is input to be checked, never a
+source of truth.
+
+1. **Independent classification.** `python_validation/classifier.py` scores the complaint
+   against weighted keyword patterns per subcategory (`config/classification.yaml`) plus the
+   deterministic risk signals. It reports `confident`, `tentative` or `unknown` instead of
+   guessing, and safety and privacy win whenever they are confidently present.
+2. **Rules.** The rule matrix and all escalation rules are applied to Python-computed facts to
+   get the expected department, supporting departments, urgency, priority, escalation level,
+   required and prohibited actions, and the policy sections to cite.
+3. **Checks** (`python_validation/checks.py`), each with a status (pass / warn / fail / skip),
+   a severity and evidence:
+
+   | Area | What is checked |
+   |---|---|
+   | Structure | Schema and vocabulary; subcategory belongs to category |
+   | Classification | Category, subcategory, department, supporting departments |
+   | Risk | Urgency, priority, escalation (never lower than the rules require) |
+   | Actions | Required actions present, prohibited actions absent |
+   | Compensation | Type allowed for the category, within the policy cap (e.g. store credit at most 10% of the order and USD 50) |
+   | Policy | Citations point to active versions only; required sections cited |
+   | Response | Unsupported promises (refunds, deadlines, replacements not in the rules or policy), untraceable facts (amounts, dates, order numbers not in the complaint, order or policy) |
+   | Other | Contradictions, missing information, prompt injection handling, follow-up timing |
+
+4. **Score and verdict.** Weighted score out of 100 (critical 5, major 3, minor 1; a warning
+   counts half):
+   - **Verified**: no failures, score at least 80.
+   - **Verified with corrections**: Python safely enforced the rules itself (raised priority
+     or escalation, added a mandatory action, added the supporting departments).
+   - **Needs review**: anything a human must decide (wrong category, hallucinated facts,
+     unsupported promises, compensation over the cap, invalid GenAI output, provider outage,
+     escalation level 4 or 5, or a score below 80).
+
+   The final complaint values keep the **more severe** of GenAI and Python, so a missed
+   escalation is corrected even when the model got it wrong.
+
+```bash
+uv run python -m comparison_engine.report baseline     # Python only, scored on the dataset labels
+uv run python -m comparison_engine.report comparison   # GenAI vs Python for analysed complaints
+```
+
+`reports/genai_python_comparison.csv` has the SRS columns (expected, GenAI and Python category,
+department, urgency, priority, escalation, policy references, match, verification status and
+an explanation of each difference). On the 531 loaded dataset complaints the Python-only
+baseline scores category 94.9%, department 95.3%, urgency 97.0%, priority 97.0% and escalation
+100% against the hand-set labels.
+
+## Manual review, status and related complaints
+
+- **Review queue** (reviewers, managers, administrators): every complaint with the verdict
+  *Needs review*, with the reasons. One open task per complaint; new reasons are merged.
+- **Reviewer actions**: approve, modify the response, reject, reclassify (the rules are
+  re-applied), reassign, escalate (never lowered), regenerate the GenAI analysis, comment.
+  Every decision stores the before and after state; the original GenAI and Python results are
+  never overwritten, and everything goes to the audit trail.
+- **Status lifecycle**: only allowed transitions (for example `new` cannot jump to
+  `resolved`), each recorded as a complaint event with a customer-facing message.
+- **Duplicates and repeats**: exact resubmissions are rejected; near-duplicates (fuzzy text
+  match of at least 88%) and reworded repeats (embedding similarity of at least 0.80) are linked
+  to the earlier complaint and shown on both.
+- **Policy updates**: activating a new version of a document flags every open complaint whose
+  latest analysis relied on the superseded version for review.
+
 ## Labelled complaint dataset
 
 `sample_complaints/generate_dataset.py` generates 536 complaints (523 unique + 5 intentional
@@ -196,7 +266,7 @@ product guide → response template → FAQ. `FAQ-GEN-01` intentionally contradi
 ## Testing and quality
 
 ```bash
-make test     # 170 backend tests (needs `make infra`; uses the supportnova_test database)
+make test     # 199 backend tests (needs `make infra`; uses the supportnova_test database)
 make lint     # ruff, mypy --strict, eslint, tsc
 ```
 
@@ -226,3 +296,6 @@ After changing API routes or schemas: `make openapi` regenerates the typed front
 - Business-day calculations ignore public holidays.
 - The GenAI pipeline has been tested with a scripted provider; live runs need an Anthropic API key
   (latency against the 20-second target is measured once the key is configured).
+- The Python classifier is keyword-based. When it is not confident (vague or unusual wording),
+  the category check is skipped rather than guessed; the rules, escalation and response checks
+  still run.

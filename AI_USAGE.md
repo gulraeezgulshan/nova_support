@@ -102,3 +102,51 @@ architecture and is documented in the project report, not here.
 | Team member | Modules reviewed | Date |
 |---|---|---|
 | _to be completed by the team_ | | |
+
+## Entry 3: Day 3 ground-truth validation, comparison and manual review
+
+| Field | Details |
+|---|---|
+| **Date** | 2026-09-26 |
+| **Tool** | Claude Code (Anthropic), model Claude Opus 5.5 |
+| **Purpose** | Build the Python Ground-Truth Validation Pipeline, hallucination checks, the GenAI-vs-Python comparison, manual review, status lifecycle, duplicate linking and policy-update impact analysis |
+| **Type of assistance** | Design and code generation; running tests, lint, type checks and the Python-only baseline; fixing the defects those checks found |
+
+### Files affected
+
+- Backend: `python_validation/**`, `hallucination_checks/**`, `comparison_engine/**`, `complaint_processing/{duplicates,review,tasks,service}.py`, `knowledge_base/{impact,ingestion,service}.py`, `database/models/{validation,complaints}.py`, migration `*_validation_review_and_duplicates.py`, `src/api/routes/{review,complaints}.py`, `src/api/schemas.py`, `src/worker.py`, `genai_pipeline/analyze.py`
+- Configuration: `config/{classification,validation}.yaml`
+- Frontend: `web/src/components/complaints/{validation-panel,review-panel,status-control,review-queue,complaint-view}.tsx`, `web/src/app/(app)/review/page.tsx`, complaint detail page, sidebar, complaints table, regenerated API client
+- Tests: `tests/unit/test_validation_checks.py`, `tests/integration/test_validation_and_review.py`, `tests/integration/conftest.py`
+- Docs: `README.md`, `Makefile`
+
+### Changes made
+
+- An independent keyword-and-signal classifier that reports its confidence instead of guessing.
+- 18 validation checks with severity, evidence and a weighted score; verdicts Verified, Verified with corrections and Needs review. Python enforces safe corrections itself and keeps the more severe value of GenAI and rules.
+- Detection of unsupported promises and untraceable facts in drafted customer responses.
+- Comparison and Python-only baseline reports (`reports/*.csv`).
+- Review queue, eight reviewer actions with before/after records, allowed status transitions, near-duplicate and reworded-repeat linking, and flagging of complaints affected by a policy update.
+- Background task that runs analysis then validation, with a Python-only validation when the GenAI provider is down.
+
+### Issues found and fixed during the session
+
+- The priority comparison used a reversed scale, so P3 counted as more severe than P0 (found by unit tests).
+- The hallucination check flagged correct response times (SLA and follow-up hours) as untraceable facts.
+- The new non-null JSONB column failed on existing rows; the migration now sets a default.
+- The status endpoint failed after commit when reading a server-generated timestamp; the complaint is refreshed first.
+- A frontend type error on optional check evidence.
+- Configuration issue during local setup: the Clerk issuer was still the placeholder, and real Clerk keys had been typed into the committed `web/.env.example`; the template was restored before any commit.
+
+### Tests performed
+
+- 199 automated backend tests pass, including a grounded analysis verified end to end, a missed escalation corrected by Python, a safety complaint escalated with no GenAI output at all, review-queue permissions, every reviewer action and invalid-action error, reclassification re-applying the rules, forbidden status transitions, policy-update impact and near-duplicate linking.
+- Python-only baseline on 531 dataset complaints: category 94.9%, department 95.3%, urgency 97.0%, priority 97.0%, escalation 100%.
+- Ruff, mypy `--strict`, ESLint, `tsc` and `next build` pass. Signed-in UI loads with Clerk configured.
+- Not yet verified: live Claude runs, the GenAI-vs-Python comparison on real model output and the 20-second latency target (no API key configured yet).
+
+### Verified by
+
+| Team member | Modules reviewed | Date |
+|---|---|---|
+| _to be completed by the team_ | | |

@@ -62,7 +62,6 @@ const NAV: { label: string; items: NavItem[] }[] = [
         href: "/review",
         icon: Scale,
         roles: ["reviewer", "manager", "admin"],
-        soon: true,
       },
       {
         title: "Analytics",

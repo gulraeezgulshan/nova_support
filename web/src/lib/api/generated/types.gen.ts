@@ -252,6 +252,48 @@ export type CategoryUpdate = {
 };
 
 /**
+ * CheckResultOut
+ */
+export type CheckResultOut = {
+    /**
+     * Code
+     */
+    code: string;
+    /**
+     * Name
+     */
+    name: string;
+    /**
+     * Status
+     */
+    status: string;
+    /**
+     * Severity
+     */
+    severity: string;
+    /**
+     * Message
+     */
+    message: string;
+    /**
+     * Expected
+     */
+    expected?: unknown;
+    /**
+     * Actual
+     */
+    actual?: unknown;
+    /**
+     * Evidence
+     */
+    evidence?: Array<string>;
+    /**
+     * Correctable
+     */
+    correctable?: boolean;
+};
+
+/**
  * ChunkOut
  */
 export type ChunkOut = {
@@ -287,6 +329,36 @@ export type ChunkOut = {
      * Token Count
      */
     token_count: number;
+};
+
+/**
+ * ComparisonRowOut
+ */
+export type ComparisonRowOut = {
+    /**
+     * Field
+     */
+    field: string;
+    /**
+     * Genai
+     */
+    genai: unknown;
+    /**
+     * Python
+     */
+    python: unknown;
+    /**
+     * Match
+     */
+    match: boolean;
+    /**
+     * Explanation
+     */
+    explanation: string;
+    /**
+     * Expected
+     */
+    expected?: unknown;
 };
 
 /**
@@ -508,6 +580,10 @@ export type ComplaintDetail = {
      */
     needs_review?: boolean;
     /**
+     * Verification
+     */
+    verification?: string | null;
+    /**
      * Description
      */
     description: string;
@@ -564,6 +640,26 @@ export type ComplaintDetail = {
      * Review Reason
      */
     review_reason?: string | null;
+    /**
+     * Supporting Departments
+     */
+    supporting_departments?: Array<string> | null;
+    /**
+     * Duplicate Of Ref
+     */
+    duplicate_of_ref?: string | null;
+    /**
+     * Related Complaint Ref
+     */
+    related_complaint_ref?: string | null;
+    /**
+     * Similarity
+     */
+    similarity?: number | null;
+    /**
+     * Approved Response
+     */
+    approved_response?: string | null;
 };
 
 /**
@@ -670,6 +766,10 @@ export type ComplaintSummary = {
      * Needs Review
      */
     needs_review?: boolean;
+    /**
+     * Verification
+     */
+    verification?: string | null;
 };
 
 /**
@@ -1156,6 +1256,113 @@ export type ResolutionStep = {
 };
 
 /**
+ * ReviewAction
+ */
+export type ReviewAction = 'approve' | 'reject' | 'modify' | 'reclassify' | 'reassign' | 'escalate' | 'regenerate' | 'comment';
+
+/**
+ * ReviewActionIn
+ */
+export type ReviewActionIn = {
+    action: ReviewAction;
+    /**
+     * Comment
+     */
+    comment?: string | null;
+    /**
+     * Response Body
+     */
+    response_body?: string | null;
+    /**
+     * Category
+     */
+    category?: string | null;
+    /**
+     * Subcategory
+     */
+    subcategory?: string | null;
+    /**
+     * Department
+     */
+    department?: string | null;
+    /**
+     * Escalation Level
+     */
+    escalation_level?: number | null;
+};
+
+/**
+ * ReviewStatus
+ */
+export type ReviewStatus = 'open' | 'resolved';
+
+/**
+ * ReviewTaskOut
+ */
+export type ReviewTaskOut = {
+    /**
+     * Id
+     */
+    id: string;
+    /**
+     * Status
+     */
+    status: string;
+    /**
+     * Reasons
+     */
+    reasons: Array<string>;
+    /**
+     * Priority
+     */
+    priority: string | null;
+    /**
+     * Created At
+     */
+    created_at: string;
+    /**
+     * Resolved At
+     */
+    resolved_at: string | null;
+    complaint: ComplaintSummary;
+};
+
+/**
+ * ReviewerDecisionOut
+ */
+export type ReviewerDecisionOut = {
+    /**
+     * Id
+     */
+    id: number;
+    action: ReviewAction;
+    /**
+     * Comment
+     */
+    comment: string | null;
+    /**
+     * Before
+     */
+    before: {
+        [key: string]: unknown;
+    };
+    /**
+     * After
+     */
+    after: {
+        [key: string]: unknown;
+    };
+    /**
+     * Created At
+     */
+    created_at: string;
+    /**
+     * Reviewer Id
+     */
+    reviewer_id: string;
+};
+
+/**
  * Role
  */
 export type Role = 'customer' | 'agent' | 'reviewer' | 'manager' | 'admin';
@@ -1429,6 +1636,17 @@ export type SlaPolicyUpdate = {
 };
 
 /**
+ * StatusChangeIn
+ */
+export type StatusChangeIn = {
+    status: ComplaintStatus;
+    /**
+     * Note
+     */
+    note?: string | null;
+};
+
+/**
  * SubcategoryCreate
  */
 export type SubcategoryCreate = {
@@ -1537,6 +1755,64 @@ export type ValidationError = {
     ctx?: {
         [key: string]: unknown;
     };
+};
+
+/**
+ * ValidationRunOut
+ */
+export type ValidationRunOut = {
+    /**
+     * Id
+     */
+    id: string;
+    /**
+     * Analysis Run Id
+     */
+    analysis_run_id: string | null;
+    /**
+     * Verdict
+     */
+    verdict: string;
+    /**
+     * Score
+     */
+    score: number;
+    /**
+     * Checks
+     */
+    checks: Array<CheckResultOut>;
+    /**
+     * Python Decision
+     */
+    python_decision: {
+        [key: string]: unknown;
+    };
+    /**
+     * Comparison
+     */
+    comparison: Array<ComparisonRowOut>;
+    /**
+     * Final Recommendation
+     */
+    final_recommendation: {
+        [key: string]: unknown;
+    };
+    /**
+     * Corrections
+     */
+    corrections: Array<string>;
+    /**
+     * Review Reasons
+     */
+    review_reasons: Array<string>;
+    /**
+     * Rules Version
+     */
+    rules_version: string;
+    /**
+     * Created At
+     */
+    created_at: string;
 };
 
 /**
@@ -2325,6 +2601,193 @@ export type MyOrdersResponses = {
 };
 
 export type MyOrdersResponse = MyOrdersResponses[keyof MyOrdersResponses];
+
+export type GetValidationData = {
+    body?: never;
+    path: {
+        /**
+         * Ref
+         */
+        ref: string;
+    };
+    query?: never;
+    url: '/api/v1/complaints/{ref}/validation';
+};
+
+export type GetValidationErrors = {
+    /**
+     * Validation Error
+     */
+    422: HttpValidationError;
+};
+
+export type GetValidationError = GetValidationErrors[keyof GetValidationErrors];
+
+export type GetValidationResponses = {
+    /**
+     * Response Get Validation
+     *
+     * Successful Response
+     */
+    200: ValidationRunOut | null;
+};
+
+export type GetValidationResponse = GetValidationResponses[keyof GetValidationResponses];
+
+export type RevalidateData = {
+    body?: never;
+    path: {
+        /**
+         * Ref
+         */
+        ref: string;
+    };
+    query?: never;
+    url: '/api/v1/complaints/{ref}/validate';
+};
+
+export type RevalidateErrors = {
+    /**
+     * Validation Error
+     */
+    422: HttpValidationError;
+};
+
+export type RevalidateError = RevalidateErrors[keyof RevalidateErrors];
+
+export type RevalidateResponses = {
+    /**
+     * Successful Response
+     */
+    200: ValidationRunOut;
+};
+
+export type RevalidateResponse = RevalidateResponses[keyof RevalidateResponses];
+
+export type ReviewQueueData = {
+    body?: never;
+    path?: never;
+    query?: {
+        status?: ReviewStatus;
+        /**
+         * Limit
+         */
+        limit?: number;
+    };
+    url: '/api/v1/review-queue';
+};
+
+export type ReviewQueueErrors = {
+    /**
+     * Validation Error
+     */
+    422: HttpValidationError;
+};
+
+export type ReviewQueueError = ReviewQueueErrors[keyof ReviewQueueErrors];
+
+export type ReviewQueueResponses = {
+    /**
+     * Response Review Queue
+     *
+     * Successful Response
+     */
+    200: Array<ReviewTaskOut>;
+};
+
+export type ReviewQueueResponse = ReviewQueueResponses[keyof ReviewQueueResponses];
+
+export type ReviewComplaintData = {
+    body: ReviewActionIn;
+    path: {
+        /**
+         * Ref
+         */
+        ref: string;
+    };
+    query?: never;
+    url: '/api/v1/complaints/{ref}/review';
+};
+
+export type ReviewComplaintErrors = {
+    /**
+     * Unprocessable Content
+     */
+    422: ErrorResponse;
+};
+
+export type ReviewComplaintError = ReviewComplaintErrors[keyof ReviewComplaintErrors];
+
+export type ReviewComplaintResponses = {
+    /**
+     * Successful Response
+     */
+    200: ReviewerDecisionOut;
+};
+
+export type ReviewComplaintResponse = ReviewComplaintResponses[keyof ReviewComplaintResponses];
+
+export type ListDecisionsData = {
+    body?: never;
+    path: {
+        /**
+         * Ref
+         */
+        ref: string;
+    };
+    query?: never;
+    url: '/api/v1/complaints/{ref}/decisions';
+};
+
+export type ListDecisionsErrors = {
+    /**
+     * Validation Error
+     */
+    422: HttpValidationError;
+};
+
+export type ListDecisionsError = ListDecisionsErrors[keyof ListDecisionsErrors];
+
+export type ListDecisionsResponses = {
+    /**
+     * Response List Decisions
+     *
+     * Successful Response
+     */
+    200: Array<ReviewerDecisionOut>;
+};
+
+export type ListDecisionsResponse = ListDecisionsResponses[keyof ListDecisionsResponses];
+
+export type UpdateStatusData = {
+    body: StatusChangeIn;
+    path: {
+        /**
+         * Ref
+         */
+        ref: string;
+    };
+    query?: never;
+    url: '/api/v1/complaints/{ref}/status';
+};
+
+export type UpdateStatusErrors = {
+    /**
+     * Unprocessable Content
+     */
+    422: ErrorResponse;
+};
+
+export type UpdateStatusError = UpdateStatusErrors[keyof UpdateStatusErrors];
+
+export type UpdateStatusResponses = {
+    /**
+     * Successful Response
+     */
+    200: ComplaintDetail;
+};
+
+export type UpdateStatusResponse = UpdateStatusResponses[keyof UpdateStatusResponses];
 
 export type ListRulesData = {
     body?: never;

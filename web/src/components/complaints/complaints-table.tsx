@@ -29,6 +29,7 @@ import { apiErrorMessage } from "@/lib/api/errors";
 import { formatDateTime, humanize, STATUS_LABELS } from "@/lib/format";
 
 import { EscalationBadge, PriorityBadge, StatusBadge } from "./badges";
+import { VerdictBadge } from "./validation-panel";
 
 const ALL = "__all__";
 const PAGE_SIZE = 25;
@@ -128,6 +129,7 @@ export function ComplaintsTable({ staff }: { staff: boolean }) {
                     <TableHead>Category</TableHead>
                     <TableHead>Priority</TableHead>
                     <TableHead>Escalation</TableHead>
+                    <TableHead>Validation</TableHead>
                   </>
                 ) : null}
                 <TableHead>Department</TableHead>
@@ -165,6 +167,9 @@ export function ComplaintsTable({ staff }: { staff: boolean }) {
                       </TableCell>
                       <TableCell>
                         <EscalationBadge level={c.escalation_level} />
+                      </TableCell>
+                      <TableCell>
+                        <VerdictBadge verdict={c.verification} />
                       </TableCell>
                     </>
                   ) : null}

@@ -2,6 +2,7 @@
 
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { Flag, RefreshCw } from "lucide-react";
+import Link from "next/link";
 import { toast } from "sonner";
 
 import { PageHeader } from "@/components/page-header";
@@ -21,6 +22,9 @@ import { apiErrorMessage } from "@/lib/api/errors";
 import { formatDate, formatDateTime, humanize } from "@/lib/format";
 
 import { AnalysisPanel } from "./analysis-panel";
+import { ReviewPanel } from "./review-panel";
+import { StatusControl } from "./status-control";
+import { ValidationPanel, VerdictBadge } from "./validation-panel";
 import { EscalationBadge, PriorityBadge, StatusBadge } from "./badges";
 
 const SIGNAL_LABELS: Record<string, string> = {
@@ -48,7 +52,15 @@ const RISK_SIGNALS = new Set([
   "prompt_injection",
 ]);
 
-export function ComplaintView({ complaintRef, staff }: { complaintRef: string; staff: boolean }) {
+export function ComplaintView({
+  complaintRef,
+  staff,
+  canReview,
+}: {
+  complaintRef: string;
+  staff: boolean;
+  canReview: boolean;
+}) {
   const queryClient = useQueryClient();
   const complaint = useQuery(getComplaintOptions({ path: { ref: complaintRef } }));
   const analysis = useQuery({
@@ -118,6 +130,17 @@ export function ComplaintView({ complaintRef, staff }: { complaintRef: string; s
               {staff ? <IntakeDetails complaint={c} /> : null}
             </CardContent>
           </Card>
+          {c.approved_response ? (
+            <Card>
+              <CardHeader>
+                <CardTitle>Approved customer response</CardTitle>
+              </CardHeader>
+              <CardContent className="whitespace-pre-line text-sm">
+                {c.approved_response}
+              </CardContent>
+            </Card>
+          ) : null}
+          {staff ? <ValidationPanel complaintRef={complaintRef} /> : null}
           {staff ? (
             analysis.data?.latest ? (
               <AnalysisPanel run={analysis.data.latest} />
@@ -134,6 +157,13 @@ export function ComplaintView({ complaintRef, staff }: { complaintRef: string; s
         </div>
 
         <div className="space-y-6">
+          {canReview ? (
+            <ReviewPanel
+              key={c.updated_at}
+              complaint={c}
+              draftResponse={analysis.data?.latest?.output?.customer_response.body}
+            />
+          ) : null}
           <Card>
             <CardHeader>
               <CardTitle>Status</CardTitle>
@@ -143,7 +173,9 @@ export function ComplaintView({ complaintRef, staff }: { complaintRef: string; s
                 <StatusBadge status={c.status} />
                 {staff ? <PriorityBadge priority={c.priority} /> : null}
                 {staff ? <EscalationBadge level={c.escalation_level} /> : null}
+                {staff ? <VerdictBadge verdict={c.verification} /> : null}
               </div>
+              {staff ? <StatusControl complaint={c} /> : null}
               <dl className="space-y-2">
                 <Row label="Department">{humanize(c.department_code)}</Row>
                 {staff ? (
@@ -158,7 +190,24 @@ export function ComplaintView({ complaintRef, staff }: { complaintRef: string; s
                 ) : null}
                 <Row label="Channel">{humanize(c.channel)}</Row>
                 {c.previous_complaint_ref ? (
-                  <Row label="Follows">{c.previous_complaint_ref}</Row>
+                  <Row label="Follows">
+                    <RefLink complaintRef={c.previous_complaint_ref} />
+                  </Row>
+                ) : null}
+                {c.duplicate_of_ref ? (
+                  <Row label="Near-duplicate of">
+                    <RefLink complaintRef={c.duplicate_of_ref} /> (
+                    {Math.round((c.similarity ?? 0) * 100)}%)
+                  </Row>
+                ) : null}
+                {c.related_complaint_ref ? (
+                  <Row label="Related to">
+                    <RefLink complaintRef={c.related_complaint_ref} /> (
+                    {Math.round((c.similarity ?? 0) * 100)}%)
+                  </Row>
+                ) : null}
+                {staff && c.supporting_departments?.length ? (
+                  <Row label="Supporting">{c.supporting_departments.map(humanize).join(", ")}</Row>
                 ) : null}
               </dl>
             </CardContent>
@@ -236,5 +285,13 @@ function Row({ label, children }: { label: string; children: React.ReactNode }) 
       <dt className="text-muted-foreground">{label}</dt>
       <dd className="text-right">{children}</dd>
     </div>
+  );
+}
+
+function RefLink({ complaintRef }: { complaintRef: string }) {
+  return (
+    <Link className="font-mono text-xs underline" href={`/complaints/${complaintRef}`}>
+      {complaintRef}
+    </Link>
   );
 }

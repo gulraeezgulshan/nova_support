@@ -3,8 +3,8 @@
 import { type DefaultError, type InfiniteData, infiniteQueryOptions, queryOptions, type UseMutationOptions } from '@tanstack/react-query';
 
 import { client } from '../client.gen';
-import { activateVersion, createCategory, createComplaint, createDepartment, createRule, createSubcategory, exportRules, getComplaint, getComplaintAnalysis, getDocument, listCategories, listComplaints, listDepartments, listDocuments, listDocumentTypes, listFacts, listRules, listSlaPolicies, listUsers, listVersionChunks, liveness, myOrders, type Options, readiness, readMe, reanalyzeComplaint, replaceRule, reprocessVersion, retireVersion, searchKnowledgeBase, updateCategory, updateDepartment, updateSlaPolicy, updateUser, uploadDocument } from '../sdk.gen';
-import type { ActivateVersionData, ActivateVersionError, ActivateVersionResponse, CreateCategoryData, CreateCategoryError, CreateCategoryResponse, CreateComplaintData, CreateComplaintError, CreateComplaintResponse, CreateDepartmentData, CreateDepartmentError, CreateDepartmentResponse, CreateRuleData, CreateRuleError, CreateRuleResponse, CreateSubcategoryData, CreateSubcategoryError, CreateSubcategoryResponse, ExportRulesData, GetComplaintAnalysisData, GetComplaintAnalysisError, GetComplaintAnalysisResponse, GetComplaintData, GetComplaintError, GetComplaintResponse, GetDocumentData, GetDocumentError, GetDocumentResponse, ListCategoriesData, ListCategoriesResponse, ListComplaintsData, ListComplaintsError, ListComplaintsResponse, ListDepartmentsData, ListDepartmentsResponse, ListDocumentsData, ListDocumentsResponse, ListDocumentTypesData, ListDocumentTypesResponse, ListFactsData, ListFactsResponse, ListRulesData, ListRulesResponse, ListSlaPoliciesData, ListSlaPoliciesResponse, ListUsersData, ListUsersResponse, ListVersionChunksData, ListVersionChunksError, ListVersionChunksResponse, LivenessData, LivenessResponse, MyOrdersData, MyOrdersResponse, ReadinessData, ReadinessResponse, ReadMeData, ReadMeResponse, ReanalyzeComplaintData, ReanalyzeComplaintError, ReanalyzeComplaintResponse, ReplaceRuleData, ReplaceRuleError, ReplaceRuleResponse, ReprocessVersionData, ReprocessVersionError, ReprocessVersionResponse, RetireVersionData, RetireVersionError, RetireVersionResponse, SearchKnowledgeBaseData, SearchKnowledgeBaseError, SearchKnowledgeBaseResponse, UpdateCategoryData, UpdateCategoryError, UpdateCategoryResponse, UpdateDepartmentData, UpdateDepartmentError, UpdateDepartmentResponse, UpdateSlaPolicyData, UpdateSlaPolicyError, UpdateSlaPolicyResponse, UpdateUserData, UpdateUserError, UpdateUserResponse, UploadDocumentData, UploadDocumentError, UploadDocumentResponse } from '../types.gen';
+import { activateVersion, createCategory, createComplaint, createDepartment, createRule, createSubcategory, exportRules, getComplaint, getComplaintAnalysis, getDocument, getValidation, listCategories, listComplaints, listDecisions, listDepartments, listDocuments, listDocumentTypes, listFacts, listRules, listSlaPolicies, listUsers, listVersionChunks, liveness, myOrders, type Options, readiness, readMe, reanalyzeComplaint, replaceRule, reprocessVersion, retireVersion, revalidate, reviewComplaint, reviewQueue, searchKnowledgeBase, updateCategory, updateDepartment, updateSlaPolicy, updateStatus, updateUser, uploadDocument } from '../sdk.gen';
+import type { ActivateVersionData, ActivateVersionError, ActivateVersionResponse, CreateCategoryData, CreateCategoryError, CreateCategoryResponse, CreateComplaintData, CreateComplaintError, CreateComplaintResponse, CreateDepartmentData, CreateDepartmentError, CreateDepartmentResponse, CreateRuleData, CreateRuleError, CreateRuleResponse, CreateSubcategoryData, CreateSubcategoryError, CreateSubcategoryResponse, ExportRulesData, GetComplaintAnalysisData, GetComplaintAnalysisError, GetComplaintAnalysisResponse, GetComplaintData, GetComplaintError, GetComplaintResponse, GetDocumentData, GetDocumentError, GetDocumentResponse, GetValidationData, GetValidationError, GetValidationResponse, ListCategoriesData, ListCategoriesResponse, ListComplaintsData, ListComplaintsError, ListComplaintsResponse, ListDecisionsData, ListDecisionsError, ListDecisionsResponse, ListDepartmentsData, ListDepartmentsResponse, ListDocumentsData, ListDocumentsResponse, ListDocumentTypesData, ListDocumentTypesResponse, ListFactsData, ListFactsResponse, ListRulesData, ListRulesResponse, ListSlaPoliciesData, ListSlaPoliciesResponse, ListUsersData, ListUsersResponse, ListVersionChunksData, ListVersionChunksError, ListVersionChunksResponse, LivenessData, LivenessResponse, MyOrdersData, MyOrdersResponse, ReadinessData, ReadinessResponse, ReadMeData, ReadMeResponse, ReanalyzeComplaintData, ReanalyzeComplaintError, ReanalyzeComplaintResponse, ReplaceRuleData, ReplaceRuleError, ReplaceRuleResponse, ReprocessVersionData, ReprocessVersionError, ReprocessVersionResponse, RetireVersionData, RetireVersionError, RetireVersionResponse, RevalidateData, RevalidateError, RevalidateResponse, ReviewComplaintData, ReviewComplaintError, ReviewComplaintResponse, ReviewQueueData, ReviewQueueError, ReviewQueueResponse, SearchKnowledgeBaseData, SearchKnowledgeBaseError, SearchKnowledgeBaseResponse, UpdateCategoryData, UpdateCategoryError, UpdateCategoryResponse, UpdateDepartmentData, UpdateDepartmentError, UpdateDepartmentResponse, UpdateSlaPolicyData, UpdateSlaPolicyError, UpdateSlaPolicyResponse, UpdateStatusData, UpdateStatusError, UpdateStatusResponse, UpdateUserData, UpdateUserError, UpdateUserResponse, UploadDocumentData, UploadDocumentError, UploadDocumentResponse } from '../types.gen';
 
 export type QueryKey<TOptions extends Options> = [
     Pick<TOptions, 'baseUrl' | 'body' | 'headers' | 'path' | 'query'> & {
@@ -610,6 +610,113 @@ export const myOrdersOptions = (options?: Options<MyOrdersData>) => queryOptions
     },
     queryKey: myOrdersQueryKey(options)
 });
+
+export const getValidationQueryKey = (options: Options<GetValidationData>) => createQueryKey('getValidation', options);
+
+/**
+ * Get Validation
+ */
+export const getValidationOptions = (options: Options<GetValidationData>) => queryOptions<GetValidationResponse, GetValidationError, GetValidationResponse, ReturnType<typeof getValidationQueryKey>>({
+    queryFn: async ({ queryKey, signal }) => {
+        const { data } = await getValidation({
+            ...options,
+            ...queryKey[0],
+            signal,
+            throwOnError: true
+        });
+        return data;
+    },
+    queryKey: getValidationQueryKey(options)
+});
+
+/**
+ * Revalidate
+ *
+ * Re-run Pipeline 2 now, e.g. after a rule or policy change.
+ */
+export const revalidateMutation = (options?: Partial<Options<RevalidateData>>): UseMutationOptions<RevalidateResponse, RevalidateError, Options<RevalidateData>> => {
+    const mutationOptions: UseMutationOptions<RevalidateResponse, RevalidateError, Options<RevalidateData>> = {
+        mutationFn: async (fnOptions) => {
+            const { data } = await revalidate({
+                ...options,
+                ...fnOptions,
+                throwOnError: true
+            });
+            return data;
+        }
+    };
+    return mutationOptions;
+};
+
+export const reviewQueueQueryKey = (options?: Options<ReviewQueueData>) => createQueryKey('reviewQueue', options);
+
+/**
+ * Review Queue
+ */
+export const reviewQueueOptions = (options?: Options<ReviewQueueData>) => queryOptions<ReviewQueueResponse, ReviewQueueError, ReviewQueueResponse, ReturnType<typeof reviewQueueQueryKey>>({
+    queryFn: async ({ queryKey, signal }) => {
+        const { data } = await reviewQueue({
+            ...options,
+            ...queryKey[0],
+            signal,
+            throwOnError: true
+        });
+        return data;
+    },
+    queryKey: reviewQueueQueryKey(options)
+});
+
+/**
+ * Review Complaint
+ */
+export const reviewComplaintMutation = (options?: Partial<Options<ReviewComplaintData>>): UseMutationOptions<ReviewComplaintResponse, ReviewComplaintError, Options<ReviewComplaintData>> => {
+    const mutationOptions: UseMutationOptions<ReviewComplaintResponse, ReviewComplaintError, Options<ReviewComplaintData>> = {
+        mutationFn: async (fnOptions) => {
+            const { data } = await reviewComplaint({
+                ...options,
+                ...fnOptions,
+                throwOnError: true
+            });
+            return data;
+        }
+    };
+    return mutationOptions;
+};
+
+export const listDecisionsQueryKey = (options: Options<ListDecisionsData>) => createQueryKey('listDecisions', options);
+
+/**
+ * List Decisions
+ */
+export const listDecisionsOptions = (options: Options<ListDecisionsData>) => queryOptions<ListDecisionsResponse, ListDecisionsError, ListDecisionsResponse, ReturnType<typeof listDecisionsQueryKey>>({
+    queryFn: async ({ queryKey, signal }) => {
+        const { data } = await listDecisions({
+            ...options,
+            ...queryKey[0],
+            signal,
+            throwOnError: true
+        });
+        return data;
+    },
+    queryKey: listDecisionsQueryKey(options)
+});
+
+/**
+ * Update Status
+ */
+export const updateStatusMutation = (options?: Partial<Options<UpdateStatusData>>): UseMutationOptions<UpdateStatusResponse, UpdateStatusError, Options<UpdateStatusData>> => {
+    const mutationOptions: UseMutationOptions<UpdateStatusResponse, UpdateStatusError, Options<UpdateStatusData>> = {
+        mutationFn: async (fnOptions) => {
+            const { data } = await updateStatus({
+                ...options,
+                ...fnOptions,
+                throwOnError: true
+            });
+            return data;
+        }
+    };
+    return mutationOptions;
+};
 
 export const listRulesQueryKey = (options?: Options<ListRulesData>) => createQueryKey('listRules', options);
 

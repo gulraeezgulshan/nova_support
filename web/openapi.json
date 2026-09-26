@@ -1396,6 +1396,337 @@
         ]
       }
     },
+    "/api/v1/complaints/{ref}/validation": {
+      "get": {
+        "tags": [
+          "review"
+        ],
+        "summary": "Get Validation",
+        "operationId": "get_validation",
+        "security": [
+          {
+            "HTTPBearer": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "ref",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "title": "Ref"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "anyOf": [
+                    {
+                      "$ref": "#/components/schemas/ValidationRunOut"
+                    },
+                    {
+                      "type": "null"
+                    }
+                  ],
+                  "title": "Response Get Validation"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/complaints/{ref}/validate": {
+      "post": {
+        "tags": [
+          "review"
+        ],
+        "summary": "Revalidate",
+        "description": "Re-run Pipeline 2 now, e.g. after a rule or policy change.",
+        "operationId": "revalidate",
+        "security": [
+          {
+            "HTTPBearer": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "ref",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "title": "Ref"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ValidationRunOut"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/review-queue": {
+      "get": {
+        "tags": [
+          "review"
+        ],
+        "summary": "Review Queue",
+        "operationId": "review_queue",
+        "security": [
+          {
+            "HTTPBearer": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "status",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "$ref": "#/components/schemas/ReviewStatus",
+              "default": "open"
+            }
+          },
+          {
+            "name": "limit",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "maximum": 500,
+              "minimum": 1,
+              "default": 100,
+              "title": "Limit"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/ReviewTaskOut"
+                  },
+                  "title": "Response Review Queue"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/complaints/{ref}/review": {
+      "post": {
+        "tags": [
+          "review"
+        ],
+        "summary": "Review Complaint",
+        "operationId": "review_complaint",
+        "security": [
+          {
+            "HTTPBearer": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "ref",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "title": "Ref"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ReviewActionIn"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ReviewerDecisionOut"
+                }
+              }
+            }
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            },
+            "description": "Unprocessable Content"
+          }
+        }
+      }
+    },
+    "/api/v1/complaints/{ref}/decisions": {
+      "get": {
+        "tags": [
+          "review"
+        ],
+        "summary": "List Decisions",
+        "operationId": "list_decisions",
+        "security": [
+          {
+            "HTTPBearer": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "ref",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "title": "Ref"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/ReviewerDecisionOut"
+                  },
+                  "title": "Response List Decisions"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/complaints/{ref}/status": {
+      "patch": {
+        "tags": [
+          "review"
+        ],
+        "summary": "Update Status",
+        "operationId": "update_status",
+        "security": [
+          {
+            "HTTPBearer": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "ref",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "title": "Ref"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/StatusChangeIn"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ComplaintDetail"
+                }
+              }
+            }
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            },
+            "description": "Unprocessable Content"
+          }
+        }
+      }
+    },
     "/api/v1/rules": {
       "get": {
         "tags": [
@@ -2093,6 +2424,58 @@
         "type": "object",
         "title": "CategoryUpdate"
       },
+      "CheckResultOut": {
+        "properties": {
+          "code": {
+            "type": "string",
+            "title": "Code"
+          },
+          "name": {
+            "type": "string",
+            "title": "Name"
+          },
+          "status": {
+            "type": "string",
+            "title": "Status"
+          },
+          "severity": {
+            "type": "string",
+            "title": "Severity"
+          },
+          "message": {
+            "type": "string",
+            "title": "Message"
+          },
+          "expected": {
+            "title": "Expected"
+          },
+          "actual": {
+            "title": "Actual"
+          },
+          "evidence": {
+            "items": {
+              "type": "string"
+            },
+            "type": "array",
+            "title": "Evidence",
+            "default": []
+          },
+          "correctable": {
+            "type": "boolean",
+            "title": "Correctable",
+            "default": false
+          }
+        },
+        "type": "object",
+        "required": [
+          "code",
+          "name",
+          "status",
+          "severity",
+          "message"
+        ],
+        "title": "CheckResultOut"
+      },
       "ChunkOut": {
         "properties": {
           "chunk_code": {
@@ -2168,6 +2551,40 @@
           "token_count"
         ],
         "title": "ChunkOut"
+      },
+      "ComparisonRowOut": {
+        "properties": {
+          "field": {
+            "type": "string",
+            "title": "Field"
+          },
+          "genai": {
+            "title": "Genai"
+          },
+          "python": {
+            "title": "Python"
+          },
+          "match": {
+            "type": "boolean",
+            "title": "Match"
+          },
+          "explanation": {
+            "type": "string",
+            "title": "Explanation"
+          },
+          "expected": {
+            "title": "Expected"
+          }
+        },
+        "type": "object",
+        "required": [
+          "field",
+          "genai",
+          "python",
+          "match",
+          "explanation"
+        ],
+        "title": "ComparisonRowOut"
       },
       "Compensation": {
         "properties": {
@@ -2578,6 +2995,17 @@
             "title": "Needs Review",
             "default": false
           },
+          "verification": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Verification"
+          },
           "description": {
             "type": "string",
             "title": "Description"
@@ -2722,6 +3150,64 @@
               }
             ],
             "title": "Review Reason"
+          },
+          "supporting_departments": {
+            "anyOf": [
+              {
+                "items": {
+                  "type": "string"
+                },
+                "type": "array"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Supporting Departments"
+          },
+          "duplicate_of_ref": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Duplicate Of Ref"
+          },
+          "related_complaint_ref": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Related Complaint Ref"
+          },
+          "similarity": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Similarity"
+          },
+          "approved_response": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Approved Response"
           }
         },
         "type": "object",
@@ -2930,6 +3416,17 @@
             "type": "boolean",
             "title": "Needs Review",
             "default": false
+          },
+          "verification": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Verification"
           }
         },
         "type": "object",
@@ -3728,6 +4225,223 @@
         ],
         "title": "ResolutionStep"
       },
+      "ReviewAction": {
+        "type": "string",
+        "enum": [
+          "approve",
+          "reject",
+          "modify",
+          "reclassify",
+          "reassign",
+          "escalate",
+          "regenerate",
+          "comment"
+        ],
+        "title": "ReviewAction"
+      },
+      "ReviewActionIn": {
+        "properties": {
+          "action": {
+            "$ref": "#/components/schemas/ReviewAction"
+          },
+          "comment": {
+            "anyOf": [
+              {
+                "type": "string",
+                "maxLength": 2000
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Comment"
+          },
+          "response_body": {
+            "anyOf": [
+              {
+                "type": "string",
+                "maxLength": 5000
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Response Body"
+          },
+          "category": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Category"
+          },
+          "subcategory": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Subcategory"
+          },
+          "department": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Department"
+          },
+          "escalation_level": {
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Escalation Level"
+          }
+        },
+        "type": "object",
+        "required": [
+          "action"
+        ],
+        "title": "ReviewActionIn"
+      },
+      "ReviewStatus": {
+        "type": "string",
+        "enum": [
+          "open",
+          "resolved"
+        ],
+        "title": "ReviewStatus"
+      },
+      "ReviewTaskOut": {
+        "properties": {
+          "id": {
+            "type": "string",
+            "format": "uuid",
+            "title": "Id"
+          },
+          "status": {
+            "type": "string",
+            "title": "Status"
+          },
+          "reasons": {
+            "items": {
+              "type": "string"
+            },
+            "type": "array",
+            "title": "Reasons"
+          },
+          "priority": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Priority"
+          },
+          "created_at": {
+            "type": "string",
+            "format": "date-time",
+            "title": "Created At"
+          },
+          "resolved_at": {
+            "anyOf": [
+              {
+                "type": "string",
+                "format": "date-time"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Resolved At"
+          },
+          "complaint": {
+            "$ref": "#/components/schemas/ComplaintSummary"
+          }
+        },
+        "type": "object",
+        "required": [
+          "id",
+          "status",
+          "reasons",
+          "priority",
+          "created_at",
+          "resolved_at",
+          "complaint"
+        ],
+        "title": "ReviewTaskOut"
+      },
+      "ReviewerDecisionOut": {
+        "properties": {
+          "id": {
+            "type": "integer",
+            "title": "Id"
+          },
+          "action": {
+            "$ref": "#/components/schemas/ReviewAction"
+          },
+          "comment": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Comment"
+          },
+          "before": {
+            "additionalProperties": true,
+            "type": "object",
+            "title": "Before"
+          },
+          "after": {
+            "additionalProperties": true,
+            "type": "object",
+            "title": "After"
+          },
+          "created_at": {
+            "type": "string",
+            "format": "date-time",
+            "title": "Created At"
+          },
+          "reviewer_id": {
+            "type": "string",
+            "format": "uuid",
+            "title": "Reviewer Id"
+          }
+        },
+        "type": "object",
+        "required": [
+          "id",
+          "action",
+          "comment",
+          "before",
+          "after",
+          "created_at",
+          "reviewer_id"
+        ],
+        "title": "ReviewerDecisionOut"
+      },
       "Role": {
         "type": "string",
         "enum": [
@@ -4252,6 +4966,30 @@
         "type": "object",
         "title": "SlaPolicyUpdate"
       },
+      "StatusChangeIn": {
+        "properties": {
+          "status": {
+            "$ref": "#/components/schemas/ComplaintStatus"
+          },
+          "note": {
+            "anyOf": [
+              {
+                "type": "string",
+                "maxLength": 500
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Note"
+          }
+        },
+        "type": "object",
+        "required": [
+          "status"
+        ],
+        "title": "StatusChangeIn"
+      },
       "SubcategoryCreate": {
         "properties": {
           "code": {
@@ -4461,6 +5199,98 @@
           "type"
         ],
         "title": "ValidationError"
+      },
+      "ValidationRunOut": {
+        "properties": {
+          "id": {
+            "type": "string",
+            "format": "uuid",
+            "title": "Id"
+          },
+          "analysis_run_id": {
+            "anyOf": [
+              {
+                "type": "string",
+                "format": "uuid"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Analysis Run Id"
+          },
+          "verdict": {
+            "type": "string",
+            "title": "Verdict"
+          },
+          "score": {
+            "type": "number",
+            "title": "Score"
+          },
+          "checks": {
+            "items": {
+              "$ref": "#/components/schemas/CheckResultOut"
+            },
+            "type": "array",
+            "title": "Checks"
+          },
+          "python_decision": {
+            "additionalProperties": true,
+            "type": "object",
+            "title": "Python Decision"
+          },
+          "comparison": {
+            "items": {
+              "$ref": "#/components/schemas/ComparisonRowOut"
+            },
+            "type": "array",
+            "title": "Comparison"
+          },
+          "final_recommendation": {
+            "additionalProperties": true,
+            "type": "object",
+            "title": "Final Recommendation"
+          },
+          "corrections": {
+            "items": {
+              "type": "string"
+            },
+            "type": "array",
+            "title": "Corrections"
+          },
+          "review_reasons": {
+            "items": {
+              "type": "string"
+            },
+            "type": "array",
+            "title": "Review Reasons"
+          },
+          "rules_version": {
+            "type": "string",
+            "title": "Rules Version"
+          },
+          "created_at": {
+            "type": "string",
+            "format": "date-time",
+            "title": "Created At"
+          }
+        },
+        "type": "object",
+        "required": [
+          "id",
+          "analysis_run_id",
+          "verdict",
+          "score",
+          "checks",
+          "python_decision",
+          "comparison",
+          "final_recommendation",
+          "corrections",
+          "review_reasons",
+          "rules_version",
+          "created_at"
+        ],
+        "title": "ValidationRunOut"
       },
       "VersionStatus": {
         "type": "string",

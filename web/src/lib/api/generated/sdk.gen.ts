@@ -2,7 +2,7 @@
 
 import { type Client, type ClientMeta, formDataBodySerializer, type Options as Options2, type RequestResult, type TDataShape } from './client';
 import { client } from './client.gen';
-import type { ActivateVersionData, ActivateVersionErrors, ActivateVersionResponses, CreateCategoryData, CreateCategoryErrors, CreateCategoryResponses, CreateComplaintData, CreateComplaintErrors, CreateComplaintResponses, CreateDepartmentData, CreateDepartmentErrors, CreateDepartmentResponses, CreateRuleData, CreateRuleErrors, CreateRuleResponses, CreateSubcategoryData, CreateSubcategoryErrors, CreateSubcategoryResponses, ExportRulesData, ExportRulesResponses, GetComplaintAnalysisData, GetComplaintAnalysisErrors, GetComplaintAnalysisResponses, GetComplaintData, GetComplaintErrors, GetComplaintResponses, GetDocumentData, GetDocumentErrors, GetDocumentResponses, ListCategoriesData, ListCategoriesResponses, ListComplaintsData, ListComplaintsErrors, ListComplaintsResponses, ListDepartmentsData, ListDepartmentsResponses, ListDocumentsData, ListDocumentsResponses, ListDocumentTypesData, ListDocumentTypesResponses, ListFactsData, ListFactsResponses, ListRulesData, ListRulesResponses, ListSlaPoliciesData, ListSlaPoliciesResponses, ListUsersData, ListUsersResponses, ListVersionChunksData, ListVersionChunksErrors, ListVersionChunksResponses, LivenessData, LivenessResponses, MyOrdersData, MyOrdersResponses, ReadinessData, ReadinessResponses, ReadMeData, ReadMeResponses, ReanalyzeComplaintData, ReanalyzeComplaintErrors, ReanalyzeComplaintResponses, ReplaceRuleData, ReplaceRuleErrors, ReplaceRuleResponses, ReprocessVersionData, ReprocessVersionErrors, ReprocessVersionResponses, RetireVersionData, RetireVersionErrors, RetireVersionResponses, SearchKnowledgeBaseData, SearchKnowledgeBaseErrors, SearchKnowledgeBaseResponses, UpdateCategoryData, UpdateCategoryErrors, UpdateCategoryResponses, UpdateDepartmentData, UpdateDepartmentErrors, UpdateDepartmentResponses, UpdateSlaPolicyData, UpdateSlaPolicyErrors, UpdateSlaPolicyResponses, UpdateUserData, UpdateUserErrors, UpdateUserResponses, UploadDocumentData, UploadDocumentErrors, UploadDocumentResponses } from './types.gen';
+import type { ActivateVersionData, ActivateVersionErrors, ActivateVersionResponses, CreateCategoryData, CreateCategoryErrors, CreateCategoryResponses, CreateComplaintData, CreateComplaintErrors, CreateComplaintResponses, CreateDepartmentData, CreateDepartmentErrors, CreateDepartmentResponses, CreateRuleData, CreateRuleErrors, CreateRuleResponses, CreateSubcategoryData, CreateSubcategoryErrors, CreateSubcategoryResponses, ExportRulesData, ExportRulesResponses, GetComplaintAnalysisData, GetComplaintAnalysisErrors, GetComplaintAnalysisResponses, GetComplaintData, GetComplaintErrors, GetComplaintResponses, GetDocumentData, GetDocumentErrors, GetDocumentResponses, GetValidationData, GetValidationErrors, GetValidationResponses, ListCategoriesData, ListCategoriesResponses, ListComplaintsData, ListComplaintsErrors, ListComplaintsResponses, ListDecisionsData, ListDecisionsErrors, ListDecisionsResponses, ListDepartmentsData, ListDepartmentsResponses, ListDocumentsData, ListDocumentsResponses, ListDocumentTypesData, ListDocumentTypesResponses, ListFactsData, ListFactsResponses, ListRulesData, ListRulesResponses, ListSlaPoliciesData, ListSlaPoliciesResponses, ListUsersData, ListUsersResponses, ListVersionChunksData, ListVersionChunksErrors, ListVersionChunksResponses, LivenessData, LivenessResponses, MyOrdersData, MyOrdersResponses, ReadinessData, ReadinessResponses, ReadMeData, ReadMeResponses, ReanalyzeComplaintData, ReanalyzeComplaintErrors, ReanalyzeComplaintResponses, ReplaceRuleData, ReplaceRuleErrors, ReplaceRuleResponses, ReprocessVersionData, ReprocessVersionErrors, ReprocessVersionResponses, RetireVersionData, RetireVersionErrors, RetireVersionResponses, RevalidateData, RevalidateErrors, RevalidateResponses, ReviewComplaintData, ReviewComplaintErrors, ReviewComplaintResponses, ReviewQueueData, ReviewQueueErrors, ReviewQueueResponses, SearchKnowledgeBaseData, SearchKnowledgeBaseErrors, SearchKnowledgeBaseResponses, UpdateCategoryData, UpdateCategoryErrors, UpdateCategoryResponses, UpdateDepartmentData, UpdateDepartmentErrors, UpdateDepartmentResponses, UpdateSlaPolicyData, UpdateSlaPolicyErrors, UpdateSlaPolicyResponses, UpdateStatusData, UpdateStatusErrors, UpdateStatusResponses, UpdateUserData, UpdateUserErrors, UpdateUserResponses, UploadDocumentData, UploadDocumentErrors, UploadDocumentResponses } from './types.gen';
 
 export type Options<TData extends TDataShape = TDataShape, ThrowOnError extends boolean = boolean, TResponse = unknown> = Options2<TData, ThrowOnError, TResponse> & {
     /**
@@ -310,6 +310,70 @@ export const myOrders = <ThrowOnError extends boolean = false>(options?: Options
     security: [{ scheme: 'bearer', type: 'http' }],
     url: '/api/v1/customers/me/orders',
     ...options
+});
+
+/**
+ * Get Validation
+ */
+export const getValidation = <ThrowOnError extends boolean = false>(options: Options<GetValidationData, ThrowOnError>): RequestResult<GetValidationResponses, GetValidationErrors, ThrowOnError> => (options.client ?? client).get<GetValidationResponses, GetValidationErrors, ThrowOnError>({
+    security: [{ scheme: 'bearer', type: 'http' }],
+    url: '/api/v1/complaints/{ref}/validation',
+    ...options
+});
+
+/**
+ * Revalidate
+ *
+ * Re-run Pipeline 2 now, e.g. after a rule or policy change.
+ */
+export const revalidate = <ThrowOnError extends boolean = false>(options: Options<RevalidateData, ThrowOnError>): RequestResult<RevalidateResponses, RevalidateErrors, ThrowOnError> => (options.client ?? client).post<RevalidateResponses, RevalidateErrors, ThrowOnError>({
+    security: [{ scheme: 'bearer', type: 'http' }],
+    url: '/api/v1/complaints/{ref}/validate',
+    ...options
+});
+
+/**
+ * Review Queue
+ */
+export const reviewQueue = <ThrowOnError extends boolean = false>(options?: Options<ReviewQueueData, ThrowOnError>): RequestResult<ReviewQueueResponses, ReviewQueueErrors, ThrowOnError> => (options?.client ?? client).get<ReviewQueueResponses, ReviewQueueErrors, ThrowOnError>({
+    security: [{ scheme: 'bearer', type: 'http' }],
+    url: '/api/v1/review-queue',
+    ...options
+});
+
+/**
+ * Review Complaint
+ */
+export const reviewComplaint = <ThrowOnError extends boolean = false>(options: Options<ReviewComplaintData, ThrowOnError>): RequestResult<ReviewComplaintResponses, ReviewComplaintErrors, ThrowOnError> => (options.client ?? client).post<ReviewComplaintResponses, ReviewComplaintErrors, ThrowOnError>({
+    security: [{ scheme: 'bearer', type: 'http' }],
+    url: '/api/v1/complaints/{ref}/review',
+    ...options,
+    headers: {
+        'Content-Type': 'application/json',
+        ...options.headers
+    }
+});
+
+/**
+ * List Decisions
+ */
+export const listDecisions = <ThrowOnError extends boolean = false>(options: Options<ListDecisionsData, ThrowOnError>): RequestResult<ListDecisionsResponses, ListDecisionsErrors, ThrowOnError> => (options.client ?? client).get<ListDecisionsResponses, ListDecisionsErrors, ThrowOnError>({
+    security: [{ scheme: 'bearer', type: 'http' }],
+    url: '/api/v1/complaints/{ref}/decisions',
+    ...options
+});
+
+/**
+ * Update Status
+ */
+export const updateStatus = <ThrowOnError extends boolean = false>(options: Options<UpdateStatusData, ThrowOnError>): RequestResult<UpdateStatusResponses, UpdateStatusErrors, ThrowOnError> => (options.client ?? client).patch<UpdateStatusResponses, UpdateStatusErrors, ThrowOnError>({
+    security: [{ scheme: 'bearer', type: 'http' }],
+    url: '/api/v1/complaints/{ref}/status',
+    ...options,
+    headers: {
+        'Content-Type': 'application/json',
+        ...options.headers
+    }
 });
 
 /**

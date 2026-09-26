@@ -8,5 +8,12 @@ export default async function ComplaintPage({ params }: PageProps<"/complaints/[
   const { ref } = await params;
   const result = await getCurrentUser();
   if (result.status !== "ok") redirect("/dashboard");
-  return <ComplaintView complaintRef={ref} staff={isStaff(result.user.role)} />;
+  const role = result.user.role;
+  return (
+    <ComplaintView
+      complaintRef={ref}
+      staff={isStaff(role)}
+      canReview={["reviewer", "manager", "admin"].includes(role)}
+    />
+  );
 }

@@ -5,10 +5,28 @@ e-commerce company). A Generative AI pipeline analyses each customer complaint; 
 Python ground-truth pipeline validates every recommendation against the Complaint Resolution
 Rule Matrix and approved, versioned company policy before anything reaches a customer.
 
-> Status: **Day 4 of 5**. Complaint intake, the Complaint Resolution Rule Matrix (111 rules), the
-> GenAI Complaint Intelligence Pipeline, the Python Ground-Truth Validation Pipeline, manual
-> review, SLA tracking, role-based dashboards, analytics, trend detection and CSV/Excel/PDF
-> reports are complete. Deployment and the final evaluation reports come on Day 5.
+| | |
+|---|---|
+| **Live application** | _add the deployment URL_ (evaluator credentials are in the submission form) |
+| **Demonstration video** | _add the .mp4 link_ |
+| **Technical blog** | _add the blog link_ (draft: [documentation/technical_blog.md](documentation/technical_blog.md)) |
+
+All five days are complete: intake, knowledge base, rule matrix (111 rules), GenAI pipeline,
+Python ground-truth validation, comparison, manual review, SLA tracking, dashboards,
+analytics, reports, security hardening, evaluation tooling and deployment configuration.
+
+## Documentation
+
+| Document | Contents |
+|---|---|
+| [Project report](documentation/project_report.md) | Problem, requirements, architecture, database design, DFD, use-case, activity and sequence diagrams, pipelines, prompt, schema, validation, security, limitations |
+| [User guide](documentation/user_guide.md) | Execution instructions: login, documents, rules, submitting, analysis, validation, review, escalation, tracking, analytics, reports |
+| [Evaluator guide](documentation/evaluator_guide.md) | Hidden data, policy update, new category, traps, live modifications, deliberate defects |
+| [Evaluation](documentation/evaluation.md) | Unseen hold-out set, GenAI vs Python comparison, Python accuracy, latency |
+| [Security testing report](documentation/security_testing_report.md) | Adversarial tests and results |
+| [Test cases](documentation/test_cases.md) | SRS test categories mapped to the 256 automated tests |
+| [Deployment](documentation/deployment.md) | Vercel, Railway, Cloudflare R2, Clerk, evaluator accounts |
+| [Demo script](documentation/demo_script.md), [team contributions](documentation/team_contributions.md), [AI usage](AI_USAGE.md) | Submission material |
 
 ## Architecture
 
@@ -68,6 +86,9 @@ The top-level folders follow the SRS deliverable structure.
 | `comparison_engine/` | GenAI vs Python comparison report and the Python-only baseline |
 | `src/analytics/` | Dashboards and analytics queries, trend detection, report builders and CSV/Excel/PDF exporters |
 | `reports/` | Generated reports |
+| `hidden_test_ready/` | Unseen evaluation packs (`holdout/`: 109 hand-written, labelled complaints) |
+| `deploy/` | Railway service configuration (api, worker, beat) |
+| `documentation/` | Project report, guides, evaluation, security report, test cases, blog draft, demo script |
 
 ## Local setup
 
@@ -79,10 +100,11 @@ cp .env.example .env                  # backend settings
 cp web/.env.example web/.env.local    # frontend settings (Clerk keys)
 make setup                            # uv sync + pnpm install
 make infra                            # PostgreSQL 18 + pgvector, Redis 8
-make migrate seed                     # schema, taxonomy, SLAs, rule matrix
-make import-docs                      # build and ingest the 20 policy documents
-make load-dataset                     # 504 customers, 404 orders, 536 complaints
+make migrate                          # database schema
+make bootstrap                        # taxonomy, SLAs, 111 rules, 20 documents, 536 complaints
 ```
+
+(`make seed`, `make import-docs` and `make load-dataset` run the same steps one at a time.)
 
 Run each in its own terminal:
 
@@ -94,6 +116,31 @@ make web      # http://localhost:3000
 
 `make help` lists every task. Everything also runs in containers with
 `docker compose --profile app up`.
+
+### Installation details
+
+- **Python**: uv installs Python 3.13 and creates the virtual environment in `.venv` on
+  `make setup` (`uv sync`). Without uv: `python3.13 -m venv .venv`,
+  `source .venv/bin/activate`, `pip install -r requirements.txt`.
+- **GenAI API**: put `ANTHROPIC_API_KEY` in `.env` (never in `.env.example` or any committed
+  file). Without a key the app runs; complaints are validated by Python alone and go to
+  manual review. `GENAI_MODEL` and `GENAI_EFFORT` choose the model.
+- **Database**: `make infra` starts PostgreSQL with pgvector and Redis in Docker; `DATABASE_URL`
+  and `REDIS_URL` in `.env` point elsewhere if needed.
+- **Hold-out evaluation pack**: `uv run python -m database.bootstrap --with-holdout`.
+- **Tests**: `make test` (creates and uses the `supportnova_test` database).
+
+### Troubleshooting
+
+| Symptom | Fix |
+|---|---|
+| "SupportNova API is unavailable … 401 Invalid session token" | `CLERK_ISSUER` in `.env` is not your Clerk Frontend API URL; fix it and restart `make api` |
+| "Cannot reach the API" | `make api` is not running, or `NEXT_PUBLIC_API_URL` in `web/.env.local` is wrong |
+| `Cannot connect to the Docker daemon` | Start Docker Desktop, then `make infra` |
+| Complaints stay "Analysis queued" | Start `make worker` (and add `ANTHROPIC_API_KEY` for AI analysis) |
+| Signed in but only customer screens | Your e-mail was not in `BOOTSTRAP_ADMIN_EMAILS` at first sign-in; an administrator changes the role under Users & roles |
+| Charts missing after an update | Stop `make web` and start it again |
+| YAML change has no effect | Restart `make api` and `make worker` (configuration is read at start-up) |
 
 ### Clerk configuration
 
@@ -332,7 +379,7 @@ product guide → response template → FAQ. `FAQ-GEN-01` intentionally contradi
 ## Testing and quality
 
 ```bash
-make test     # 228 backend tests (needs `make infra`; uses the supportnova_test database)
+make test     # 256 backend tests (needs `make infra`; uses the supportnova_test database)
 make lint     # ruff, mypy --strict, eslint, tsc
 ```
 
@@ -353,15 +400,41 @@ After changing API routes or schemas: `make openapi` regenerates the typed front
 - Complaint text is untrusted data: hidden characters are stripped at intake, markup is escaped
   inside the prompt, injection attempts are detected by Python and flagged for supervisor
   review, and the model's output can never approve anything by itself.
+- Card numbers, security codes, passwords, PINs, ID and bank numbers are removed at intake,
+  before storage or the GenAI; policy passages that try to instruct the AI are quarantined.
+- Production refuses to start without a real Clerk issuer, a deployed CORS origin and object
+  storage. Full results: [security testing report](documentation/security_testing_report.md).
 
-## Assumptions and limitations (so far)
+## Evaluation, evidence and reports
 
-- VoltHaven Electronics, its customers, policies and complaints are fictional.
+```bash
+make report-baseline   # Python-only accuracy on the 531 dataset complaints
+make evaluate-python   # Python-only accuracy on the 108 unseen hold-out complaints
+make evaluate          # GenAI + Python + latency on the hold-out (needs the API key)
+make evidence          # GenAI evidence: config, sample request/response, invalid outputs, retries
+make final-evidence    # everything that needs the API key, in one go
+```
+
+Evaluator packs: `uv run python -m comparison_engine.evaluate path/to/pack`
+(see [the evaluator guide](documentation/evaluator_guide.md)).
+
+## Assumptions
+
+- VoltHaven Electronics, its customers, orders, policies and complaints are fictional.
+- Orders are simulated records used to verify references and eligibility.
+- Routing, urgency and priority are defined by the rule matrix; policies are the source for
+  the rules, and a policy change is reflected by editing the matching rules.
+- Complaints are in English.
+
+## Limitations
+
 - Scanned (image-only) PDFs are rejected with a clear message; OCR is out of scope.
 - DOCX files have no fixed pagination, so their chunks carry section references but no page numbers.
 - Business-day calculations ignore public holidays.
-- The GenAI pipeline has been tested with a scripted provider; live runs need an Anthropic API key
-  (latency against the 20-second target is measured once the key is configured).
-- The Python classifier is keyword-based. When it is not confident (vague or unusual wording),
-  the category check is skipped rather than guessed; the rules, escalation and response checks
-  still run.
+- The Python classifier and risk-signal lexicons are keyword-based: on unseen wording the
+  classifier abstains more often (category check skipped rather than guessed) and unusual
+  phrasings of a risk can be missed; the GenAI and reviewers are the next lines of defence
+  (see [evaluation](documentation/evaluation.md)).
+- Automated tests use a scripted GenAI provider; live accuracy and latency come from
+  `make evaluate`.
+- Responses are drafted and approved in the app but not sent to customers automatically.

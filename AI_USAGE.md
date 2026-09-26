@@ -192,3 +192,48 @@ architecture and is documented in the project report, not here.
 | Team member | Modules reviewed | Date |
 |---|---|---|
 | _to be completed by the team_ | | |
+
+## Entry 5: Day 5 security hardening, evaluation, deployment and documentation
+
+| Field | Details |
+|---|---|
+| **Date** | 2026-09-26 |
+| **Tool** | Claude Code (Anthropic), model Claude Opus 5.5 |
+| **Purpose** | Security and adversarial tests, sensitive-data redaction, malicious-document quarantine, the unseen hold-out set and evaluation tooling, deployment configuration, GenAI evidence export and the project documentation |
+| **Type of assistance** | Design and code generation; writing the hold-out complaints and documentation drafts; running tests, lint, type checks, the Python-only evaluation and the production build; fixing the defects those checks found |
+
+### Files affected
+
+- Backend: `complaint_processing/{sensitive,service}.py`, `knowledge_base/{ingestion,retrieval}.py`, `database/models/knowledge_base.py`, migration `*_document_safety.py`, `python_validation/checks.py`, `comparison_engine/{evaluate,labels}.py`, `sample_complaints/load_dataset.py`, `genai_pipeline/evidence.py`, `database/bootstrap.py`, `src/core/config.py`, `src/api/schemas.py`
+- Configuration: `config/{detectors,validation}.yaml`, `deploy/railway/*.json`, `Makefile`, `requirements.txt`
+- Data: `hidden_test_ready/holdout/*` (109 hand-written, labelled complaints)
+- Frontend: knowledge-base table (quarantine warnings), regenerated API client
+- Tests: `tests/security/test_adversarial.py`, `tests/integration/test_evaluation_pack.py`
+- Docs: `documentation/*`, `README.md`
+
+### Changes made
+
+- Sensitive-data redaction at intake; quarantine of policy passages that instruct the AI; a global list of never-allowed actions; broader refund and compensation promise patterns.
+- A security suite covering all eight SRS attacks, and the Security Testing Report.
+- A hold-out set written separately from the dataset generator, an evaluator-pack importer and an evaluation command with per-complaint timing against the 20-second target.
+- Production configuration checks, Railway service definitions, a one-command database bootstrap and a deployment guide.
+- Project report with diagrams, user and evaluator guides, evaluation write-up, test-case map, blog draft, demo script and contribution template.
+
+### Issues found and fixed during the session
+
+- The security tests showed that a reply promising "50% of the price back" was not recognised as a promise, and that a policy exception proposed by the GenAI was only blocked when a rule listed it.
+- The hold-out evaluation showed 9 missed escalations (safety, privacy, account takeover) caused by lexicon gaps such as "sparked", "smelled burnt", "it wasn't me"; the lexicons were extended, the dataset re-checked for regressions, and both results are reported in `documentation/evaluation.md`.
+- The evaluation tests showed that evaluator packs needed `created_at` and that labels were read only from the repository, not from the pack; both fixed.
+- `requirements.txt` had not been regenerated after Day 4's new libraries.
+
+### Tests performed
+
+- 256 automated backend tests pass (including 26 security tests and the evaluator-pack test); ruff, mypy `--strict`, ESLint, `tsc` and `next build` pass.
+- Python-only evaluation on the 108 accepted hold-out complaints: category 66.7% (100% when the classifier is confident), escalation agreement 94.4% with no missed escalations.
+- Not yet run: the GenAI evaluation and latency measurement, evidence export and deployment (they need the API key and hosting accounts).
+
+### Verified by
+
+| Team member | Modules reviewed | Date |
+|---|---|---|
+| _to be completed by the team_ | | |

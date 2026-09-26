@@ -2,7 +2,7 @@
 
 Document ID: ESC-PRC-01
 Document Type: escalation_procedure
-Version: 2.2
+Version: 2.3
 Effective Date: 2026-02-01
 Expiry Date: 2027-12-31
 Owner: Management Escalations
@@ -40,6 +40,10 @@ A dispute involving more than USD 1,000 requires Department Manager escalation (
 ### 3.6 Policy Exceptions
 
 Any request that can only be met by an exception to company policy requires Supervisor Review (Level 1) before the customer is promised anything.
+
+### 3.7 Severe Service Failures
+
+An order more than 15 business days late, or a replacement or repair chased again after an earlier complaint, requires Supervisor Review (Level 1).
 
 ## 4 Escalation Notes
 

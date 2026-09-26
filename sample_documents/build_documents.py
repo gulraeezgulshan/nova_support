@@ -16,7 +16,7 @@ HERE = Path(__file__).resolve().parent
 SOURCES = HERE / "sources"
 OUTPUT = HERE / "generated"
 
-# Alternate formats so both parsers are exercised; FAQ stays Markdown (optional format).
+# Mix formats so both required parsers (PDF, DOCX) and the optional Markdown path are exercised.
 FORMATS = {
     "DEL-POL-04": "pdf",
     "REF-POL-01": "docx",
@@ -25,6 +25,19 @@ FORMATS = {
     "RTG-RUL-01": "pdf",
     "SLA-AGR-01": "docx",
     "FAQ-GEN-01": "md",
+    "ACC-POL-01": "pdf",
+    "PRV-POL-01": "docx",
+    "BIL-POL-01": "pdf",
+    "CAN-POL-01": "docx",
+    "PRM-POL-01": "pdf",
+    "SRV-POL-01": "docx",
+    "CMP-SOP-01": "pdf",
+    "SAF-SOP-01": "docx",
+    "DEL-SOP-01": "pdf",
+    "RET-SOP-01": "docx",
+    "TEC-GDE-01": "pdf",
+    "RSP-TPL-01": "docx",
+    "CPL-GDL-01": "pdf",
 }
 
 CSS = """
@@ -102,22 +115,29 @@ def to_docx(blocks: list[tuple[str, str]], title: str) -> bytes:
     return buffer.getvalue()
 
 
+def build(source: Path, target_dir: Path) -> Path:
+    doc_code = source.stem.split("_", 1)[0]
+    fmt = FORMATS.get(doc_code, "pdf")
+    text = source.read_text(encoding="utf-8")
+    blocks = parse_markdown(text)
+    title = next(t for kind, t in blocks if kind == "h1")
+    target = target_dir / f"{source.stem}.{fmt}"
+    if fmt == "pdf":
+        target.write_bytes(to_pdf(blocks, title))
+    elif fmt == "docx":
+        target.write_bytes(to_docx(blocks, title))
+    else:
+        target.write_text(text, encoding="utf-8")
+    return target
+
+
 def main() -> None:
-    OUTPUT.mkdir(exist_ok=True)
-    for source in sorted(SOURCES.glob("*.md")):
-        doc_code = source.stem.split("_", 1)[0]
-        fmt = FORMATS.get(doc_code, "pdf")
-        text = source.read_text(encoding="utf-8")
-        blocks = parse_markdown(text)
-        title = next(t for kind, t in blocks if kind == "h1")
-        target = OUTPUT / f"{source.stem}.{fmt}"
-        if fmt == "pdf":
-            target.write_bytes(to_pdf(blocks, title))
-        elif fmt == "docx":
-            target.write_bytes(to_docx(blocks, title))
-        else:
-            target.write_text(text, encoding="utf-8")
-        print(f"{target.relative_to(HERE)}")
+    """Current documents go to generated/; superseded versions to generated/archive/
+    (import the archive first so the current versions supersede them)."""
+    for source_dir, target_dir in ((SOURCES, OUTPUT), (SOURCES / "archive", OUTPUT / "archive")):
+        target_dir.mkdir(parents=True, exist_ok=True)
+        for source in sorted(source_dir.glob("*.md")):
+            print(build(source, target_dir).relative_to(HERE))
 
 
 if __name__ == "__main__":

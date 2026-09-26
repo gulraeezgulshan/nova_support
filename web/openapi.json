@@ -582,6 +582,33 @@
         }
       }
     },
+    "/api/v1/taxonomy/vocabulary": {
+      "get": {
+        "tags": [
+          "taxonomy"
+        ],
+        "summary": "Get Vocabulary",
+        "description": "Controlled values from `config/analysis.yaml` and `config/actions.yaml`, for filters\nand the rule editor (so the UI never hard-codes them).",
+        "operationId": "get_vocabulary",
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/VocabularyOut"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "HTTPBearer": []
+          }
+        ]
+      }
+    },
     "/api/v1/documents/types": {
       "get": {
         "tags": [
@@ -1153,6 +1180,110 @@
               ],
               "title": "Needs Review"
             }
+          },
+          {
+            "name": "sentiment",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Sentiment"
+            }
+          },
+          {
+            "name": "escalated",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "boolean"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "description": "Escalation level 1 or higher",
+              "title": "Escalated"
+            },
+            "description": "Escalation level 1 or higher"
+          },
+          {
+            "name": "sla_status",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Sla Status"
+            }
+          },
+          {
+            "name": "verification",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Verification"
+            }
+          },
+          {
+            "name": "date_from",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string",
+                  "format": "date"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "description": "Submitted on or after (UTC)",
+              "title": "Date From"
+            },
+            "description": "Submitted on or after (UTC)"
+          },
+          {
+            "name": "date_to",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string",
+                  "format": "date"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "description": "Submitted on or before (UTC)",
+              "title": "Date To"
+            },
+            "description": "Submitted on or before (UTC)"
           },
           {
             "name": "q",
@@ -1727,6 +1858,827 @@
         }
       }
     },
+    "/api/v1/dashboard/admin": {
+      "get": {
+        "tags": [
+          "analytics"
+        ],
+        "summary": "Admin Dashboard",
+        "operationId": "admin_dashboard",
+        "security": [
+          {
+            "HTTPBearer": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "date_from",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string",
+                  "format": "date"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "description": "Submitted on or after (UTC)",
+              "title": "Date From"
+            },
+            "description": "Submitted on or after (UTC)"
+          },
+          {
+            "name": "date_to",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string",
+                  "format": "date"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "description": "Submitted on or before (UTC)",
+              "title": "Date To"
+            },
+            "description": "Submitted on or before (UTC)"
+          },
+          {
+            "name": "category",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Category"
+            }
+          },
+          {
+            "name": "department",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Department"
+            }
+          },
+          {
+            "name": "priority",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Priority"
+            }
+          },
+          {
+            "name": "sentiment",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Sentiment"
+            }
+          },
+          {
+            "name": "channel",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Channel"
+            }
+          },
+          {
+            "name": "source",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "description": "portal, dataset or evaluation",
+              "title": "Source"
+            },
+            "description": "portal, dataset or evaluation"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/AdminDashboardOut"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/analytics": {
+      "get": {
+        "tags": [
+          "analytics"
+        ],
+        "summary": "Analytics",
+        "operationId": "analytics",
+        "security": [
+          {
+            "HTTPBearer": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "bucket",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "pattern": "^(day|week|month)$",
+              "default": "day",
+              "title": "Bucket"
+            }
+          },
+          {
+            "name": "date_from",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string",
+                  "format": "date"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "description": "Submitted on or after (UTC)",
+              "title": "Date From"
+            },
+            "description": "Submitted on or after (UTC)"
+          },
+          {
+            "name": "date_to",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string",
+                  "format": "date"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "description": "Submitted on or before (UTC)",
+              "title": "Date To"
+            },
+            "description": "Submitted on or before (UTC)"
+          },
+          {
+            "name": "category",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Category"
+            }
+          },
+          {
+            "name": "department",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Department"
+            }
+          },
+          {
+            "name": "priority",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Priority"
+            }
+          },
+          {
+            "name": "sentiment",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Sentiment"
+            }
+          },
+          {
+            "name": "channel",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Channel"
+            }
+          },
+          {
+            "name": "source",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "description": "portal, dataset or evaluation",
+              "title": "Source"
+            },
+            "description": "portal, dataset or evaluation"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/AnalyticsOut"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/dashboard/agent": {
+      "get": {
+        "tags": [
+          "analytics"
+        ],
+        "summary": "Agent Dashboard",
+        "operationId": "agent_dashboard",
+        "security": [
+          {
+            "HTTPBearer": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "department",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "description": "Defaults to the agent's own department",
+              "title": "Department"
+            },
+            "description": "Defaults to the agent's own department"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/AgentDashboardOut"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/reports": {
+      "get": {
+        "tags": [
+          "analytics"
+        ],
+        "summary": "List Reports",
+        "operationId": "list_reports",
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "items": {
+                    "$ref": "#/components/schemas/ReportSpecOut"
+                  },
+                  "type": "array",
+                  "title": "Response List Reports"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "HTTPBearer": []
+          }
+        ]
+      }
+    },
+    "/api/v1/reports/{code}": {
+      "get": {
+        "tags": [
+          "analytics"
+        ],
+        "summary": "Preview Report",
+        "description": "The report as JSON; each table is cut to its first 100 rows (exports have them all).",
+        "operationId": "preview_report",
+        "security": [
+          {
+            "HTTPBearer": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "code",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "title": "Code"
+            }
+          },
+          {
+            "name": "date_from",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string",
+                  "format": "date"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "description": "Submitted on or after (UTC)",
+              "title": "Date From"
+            },
+            "description": "Submitted on or after (UTC)"
+          },
+          {
+            "name": "date_to",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string",
+                  "format": "date"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "description": "Submitted on or before (UTC)",
+              "title": "Date To"
+            },
+            "description": "Submitted on or before (UTC)"
+          },
+          {
+            "name": "category",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Category"
+            }
+          },
+          {
+            "name": "department",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Department"
+            }
+          },
+          {
+            "name": "priority",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Priority"
+            }
+          },
+          {
+            "name": "sentiment",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Sentiment"
+            }
+          },
+          {
+            "name": "channel",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Channel"
+            }
+          },
+          {
+            "name": "source",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "description": "portal, dataset or evaluation",
+              "title": "Source"
+            },
+            "description": "portal, dataset or evaluation"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ReportOut"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/reports/{code}/export": {
+      "get": {
+        "tags": [
+          "analytics"
+        ],
+        "summary": "Export Report",
+        "operationId": "export_report",
+        "security": [
+          {
+            "HTTPBearer": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "code",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "title": "Code"
+            }
+          },
+          {
+            "name": "format",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "pattern": "^(csv|xlsx|pdf)$",
+              "default": "csv",
+              "title": "Format"
+            }
+          },
+          {
+            "name": "date_from",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string",
+                  "format": "date"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "description": "Submitted on or after (UTC)",
+              "title": "Date From"
+            },
+            "description": "Submitted on or after (UTC)"
+          },
+          {
+            "name": "date_to",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string",
+                  "format": "date"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "description": "Submitted on or before (UTC)",
+              "title": "Date To"
+            },
+            "description": "Submitted on or before (UTC)"
+          },
+          {
+            "name": "category",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Category"
+            }
+          },
+          {
+            "name": "department",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Department"
+            }
+          },
+          {
+            "name": "priority",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Priority"
+            }
+          },
+          {
+            "name": "sentiment",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Sentiment"
+            }
+          },
+          {
+            "name": "channel",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Channel"
+            }
+          },
+          {
+            "name": "source",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "description": "portal, dataset or evaluation",
+              "title": "Source"
+            },
+            "description": "portal, dataset or evaluation"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "text/csv; charset=utf-8": {},
+              "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet": {},
+              "application/pdf": {}
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
     "/api/v1/rules": {
       "get": {
         "tags": [
@@ -1920,6 +2872,345 @@
   },
   "components": {
     "schemas": {
+      "ActionOut": {
+        "properties": {
+          "code": {
+            "type": "string",
+            "title": "Code"
+          },
+          "kind": {
+            "type": "string",
+            "title": "Kind"
+          },
+          "description": {
+            "type": "string",
+            "title": "Description"
+          }
+        },
+        "type": "object",
+        "required": [
+          "code",
+          "kind",
+          "description"
+        ],
+        "title": "ActionOut"
+      },
+      "AdminDashboardOut": {
+        "properties": {
+          "overview": {
+            "$ref": "#/components/schemas/OverviewOut"
+          },
+          "distributions": {
+            "additionalProperties": {
+              "items": {
+                "$ref": "#/components/schemas/DistributionItem"
+              },
+              "type": "array"
+            },
+            "type": "object",
+            "title": "Distributions"
+          },
+          "departments": {
+            "items": {
+              "$ref": "#/components/schemas/DepartmentRow"
+            },
+            "type": "array",
+            "title": "Departments"
+          },
+          "sla_risks": {
+            "items": {
+              "$ref": "#/components/schemas/ComplaintRow"
+            },
+            "type": "array",
+            "title": "Sla Risks"
+          },
+          "trends": {
+            "items": {
+              "$ref": "#/components/schemas/TrendOut"
+            },
+            "type": "array",
+            "title": "Trends"
+          },
+          "agreement": {
+            "$ref": "#/components/schemas/AgreementOut"
+          },
+          "reviews": {
+            "$ref": "#/components/schemas/ReviewStatsOut"
+          }
+        },
+        "type": "object",
+        "required": [
+          "overview",
+          "distributions",
+          "departments",
+          "sla_risks",
+          "trends",
+          "agreement",
+          "reviews"
+        ],
+        "title": "AdminDashboardOut"
+      },
+      "AgentDashboardOut": {
+        "properties": {
+          "department": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Department"
+          },
+          "items": {
+            "items": {
+              "$ref": "#/components/schemas/AgentQueueItem"
+            },
+            "type": "array",
+            "title": "Items"
+          }
+        },
+        "type": "object",
+        "required": [
+          "department",
+          "items"
+        ],
+        "title": "AgentDashboardOut"
+      },
+      "AgentQueueItem": {
+        "properties": {
+          "complaint_ref": {
+            "type": "string",
+            "title": "Complaint Ref"
+          },
+          "title": {
+            "type": "string",
+            "title": "Title"
+          },
+          "created_at": {
+            "type": "string",
+            "format": "date-time",
+            "title": "Created At"
+          },
+          "status": {
+            "$ref": "#/components/schemas/ComplaintStatus"
+          },
+          "category_code": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Category Code"
+          },
+          "subcategory_code": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Subcategory Code"
+          },
+          "department_code": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Department Code"
+          },
+          "priority": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Priority"
+          },
+          "urgency": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Urgency"
+          },
+          "sentiment": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Sentiment"
+          },
+          "escalation_level": {
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Escalation Level"
+          },
+          "verification": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Verification"
+          },
+          "needs_review": {
+            "type": "boolean",
+            "title": "Needs Review"
+          },
+          "sla_status": {
+            "type": "string",
+            "title": "Sla Status"
+          },
+          "resolution_due_at": {
+            "anyOf": [
+              {
+                "type": "string",
+                "format": "date-time"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Resolution Due At"
+          },
+          "summary": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Summary"
+          },
+          "recommended_steps": {
+            "items": {
+              "type": "string"
+            },
+            "type": "array",
+            "title": "Recommended Steps"
+          },
+          "suggested_response": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Suggested Response"
+          },
+          "response_approved": {
+            "type": "boolean",
+            "title": "Response Approved"
+          },
+          "escalation_warnings": {
+            "items": {
+              "type": "string"
+            },
+            "type": "array",
+            "title": "Escalation Warnings"
+          }
+        },
+        "type": "object",
+        "required": [
+          "complaint_ref",
+          "title",
+          "created_at",
+          "status",
+          "category_code",
+          "subcategory_code",
+          "department_code",
+          "priority",
+          "urgency",
+          "sentiment",
+          "escalation_level",
+          "verification",
+          "needs_review",
+          "sla_status",
+          "resolution_due_at",
+          "summary",
+          "recommended_steps",
+          "suggested_response",
+          "response_approved",
+          "escalation_warnings"
+        ],
+        "title": "AgentQueueItem"
+      },
+      "AgreementOut": {
+        "properties": {
+          "compared": {
+            "type": "integer",
+            "title": "Compared"
+          },
+          "mismatched": {
+            "type": "integer",
+            "title": "Mismatched"
+          },
+          "verdicts": {
+            "additionalProperties": {
+              "type": "integer"
+            },
+            "type": "object",
+            "title": "Verdicts"
+          },
+          "agreement_pct": {
+            "additionalProperties": {
+              "anyOf": [
+                {
+                  "type": "number"
+                },
+                {
+                  "type": "null"
+                }
+              ]
+            },
+            "type": "object",
+            "title": "Agreement Pct"
+          }
+        },
+        "type": "object",
+        "required": [
+          "compared",
+          "mismatched",
+          "verdicts",
+          "agreement_pct"
+        ],
+        "title": "AgreementOut"
+      },
       "Amount": {
         "properties": {
           "value": {
@@ -2212,6 +3503,69 @@
           "output_tokens"
         ],
         "title": "AnalysisRunSummary"
+      },
+      "AnalyticsOut": {
+        "properties": {
+          "overview": {
+            "$ref": "#/components/schemas/OverviewOut"
+          },
+          "volume": {
+            "items": {
+              "$ref": "#/components/schemas/VolumePoint"
+            },
+            "type": "array",
+            "title": "Volume"
+          },
+          "distributions": {
+            "additionalProperties": {
+              "items": {
+                "$ref": "#/components/schemas/DistributionItem"
+              },
+              "type": "array"
+            },
+            "type": "object",
+            "title": "Distributions"
+          },
+          "resolution_time": {
+            "items": {
+              "$ref": "#/components/schemas/ResolutionTimeRow"
+            },
+            "type": "array",
+            "title": "Resolution Time"
+          },
+          "departments": {
+            "items": {
+              "$ref": "#/components/schemas/DepartmentRow"
+            },
+            "type": "array",
+            "title": "Departments"
+          },
+          "trends": {
+            "items": {
+              "$ref": "#/components/schemas/TrendOut"
+            },
+            "type": "array",
+            "title": "Trends"
+          },
+          "policy_usage": {
+            "items": {
+              "$ref": "#/components/schemas/PolicyUsageRow"
+            },
+            "type": "array",
+            "title": "Policy Usage"
+          }
+        },
+        "type": "object",
+        "required": [
+          "overview",
+          "volume",
+          "distributions",
+          "resolution_time",
+          "departments",
+          "trends",
+          "policy_usage"
+        ],
+        "title": "AnalyticsOut"
       },
       "Body_upload_document": {
         "properties": {
@@ -3006,6 +4360,88 @@
             ],
             "title": "Verification"
           },
+          "resolved_at": {
+            "anyOf": [
+              {
+                "type": "string",
+                "format": "date-time"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Resolved At"
+          },
+          "latest_update": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Latest Update"
+          },
+          "latest_update_at": {
+            "anyOf": [
+              {
+                "type": "string",
+                "format": "date-time"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Latest Update At"
+          },
+          "sla_status": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Sla Status"
+          },
+          "first_response_due_at": {
+            "anyOf": [
+              {
+                "type": "string",
+                "format": "date-time"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "First Response Due At"
+          },
+          "resolution_due_at": {
+            "anyOf": [
+              {
+                "type": "string",
+                "format": "date-time"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Resolution Due At"
+          },
+          "first_responded_at": {
+            "anyOf": [
+              {
+                "type": "string",
+                "format": "date-time"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "First Responded At"
+          },
           "description": {
             "type": "string",
             "title": "Description"
@@ -3300,6 +4736,177 @@
         ],
         "title": "ComplaintPage"
       },
+      "ComplaintRow": {
+        "properties": {
+          "complaint_ref": {
+            "type": "string",
+            "title": "Complaint Ref"
+          },
+          "customer_ref": {
+            "type": "string",
+            "title": "Customer Ref"
+          },
+          "created_at": {
+            "type": "string",
+            "format": "date-time",
+            "title": "Created At"
+          },
+          "title": {
+            "type": "string",
+            "title": "Title"
+          },
+          "category_code": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Category Code"
+          },
+          "subcategory_code": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Subcategory Code"
+          },
+          "department_code": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Department Code"
+          },
+          "priority": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Priority"
+          },
+          "urgency": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Urgency"
+          },
+          "sentiment": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Sentiment"
+          },
+          "escalation_level": {
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Escalation Level"
+          },
+          "status": {
+            "type": "string",
+            "title": "Status"
+          },
+          "verification": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Verification"
+          },
+          "sla_status": {
+            "type": "string",
+            "title": "Sla Status"
+          },
+          "resolution_due_at": {
+            "anyOf": [
+              {
+                "type": "string",
+                "format": "date-time"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Resolution Due At"
+          },
+          "resolved_at": {
+            "anyOf": [
+              {
+                "type": "string",
+                "format": "date-time"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Resolved At"
+          },
+          "product": {
+            "type": "string",
+            "title": "Product"
+          },
+          "needs_review": {
+            "type": "boolean",
+            "title": "Needs Review"
+          }
+        },
+        "type": "object",
+        "required": [
+          "complaint_ref",
+          "customer_ref",
+          "created_at",
+          "title",
+          "category_code",
+          "subcategory_code",
+          "department_code",
+          "priority",
+          "urgency",
+          "sentiment",
+          "escalation_level",
+          "status",
+          "verification",
+          "sla_status",
+          "resolution_due_at",
+          "resolved_at",
+          "product",
+          "needs_review"
+        ],
+        "title": "ComplaintRow"
+      },
       "ComplaintStatus": {
         "type": "string",
         "enum": [
@@ -3427,6 +5034,88 @@
               }
             ],
             "title": "Verification"
+          },
+          "resolved_at": {
+            "anyOf": [
+              {
+                "type": "string",
+                "format": "date-time"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Resolved At"
+          },
+          "latest_update": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Latest Update"
+          },
+          "latest_update_at": {
+            "anyOf": [
+              {
+                "type": "string",
+                "format": "date-time"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Latest Update At"
+          },
+          "sla_status": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Sla Status"
+          },
+          "first_response_due_at": {
+            "anyOf": [
+              {
+                "type": "string",
+                "format": "date-time"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "First Response Due At"
+          },
+          "resolution_due_at": {
+            "anyOf": [
+              {
+                "type": "string",
+                "format": "date-time"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Resolution Due At"
+          },
+          "first_responded_at": {
+            "anyOf": [
+              {
+                "type": "string",
+                "format": "date-time"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "First Responded At"
           }
         },
         "type": "object",
@@ -3570,6 +5259,88 @@
         ],
         "title": "DepartmentRef"
       },
+      "DepartmentRow": {
+        "properties": {
+          "department": {
+            "type": "string",
+            "title": "Department"
+          },
+          "label": {
+            "type": "string",
+            "title": "Label"
+          },
+          "total": {
+            "type": "integer",
+            "title": "Total"
+          },
+          "open": {
+            "type": "integer",
+            "title": "Open"
+          },
+          "resolved": {
+            "type": "integer",
+            "title": "Resolved"
+          },
+          "escalated": {
+            "type": "integer",
+            "title": "Escalated"
+          },
+          "in_review": {
+            "type": "integer",
+            "title": "In Review"
+          },
+          "at_risk": {
+            "type": "integer",
+            "title": "At Risk"
+          },
+          "breached": {
+            "type": "integer",
+            "title": "Breached"
+          },
+          "repeat": {
+            "type": "integer",
+            "title": "Repeat"
+          },
+          "avg_resolution_hours": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Avg Resolution Hours"
+          },
+          "sla_compliance_pct": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Sla Compliance Pct"
+          }
+        },
+        "type": "object",
+        "required": [
+          "department",
+          "label",
+          "total",
+          "open",
+          "resolved",
+          "escalated",
+          "in_review",
+          "at_risk",
+          "breached",
+          "repeat",
+          "avg_resolution_hours",
+          "sla_compliance_pct"
+        ],
+        "title": "DepartmentRow"
+      },
       "DepartmentUpdate": {
         "properties": {
           "name": {
@@ -3610,6 +5381,41 @@
         },
         "type": "object",
         "title": "DepartmentUpdate"
+      },
+      "DistributionItem": {
+        "properties": {
+          "key": {
+            "type": "string",
+            "title": "Key"
+          },
+          "label": {
+            "type": "string",
+            "title": "Label"
+          },
+          "count": {
+            "type": "integer",
+            "title": "Count"
+          },
+          "pct": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Pct"
+          }
+        },
+        "type": "object",
+        "required": [
+          "key",
+          "label",
+          "count",
+          "pct"
+        ],
+        "title": "DistributionItem"
       },
       "DocumentOut": {
         "properties": {
@@ -3909,6 +5715,29 @@
         ],
         "title": "Escalation"
       },
+      "EscalationLevelOut": {
+        "properties": {
+          "level": {
+            "type": "integer",
+            "title": "Level"
+          },
+          "code": {
+            "type": "string",
+            "title": "Code"
+          },
+          "name": {
+            "type": "string",
+            "title": "Name"
+          }
+        },
+        "type": "object",
+        "required": [
+          "level",
+          "code",
+          "name"
+        ],
+        "title": "EscalationLevelOut"
+      },
       "EscalationNotes": {
         "properties": {
           "summary": {
@@ -4085,6 +5914,31 @@
         ],
         "title": "Issue"
       },
+      "LabelValue": {
+        "properties": {
+          "label": {
+            "type": "string",
+            "title": "Label"
+          },
+          "value": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Value"
+          }
+        },
+        "type": "object",
+        "required": [
+          "label",
+          "value"
+        ],
+        "title": "LabelValue"
+      },
       "OrderOut": {
         "properties": {
           "order_ref": {
@@ -4148,6 +6002,128 @@
         ],
         "title": "OrderOut"
       },
+      "OverviewOut": {
+        "properties": {
+          "total": {
+            "type": "integer",
+            "title": "Total"
+          },
+          "open": {
+            "type": "integer",
+            "title": "Open"
+          },
+          "resolved": {
+            "type": "integer",
+            "title": "Resolved"
+          },
+          "escalated": {
+            "type": "integer",
+            "title": "Escalated"
+          },
+          "open_escalated": {
+            "type": "integer",
+            "title": "Open Escalated"
+          },
+          "unclassified": {
+            "type": "integer",
+            "title": "Unclassified"
+          },
+          "needs_review": {
+            "type": "integer",
+            "title": "Needs Review"
+          },
+          "sla_at_risk": {
+            "type": "integer",
+            "title": "Sla At Risk"
+          },
+          "sla_breached": {
+            "type": "integer",
+            "title": "Sla Breached"
+          },
+          "sla_met": {
+            "type": "integer",
+            "title": "Sla Met"
+          },
+          "sla_missed": {
+            "type": "integer",
+            "title": "Sla Missed"
+          },
+          "repeat": {
+            "type": "integer",
+            "title": "Repeat"
+          },
+          "verified": {
+            "type": "integer",
+            "title": "Verified"
+          },
+          "corrected": {
+            "type": "integer",
+            "title": "Corrected"
+          },
+          "flagged": {
+            "type": "integer",
+            "title": "Flagged"
+          },
+          "avg_resolution_hours": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Avg Resolution Hours"
+          },
+          "sla_compliance_pct": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Sla Compliance Pct"
+          },
+          "analysed": {
+            "type": "integer",
+            "title": "Analysed"
+          },
+          "mismatches": {
+            "type": "integer",
+            "title": "Mismatches"
+          },
+          "open_reviews": {
+            "type": "integer",
+            "title": "Open Reviews"
+          }
+        },
+        "type": "object",
+        "required": [
+          "total",
+          "open",
+          "resolved",
+          "escalated",
+          "open_escalated",
+          "unclassified",
+          "needs_review",
+          "sla_at_risk",
+          "sla_breached",
+          "sla_met",
+          "sla_missed",
+          "repeat",
+          "verified",
+          "corrected",
+          "flagged",
+          "avg_resolution_hours",
+          "sla_compliance_pct",
+          "analysed",
+          "mismatches",
+          "open_reviews"
+        ],
+        "title": "OverviewOut"
+      },
       "PolicyReference": {
         "properties": {
           "chunk_code": {
@@ -4191,6 +6167,186 @@
         ],
         "title": "PolicyReference"
       },
+      "PolicyUsageRow": {
+        "properties": {
+          "doc_code": {
+            "type": "string",
+            "title": "Doc Code"
+          },
+          "versions": {
+            "type": "string",
+            "title": "Versions"
+          },
+          "retrieved": {
+            "type": "integer",
+            "title": "Retrieved"
+          },
+          "cited": {
+            "type": "integer",
+            "title": "Cited"
+          },
+          "required_by_rules": {
+            "type": "integer",
+            "title": "Required By Rules"
+          }
+        },
+        "type": "object",
+        "required": [
+          "doc_code",
+          "versions",
+          "retrieved",
+          "cited",
+          "required_by_rules"
+        ],
+        "title": "PolicyUsageRow"
+      },
+      "ReasonCount": {
+        "properties": {
+          "reason": {
+            "type": "string",
+            "title": "Reason"
+          },
+          "count": {
+            "type": "integer",
+            "title": "Count"
+          }
+        },
+        "type": "object",
+        "required": [
+          "reason",
+          "count"
+        ],
+        "title": "ReasonCount"
+      },
+      "ReportColumn": {
+        "properties": {
+          "key": {
+            "type": "string",
+            "title": "Key"
+          },
+          "header": {
+            "type": "string",
+            "title": "Header"
+          }
+        },
+        "type": "object",
+        "required": [
+          "key",
+          "header"
+        ],
+        "title": "ReportColumn"
+      },
+      "ReportOut": {
+        "properties": {
+          "code": {
+            "type": "string",
+            "title": "Code"
+          },
+          "title": {
+            "type": "string",
+            "title": "Title"
+          },
+          "description": {
+            "type": "string",
+            "title": "Description"
+          },
+          "generated_at": {
+            "type": "string",
+            "format": "date-time",
+            "title": "Generated At"
+          },
+          "filters": {
+            "items": {
+              "$ref": "#/components/schemas/LabelValue"
+            },
+            "type": "array",
+            "title": "Filters"
+          },
+          "summary": {
+            "items": {
+              "$ref": "#/components/schemas/LabelValue"
+            },
+            "type": "array",
+            "title": "Summary"
+          },
+          "tables": {
+            "items": {
+              "$ref": "#/components/schemas/ReportTableOut"
+            },
+            "type": "array",
+            "title": "Tables"
+          }
+        },
+        "type": "object",
+        "required": [
+          "code",
+          "title",
+          "description",
+          "generated_at",
+          "filters",
+          "summary",
+          "tables"
+        ],
+        "title": "ReportOut"
+      },
+      "ReportSpecOut": {
+        "properties": {
+          "code": {
+            "type": "string",
+            "title": "Code"
+          },
+          "title": {
+            "type": "string",
+            "title": "Title"
+          },
+          "description": {
+            "type": "string",
+            "title": "Description"
+          }
+        },
+        "type": "object",
+        "required": [
+          "code",
+          "title",
+          "description"
+        ],
+        "title": "ReportSpecOut"
+      },
+      "ReportTableOut": {
+        "properties": {
+          "title": {
+            "type": "string",
+            "title": "Title"
+          },
+          "columns": {
+            "items": {
+              "$ref": "#/components/schemas/ReportColumn"
+            },
+            "type": "array",
+            "title": "Columns"
+          },
+          "rows": {
+            "items": {
+              "additionalProperties": true,
+              "type": "object"
+            },
+            "type": "array",
+            "title": "Rows"
+          },
+          "total_rows": {
+            "type": "integer",
+            "title": "Total Rows"
+          }
+        },
+        "type": "object",
+        "required": [
+          "title",
+          "columns",
+          "rows",
+          "total_rows"
+        ],
+        "title": "ReportTableOut"
+      },
       "ResolutionStep": {
         "properties": {
           "action_code": {
@@ -4224,6 +6380,60 @@
           "policy_chunk"
         ],
         "title": "ResolutionStep"
+      },
+      "ResolutionTimeRow": {
+        "properties": {
+          "priority": {
+            "type": "string",
+            "title": "Priority"
+          },
+          "resolved": {
+            "type": "integer",
+            "title": "Resolved"
+          },
+          "avg_hours": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Avg Hours"
+          },
+          "median_hours": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Median Hours"
+          },
+          "within_sla_pct": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Within Sla Pct"
+          }
+        },
+        "type": "object",
+        "required": [
+          "priority",
+          "resolved",
+          "avg_hours",
+          "median_hours",
+          "within_sla_pct"
+        ],
+        "title": "ResolutionTimeRow"
       },
       "ReviewAction": {
         "type": "string",
@@ -4318,6 +6528,52 @@
           "action"
         ],
         "title": "ReviewActionIn"
+      },
+      "ReviewStatsOut": {
+        "properties": {
+          "open": {
+            "type": "integer",
+            "title": "Open"
+          },
+          "resolved": {
+            "type": "integer",
+            "title": "Resolved"
+          },
+          "avg_hours_to_resolve": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Avg Hours To Resolve"
+          },
+          "decisions": {
+            "additionalProperties": {
+              "type": "integer"
+            },
+            "type": "object",
+            "title": "Decisions"
+          },
+          "top_reasons": {
+            "items": {
+              "$ref": "#/components/schemas/ReasonCount"
+            },
+            "type": "array",
+            "title": "Top Reasons"
+          }
+        },
+        "type": "object",
+        "required": [
+          "open",
+          "resolved",
+          "avg_hours_to_resolve",
+          "decisions",
+          "top_reasons"
+        ],
+        "title": "ReviewStatsOut"
       },
       "ReviewStatus": {
         "type": "string",
@@ -5063,6 +7319,56 @@
         ],
         "title": "SubcategoryOut"
       },
+      "TrendOut": {
+        "properties": {
+          "kind": {
+            "type": "string",
+            "title": "Kind"
+          },
+          "key": {
+            "type": "string",
+            "title": "Key"
+          },
+          "label": {
+            "type": "string",
+            "title": "Label"
+          },
+          "current": {
+            "type": "integer",
+            "title": "Current"
+          },
+          "previous": {
+            "type": "integer",
+            "title": "Previous"
+          },
+          "change_pct": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Change Pct"
+          },
+          "message": {
+            "type": "string",
+            "title": "Message"
+          }
+        },
+        "type": "object",
+        "required": [
+          "kind",
+          "key",
+          "label",
+          "current",
+          "previous",
+          "change_pct",
+          "message"
+        ],
+        "title": "TrendOut"
+      },
       "UserOut": {
         "properties": {
           "id": {
@@ -5301,6 +7607,103 @@
           "previous"
         ],
         "title": "VersionStatus"
+      },
+      "VocabularyOut": {
+        "properties": {
+          "sentiments": {
+            "items": {
+              "type": "string"
+            },
+            "type": "array",
+            "title": "Sentiments"
+          },
+          "urgencies": {
+            "items": {
+              "type": "string"
+            },
+            "type": "array",
+            "title": "Urgencies"
+          },
+          "priorities": {
+            "items": {
+              "type": "string"
+            },
+            "type": "array",
+            "title": "Priorities"
+          },
+          "channels": {
+            "items": {
+              "type": "string"
+            },
+            "type": "array",
+            "title": "Channels"
+          },
+          "follow_up_types": {
+            "items": {
+              "type": "string"
+            },
+            "type": "array",
+            "title": "Follow Up Types"
+          },
+          "escalation_levels": {
+            "items": {
+              "$ref": "#/components/schemas/EscalationLevelOut"
+            },
+            "type": "array",
+            "title": "Escalation Levels"
+          },
+          "actions": {
+            "items": {
+              "$ref": "#/components/schemas/ActionOut"
+            },
+            "type": "array",
+            "title": "Actions"
+          }
+        },
+        "type": "object",
+        "required": [
+          "sentiments",
+          "urgencies",
+          "priorities",
+          "channels",
+          "follow_up_types",
+          "escalation_levels",
+          "actions"
+        ],
+        "title": "VocabularyOut"
+      },
+      "VolumePoint": {
+        "properties": {
+          "period": {
+            "type": "string",
+            "title": "Period"
+          },
+          "total": {
+            "type": "integer",
+            "title": "Total"
+          },
+          "escalated": {
+            "type": "integer",
+            "title": "Escalated"
+          },
+          "repeat": {
+            "type": "integer",
+            "title": "Repeat"
+          },
+          "resolved": {
+            "type": "integer",
+            "title": "Resolved"
+          }
+        },
+        "type": "object",
+        "required": [
+          "period",
+          "total",
+          "escalated",
+          "repeat",
+          "resolved"
+        ],
+        "title": "VolumePoint"
       }
     },
     "securitySchemes": {

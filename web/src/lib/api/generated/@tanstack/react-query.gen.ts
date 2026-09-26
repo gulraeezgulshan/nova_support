@@ -3,8 +3,8 @@
 import { type DefaultError, type InfiniteData, infiniteQueryOptions, queryOptions, type UseMutationOptions } from '@tanstack/react-query';
 
 import { client } from '../client.gen';
-import { activateVersion, createCategory, createComplaint, createDepartment, createRule, createSubcategory, exportRules, getComplaint, getComplaintAnalysis, getDocument, getValidation, listCategories, listComplaints, listDecisions, listDepartments, listDocuments, listDocumentTypes, listFacts, listRules, listSlaPolicies, listUsers, listVersionChunks, liveness, myOrders, type Options, readiness, readMe, reanalyzeComplaint, replaceRule, reprocessVersion, retireVersion, revalidate, reviewComplaint, reviewQueue, searchKnowledgeBase, updateCategory, updateDepartment, updateSlaPolicy, updateStatus, updateUser, uploadDocument } from '../sdk.gen';
-import type { ActivateVersionData, ActivateVersionError, ActivateVersionResponse, CreateCategoryData, CreateCategoryError, CreateCategoryResponse, CreateComplaintData, CreateComplaintError, CreateComplaintResponse, CreateDepartmentData, CreateDepartmentError, CreateDepartmentResponse, CreateRuleData, CreateRuleError, CreateRuleResponse, CreateSubcategoryData, CreateSubcategoryError, CreateSubcategoryResponse, ExportRulesData, GetComplaintAnalysisData, GetComplaintAnalysisError, GetComplaintAnalysisResponse, GetComplaintData, GetComplaintError, GetComplaintResponse, GetDocumentData, GetDocumentError, GetDocumentResponse, GetValidationData, GetValidationError, GetValidationResponse, ListCategoriesData, ListCategoriesResponse, ListComplaintsData, ListComplaintsError, ListComplaintsResponse, ListDecisionsData, ListDecisionsError, ListDecisionsResponse, ListDepartmentsData, ListDepartmentsResponse, ListDocumentsData, ListDocumentsResponse, ListDocumentTypesData, ListDocumentTypesResponse, ListFactsData, ListFactsResponse, ListRulesData, ListRulesResponse, ListSlaPoliciesData, ListSlaPoliciesResponse, ListUsersData, ListUsersResponse, ListVersionChunksData, ListVersionChunksError, ListVersionChunksResponse, LivenessData, LivenessResponse, MyOrdersData, MyOrdersResponse, ReadinessData, ReadinessResponse, ReadMeData, ReadMeResponse, ReanalyzeComplaintData, ReanalyzeComplaintError, ReanalyzeComplaintResponse, ReplaceRuleData, ReplaceRuleError, ReplaceRuleResponse, ReprocessVersionData, ReprocessVersionError, ReprocessVersionResponse, RetireVersionData, RetireVersionError, RetireVersionResponse, RevalidateData, RevalidateError, RevalidateResponse, ReviewComplaintData, ReviewComplaintError, ReviewComplaintResponse, ReviewQueueData, ReviewQueueError, ReviewQueueResponse, SearchKnowledgeBaseData, SearchKnowledgeBaseError, SearchKnowledgeBaseResponse, UpdateCategoryData, UpdateCategoryError, UpdateCategoryResponse, UpdateDepartmentData, UpdateDepartmentError, UpdateDepartmentResponse, UpdateSlaPolicyData, UpdateSlaPolicyError, UpdateSlaPolicyResponse, UpdateStatusData, UpdateStatusError, UpdateStatusResponse, UpdateUserData, UpdateUserError, UpdateUserResponse, UploadDocumentData, UploadDocumentError, UploadDocumentResponse } from '../types.gen';
+import { activateVersion, adminDashboard, agentDashboard, analytics, createCategory, createComplaint, createDepartment, createRule, createSubcategory, exportReport, exportRules, getComplaint, getComplaintAnalysis, getDocument, getValidation, getVocabulary, listCategories, listComplaints, listDecisions, listDepartments, listDocuments, listDocumentTypes, listFacts, listReports, listRules, listSlaPolicies, listUsers, listVersionChunks, liveness, myOrders, type Options, previewReport, readiness, readMe, reanalyzeComplaint, replaceRule, reprocessVersion, retireVersion, revalidate, reviewComplaint, reviewQueue, searchKnowledgeBase, updateCategory, updateDepartment, updateSlaPolicy, updateStatus, updateUser, uploadDocument } from '../sdk.gen';
+import type { ActivateVersionData, ActivateVersionError, ActivateVersionResponse, AdminDashboardData, AdminDashboardError, AdminDashboardResponse, AgentDashboardData, AgentDashboardError, AgentDashboardResponse, AnalyticsData, AnalyticsError, AnalyticsResponse, CreateCategoryData, CreateCategoryError, CreateCategoryResponse, CreateComplaintData, CreateComplaintError, CreateComplaintResponse, CreateDepartmentData, CreateDepartmentError, CreateDepartmentResponse, CreateRuleData, CreateRuleError, CreateRuleResponse, CreateSubcategoryData, CreateSubcategoryError, CreateSubcategoryResponse, ExportReportData, ExportReportError, ExportRulesData, GetComplaintAnalysisData, GetComplaintAnalysisError, GetComplaintAnalysisResponse, GetComplaintData, GetComplaintError, GetComplaintResponse, GetDocumentData, GetDocumentError, GetDocumentResponse, GetValidationData, GetValidationError, GetValidationResponse, GetVocabularyData, GetVocabularyResponse, ListCategoriesData, ListCategoriesResponse, ListComplaintsData, ListComplaintsError, ListComplaintsResponse, ListDecisionsData, ListDecisionsError, ListDecisionsResponse, ListDepartmentsData, ListDepartmentsResponse, ListDocumentsData, ListDocumentsResponse, ListDocumentTypesData, ListDocumentTypesResponse, ListFactsData, ListFactsResponse, ListReportsData, ListReportsResponse, ListRulesData, ListRulesResponse, ListSlaPoliciesData, ListSlaPoliciesResponse, ListUsersData, ListUsersResponse, ListVersionChunksData, ListVersionChunksError, ListVersionChunksResponse, LivenessData, LivenessResponse, MyOrdersData, MyOrdersResponse, PreviewReportData, PreviewReportError, PreviewReportResponse, ReadinessData, ReadinessResponse, ReadMeData, ReadMeResponse, ReanalyzeComplaintData, ReanalyzeComplaintError, ReanalyzeComplaintResponse, ReplaceRuleData, ReplaceRuleError, ReplaceRuleResponse, ReprocessVersionData, ReprocessVersionError, ReprocessVersionResponse, RetireVersionData, RetireVersionError, RetireVersionResponse, RevalidateData, RevalidateError, RevalidateResponse, ReviewComplaintData, ReviewComplaintError, ReviewComplaintResponse, ReviewQueueData, ReviewQueueError, ReviewQueueResponse, SearchKnowledgeBaseData, SearchKnowledgeBaseError, SearchKnowledgeBaseResponse, UpdateCategoryData, UpdateCategoryError, UpdateCategoryResponse, UpdateDepartmentData, UpdateDepartmentError, UpdateDepartmentResponse, UpdateSlaPolicyData, UpdateSlaPolicyError, UpdateSlaPolicyResponse, UpdateStatusData, UpdateStatusError, UpdateStatusResponse, UpdateUserData, UpdateUserError, UpdateUserResponse, UploadDocumentData, UploadDocumentError, UploadDocumentResponse } from '../types.gen';
 
 export type QueryKey<TOptions extends Options> = [
     Pick<TOptions, 'baseUrl' | 'body' | 'headers' | 'path' | 'query'> & {
@@ -287,6 +287,27 @@ export const updateSlaPolicyMutation = (options?: Partial<Options<UpdateSlaPolic
     };
     return mutationOptions;
 };
+
+export const getVocabularyQueryKey = (options?: Options<GetVocabularyData>) => createQueryKey('getVocabulary', options);
+
+/**
+ * Get Vocabulary
+ *
+ * Controlled values from `config/analysis.yaml` and `config/actions.yaml`, for filters
+ * and the rule editor (so the UI never hard-codes them).
+ */
+export const getVocabularyOptions = (options?: Options<GetVocabularyData>) => queryOptions<GetVocabularyResponse, DefaultError, GetVocabularyResponse, ReturnType<typeof getVocabularyQueryKey>>({
+    queryFn: async ({ queryKey, signal }) => {
+        const { data } = await getVocabulary({
+            ...options,
+            ...queryKey[0],
+            signal,
+            throwOnError: true
+        });
+        return data;
+    },
+    queryKey: getVocabularyQueryKey(options)
+});
 
 export const listDocumentTypesQueryKey = (options?: Options<ListDocumentTypesData>) => createQueryKey('listDocumentTypes', options);
 
@@ -717,6 +738,116 @@ export const updateStatusMutation = (options?: Partial<Options<UpdateStatusData>
     };
     return mutationOptions;
 };
+
+export const adminDashboardQueryKey = (options?: Options<AdminDashboardData>) => createQueryKey('adminDashboard', options);
+
+/**
+ * Admin Dashboard
+ */
+export const adminDashboardOptions = (options?: Options<AdminDashboardData>) => queryOptions<AdminDashboardResponse, AdminDashboardError, AdminDashboardResponse, ReturnType<typeof adminDashboardQueryKey>>({
+    queryFn: async ({ queryKey, signal }) => {
+        const { data } = await adminDashboard({
+            ...options,
+            ...queryKey[0],
+            signal,
+            throwOnError: true
+        });
+        return data;
+    },
+    queryKey: adminDashboardQueryKey(options)
+});
+
+export const analyticsQueryKey = (options?: Options<AnalyticsData>) => createQueryKey('analytics', options);
+
+/**
+ * Analytics
+ */
+export const analyticsOptions = (options?: Options<AnalyticsData>) => queryOptions<AnalyticsResponse, AnalyticsError, AnalyticsResponse, ReturnType<typeof analyticsQueryKey>>({
+    queryFn: async ({ queryKey, signal }) => {
+        const { data } = await analytics({
+            ...options,
+            ...queryKey[0],
+            signal,
+            throwOnError: true
+        });
+        return data;
+    },
+    queryKey: analyticsQueryKey(options)
+});
+
+export const agentDashboardQueryKey = (options?: Options<AgentDashboardData>) => createQueryKey('agentDashboard', options);
+
+/**
+ * Agent Dashboard
+ */
+export const agentDashboardOptions = (options?: Options<AgentDashboardData>) => queryOptions<AgentDashboardResponse, AgentDashboardError, AgentDashboardResponse, ReturnType<typeof agentDashboardQueryKey>>({
+    queryFn: async ({ queryKey, signal }) => {
+        const { data } = await agentDashboard({
+            ...options,
+            ...queryKey[0],
+            signal,
+            throwOnError: true
+        });
+        return data;
+    },
+    queryKey: agentDashboardQueryKey(options)
+});
+
+export const listReportsQueryKey = (options?: Options<ListReportsData>) => createQueryKey('listReports', options);
+
+/**
+ * List Reports
+ */
+export const listReportsOptions = (options?: Options<ListReportsData>) => queryOptions<ListReportsResponse, DefaultError, ListReportsResponse, ReturnType<typeof listReportsQueryKey>>({
+    queryFn: async ({ queryKey, signal }) => {
+        const { data } = await listReports({
+            ...options,
+            ...queryKey[0],
+            signal,
+            throwOnError: true
+        });
+        return data;
+    },
+    queryKey: listReportsQueryKey(options)
+});
+
+export const previewReportQueryKey = (options: Options<PreviewReportData>) => createQueryKey('previewReport', options);
+
+/**
+ * Preview Report
+ *
+ * The report as JSON; each table is cut to its first 100 rows (exports have them all).
+ */
+export const previewReportOptions = (options: Options<PreviewReportData>) => queryOptions<PreviewReportResponse, PreviewReportError, PreviewReportResponse, ReturnType<typeof previewReportQueryKey>>({
+    queryFn: async ({ queryKey, signal }) => {
+        const { data } = await previewReport({
+            ...options,
+            ...queryKey[0],
+            signal,
+            throwOnError: true
+        });
+        return data;
+    },
+    queryKey: previewReportQueryKey(options)
+});
+
+export const exportReportQueryKey = (options: Options<ExportReportData>) => createQueryKey('exportReport', options);
+
+/**
+ * Export Report
+ */
+export const exportReportOptions = (options: Options<ExportReportData>) => queryOptions<unknown, ExportReportError, unknown, ReturnType<typeof exportReportQueryKey>>({
+    queryFn: async ({ queryKey, signal }) => {
+        const { data } = await exportReport({
+            ...options,
+            ...queryKey[0],
+            signal,
+            throwOnError: true
+        });
+        return data;
+    },
+    queryKey: exportReportQueryKey(options)
+});
 
 export const listRulesQueryKey = (options?: Options<ListRulesData>) => createQueryKey('listRules', options);
 

@@ -5,6 +5,174 @@ export type ClientOptions = {
 };
 
 /**
+ * ActionOut
+ */
+export type ActionOut = {
+    /**
+     * Code
+     */
+    code: string;
+    /**
+     * Kind
+     */
+    kind: string;
+    /**
+     * Description
+     */
+    description: string;
+};
+
+/**
+ * AdminDashboardOut
+ */
+export type AdminDashboardOut = {
+    overview: OverviewOut;
+    /**
+     * Distributions
+     */
+    distributions: {
+        [key: string]: Array<DistributionItem>;
+    };
+    /**
+     * Departments
+     */
+    departments: Array<DepartmentRow>;
+    /**
+     * Sla Risks
+     */
+    sla_risks: Array<ComplaintRow>;
+    /**
+     * Trends
+     */
+    trends: Array<TrendOut>;
+    agreement: AgreementOut;
+    reviews: ReviewStatsOut;
+};
+
+/**
+ * AgentDashboardOut
+ */
+export type AgentDashboardOut = {
+    /**
+     * Department
+     */
+    department: string | null;
+    /**
+     * Items
+     */
+    items: Array<AgentQueueItem>;
+};
+
+/**
+ * AgentQueueItem
+ */
+export type AgentQueueItem = {
+    /**
+     * Complaint Ref
+     */
+    complaint_ref: string;
+    /**
+     * Title
+     */
+    title: string;
+    /**
+     * Created At
+     */
+    created_at: string;
+    status: ComplaintStatus;
+    /**
+     * Category Code
+     */
+    category_code: string | null;
+    /**
+     * Subcategory Code
+     */
+    subcategory_code: string | null;
+    /**
+     * Department Code
+     */
+    department_code: string | null;
+    /**
+     * Priority
+     */
+    priority: string | null;
+    /**
+     * Urgency
+     */
+    urgency: string | null;
+    /**
+     * Sentiment
+     */
+    sentiment: string | null;
+    /**
+     * Escalation Level
+     */
+    escalation_level: number | null;
+    /**
+     * Verification
+     */
+    verification: string | null;
+    /**
+     * Needs Review
+     */
+    needs_review: boolean;
+    /**
+     * Sla Status
+     */
+    sla_status: string;
+    /**
+     * Resolution Due At
+     */
+    resolution_due_at: string | null;
+    /**
+     * Summary
+     */
+    summary: string | null;
+    /**
+     * Recommended Steps
+     */
+    recommended_steps: Array<string>;
+    /**
+     * Suggested Response
+     */
+    suggested_response: string | null;
+    /**
+     * Response Approved
+     */
+    response_approved: boolean;
+    /**
+     * Escalation Warnings
+     */
+    escalation_warnings: Array<string>;
+};
+
+/**
+ * AgreementOut
+ */
+export type AgreementOut = {
+    /**
+     * Compared
+     */
+    compared: number;
+    /**
+     * Mismatched
+     */
+    mismatched: number;
+    /**
+     * Verdicts
+     */
+    verdicts: {
+        [key: string]: number;
+    };
+    /**
+     * Agreement Pct
+     */
+    agreement_pct: {
+        [key: string]: number | null;
+    };
+};
+
+/**
  * Amount
  */
 export type Amount = {
@@ -141,6 +309,39 @@ export type AnalysisRunSummary = {
      * Output Tokens
      */
     output_tokens: number;
+};
+
+/**
+ * AnalyticsOut
+ */
+export type AnalyticsOut = {
+    overview: OverviewOut;
+    /**
+     * Volume
+     */
+    volume: Array<VolumePoint>;
+    /**
+     * Distributions
+     */
+    distributions: {
+        [key: string]: Array<DistributionItem>;
+    };
+    /**
+     * Resolution Time
+     */
+    resolution_time: Array<ResolutionTimeRow>;
+    /**
+     * Departments
+     */
+    departments: Array<DepartmentRow>;
+    /**
+     * Trends
+     */
+    trends: Array<TrendOut>;
+    /**
+     * Policy Usage
+     */
+    policy_usage: Array<PolicyUsageRow>;
 };
 
 /**
@@ -584,6 +785,34 @@ export type ComplaintDetail = {
      */
     verification?: string | null;
     /**
+     * Resolved At
+     */
+    resolved_at?: string | null;
+    /**
+     * Latest Update
+     */
+    latest_update?: string | null;
+    /**
+     * Latest Update At
+     */
+    latest_update_at?: string | null;
+    /**
+     * Sla Status
+     */
+    sla_status?: string | null;
+    /**
+     * First Response Due At
+     */
+    first_response_due_at?: string | null;
+    /**
+     * Resolution Due At
+     */
+    resolution_due_at?: string | null;
+    /**
+     * First Responded At
+     */
+    first_responded_at?: string | null;
+    /**
      * Description
      */
     description: string;
@@ -703,6 +932,84 @@ export type ComplaintPage = {
 };
 
 /**
+ * ComplaintRow
+ */
+export type ComplaintRow = {
+    /**
+     * Complaint Ref
+     */
+    complaint_ref: string;
+    /**
+     * Customer Ref
+     */
+    customer_ref: string;
+    /**
+     * Created At
+     */
+    created_at: string;
+    /**
+     * Title
+     */
+    title: string;
+    /**
+     * Category Code
+     */
+    category_code: string | null;
+    /**
+     * Subcategory Code
+     */
+    subcategory_code: string | null;
+    /**
+     * Department Code
+     */
+    department_code: string | null;
+    /**
+     * Priority
+     */
+    priority: string | null;
+    /**
+     * Urgency
+     */
+    urgency: string | null;
+    /**
+     * Sentiment
+     */
+    sentiment: string | null;
+    /**
+     * Escalation Level
+     */
+    escalation_level: number | null;
+    /**
+     * Status
+     */
+    status: string;
+    /**
+     * Verification
+     */
+    verification: string | null;
+    /**
+     * Sla Status
+     */
+    sla_status: string;
+    /**
+     * Resolution Due At
+     */
+    resolution_due_at: string | null;
+    /**
+     * Resolved At
+     */
+    resolved_at: string | null;
+    /**
+     * Product
+     */
+    product: string;
+    /**
+     * Needs Review
+     */
+    needs_review: boolean;
+};
+
+/**
  * ComplaintStatus
  */
 export type ComplaintStatus = 'new' | 'analyzed' | 'assigned' | 'in_progress' | 'awaiting_customer' | 'escalated' | 'resolved' | 'closed' | 'reopened';
@@ -770,6 +1077,34 @@ export type ComplaintSummary = {
      * Verification
      */
     verification?: string | null;
+    /**
+     * Resolved At
+     */
+    resolved_at?: string | null;
+    /**
+     * Latest Update
+     */
+    latest_update?: string | null;
+    /**
+     * Latest Update At
+     */
+    latest_update_at?: string | null;
+    /**
+     * Sla Status
+     */
+    sla_status?: string | null;
+    /**
+     * First Response Due At
+     */
+    first_response_due_at?: string | null;
+    /**
+     * Resolution Due At
+     */
+    resolution_due_at?: string | null;
+    /**
+     * First Responded At
+     */
+    first_responded_at?: string | null;
 };
 
 /**
@@ -859,6 +1194,60 @@ export type DepartmentRef = {
 };
 
 /**
+ * DepartmentRow
+ */
+export type DepartmentRow = {
+    /**
+     * Department
+     */
+    department: string;
+    /**
+     * Label
+     */
+    label: string;
+    /**
+     * Total
+     */
+    total: number;
+    /**
+     * Open
+     */
+    open: number;
+    /**
+     * Resolved
+     */
+    resolved: number;
+    /**
+     * Escalated
+     */
+    escalated: number;
+    /**
+     * In Review
+     */
+    in_review: number;
+    /**
+     * At Risk
+     */
+    at_risk: number;
+    /**
+     * Breached
+     */
+    breached: number;
+    /**
+     * Repeat
+     */
+    repeat: number;
+    /**
+     * Avg Resolution Hours
+     */
+    avg_resolution_hours: number | null;
+    /**
+     * Sla Compliance Pct
+     */
+    sla_compliance_pct: number | null;
+};
+
+/**
  * DepartmentUpdate
  */
 export type DepartmentUpdate = {
@@ -874,6 +1263,28 @@ export type DepartmentUpdate = {
      * Is Active
      */
     is_active?: boolean | null;
+};
+
+/**
+ * DistributionItem
+ */
+export type DistributionItem = {
+    /**
+     * Key
+     */
+    key: string;
+    /**
+     * Label
+     */
+    label: string;
+    /**
+     * Count
+     */
+    count: number;
+    /**
+     * Pct
+     */
+    pct: number | null;
 };
 
 /**
@@ -1049,6 +1460,24 @@ export type Escalation = {
 };
 
 /**
+ * EscalationLevelOut
+ */
+export type EscalationLevelOut = {
+    /**
+     * Level
+     */
+    level: number;
+    /**
+     * Code
+     */
+    code: string;
+    /**
+     * Name
+     */
+    name: string;
+};
+
+/**
  * EscalationNotes
  */
 export type EscalationNotes = {
@@ -1160,6 +1589,20 @@ export type Issue = {
 };
 
 /**
+ * LabelValue
+ */
+export type LabelValue = {
+    /**
+     * Label
+     */
+    label: string;
+    /**
+     * Value
+     */
+    value: string | null;
+};
+
+/**
  * OrderOut
  */
 export type OrderOut = {
@@ -1202,6 +1645,92 @@ export type OrderOut = {
 };
 
 /**
+ * OverviewOut
+ */
+export type OverviewOut = {
+    /**
+     * Total
+     */
+    total: number;
+    /**
+     * Open
+     */
+    open: number;
+    /**
+     * Resolved
+     */
+    resolved: number;
+    /**
+     * Escalated
+     */
+    escalated: number;
+    /**
+     * Open Escalated
+     */
+    open_escalated: number;
+    /**
+     * Unclassified
+     */
+    unclassified: number;
+    /**
+     * Needs Review
+     */
+    needs_review: number;
+    /**
+     * Sla At Risk
+     */
+    sla_at_risk: number;
+    /**
+     * Sla Breached
+     */
+    sla_breached: number;
+    /**
+     * Sla Met
+     */
+    sla_met: number;
+    /**
+     * Sla Missed
+     */
+    sla_missed: number;
+    /**
+     * Repeat
+     */
+    repeat: number;
+    /**
+     * Verified
+     */
+    verified: number;
+    /**
+     * Corrected
+     */
+    corrected: number;
+    /**
+     * Flagged
+     */
+    flagged: number;
+    /**
+     * Avg Resolution Hours
+     */
+    avg_resolution_hours: number | null;
+    /**
+     * Sla Compliance Pct
+     */
+    sla_compliance_pct: number | null;
+    /**
+     * Analysed
+     */
+    analysed: number;
+    /**
+     * Mismatches
+     */
+    mismatches: number;
+    /**
+     * Open Reviews
+     */
+    open_reviews: number;
+};
+
+/**
  * PolicyReference
  */
 export type PolicyReference = {
@@ -1232,6 +1761,136 @@ export type PolicyReference = {
 };
 
 /**
+ * PolicyUsageRow
+ */
+export type PolicyUsageRow = {
+    /**
+     * Doc Code
+     */
+    doc_code: string;
+    /**
+     * Versions
+     */
+    versions: string;
+    /**
+     * Retrieved
+     */
+    retrieved: number;
+    /**
+     * Cited
+     */
+    cited: number;
+    /**
+     * Required By Rules
+     */
+    required_by_rules: number;
+};
+
+/**
+ * ReasonCount
+ */
+export type ReasonCount = {
+    /**
+     * Reason
+     */
+    reason: string;
+    /**
+     * Count
+     */
+    count: number;
+};
+
+/**
+ * ReportColumn
+ */
+export type ReportColumn = {
+    /**
+     * Key
+     */
+    key: string;
+    /**
+     * Header
+     */
+    header: string;
+};
+
+/**
+ * ReportOut
+ */
+export type ReportOut = {
+    /**
+     * Code
+     */
+    code: string;
+    /**
+     * Title
+     */
+    title: string;
+    /**
+     * Description
+     */
+    description: string;
+    /**
+     * Generated At
+     */
+    generated_at: string;
+    /**
+     * Filters
+     */
+    filters: Array<LabelValue>;
+    /**
+     * Summary
+     */
+    summary: Array<LabelValue>;
+    /**
+     * Tables
+     */
+    tables: Array<ReportTableOut>;
+};
+
+/**
+ * ReportSpecOut
+ */
+export type ReportSpecOut = {
+    /**
+     * Code
+     */
+    code: string;
+    /**
+     * Title
+     */
+    title: string;
+    /**
+     * Description
+     */
+    description: string;
+};
+
+/**
+ * ReportTableOut
+ */
+export type ReportTableOut = {
+    /**
+     * Title
+     */
+    title: string;
+    /**
+     * Columns
+     */
+    columns: Array<ReportColumn>;
+    /**
+     * Rows
+     */
+    rows: Array<{
+        [key: string]: unknown;
+    }>;
+    /**
+     * Total Rows
+     */
+    total_rows: number;
+};
+
+/**
  * ResolutionStep
  */
 export type ResolutionStep = {
@@ -1253,6 +1912,32 @@ export type ResolutionStep = {
      * chunk_code supporting this step, if any
      */
     policy_chunk: string | null;
+};
+
+/**
+ * ResolutionTimeRow
+ */
+export type ResolutionTimeRow = {
+    /**
+     * Priority
+     */
+    priority: string;
+    /**
+     * Resolved
+     */
+    resolved: number;
+    /**
+     * Avg Hours
+     */
+    avg_hours: number | null;
+    /**
+     * Median Hours
+     */
+    median_hours: number | null;
+    /**
+     * Within Sla Pct
+     */
+    within_sla_pct: number | null;
 };
 
 /**
@@ -1289,6 +1974,34 @@ export type ReviewActionIn = {
      * Escalation Level
      */
     escalation_level?: number | null;
+};
+
+/**
+ * ReviewStatsOut
+ */
+export type ReviewStatsOut = {
+    /**
+     * Open
+     */
+    open: number;
+    /**
+     * Resolved
+     */
+    resolved: number;
+    /**
+     * Avg Hours To Resolve
+     */
+    avg_hours_to_resolve: number | null;
+    /**
+     * Decisions
+     */
+    decisions: {
+        [key: string]: number;
+    };
+    /**
+     * Top Reasons
+     */
+    top_reasons: Array<ReasonCount>;
 };
 
 /**
@@ -1691,6 +2404,40 @@ export type SubcategoryOut = {
 };
 
 /**
+ * TrendOut
+ */
+export type TrendOut = {
+    /**
+     * Kind
+     */
+    kind: string;
+    /**
+     * Key
+     */
+    key: string;
+    /**
+     * Label
+     */
+    label: string;
+    /**
+     * Current
+     */
+    current: number;
+    /**
+     * Previous
+     */
+    previous: number;
+    /**
+     * Change Pct
+     */
+    change_pct: number | null;
+    /**
+     * Message
+     */
+    message: string;
+};
+
+/**
  * UserOut
  */
 export type UserOut = {
@@ -1819,6 +2566,66 @@ export type ValidationRunOut = {
  * VersionStatus
  */
 export type VersionStatus = 'draft' | 'active' | 'superseded' | 'previous';
+
+/**
+ * VocabularyOut
+ */
+export type VocabularyOut = {
+    /**
+     * Sentiments
+     */
+    sentiments: Array<string>;
+    /**
+     * Urgencies
+     */
+    urgencies: Array<string>;
+    /**
+     * Priorities
+     */
+    priorities: Array<string>;
+    /**
+     * Channels
+     */
+    channels: Array<string>;
+    /**
+     * Follow Up Types
+     */
+    follow_up_types: Array<string>;
+    /**
+     * Escalation Levels
+     */
+    escalation_levels: Array<EscalationLevelOut>;
+    /**
+     * Actions
+     */
+    actions: Array<ActionOut>;
+};
+
+/**
+ * VolumePoint
+ */
+export type VolumePoint = {
+    /**
+     * Period
+     */
+    period: string;
+    /**
+     * Total
+     */
+    total: number;
+    /**
+     * Escalated
+     */
+    escalated: number;
+    /**
+     * Repeat
+     */
+    repeat: number;
+    /**
+     * Resolved
+     */
+    resolved: number;
+};
 
 export type LivenessData = {
     body?: never;
@@ -2148,6 +2955,22 @@ export type UpdateSlaPolicyResponses = {
 
 export type UpdateSlaPolicyResponse = UpdateSlaPolicyResponses[keyof UpdateSlaPolicyResponses];
 
+export type GetVocabularyData = {
+    body?: never;
+    path?: never;
+    query?: never;
+    url: '/api/v1/taxonomy/vocabulary';
+};
+
+export type GetVocabularyResponses = {
+    /**
+     * Successful Response
+     */
+    200: VocabularyOut;
+};
+
+export type GetVocabularyResponse = GetVocabularyResponses[keyof GetVocabularyResponses];
+
 export type ListDocumentTypesData = {
     body?: never;
     path?: never;
@@ -2425,6 +3248,36 @@ export type ListComplaintsData = {
          * Needs Review
          */
         needs_review?: boolean | null;
+        /**
+         * Sentiment
+         */
+        sentiment?: string | null;
+        /**
+         * Escalated
+         *
+         * Escalation level 1 or higher
+         */
+        escalated?: boolean | null;
+        /**
+         * Sla Status
+         */
+        sla_status?: string | null;
+        /**
+         * Verification
+         */
+        verification?: string | null;
+        /**
+         * Date From
+         *
+         * Submitted on or after (UTC)
+         */
+        date_from?: string | null;
+        /**
+         * Date To
+         *
+         * Submitted on or before (UTC)
+         */
+        date_to?: string | null;
         /**
          * Q
          *
@@ -2788,6 +3641,328 @@ export type UpdateStatusResponses = {
 };
 
 export type UpdateStatusResponse = UpdateStatusResponses[keyof UpdateStatusResponses];
+
+export type AdminDashboardData = {
+    body?: never;
+    path?: never;
+    query?: {
+        /**
+         * Date From
+         *
+         * Submitted on or after (UTC)
+         */
+        date_from?: string | null;
+        /**
+         * Date To
+         *
+         * Submitted on or before (UTC)
+         */
+        date_to?: string | null;
+        /**
+         * Category
+         */
+        category?: string | null;
+        /**
+         * Department
+         */
+        department?: string | null;
+        /**
+         * Priority
+         */
+        priority?: string | null;
+        /**
+         * Sentiment
+         */
+        sentiment?: string | null;
+        /**
+         * Channel
+         */
+        channel?: string | null;
+        /**
+         * Source
+         *
+         * portal, dataset or evaluation
+         */
+        source?: string | null;
+    };
+    url: '/api/v1/dashboard/admin';
+};
+
+export type AdminDashboardErrors = {
+    /**
+     * Validation Error
+     */
+    422: HttpValidationError;
+};
+
+export type AdminDashboardError = AdminDashboardErrors[keyof AdminDashboardErrors];
+
+export type AdminDashboardResponses = {
+    /**
+     * Successful Response
+     */
+    200: AdminDashboardOut;
+};
+
+export type AdminDashboardResponse = AdminDashboardResponses[keyof AdminDashboardResponses];
+
+export type AnalyticsData = {
+    body?: never;
+    path?: never;
+    query?: {
+        /**
+         * Bucket
+         */
+        bucket?: string;
+        /**
+         * Date From
+         *
+         * Submitted on or after (UTC)
+         */
+        date_from?: string | null;
+        /**
+         * Date To
+         *
+         * Submitted on or before (UTC)
+         */
+        date_to?: string | null;
+        /**
+         * Category
+         */
+        category?: string | null;
+        /**
+         * Department
+         */
+        department?: string | null;
+        /**
+         * Priority
+         */
+        priority?: string | null;
+        /**
+         * Sentiment
+         */
+        sentiment?: string | null;
+        /**
+         * Channel
+         */
+        channel?: string | null;
+        /**
+         * Source
+         *
+         * portal, dataset or evaluation
+         */
+        source?: string | null;
+    };
+    url: '/api/v1/analytics';
+};
+
+export type AnalyticsErrors = {
+    /**
+     * Validation Error
+     */
+    422: HttpValidationError;
+};
+
+export type AnalyticsError = AnalyticsErrors[keyof AnalyticsErrors];
+
+export type AnalyticsResponses = {
+    /**
+     * Successful Response
+     */
+    200: AnalyticsOut;
+};
+
+export type AnalyticsResponse = AnalyticsResponses[keyof AnalyticsResponses];
+
+export type AgentDashboardData = {
+    body?: never;
+    path?: never;
+    query?: {
+        /**
+         * Department
+         *
+         * Defaults to the agent's own department
+         */
+        department?: string | null;
+    };
+    url: '/api/v1/dashboard/agent';
+};
+
+export type AgentDashboardErrors = {
+    /**
+     * Validation Error
+     */
+    422: HttpValidationError;
+};
+
+export type AgentDashboardError = AgentDashboardErrors[keyof AgentDashboardErrors];
+
+export type AgentDashboardResponses = {
+    /**
+     * Successful Response
+     */
+    200: AgentDashboardOut;
+};
+
+export type AgentDashboardResponse = AgentDashboardResponses[keyof AgentDashboardResponses];
+
+export type ListReportsData = {
+    body?: never;
+    path?: never;
+    query?: never;
+    url: '/api/v1/reports';
+};
+
+export type ListReportsResponses = {
+    /**
+     * Response List Reports
+     *
+     * Successful Response
+     */
+    200: Array<ReportSpecOut>;
+};
+
+export type ListReportsResponse = ListReportsResponses[keyof ListReportsResponses];
+
+export type PreviewReportData = {
+    body?: never;
+    path: {
+        /**
+         * Code
+         */
+        code: string;
+    };
+    query?: {
+        /**
+         * Date From
+         *
+         * Submitted on or after (UTC)
+         */
+        date_from?: string | null;
+        /**
+         * Date To
+         *
+         * Submitted on or before (UTC)
+         */
+        date_to?: string | null;
+        /**
+         * Category
+         */
+        category?: string | null;
+        /**
+         * Department
+         */
+        department?: string | null;
+        /**
+         * Priority
+         */
+        priority?: string | null;
+        /**
+         * Sentiment
+         */
+        sentiment?: string | null;
+        /**
+         * Channel
+         */
+        channel?: string | null;
+        /**
+         * Source
+         *
+         * portal, dataset or evaluation
+         */
+        source?: string | null;
+    };
+    url: '/api/v1/reports/{code}';
+};
+
+export type PreviewReportErrors = {
+    /**
+     * Validation Error
+     */
+    422: HttpValidationError;
+};
+
+export type PreviewReportError = PreviewReportErrors[keyof PreviewReportErrors];
+
+export type PreviewReportResponses = {
+    /**
+     * Successful Response
+     */
+    200: ReportOut;
+};
+
+export type PreviewReportResponse = PreviewReportResponses[keyof PreviewReportResponses];
+
+export type ExportReportData = {
+    body?: never;
+    path: {
+        /**
+         * Code
+         */
+        code: string;
+    };
+    query?: {
+        /**
+         * Format
+         */
+        format?: string;
+        /**
+         * Date From
+         *
+         * Submitted on or after (UTC)
+         */
+        date_from?: string | null;
+        /**
+         * Date To
+         *
+         * Submitted on or before (UTC)
+         */
+        date_to?: string | null;
+        /**
+         * Category
+         */
+        category?: string | null;
+        /**
+         * Department
+         */
+        department?: string | null;
+        /**
+         * Priority
+         */
+        priority?: string | null;
+        /**
+         * Sentiment
+         */
+        sentiment?: string | null;
+        /**
+         * Channel
+         */
+        channel?: string | null;
+        /**
+         * Source
+         *
+         * portal, dataset or evaluation
+         */
+        source?: string | null;
+    };
+    url: '/api/v1/reports/{code}/export';
+};
+
+export type ExportReportErrors = {
+    /**
+     * Validation Error
+     */
+    422: HttpValidationError;
+};
+
+export type ExportReportError = ExportReportErrors[keyof ExportReportErrors];
+
+export type ExportReportResponses = {
+    /**
+     * Successful Response
+     */
+    200: unknown;
+};
 
 export type ListRulesData = {
     body?: never;

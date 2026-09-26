@@ -2,7 +2,7 @@
 
 import { type Client, type ClientMeta, formDataBodySerializer, type Options as Options2, type RequestResult, type TDataShape } from './client';
 import { client } from './client.gen';
-import type { ActivateVersionData, ActivateVersionErrors, ActivateVersionResponses, CreateCategoryData, CreateCategoryErrors, CreateCategoryResponses, CreateComplaintData, CreateComplaintErrors, CreateComplaintResponses, CreateDepartmentData, CreateDepartmentErrors, CreateDepartmentResponses, CreateRuleData, CreateRuleErrors, CreateRuleResponses, CreateSubcategoryData, CreateSubcategoryErrors, CreateSubcategoryResponses, ExportRulesData, ExportRulesResponses, GetComplaintAnalysisData, GetComplaintAnalysisErrors, GetComplaintAnalysisResponses, GetComplaintData, GetComplaintErrors, GetComplaintResponses, GetDocumentData, GetDocumentErrors, GetDocumentResponses, GetValidationData, GetValidationErrors, GetValidationResponses, ListCategoriesData, ListCategoriesResponses, ListComplaintsData, ListComplaintsErrors, ListComplaintsResponses, ListDecisionsData, ListDecisionsErrors, ListDecisionsResponses, ListDepartmentsData, ListDepartmentsResponses, ListDocumentsData, ListDocumentsResponses, ListDocumentTypesData, ListDocumentTypesResponses, ListFactsData, ListFactsResponses, ListRulesData, ListRulesResponses, ListSlaPoliciesData, ListSlaPoliciesResponses, ListUsersData, ListUsersResponses, ListVersionChunksData, ListVersionChunksErrors, ListVersionChunksResponses, LivenessData, LivenessResponses, MyOrdersData, MyOrdersResponses, ReadinessData, ReadinessResponses, ReadMeData, ReadMeResponses, ReanalyzeComplaintData, ReanalyzeComplaintErrors, ReanalyzeComplaintResponses, ReplaceRuleData, ReplaceRuleErrors, ReplaceRuleResponses, ReprocessVersionData, ReprocessVersionErrors, ReprocessVersionResponses, RetireVersionData, RetireVersionErrors, RetireVersionResponses, RevalidateData, RevalidateErrors, RevalidateResponses, ReviewComplaintData, ReviewComplaintErrors, ReviewComplaintResponses, ReviewQueueData, ReviewQueueErrors, ReviewQueueResponses, SearchKnowledgeBaseData, SearchKnowledgeBaseErrors, SearchKnowledgeBaseResponses, UpdateCategoryData, UpdateCategoryErrors, UpdateCategoryResponses, UpdateDepartmentData, UpdateDepartmentErrors, UpdateDepartmentResponses, UpdateSlaPolicyData, UpdateSlaPolicyErrors, UpdateSlaPolicyResponses, UpdateStatusData, UpdateStatusErrors, UpdateStatusResponses, UpdateUserData, UpdateUserErrors, UpdateUserResponses, UploadDocumentData, UploadDocumentErrors, UploadDocumentResponses } from './types.gen';
+import type { ActivateVersionData, ActivateVersionErrors, ActivateVersionResponses, AdminDashboardData, AdminDashboardErrors, AdminDashboardResponses, AgentDashboardData, AgentDashboardErrors, AgentDashboardResponses, AnalyticsData, AnalyticsErrors, AnalyticsResponses, CreateCategoryData, CreateCategoryErrors, CreateCategoryResponses, CreateComplaintData, CreateComplaintErrors, CreateComplaintResponses, CreateDepartmentData, CreateDepartmentErrors, CreateDepartmentResponses, CreateRuleData, CreateRuleErrors, CreateRuleResponses, CreateSubcategoryData, CreateSubcategoryErrors, CreateSubcategoryResponses, ExportReportData, ExportReportErrors, ExportReportResponses, ExportRulesData, ExportRulesResponses, GetComplaintAnalysisData, GetComplaintAnalysisErrors, GetComplaintAnalysisResponses, GetComplaintData, GetComplaintErrors, GetComplaintResponses, GetDocumentData, GetDocumentErrors, GetDocumentResponses, GetValidationData, GetValidationErrors, GetValidationResponses, GetVocabularyData, GetVocabularyResponses, ListCategoriesData, ListCategoriesResponses, ListComplaintsData, ListComplaintsErrors, ListComplaintsResponses, ListDecisionsData, ListDecisionsErrors, ListDecisionsResponses, ListDepartmentsData, ListDepartmentsResponses, ListDocumentsData, ListDocumentsResponses, ListDocumentTypesData, ListDocumentTypesResponses, ListFactsData, ListFactsResponses, ListReportsData, ListReportsResponses, ListRulesData, ListRulesResponses, ListSlaPoliciesData, ListSlaPoliciesResponses, ListUsersData, ListUsersResponses, ListVersionChunksData, ListVersionChunksErrors, ListVersionChunksResponses, LivenessData, LivenessResponses, MyOrdersData, MyOrdersResponses, PreviewReportData, PreviewReportErrors, PreviewReportResponses, ReadinessData, ReadinessResponses, ReadMeData, ReadMeResponses, ReanalyzeComplaintData, ReanalyzeComplaintErrors, ReanalyzeComplaintResponses, ReplaceRuleData, ReplaceRuleErrors, ReplaceRuleResponses, ReprocessVersionData, ReprocessVersionErrors, ReprocessVersionResponses, RetireVersionData, RetireVersionErrors, RetireVersionResponses, RevalidateData, RevalidateErrors, RevalidateResponses, ReviewComplaintData, ReviewComplaintErrors, ReviewComplaintResponses, ReviewQueueData, ReviewQueueErrors, ReviewQueueResponses, SearchKnowledgeBaseData, SearchKnowledgeBaseErrors, SearchKnowledgeBaseResponses, UpdateCategoryData, UpdateCategoryErrors, UpdateCategoryResponses, UpdateDepartmentData, UpdateDepartmentErrors, UpdateDepartmentResponses, UpdateSlaPolicyData, UpdateSlaPolicyErrors, UpdateSlaPolicyResponses, UpdateStatusData, UpdateStatusErrors, UpdateStatusResponses, UpdateUserData, UpdateUserErrors, UpdateUserResponses, UploadDocumentData, UploadDocumentErrors, UploadDocumentResponses } from './types.gen';
 
 export type Options<TData extends TDataShape = TDataShape, ThrowOnError extends boolean = boolean, TResponse = unknown> = Options2<TData, ThrowOnError, TResponse> & {
     /**
@@ -166,6 +166,18 @@ export const updateSlaPolicy = <ThrowOnError extends boolean = false>(options: O
         'Content-Type': 'application/json',
         ...options.headers
     }
+});
+
+/**
+ * Get Vocabulary
+ *
+ * Controlled values from `config/analysis.yaml` and `config/actions.yaml`, for filters
+ * and the rule editor (so the UI never hard-codes them).
+ */
+export const getVocabulary = <ThrowOnError extends boolean = false>(options?: Options<GetVocabularyData, ThrowOnError>): RequestResult<GetVocabularyResponses, unknown, ThrowOnError> => (options?.client ?? client).get<GetVocabularyResponses, unknown, ThrowOnError>({
+    security: [{ scheme: 'bearer', type: 'http' }],
+    url: '/api/v1/taxonomy/vocabulary',
+    ...options
 });
 
 /**
@@ -374,6 +386,62 @@ export const updateStatus = <ThrowOnError extends boolean = false>(options: Opti
         'Content-Type': 'application/json',
         ...options.headers
     }
+});
+
+/**
+ * Admin Dashboard
+ */
+export const adminDashboard = <ThrowOnError extends boolean = false>(options?: Options<AdminDashboardData, ThrowOnError>): RequestResult<AdminDashboardResponses, AdminDashboardErrors, ThrowOnError> => (options?.client ?? client).get<AdminDashboardResponses, AdminDashboardErrors, ThrowOnError>({
+    security: [{ scheme: 'bearer', type: 'http' }],
+    url: '/api/v1/dashboard/admin',
+    ...options
+});
+
+/**
+ * Analytics
+ */
+export const analytics = <ThrowOnError extends boolean = false>(options?: Options<AnalyticsData, ThrowOnError>): RequestResult<AnalyticsResponses, AnalyticsErrors, ThrowOnError> => (options?.client ?? client).get<AnalyticsResponses, AnalyticsErrors, ThrowOnError>({
+    security: [{ scheme: 'bearer', type: 'http' }],
+    url: '/api/v1/analytics',
+    ...options
+});
+
+/**
+ * Agent Dashboard
+ */
+export const agentDashboard = <ThrowOnError extends boolean = false>(options?: Options<AgentDashboardData, ThrowOnError>): RequestResult<AgentDashboardResponses, AgentDashboardErrors, ThrowOnError> => (options?.client ?? client).get<AgentDashboardResponses, AgentDashboardErrors, ThrowOnError>({
+    security: [{ scheme: 'bearer', type: 'http' }],
+    url: '/api/v1/dashboard/agent',
+    ...options
+});
+
+/**
+ * List Reports
+ */
+export const listReports = <ThrowOnError extends boolean = false>(options?: Options<ListReportsData, ThrowOnError>): RequestResult<ListReportsResponses, unknown, ThrowOnError> => (options?.client ?? client).get<ListReportsResponses, unknown, ThrowOnError>({
+    security: [{ scheme: 'bearer', type: 'http' }],
+    url: '/api/v1/reports',
+    ...options
+});
+
+/**
+ * Preview Report
+ *
+ * The report as JSON; each table is cut to its first 100 rows (exports have them all).
+ */
+export const previewReport = <ThrowOnError extends boolean = false>(options: Options<PreviewReportData, ThrowOnError>): RequestResult<PreviewReportResponses, PreviewReportErrors, ThrowOnError> => (options.client ?? client).get<PreviewReportResponses, PreviewReportErrors, ThrowOnError>({
+    security: [{ scheme: 'bearer', type: 'http' }],
+    url: '/api/v1/reports/{code}',
+    ...options
+});
+
+/**
+ * Export Report
+ */
+export const exportReport = <ThrowOnError extends boolean = false>(options: Options<ExportReportData, ThrowOnError>): RequestResult<ExportReportResponses, ExportReportErrors, ThrowOnError> => (options.client ?? client).get<ExportReportResponses, ExportReportErrors, ThrowOnError>({
+    security: [{ scheme: 'bearer', type: 'http' }],
+    url: '/api/v1/reports/{code}/export',
+    ...options
 });
 
 /**

@@ -1,0 +1,537 @@
+dataset_id,scenario,category,subcategory,department,urgency,priority,escalation_level,sentiment,needs_clarification,prompt_injection,expected_intake,tags
+DS-0001,late_small,DELIVERY,DELAYED_DELIVERY,LOGISTICS,Medium,P2,0,Negative,False,False,accepted,calm
+DS-0002,late_small,DELIVERY,DELAYED_DELIVERY,LOGISTICS,Medium,P2,0,Negative,False,False,accepted,frustrated
+DS-0003,late_small,DELIVERY,DELAYED_DELIVERY,LOGISTICS,Medium,P2,0,Strongly Negative,False,False,accepted,angry
+DS-0004,late_small,DELIVERY,DELAYED_DELIVERY,LOGISTICS,Medium,P2,0,Negative,False,False,accepted,calm
+DS-0005,late_small,DELIVERY,DELAYED_DELIVERY,LOGISTICS,Medium,P2,0,Negative,False,False,accepted,frustrated
+DS-0006,late_small,DELIVERY,DELAYED_DELIVERY,LOGISTICS,Medium,P2,0,Strongly Negative,False,False,accepted,angry
+DS-0007,late_small,DELIVERY,DELAYED_DELIVERY,LOGISTICS,Medium,P2,0,Negative,False,False,accepted,calm
+DS-0008,late_small,DELIVERY,DELAYED_DELIVERY,LOGISTICS,Medium,P2,0,Negative,False,False,accepted,frustrated
+DS-0009,late_small,DELIVERY,DELAYED_DELIVERY,LOGISTICS,Medium,P2,0,Strongly Negative,False,False,accepted,angry
+DS-0010,late_standard,DELIVERY,DELAYED_DELIVERY,LOGISTICS,Medium,P2,0,Negative,False,False,accepted,calm
+DS-0011,late_standard,DELIVERY,DELAYED_DELIVERY,LOGISTICS,Medium,P2,0,Negative,False,False,accepted,frustrated
+DS-0012,late_standard,DELIVERY,DELAYED_DELIVERY,LOGISTICS,Medium,P2,0,Strongly Negative,False,False,accepted,angry
+DS-0013,late_standard,DELIVERY,DELAYED_DELIVERY,LOGISTICS,Medium,P2,0,Negative,False,False,accepted,calm
+DS-0014,late_standard,DELIVERY,DELAYED_DELIVERY,LOGISTICS,Medium,P2,0,Negative,False,False,accepted,frustrated
+DS-0015,late_standard,DELIVERY,DELAYED_DELIVERY,LOGISTICS,Medium,P2,0,Strongly Negative,False,False,accepted,angry
+DS-0016,late_standard,DELIVERY,DELAYED_DELIVERY,LOGISTICS,Medium,P2,0,Negative,False,False,accepted,calm
+DS-0017,late_standard,DELIVERY,DELAYED_DELIVERY,LOGISTICS,Medium,P2,0,Negative,False,False,accepted,frustrated
+DS-0018,late_standard,DELIVERY,DELAYED_DELIVERY,LOGISTICS,Medium,P2,0,Strongly Negative,False,False,accepted,angry
+DS-0019,late_standard,DELIVERY,DELAYED_DELIVERY,LOGISTICS,Medium,P2,0,Negative,False,False,accepted,calm
+DS-0020,late_standard,DELIVERY,DELAYED_DELIVERY,LOGISTICS,Medium,P2,0,Negative,False,False,accepted,frustrated
+DS-0021,late_express,DELIVERY,DELAYED_DELIVERY,LOGISTICS,Medium,P2,0,Negative,False,False,accepted,calm
+DS-0022,late_express,DELIVERY,DELAYED_DELIVERY,LOGISTICS,Medium,P2,0,Negative,False,False,accepted,frustrated
+DS-0023,late_express,DELIVERY,DELAYED_DELIVERY,LOGISTICS,Medium,P2,0,Strongly Negative,False,False,accepted,angry
+DS-0024,late_express,DELIVERY,DELAYED_DELIVERY,LOGISTICS,Medium,P2,0,Negative,False,False,accepted,calm
+DS-0025,late_express,DELIVERY,DELAYED_DELIVERY,LOGISTICS,Medium,P2,0,Negative,False,False,accepted,frustrated
+DS-0026,late_express,DELIVERY,DELAYED_DELIVERY,LOGISTICS,Medium,P2,0,Strongly Negative,False,False,accepted,angry
+DS-0027,late_express,DELIVERY,DELAYED_DELIVERY,LOGISTICS,Medium,P2,0,Negative,False,False,accepted,calm
+DS-0028,late_express,DELIVERY,DELAYED_DELIVERY,LOGISTICS,Medium,P2,0,Negative,False,False,accepted,frustrated
+DS-0029,late_express,DELIVERY,DELAYED_DELIVERY,LOGISTICS,Medium,P2,0,Strongly Negative,False,False,accepted,angry
+DS-0030,not_arrived,DELIVERY,DELAYED_DELIVERY,LOGISTICS,High,P1,0,Negative,False,False,accepted,calm
+DS-0031,not_arrived,DELIVERY,DELAYED_DELIVERY,LOGISTICS,High,P1,0,Negative,False,False,accepted,frustrated
+DS-0032,not_arrived,DELIVERY,DELAYED_DELIVERY,LOGISTICS,High,P1,0,Strongly Negative,False,False,accepted,angry
+DS-0033,not_arrived,DELIVERY,DELAYED_DELIVERY,LOGISTICS,High,P1,0,Negative,False,False,accepted,calm
+DS-0034,not_arrived,DELIVERY,DELAYED_DELIVERY,LOGISTICS,High,P1,0,Negative,False,False,accepted,frustrated
+DS-0035,not_arrived,DELIVERY,DELAYED_DELIVERY,LOGISTICS,High,P1,0,Strongly Negative,False,False,accepted,angry
+DS-0036,not_arrived,DELIVERY,DELAYED_DELIVERY,LOGISTICS,High,P1,0,Negative,False,False,accepted,calm
+DS-0037,not_arrived,DELIVERY,DELAYED_DELIVERY,LOGISTICS,High,P1,0,Negative,False,False,accepted,frustrated
+DS-0038,lost_parcel_high,DELIVERY,LOST_PARCEL,LOGISTICS,High,P1,1,Negative,False,False,accepted,calm;high_value
+DS-0039,lost_parcel_high,DELIVERY,LOST_PARCEL,LOGISTICS,High,P1,1,Negative,False,False,accepted,frustrated;high_value
+DS-0040,lost_parcel_high,DELIVERY,LOST_PARCEL,LOGISTICS,High,P1,1,Strongly Negative,False,False,accepted,angry;high_value
+DS-0041,lost_parcel_high,DELIVERY,LOST_PARCEL,LOGISTICS,High,P1,1,Negative,False,False,accepted,calm;high_value
+DS-0042,lost_parcel,DELIVERY,LOST_PARCEL,LOGISTICS,High,P1,0,Negative,False,False,accepted,calm
+DS-0043,lost_parcel,DELIVERY,LOST_PARCEL,LOGISTICS,High,P1,0,Negative,False,False,accepted,frustrated
+DS-0044,lost_parcel,DELIVERY,LOST_PARCEL,LOGISTICS,High,P1,0,Strongly Negative,False,False,accepted,angry
+DS-0045,lost_parcel,DELIVERY,LOST_PARCEL,LOGISTICS,High,P1,0,Negative,False,False,accepted,calm
+DS-0046,lost_parcel,DELIVERY,LOST_PARCEL,LOGISTICS,High,P1,0,Negative,False,False,accepted,frustrated
+DS-0047,lost_parcel,DELIVERY,LOST_PARCEL,LOGISTICS,High,P1,0,Strongly Negative,False,False,accepted,angry
+DS-0048,lost_parcel,DELIVERY,LOST_PARCEL,LOGISTICS,High,P1,0,Negative,False,False,accepted,calm
+DS-0049,lost_parcel,DELIVERY,LOST_PARCEL,LOGISTICS,High,P1,0,Negative,False,False,accepted,frustrated
+DS-0050,lost_parcel,DELIVERY,LOST_PARCEL,LOGISTICS,High,P1,0,Strongly Negative,False,False,accepted,angry
+DS-0051,wrong_address,DELIVERY,WRONG_ADDRESS_DELIVERY,LOGISTICS,Medium,P2,0,Negative,False,False,accepted,calm
+DS-0052,wrong_address,DELIVERY,WRONG_ADDRESS_DELIVERY,LOGISTICS,Medium,P2,0,Negative,False,False,accepted,frustrated
+DS-0053,wrong_address,DELIVERY,WRONG_ADDRESS_DELIVERY,LOGISTICS,Medium,P2,0,Strongly Negative,False,False,accepted,angry
+DS-0054,wrong_address,DELIVERY,WRONG_ADDRESS_DELIVERY,LOGISTICS,Medium,P2,0,Negative,False,False,accepted,calm
+DS-0055,wrong_address,DELIVERY,WRONG_ADDRESS_DELIVERY,LOGISTICS,Medium,P2,0,Negative,False,False,accepted,frustrated
+DS-0056,wrong_address,DELIVERY,WRONG_ADDRESS_DELIVERY,LOGISTICS,Medium,P2,0,Strongly Negative,False,False,accepted,angry
+DS-0057,wrong_address,DELIVERY,WRONG_ADDRESS_DELIVERY,LOGISTICS,Medium,P2,0,Negative,False,False,accepted,calm
+DS-0058,damaged_transit,DELIVERY,DAMAGED_IN_TRANSIT,LOGISTICS,Medium,P2,0,Negative,False,False,accepted,calm
+DS-0059,damaged_transit,DELIVERY,DAMAGED_IN_TRANSIT,LOGISTICS,Medium,P2,0,Negative,False,False,accepted,frustrated
+DS-0060,damaged_transit,DELIVERY,DAMAGED_IN_TRANSIT,LOGISTICS,Medium,P2,0,Strongly Negative,False,False,accepted,angry
+DS-0061,damaged_transit,DELIVERY,DAMAGED_IN_TRANSIT,LOGISTICS,Medium,P2,0,Negative,False,False,accepted,calm
+DS-0062,damaged_transit,DELIVERY,DAMAGED_IN_TRANSIT,LOGISTICS,Medium,P2,0,Negative,False,False,accepted,frustrated
+DS-0063,damaged_transit,DELIVERY,DAMAGED_IN_TRANSIT,LOGISTICS,Medium,P2,0,Strongly Negative,False,False,accepted,angry
+DS-0064,damaged_transit,DELIVERY,DAMAGED_IN_TRANSIT,LOGISTICS,Medium,P2,0,Negative,False,False,accepted,calm
+DS-0065,damaged_transit,DELIVERY,DAMAGED_IN_TRANSIT,LOGISTICS,Medium,P2,0,Negative,False,False,accepted,frustrated
+DS-0066,damaged_transit,DELIVERY,DAMAGED_IN_TRANSIT,LOGISTICS,Medium,P2,0,Strongly Negative,False,False,accepted,angry
+DS-0067,doa,PRODUCT_DEFECT,DEAD_ON_ARRIVAL,RETURNS,Medium,P2,0,Negative,False,False,accepted,calm
+DS-0068,doa,PRODUCT_DEFECT,DEAD_ON_ARRIVAL,RETURNS,Medium,P2,0,Negative,False,False,accepted,frustrated
+DS-0069,doa,PRODUCT_DEFECT,DEAD_ON_ARRIVAL,RETURNS,Medium,P2,0,Strongly Negative,False,False,accepted,angry
+DS-0070,doa,PRODUCT_DEFECT,DEAD_ON_ARRIVAL,RETURNS,Medium,P2,0,Negative,False,False,accepted,calm
+DS-0071,doa,PRODUCT_DEFECT,DEAD_ON_ARRIVAL,RETURNS,Medium,P2,0,Negative,False,False,accepted,frustrated
+DS-0072,doa,PRODUCT_DEFECT,DEAD_ON_ARRIVAL,RETURNS,Medium,P2,0,Strongly Negative,False,False,accepted,angry
+DS-0073,doa,PRODUCT_DEFECT,DEAD_ON_ARRIVAL,RETURNS,Medium,P2,0,Negative,False,False,accepted,calm
+DS-0074,doa,PRODUCT_DEFECT,DEAD_ON_ARRIVAL,RETURNS,Medium,P2,0,Negative,False,False,accepted,frustrated
+DS-0075,doa,PRODUCT_DEFECT,DEAD_ON_ARRIVAL,RETURNS,Medium,P2,0,Strongly Negative,False,False,accepted,angry
+DS-0076,fault_early,PRODUCT_DEFECT,MALFUNCTION_AFTER_USE,RETURNS,Medium,P2,0,Negative,False,False,accepted,calm
+DS-0077,fault_early,PRODUCT_DEFECT,MALFUNCTION_AFTER_USE,RETURNS,Medium,P2,0,Negative,False,False,accepted,frustrated
+DS-0078,fault_early,PRODUCT_DEFECT,MALFUNCTION_AFTER_USE,RETURNS,Medium,P2,0,Strongly Negative,False,False,accepted,angry
+DS-0079,fault_early,PRODUCT_DEFECT,MALFUNCTION_AFTER_USE,RETURNS,Medium,P2,0,Negative,False,False,accepted,calm
+DS-0080,fault_early,PRODUCT_DEFECT,MALFUNCTION_AFTER_USE,RETURNS,Medium,P2,0,Negative,False,False,accepted,frustrated
+DS-0081,fault_early,PRODUCT_DEFECT,MALFUNCTION_AFTER_USE,RETURNS,Medium,P2,0,Strongly Negative,False,False,accepted,angry
+DS-0082,fault_early,PRODUCT_DEFECT,MALFUNCTION_AFTER_USE,RETURNS,Medium,P2,0,Negative,False,False,accepted,calm
+DS-0083,fault_early,PRODUCT_DEFECT,MALFUNCTION_AFTER_USE,RETURNS,Medium,P2,0,Negative,False,False,accepted,frustrated
+DS-0084,fault_early,PRODUCT_DEFECT,MALFUNCTION_AFTER_USE,RETURNS,Medium,P2,0,Strongly Negative,False,False,accepted,angry
+DS-0085,fault_warranty,PRODUCT_DEFECT,MALFUNCTION_AFTER_USE,WARRANTY,Medium,P2,0,Negative,False,False,accepted,calm
+DS-0086,fault_warranty,PRODUCT_DEFECT,MALFUNCTION_AFTER_USE,WARRANTY,Medium,P2,0,Negative,False,False,accepted,frustrated
+DS-0087,fault_warranty,PRODUCT_DEFECT,MALFUNCTION_AFTER_USE,WARRANTY,Medium,P2,0,Strongly Negative,False,False,accepted,angry
+DS-0088,fault_warranty,PRODUCT_DEFECT,MALFUNCTION_AFTER_USE,WARRANTY,Medium,P2,0,Negative,False,False,accepted,calm
+DS-0089,fault_warranty,PRODUCT_DEFECT,MALFUNCTION_AFTER_USE,WARRANTY,Medium,P2,0,Negative,False,False,accepted,frustrated
+DS-0090,fault_warranty,PRODUCT_DEFECT,MALFUNCTION_AFTER_USE,WARRANTY,Medium,P2,0,Strongly Negative,False,False,accepted,angry
+DS-0091,fault_warranty,PRODUCT_DEFECT,MALFUNCTION_AFTER_USE,WARRANTY,Medium,P2,0,Negative,False,False,accepted,calm
+DS-0092,fault_warranty,PRODUCT_DEFECT,MALFUNCTION_AFTER_USE,WARRANTY,Medium,P2,0,Negative,False,False,accepted,frustrated
+DS-0093,fault_warranty,PRODUCT_DEFECT,MALFUNCTION_AFTER_USE,WARRANTY,Medium,P2,0,Strongly Negative,False,False,accepted,angry
+DS-0094,fault_out_of_warranty,PRODUCT_DEFECT,MALFUNCTION_AFTER_USE,WARRANTY,Low,P3,0,Negative,False,False,accepted,calm
+DS-0095,fault_out_of_warranty,PRODUCT_DEFECT,MALFUNCTION_AFTER_USE,WARRANTY,Low,P3,0,Negative,False,False,accepted,frustrated
+DS-0096,fault_out_of_warranty,PRODUCT_DEFECT,MALFUNCTION_AFTER_USE,WARRANTY,Low,P3,0,Strongly Negative,False,False,accepted,angry
+DS-0097,fault_out_of_warranty,PRODUCT_DEFECT,MALFUNCTION_AFTER_USE,WARRANTY,Low,P3,0,Negative,False,False,accepted,calm
+DS-0098,fault_out_of_warranty,PRODUCT_DEFECT,MALFUNCTION_AFTER_USE,WARRANTY,Low,P3,0,Negative,False,False,accepted,frustrated
+DS-0099,fault_out_of_warranty,PRODUCT_DEFECT,MALFUNCTION_AFTER_USE,WARRANTY,Low,P3,0,Strongly Negative,False,False,accepted,angry
+DS-0100,fault_out_of_warranty,PRODUCT_DEFECT,MALFUNCTION_AFTER_USE,WARRANTY,Low,P3,0,Negative,False,False,accepted,calm
+DS-0101,missing_parts,PRODUCT_DEFECT,MISSING_PARTS,RETURNS,Medium,P2,0,Negative,False,False,accepted,calm
+DS-0102,missing_parts,PRODUCT_DEFECT,MISSING_PARTS,RETURNS,Medium,P2,0,Negative,False,False,accepted,frustrated
+DS-0103,missing_parts,PRODUCT_DEFECT,MISSING_PARTS,RETURNS,Medium,P2,0,Strongly Negative,False,False,accepted,angry
+DS-0104,missing_parts,PRODUCT_DEFECT,MISSING_PARTS,RETURNS,Medium,P2,0,Negative,False,False,accepted,calm
+DS-0105,missing_parts,PRODUCT_DEFECT,MISSING_PARTS,RETURNS,Medium,P2,0,Negative,False,False,accepted,frustrated
+DS-0106,missing_parts,PRODUCT_DEFECT,MISSING_PARTS,RETURNS,Medium,P2,0,Strongly Negative,False,False,accepted,angry
+DS-0107,missing_parts,PRODUCT_DEFECT,MISSING_PARTS,RETURNS,Medium,P2,0,Negative,False,False,accepted,calm
+DS-0108,missing_parts,PRODUCT_DEFECT,MISSING_PARTS,RETURNS,Medium,P2,0,Negative,False,False,accepted,frustrated
+DS-0109,missing_parts,PRODUCT_DEFECT,MISSING_PARTS,RETURNS,Medium,P2,0,Strongly Negative,False,False,accepted,angry
+DS-0110,wrong_item,PRODUCT_DEFECT,WRONG_ITEM,RETURNS,Medium,P2,0,Negative,False,False,accepted,calm
+DS-0111,wrong_item,PRODUCT_DEFECT,WRONG_ITEM,RETURNS,Medium,P2,0,Negative,False,False,accepted,frustrated
+DS-0112,wrong_item,PRODUCT_DEFECT,WRONG_ITEM,RETURNS,Medium,P2,0,Strongly Negative,False,False,accepted,angry
+DS-0113,wrong_item,PRODUCT_DEFECT,WRONG_ITEM,RETURNS,Medium,P2,0,Negative,False,False,accepted,calm
+DS-0114,wrong_item,PRODUCT_DEFECT,WRONG_ITEM,RETURNS,Medium,P2,0,Negative,False,False,accepted,frustrated
+DS-0115,wrong_item,PRODUCT_DEFECT,WRONG_ITEM,RETURNS,Medium,P2,0,Strongly Negative,False,False,accepted,angry
+DS-0116,wrong_item,PRODUCT_DEFECT,WRONG_ITEM,RETURNS,Medium,P2,0,Negative,False,False,accepted,calm
+DS-0117,wrong_item,PRODUCT_DEFECT,WRONG_ITEM,RETURNS,Medium,P2,0,Negative,False,False,accepted,frustrated
+DS-0118,wrong_item,PRODUCT_DEFECT,WRONG_ITEM,RETURNS,Medium,P2,0,Strongly Negative,False,False,accepted,angry
+DS-0119,duplicate_charge_high,BILLING,DUPLICATE_CHARGE,BILLING,High,P1,1,Negative,False,False,accepted,calm;high_value
+DS-0120,duplicate_charge_high,BILLING,DUPLICATE_CHARGE,BILLING,High,P1,1,Negative,False,False,accepted,frustrated;high_value
+DS-0121,duplicate_charge_high,BILLING,DUPLICATE_CHARGE,BILLING,High,P1,1,Strongly Negative,False,False,accepted,angry;high_value
+DS-0122,duplicate_charge_high,BILLING,DUPLICATE_CHARGE,BILLING,High,P1,1,Negative,False,False,accepted,calm;high_value
+DS-0123,duplicate_charge,BILLING,DUPLICATE_CHARGE,BILLING,Medium,P2,0,Negative,False,False,accepted,calm
+DS-0124,duplicate_charge,BILLING,DUPLICATE_CHARGE,BILLING,Medium,P2,0,Negative,False,False,accepted,frustrated
+DS-0125,duplicate_charge,BILLING,DUPLICATE_CHARGE,BILLING,Medium,P2,0,Strongly Negative,False,False,accepted,angry
+DS-0126,duplicate_charge,BILLING,DUPLICATE_CHARGE,BILLING,Medium,P2,0,Negative,False,False,accepted,calm
+DS-0127,duplicate_charge,BILLING,DUPLICATE_CHARGE,BILLING,Medium,P2,0,Negative,False,False,accepted,frustrated
+DS-0128,duplicate_charge,BILLING,DUPLICATE_CHARGE,BILLING,Medium,P2,0,Strongly Negative,False,False,accepted,angry
+DS-0129,duplicate_charge,BILLING,DUPLICATE_CHARGE,BILLING,Medium,P2,0,Negative,False,False,accepted,calm
+DS-0130,duplicate_charge,BILLING,DUPLICATE_CHARGE,BILLING,Medium,P2,0,Negative,False,False,accepted,frustrated
+DS-0131,duplicate_charge,BILLING,DUPLICATE_CHARGE,BILLING,Medium,P2,0,Strongly Negative,False,False,accepted,angry
+DS-0132,incorrect_charge,BILLING,INCORRECT_CHARGE,BILLING,Medium,P2,0,Negative,False,False,accepted,calm
+DS-0133,incorrect_charge,BILLING,INCORRECT_CHARGE,BILLING,Medium,P2,0,Negative,False,False,accepted,frustrated
+DS-0134,incorrect_charge,BILLING,INCORRECT_CHARGE,BILLING,Medium,P2,0,Strongly Negative,False,False,accepted,angry
+DS-0135,incorrect_charge,BILLING,INCORRECT_CHARGE,BILLING,Medium,P2,0,Negative,False,False,accepted,calm
+DS-0136,incorrect_charge,BILLING,INCORRECT_CHARGE,BILLING,Medium,P2,0,Negative,False,False,accepted,frustrated
+DS-0137,incorrect_charge,BILLING,INCORRECT_CHARGE,BILLING,Medium,P2,0,Strongly Negative,False,False,accepted,angry
+DS-0138,incorrect_charge,BILLING,INCORRECT_CHARGE,BILLING,Medium,P2,0,Negative,False,False,accepted,calm
+DS-0139,incorrect_charge,BILLING,INCORRECT_CHARGE,BILLING,Medium,P2,0,Negative,False,False,accepted,frustrated
+DS-0140,incorrect_charge,BILLING,INCORRECT_CHARGE,BILLING,Medium,P2,0,Strongly Negative,False,False,accepted,angry
+DS-0141,renewal,BILLING,SUBSCRIPTION_RENEWAL,BILLING,Medium,P2,0,Negative,False,False,accepted,calm
+DS-0142,renewal,BILLING,SUBSCRIPTION_RENEWAL,BILLING,Medium,P2,0,Negative,False,False,accepted,frustrated
+DS-0143,renewal,BILLING,SUBSCRIPTION_RENEWAL,BILLING,Medium,P2,0,Strongly Negative,False,False,accepted,angry
+DS-0144,renewal,BILLING,SUBSCRIPTION_RENEWAL,BILLING,Medium,P2,0,Negative,False,False,accepted,calm
+DS-0145,renewal,BILLING,SUBSCRIPTION_RENEWAL,BILLING,Medium,P2,0,Negative,False,False,accepted,frustrated
+DS-0146,renewal,BILLING,SUBSCRIPTION_RENEWAL,BILLING,Medium,P2,0,Strongly Negative,False,False,accepted,angry
+DS-0147,renewal,BILLING,SUBSCRIPTION_RENEWAL,BILLING,Medium,P2,0,Negative,False,False,accepted,calm
+DS-0148,renewal,BILLING,SUBSCRIPTION_RENEWAL,BILLING,Medium,P2,0,Negative,False,False,accepted,frustrated
+DS-0149,promo_ok,BILLING,PROMO_NOT_APPLIED,BILLING,Low,P3,0,Negative,False,False,accepted,calm
+DS-0150,promo_ok,BILLING,PROMO_NOT_APPLIED,BILLING,Low,P3,0,Negative,False,False,accepted,frustrated
+DS-0151,promo_ok,BILLING,PROMO_NOT_APPLIED,BILLING,Low,P3,0,Strongly Negative,False,False,accepted,angry
+DS-0152,promo_ok,BILLING,PROMO_NOT_APPLIED,BILLING,Low,P3,0,Negative,False,False,accepted,calm
+DS-0153,promo_ok,BILLING,PROMO_NOT_APPLIED,BILLING,Low,P3,0,Negative,False,False,accepted,frustrated
+DS-0154,promo_ok,BILLING,PROMO_NOT_APPLIED,BILLING,Low,P3,0,Strongly Negative,False,False,accepted,angry
+DS-0155,promo_ok,BILLING,PROMO_NOT_APPLIED,BILLING,Low,P3,0,Negative,False,False,accepted,calm
+DS-0156,promo_ok,BILLING,PROMO_NOT_APPLIED,BILLING,Low,P3,0,Negative,False,False,accepted,frustrated
+DS-0157,promo_ok,BILLING,PROMO_NOT_APPLIED,BILLING,Low,P3,0,Strongly Negative,False,False,accepted,angry
+DS-0158,refund_delay,REFUND,REFUND_DELAY,RETURNS,Medium,P2,0,Negative,False,False,accepted,calm
+DS-0159,refund_delay,REFUND,REFUND_DELAY,RETURNS,Medium,P2,0,Negative,False,False,accepted,frustrated
+DS-0160,refund_delay,REFUND,REFUND_DELAY,RETURNS,Medium,P2,0,Strongly Negative,False,False,accepted,angry
+DS-0161,refund_delay,REFUND,REFUND_DELAY,RETURNS,Medium,P2,0,Negative,False,False,accepted,calm
+DS-0162,refund_delay,REFUND,REFUND_DELAY,RETURNS,Medium,P2,0,Negative,False,False,accepted,frustrated
+DS-0163,refund_delay,REFUND,REFUND_DELAY,RETURNS,Medium,P2,0,Strongly Negative,False,False,accepted,angry
+DS-0164,refund_delay,REFUND,REFUND_DELAY,RETURNS,Medium,P2,0,Negative,False,False,accepted,calm
+DS-0165,refund_delay,REFUND,REFUND_DELAY,RETURNS,Medium,P2,0,Negative,False,False,accepted,frustrated
+DS-0166,refund_delay,REFUND,REFUND_DELAY,RETURNS,Medium,P2,0,Strongly Negative,False,False,accepted,angry
+DS-0167,refund_delay,REFUND,REFUND_DELAY,RETURNS,Medium,P2,0,Negative,False,False,accepted,calm
+DS-0168,refund_denied,REFUND,REFUND_DENIED,RETURNS,Medium,P2,0,Negative,False,False,accepted,calm
+DS-0169,refund_denied,REFUND,REFUND_DENIED,RETURNS,Medium,P2,0,Negative,False,False,accepted,frustrated
+DS-0170,refund_denied,REFUND,REFUND_DENIED,RETURNS,Medium,P2,0,Strongly Negative,False,False,accepted,angry
+DS-0171,refund_denied,REFUND,REFUND_DENIED,RETURNS,Medium,P2,0,Negative,False,False,accepted,calm
+DS-0172,refund_denied,REFUND,REFUND_DENIED,RETURNS,Medium,P2,0,Negative,False,False,accepted,frustrated
+DS-0173,refund_denied,REFUND,REFUND_DENIED,RETURNS,Medium,P2,0,Strongly Negative,False,False,accepted,angry
+DS-0174,refund_denied,REFUND,REFUND_DENIED,RETURNS,Medium,P2,0,Negative,False,False,accepted,calm
+DS-0175,refund_denied,REFUND,REFUND_DENIED,RETURNS,Medium,P2,0,Negative,False,False,accepted,frustrated
+DS-0176,refund_denied,REFUND,REFUND_DENIED,RETURNS,Medium,P2,0,Strongly Negative,False,False,accepted,angry
+DS-0177,partial_refund,REFUND,PARTIAL_REFUND,RETURNS,Medium,P2,0,Negative,False,False,accepted,calm
+DS-0178,partial_refund,REFUND,PARTIAL_REFUND,RETURNS,Medium,P2,0,Negative,False,False,accepted,frustrated
+DS-0179,partial_refund,REFUND,PARTIAL_REFUND,RETURNS,Medium,P2,0,Strongly Negative,False,False,accepted,angry
+DS-0180,partial_refund,REFUND,PARTIAL_REFUND,RETURNS,Medium,P2,0,Negative,False,False,accepted,calm
+DS-0181,partial_refund,REFUND,PARTIAL_REFUND,RETURNS,Medium,P2,0,Negative,False,False,accepted,frustrated
+DS-0182,partial_refund,REFUND,PARTIAL_REFUND,RETURNS,Medium,P2,0,Strongly Negative,False,False,accepted,angry
+DS-0183,partial_refund,REFUND,PARTIAL_REFUND,RETURNS,Medium,P2,0,Negative,False,False,accepted,calm
+DS-0184,return_rejected,RETURNS_REPLACEMENT,RETURN_REJECTED,RETURNS,Medium,P2,0,Negative,False,False,accepted,calm
+DS-0185,return_rejected,RETURNS_REPLACEMENT,RETURN_REJECTED,RETURNS,Medium,P2,0,Negative,False,False,accepted,frustrated
+DS-0186,return_rejected,RETURNS_REPLACEMENT,RETURN_REJECTED,RETURNS,Medium,P2,0,Strongly Negative,False,False,accepted,angry
+DS-0187,return_rejected,RETURNS_REPLACEMENT,RETURN_REJECTED,RETURNS,Medium,P2,0,Negative,False,False,accepted,calm
+DS-0188,return_rejected,RETURNS_REPLACEMENT,RETURN_REJECTED,RETURNS,Medium,P2,0,Negative,False,False,accepted,frustrated
+DS-0189,return_rejected,RETURNS_REPLACEMENT,RETURN_REJECTED,RETURNS,Medium,P2,0,Strongly Negative,False,False,accepted,angry
+DS-0190,return_rejected,RETURNS_REPLACEMENT,RETURN_REJECTED,RETURNS,Medium,P2,0,Negative,False,False,accepted,calm
+DS-0191,replacement_delay,RETURNS_REPLACEMENT,REPLACEMENT_DELAY,RETURNS,Medium,P2,0,Negative,False,False,accepted,calm
+DS-0192,replacement_delay,RETURNS_REPLACEMENT,REPLACEMENT_DELAY,RETURNS,Medium,P2,0,Negative,False,False,accepted,frustrated
+DS-0193,replacement_delay,RETURNS_REPLACEMENT,REPLACEMENT_DELAY,RETURNS,Medium,P2,0,Strongly Negative,False,False,accepted,angry
+DS-0194,replacement_delay,RETURNS_REPLACEMENT,REPLACEMENT_DELAY,RETURNS,Medium,P2,0,Negative,False,False,accepted,calm
+DS-0195,replacement_delay,RETURNS_REPLACEMENT,REPLACEMENT_DELAY,RETURNS,Medium,P2,0,Negative,False,False,accepted,frustrated
+DS-0196,replacement_delay,RETURNS_REPLACEMENT,REPLACEMENT_DELAY,RETURNS,Medium,P2,0,Strongly Negative,False,False,accepted,angry
+DS-0197,replacement_delay,RETURNS_REPLACEMENT,REPLACEMENT_DELAY,RETURNS,Medium,P2,0,Negative,False,False,accepted,calm
+DS-0198,replacement_delay,RETURNS_REPLACEMENT,REPLACEMENT_DELAY,RETURNS,Medium,P2,0,Negative,False,False,accepted,frustrated
+DS-0199,replacement_delay,RETURNS_REPLACEMENT,REPLACEMENT_DELAY,RETURNS,Medium,P2,0,Strongly Negative,False,False,accepted,angry
+DS-0200,pickup_missed,RETURNS_REPLACEMENT,RETURN_PICKUP_MISSED,RETURNS,Medium,P2,0,Negative,False,False,accepted,calm
+DS-0201,pickup_missed,RETURNS_REPLACEMENT,RETURN_PICKUP_MISSED,RETURNS,Medium,P2,0,Negative,False,False,accepted,frustrated
+DS-0202,pickup_missed,RETURNS_REPLACEMENT,RETURN_PICKUP_MISSED,RETURNS,Medium,P2,0,Strongly Negative,False,False,accepted,angry
+DS-0203,pickup_missed,RETURNS_REPLACEMENT,RETURN_PICKUP_MISSED,RETURNS,Medium,P2,0,Negative,False,False,accepted,calm
+DS-0204,pickup_missed,RETURNS_REPLACEMENT,RETURN_PICKUP_MISSED,RETURNS,Medium,P2,0,Negative,False,False,accepted,frustrated
+DS-0205,pickup_missed,RETURNS_REPLACEMENT,RETURN_PICKUP_MISSED,RETURNS,Medium,P2,0,Strongly Negative,False,False,accepted,angry
+DS-0206,pickup_missed,RETURNS_REPLACEMENT,RETURN_PICKUP_MISSED,RETURNS,Medium,P2,0,Negative,False,False,accepted,calm
+DS-0207,warranty_denied,WARRANTY,WARRANTY_CLAIM_DENIED,WARRANTY,Medium,P2,0,Negative,False,False,accepted,calm
+DS-0208,warranty_denied,WARRANTY,WARRANTY_CLAIM_DENIED,WARRANTY,Medium,P2,0,Negative,False,False,accepted,frustrated
+DS-0209,warranty_denied,WARRANTY,WARRANTY_CLAIM_DENIED,WARRANTY,Medium,P2,0,Strongly Negative,False,False,accepted,angry
+DS-0210,warranty_denied,WARRANTY,WARRANTY_CLAIM_DENIED,WARRANTY,Medium,P2,0,Negative,False,False,accepted,calm
+DS-0211,warranty_denied,WARRANTY,WARRANTY_CLAIM_DENIED,WARRANTY,Medium,P2,0,Negative,False,False,accepted,frustrated
+DS-0212,warranty_denied,WARRANTY,WARRANTY_CLAIM_DENIED,WARRANTY,Medium,P2,0,Strongly Negative,False,False,accepted,angry
+DS-0213,warranty_denied,WARRANTY,WARRANTY_CLAIM_DENIED,WARRANTY,Medium,P2,0,Negative,False,False,accepted,calm
+DS-0214,warranty_denied,WARRANTY,WARRANTY_CLAIM_DENIED,WARRANTY,Medium,P2,0,Negative,False,False,accepted,frustrated
+DS-0215,warranty_denied,WARRANTY,WARRANTY_CLAIM_DENIED,WARRANTY,Medium,P2,0,Strongly Negative,False,False,accepted,angry
+DS-0216,repair_delay,WARRANTY,REPAIR_DELAY,WARRANTY,Medium,P2,0,Negative,False,False,accepted,calm
+DS-0217,repair_delay,WARRANTY,REPAIR_DELAY,WARRANTY,Medium,P2,0,Negative,False,False,accepted,frustrated
+DS-0218,repair_delay,WARRANTY,REPAIR_DELAY,WARRANTY,Medium,P2,0,Strongly Negative,False,False,accepted,angry
+DS-0219,repair_delay,WARRANTY,REPAIR_DELAY,WARRANTY,Medium,P2,0,Negative,False,False,accepted,calm
+DS-0220,repair_delay,WARRANTY,REPAIR_DELAY,WARRANTY,Medium,P2,0,Negative,False,False,accepted,frustrated
+DS-0221,repair_delay,WARRANTY,REPAIR_DELAY,WARRANTY,Medium,P2,0,Strongly Negative,False,False,accepted,angry
+DS-0222,repair_delay,WARRANTY,REPAIR_DELAY,WARRANTY,Medium,P2,0,Negative,False,False,accepted,calm
+DS-0223,repeated_repair,WARRANTY,REPEATED_REPAIR,WARRANTY,High,P1,3,Negative,False,False,accepted,calm
+DS-0224,repeated_repair,WARRANTY,REPEATED_REPAIR,WARRANTY,High,P1,3,Negative,False,False,accepted,frustrated
+DS-0225,repeated_repair,WARRANTY,REPEATED_REPAIR,WARRANTY,High,P1,3,Strongly Negative,False,False,accepted,angry
+DS-0226,repeated_repair,WARRANTY,REPEATED_REPAIR,WARRANTY,High,P1,3,Negative,False,False,accepted,calm
+DS-0227,repeated_repair,WARRANTY,REPEATED_REPAIR,WARRANTY,High,P1,3,Negative,False,False,accepted,frustrated
+DS-0228,repeated_repair,WARRANTY,REPEATED_REPAIR,WARRANTY,High,P1,3,Strongly Negative,False,False,accepted,angry
+DS-0229,repeated_repair,WARRANTY,REPEATED_REPAIR,WARRANTY,High,P1,3,Negative,False,False,accepted,calm
+DS-0230,login,ACCOUNT,LOGIN_ISSUE,ACCOUNT_SECURITY,Low,P3,0,Negative,False,False,accepted,calm
+DS-0231,login,ACCOUNT,LOGIN_ISSUE,ACCOUNT_SECURITY,Low,P3,0,Negative,False,False,accepted,frustrated
+DS-0232,login,ACCOUNT,LOGIN_ISSUE,ACCOUNT_SECURITY,Low,P3,0,Strongly Negative,False,False,accepted,angry
+DS-0233,login,ACCOUNT,LOGIN_ISSUE,ACCOUNT_SECURITY,Low,P3,0,Negative,False,False,accepted,calm
+DS-0234,login,ACCOUNT,LOGIN_ISSUE,ACCOUNT_SECURITY,Low,P3,0,Negative,False,False,accepted,frustrated
+DS-0235,login,ACCOUNT,LOGIN_ISSUE,ACCOUNT_SECURITY,Low,P3,0,Strongly Negative,False,False,accepted,angry
+DS-0236,login,ACCOUNT,LOGIN_ISSUE,ACCOUNT_SECURITY,Low,P3,0,Negative,False,False,accepted,frustrated
+DS-0237,locked,ACCOUNT,ACCOUNT_LOCKED,ACCOUNT_SECURITY,Medium,P2,0,Negative,False,False,accepted,calm
+DS-0238,locked,ACCOUNT,ACCOUNT_LOCKED,ACCOUNT_SECURITY,Medium,P2,0,Negative,False,False,accepted,frustrated
+DS-0239,locked,ACCOUNT,ACCOUNT_LOCKED,ACCOUNT_SECURITY,Medium,P2,0,Strongly Negative,False,False,accepted,angry
+DS-0240,locked,ACCOUNT,ACCOUNT_LOCKED,ACCOUNT_SECURITY,Medium,P2,0,Negative,False,False,accepted,calm
+DS-0241,locked,ACCOUNT,ACCOUNT_LOCKED,ACCOUNT_SECURITY,Medium,P2,0,Negative,False,False,accepted,frustrated
+DS-0242,locked,ACCOUNT,ACCOUNT_LOCKED,ACCOUNT_SECURITY,Medium,P2,0,Strongly Negative,False,False,accepted,angry
+DS-0243,locked,ACCOUNT,ACCOUNT_LOCKED,ACCOUNT_SECURITY,Medium,P2,0,Negative,False,False,accepted,calm
+DS-0244,unauthorised,ACCOUNT,UNAUTHORIZED_ACCESS,ACCOUNT_SECURITY,Critical,P0,4,Negative,False,False,accepted,calm
+DS-0245,unauthorised,ACCOUNT,UNAUTHORIZED_ACCESS,ACCOUNT_SECURITY,Critical,P0,4,Negative,False,False,accepted,frustrated
+DS-0246,unauthorised,ACCOUNT,UNAUTHORIZED_ACCESS,ACCOUNT_SECURITY,Critical,P0,4,Strongly Negative,False,False,accepted,angry
+DS-0247,unauthorised,ACCOUNT,UNAUTHORIZED_ACCESS,ACCOUNT_SECURITY,Critical,P0,4,Negative,False,False,accepted,calm
+DS-0248,unauthorised,ACCOUNT,UNAUTHORIZED_ACCESS,ACCOUNT_SECURITY,Critical,P0,4,Negative,False,False,accepted,frustrated
+DS-0249,unauthorised,ACCOUNT,UNAUTHORIZED_ACCESS,ACCOUNT_SECURITY,Critical,P0,4,Strongly Negative,False,False,accepted,angry
+DS-0250,unauthorised,ACCOUNT,UNAUTHORIZED_ACCESS,ACCOUNT_SECURITY,Critical,P0,4,Negative,False,False,accepted,calm
+DS-0251,unauthorised,ACCOUNT,UNAUTHORIZED_ACCESS,ACCOUNT_SECURITY,Critical,P0,4,Negative,False,False,accepted,frustrated
+DS-0252,unauthorised,ACCOUNT,UNAUTHORIZED_ACCESS,ACCOUNT_SECURITY,Critical,P0,4,Strongly Negative,False,False,accepted,angry
+DS-0253,setup,TECHNICAL_SUPPORT,SETUP_ASSISTANCE,TECH_SUPPORT,Low,P3,0,Negative,False,False,accepted,calm
+DS-0254,setup,TECHNICAL_SUPPORT,SETUP_ASSISTANCE,TECH_SUPPORT,Low,P3,0,Negative,False,False,accepted,frustrated
+DS-0255,setup,TECHNICAL_SUPPORT,SETUP_ASSISTANCE,TECH_SUPPORT,Low,P3,0,Strongly Negative,False,False,accepted,angry
+DS-0256,setup,TECHNICAL_SUPPORT,SETUP_ASSISTANCE,TECH_SUPPORT,Low,P3,0,Negative,False,False,accepted,calm
+DS-0257,setup,TECHNICAL_SUPPORT,SETUP_ASSISTANCE,TECH_SUPPORT,Low,P3,0,Negative,False,False,accepted,frustrated
+DS-0258,setup,TECHNICAL_SUPPORT,SETUP_ASSISTANCE,TECH_SUPPORT,Low,P3,0,Strongly Negative,False,False,accepted,angry
+DS-0259,setup,TECHNICAL_SUPPORT,SETUP_ASSISTANCE,TECH_SUPPORT,Low,P3,0,Negative,False,False,accepted,calm
+DS-0260,setup,TECHNICAL_SUPPORT,SETUP_ASSISTANCE,TECH_SUPPORT,Low,P3,0,Negative,False,False,accepted,frustrated
+DS-0261,setup,TECHNICAL_SUPPORT,SETUP_ASSISTANCE,TECH_SUPPORT,Low,P3,0,Strongly Negative,False,False,accepted,angry
+DS-0262,update,TECHNICAL_SUPPORT,SOFTWARE_UPDATE_ISSUE,TECH_SUPPORT,Medium,P2,0,Negative,False,False,accepted,calm
+DS-0263,update,TECHNICAL_SUPPORT,SOFTWARE_UPDATE_ISSUE,TECH_SUPPORT,Medium,P2,0,Negative,False,False,accepted,frustrated
+DS-0264,update,TECHNICAL_SUPPORT,SOFTWARE_UPDATE_ISSUE,TECH_SUPPORT,Medium,P2,0,Strongly Negative,False,False,accepted,angry
+DS-0265,update,TECHNICAL_SUPPORT,SOFTWARE_UPDATE_ISSUE,TECH_SUPPORT,Medium,P2,0,Negative,False,False,accepted,calm
+DS-0266,update,TECHNICAL_SUPPORT,SOFTWARE_UPDATE_ISSUE,TECH_SUPPORT,Medium,P2,0,Negative,False,False,accepted,frustrated
+DS-0267,update,TECHNICAL_SUPPORT,SOFTWARE_UPDATE_ISSUE,TECH_SUPPORT,Medium,P2,0,Strongly Negative,False,False,accepted,angry
+DS-0268,update,TECHNICAL_SUPPORT,SOFTWARE_UPDATE_ISSUE,TECH_SUPPORT,Medium,P2,0,Negative,False,False,accepted,calm
+DS-0269,update,TECHNICAL_SUPPORT,SOFTWARE_UPDATE_ISSUE,TECH_SUPPORT,Medium,P2,0,Negative,False,False,accepted,frustrated
+DS-0270,update,TECHNICAL_SUPPORT,SOFTWARE_UPDATE_ISSUE,TECH_SUPPORT,Medium,P2,0,Strongly Negative,False,False,accepted,angry
+DS-0271,connectivity,TECHNICAL_SUPPORT,CONNECTIVITY_ISSUE,TECH_SUPPORT,Low,P3,0,Negative,False,False,accepted,calm
+DS-0272,connectivity,TECHNICAL_SUPPORT,CONNECTIVITY_ISSUE,TECH_SUPPORT,Low,P3,0,Negative,False,False,accepted,frustrated
+DS-0273,connectivity,TECHNICAL_SUPPORT,CONNECTIVITY_ISSUE,TECH_SUPPORT,Low,P3,0,Strongly Negative,False,False,accepted,angry
+DS-0274,connectivity,TECHNICAL_SUPPORT,CONNECTIVITY_ISSUE,TECH_SUPPORT,Low,P3,0,Negative,False,False,accepted,calm
+DS-0275,connectivity,TECHNICAL_SUPPORT,CONNECTIVITY_ISSUE,TECH_SUPPORT,Low,P3,0,Negative,False,False,accepted,frustrated
+DS-0276,connectivity,TECHNICAL_SUPPORT,CONNECTIVITY_ISSUE,TECH_SUPPORT,Low,P3,0,Strongly Negative,False,False,accepted,angry
+DS-0277,connectivity,TECHNICAL_SUPPORT,CONNECTIVITY_ISSUE,TECH_SUPPORT,Low,P3,0,Negative,False,False,accepted,calm
+DS-0278,connectivity,TECHNICAL_SUPPORT,CONNECTIVITY_ISSUE,TECH_SUPPORT,Low,P3,0,Negative,False,False,accepted,frustrated
+DS-0279,connectivity,TECHNICAL_SUPPORT,CONNECTIVITY_ISSUE,TECH_SUPPORT,Low,P3,0,Strongly Negative,False,False,accepted,angry
+DS-0280,data_exposure,PRIVACY,DATA_EXPOSURE,PRIVACY_COMPLIANCE,Critical,P0,4,Negative,False,False,accepted,calm
+DS-0281,data_exposure,PRIVACY,DATA_EXPOSURE,PRIVACY_COMPLIANCE,Critical,P0,4,Negative,False,False,accepted,frustrated
+DS-0282,data_exposure,PRIVACY,DATA_EXPOSURE,PRIVACY_COMPLIANCE,Critical,P0,4,Strongly Negative,False,False,accepted,angry
+DS-0283,data_exposure,PRIVACY,DATA_EXPOSURE,PRIVACY_COMPLIANCE,Critical,P0,4,Negative,False,False,accepted,calm
+DS-0284,data_exposure,PRIVACY,DATA_EXPOSURE,PRIVACY_COMPLIANCE,Critical,P0,4,Negative,False,False,accepted,frustrated
+DS-0285,data_exposure,PRIVACY,DATA_EXPOSURE,PRIVACY_COMPLIANCE,Critical,P0,4,Negative,False,False,accepted,calm
+DS-0286,data_exposure,PRIVACY,DATA_EXPOSURE,PRIVACY_COMPLIANCE,Critical,P0,4,Negative,False,False,accepted,frustrated
+DS-0287,data_exposure,PRIVACY,DATA_EXPOSURE,PRIVACY_COMPLIANCE,Critical,P0,4,Strongly Negative,False,False,accepted,angry
+DS-0288,data_exposure,PRIVACY,DATA_EXPOSURE,PRIVACY_COMPLIANCE,Critical,P0,4,Negative,False,False,accepted,calm
+DS-0289,marketing,PRIVACY,MARKETING_CONSENT,PRIVACY_COMPLIANCE,Medium,P2,0,Negative,False,False,accepted,calm
+DS-0290,marketing,PRIVACY,MARKETING_CONSENT,PRIVACY_COMPLIANCE,Medium,P2,0,Negative,False,False,accepted,frustrated
+DS-0291,marketing,PRIVACY,MARKETING_CONSENT,PRIVACY_COMPLIANCE,Medium,P2,0,Strongly Negative,False,False,accepted,angry
+DS-0292,marketing,PRIVACY,MARKETING_CONSENT,PRIVACY_COMPLIANCE,Medium,P2,0,Negative,False,False,accepted,calm
+DS-0293,marketing,PRIVACY,MARKETING_CONSENT,PRIVACY_COMPLIANCE,Medium,P2,0,Negative,False,False,accepted,frustrated
+DS-0294,marketing,PRIVACY,MARKETING_CONSENT,PRIVACY_COMPLIANCE,Medium,P2,0,Strongly Negative,False,False,accepted,angry
+DS-0295,marketing,PRIVACY,MARKETING_CONSENT,PRIVACY_COMPLIANCE,Medium,P2,0,Negative,False,False,accepted,calm
+DS-0296,deletion,PRIVACY,DATA_DELETION_REQUEST,PRIVACY_COMPLIANCE,Medium,P2,0,Negative,False,False,accepted,calm
+DS-0297,deletion,PRIVACY,DATA_DELETION_REQUEST,PRIVACY_COMPLIANCE,Medium,P2,0,Negative,False,False,accepted,frustrated
+DS-0298,deletion,PRIVACY,DATA_DELETION_REQUEST,PRIVACY_COMPLIANCE,Medium,P2,0,Strongly Negative,False,False,accepted,angry
+DS-0299,deletion,PRIVACY,DATA_DELETION_REQUEST,PRIVACY_COMPLIANCE,Medium,P2,0,Negative,False,False,accepted,calm
+DS-0300,deletion,PRIVACY,DATA_DELETION_REQUEST,PRIVACY_COMPLIANCE,Medium,P2,0,Negative,False,False,accepted,frustrated
+DS-0301,deletion,PRIVACY,DATA_DELETION_REQUEST,PRIVACY_COMPLIANCE,Medium,P2,0,Strongly Negative,False,False,accepted,angry
+DS-0302,deletion,PRIVACY,DATA_DELETION_REQUEST,PRIVACY_COMPLIANCE,Medium,P2,0,Negative,False,False,accepted,calm
+DS-0303,battery,SAFETY,OVERHEATING_BATTERY,PRODUCT_SAFETY,Critical,P0,5,Negative,False,False,accepted,calm
+DS-0304,battery,SAFETY,OVERHEATING_BATTERY,PRODUCT_SAFETY,Critical,P0,5,Negative,False,False,accepted,frustrated
+DS-0305,battery,SAFETY,OVERHEATING_BATTERY,PRODUCT_SAFETY,Critical,P0,5,Strongly Negative,False,False,accepted,angry
+DS-0306,battery,SAFETY,OVERHEATING_BATTERY,PRODUCT_SAFETY,Critical,P0,5,Negative,False,False,accepted,calm
+DS-0307,battery,SAFETY,OVERHEATING_BATTERY,PRODUCT_SAFETY,Critical,P0,5,Negative,False,False,accepted,frustrated
+DS-0308,battery,SAFETY,OVERHEATING_BATTERY,PRODUCT_SAFETY,Critical,P0,5,Strongly Negative,False,False,accepted,angry
+DS-0309,battery,SAFETY,OVERHEATING_BATTERY,PRODUCT_SAFETY,Critical,P0,5,Negative,False,False,accepted,calm
+DS-0310,battery,SAFETY,OVERHEATING_BATTERY,PRODUCT_SAFETY,Critical,P0,5,Negative,False,False,accepted,frustrated
+DS-0311,battery,SAFETY,OVERHEATING_BATTERY,PRODUCT_SAFETY,Critical,P0,5,Strongly Negative,False,False,accepted,angry
+DS-0312,battery,SAFETY,OVERHEATING_BATTERY,PRODUCT_SAFETY,Critical,P0,5,Negative,False,False,accepted,calm
+DS-0313,electrical,SAFETY,ELECTRICAL_HAZARD,PRODUCT_SAFETY,Critical,P0,5,Negative,False,False,accepted,calm
+DS-0314,electrical,SAFETY,ELECTRICAL_HAZARD,PRODUCT_SAFETY,Critical,P0,5,Negative,False,False,accepted,frustrated
+DS-0315,electrical,SAFETY,ELECTRICAL_HAZARD,PRODUCT_SAFETY,Critical,P0,5,Strongly Negative,False,False,accepted,angry
+DS-0316,electrical,SAFETY,ELECTRICAL_HAZARD,PRODUCT_SAFETY,Critical,P0,5,Negative,False,False,accepted,calm
+DS-0317,electrical,SAFETY,ELECTRICAL_HAZARD,PRODUCT_SAFETY,Critical,P0,5,Negative,False,False,accepted,frustrated
+DS-0318,electrical,SAFETY,ELECTRICAL_HAZARD,PRODUCT_SAFETY,Critical,P0,5,Strongly Negative,False,False,accepted,angry
+DS-0319,electrical,SAFETY,ELECTRICAL_HAZARD,PRODUCT_SAFETY,Critical,P0,5,Negative,False,False,accepted,calm
+DS-0320,electrical,SAFETY,ELECTRICAL_HAZARD,PRODUCT_SAFETY,Critical,P0,5,Negative,False,False,accepted,frustrated
+DS-0321,injury,SAFETY,INJURY_REPORTED,PRODUCT_SAFETY,Critical,P0,5,Negative,False,False,accepted,calm
+DS-0322,injury,SAFETY,INJURY_REPORTED,PRODUCT_SAFETY,Critical,P0,5,Negative,False,False,accepted,frustrated
+DS-0323,injury,SAFETY,INJURY_REPORTED,PRODUCT_SAFETY,Critical,P0,5,Strongly Negative,False,False,accepted,angry
+DS-0324,injury,SAFETY,INJURY_REPORTED,PRODUCT_SAFETY,Critical,P0,5,Negative,False,False,accepted,calm
+DS-0325,injury,SAFETY,INJURY_REPORTED,PRODUCT_SAFETY,Critical,P0,5,Negative,False,False,accepted,frustrated
+DS-0326,injury,SAFETY,INJURY_REPORTED,PRODUCT_SAFETY,Critical,P0,5,Strongly Negative,False,False,accepted,angry
+DS-0327,injury,SAFETY,INJURY_REPORTED,PRODUCT_SAFETY,Critical,P0,5,Negative,False,False,accepted,calm
+DS-0328,poor_comms,SERVICE_QUALITY,POOR_COMMUNICATION,CUSTOMER_RELATIONS,Low,P3,0,Negative,False,False,accepted,calm
+DS-0329,poor_comms,SERVICE_QUALITY,POOR_COMMUNICATION,CUSTOMER_RELATIONS,Low,P3,0,Negative,False,False,accepted,frustrated
+DS-0330,poor_comms,SERVICE_QUALITY,POOR_COMMUNICATION,CUSTOMER_RELATIONS,Low,P3,0,Strongly Negative,False,False,accepted,angry
+DS-0331,poor_comms,SERVICE_QUALITY,POOR_COMMUNICATION,CUSTOMER_RELATIONS,Low,P3,0,Negative,False,False,accepted,calm
+DS-0332,poor_comms,SERVICE_QUALITY,POOR_COMMUNICATION,CUSTOMER_RELATIONS,Low,P3,0,Negative,False,False,accepted,frustrated
+DS-0333,poor_comms,SERVICE_QUALITY,POOR_COMMUNICATION,CUSTOMER_RELATIONS,Low,P3,0,Strongly Negative,False,False,accepted,angry
+DS-0334,poor_comms,SERVICE_QUALITY,POOR_COMMUNICATION,CUSTOMER_RELATIONS,Low,P3,0,Negative,False,False,accepted,calm
+DS-0335,unresolved,SERVICE_QUALITY,UNRESOLVED_PREVIOUS,CUSTOMER_RELATIONS,Medium,P2,0,Negative,False,False,accepted,calm
+DS-0336,unresolved,SERVICE_QUALITY,UNRESOLVED_PREVIOUS,CUSTOMER_RELATIONS,Medium,P2,0,Negative,False,False,accepted,frustrated
+DS-0337,unresolved,SERVICE_QUALITY,UNRESOLVED_PREVIOUS,CUSTOMER_RELATIONS,Medium,P2,0,Strongly Negative,False,False,accepted,angry
+DS-0338,unresolved,SERVICE_QUALITY,UNRESOLVED_PREVIOUS,CUSTOMER_RELATIONS,Medium,P2,0,Negative,False,False,accepted,calm
+DS-0339,unresolved,SERVICE_QUALITY,UNRESOLVED_PREVIOUS,CUSTOMER_RELATIONS,Medium,P2,0,Negative,False,False,accepted,frustrated
+DS-0340,unresolved,SERVICE_QUALITY,UNRESOLVED_PREVIOUS,CUSTOMER_RELATIONS,Medium,P2,0,Strongly Negative,False,False,accepted,angry
+DS-0341,unresolved,SERVICE_QUALITY,UNRESOLVED_PREVIOUS,CUSTOMER_RELATIONS,Medium,P2,0,Negative,False,False,accepted,calm
+DS-0342,long_wait,SERVICE_QUALITY,LONG_WAIT,CUSTOMER_RELATIONS,Low,P3,0,Negative,False,False,accepted,calm
+DS-0343,long_wait,SERVICE_QUALITY,LONG_WAIT,CUSTOMER_RELATIONS,Low,P3,0,Negative,False,False,accepted,frustrated
+DS-0344,long_wait,SERVICE_QUALITY,LONG_WAIT,CUSTOMER_RELATIONS,Low,P3,0,Strongly Negative,False,False,accepted,angry
+DS-0345,long_wait,SERVICE_QUALITY,LONG_WAIT,CUSTOMER_RELATIONS,Low,P3,0,Negative,False,False,accepted,calm
+DS-0346,long_wait,SERVICE_QUALITY,LONG_WAIT,CUSTOMER_RELATIONS,Low,P3,0,Negative,False,False,accepted,frustrated
+DS-0347,long_wait,SERVICE_QUALITY,LONG_WAIT,CUSTOMER_RELATIONS,Low,P3,0,Strongly Negative,False,False,accepted,angry
+DS-0348,long_wait,SERVICE_QUALITY,LONG_WAIT,CUSTOMER_RELATIONS,Low,P3,0,Negative,False,False,accepted,calm
+DS-0349,rude_staff,STAFF_BEHAVIOR,RUDE_STAFF,CUSTOMER_RELATIONS,Medium,P2,0,Negative,False,False,accepted,calm
+DS-0350,rude_staff,STAFF_BEHAVIOR,RUDE_STAFF,CUSTOMER_RELATIONS,Medium,P2,0,Negative,False,False,accepted,frustrated
+DS-0351,rude_staff,STAFF_BEHAVIOR,RUDE_STAFF,CUSTOMER_RELATIONS,Medium,P2,0,Strongly Negative,False,False,accepted,angry
+DS-0352,rude_staff,STAFF_BEHAVIOR,RUDE_STAFF,CUSTOMER_RELATIONS,Medium,P2,0,Negative,False,False,accepted,calm
+DS-0353,rude_staff,STAFF_BEHAVIOR,RUDE_STAFF,CUSTOMER_RELATIONS,Medium,P2,0,Negative,False,False,accepted,frustrated
+DS-0354,rude_staff,STAFF_BEHAVIOR,RUDE_STAFF,CUSTOMER_RELATIONS,Medium,P2,0,Strongly Negative,False,False,accepted,angry
+DS-0355,rude_staff,STAFF_BEHAVIOR,RUDE_STAFF,CUSTOMER_RELATIONS,Medium,P2,0,Negative,False,False,accepted,calm
+DS-0356,courier_conduct,STAFF_BEHAVIOR,COURIER_MISCONDUCT,CUSTOMER_RELATIONS,Medium,P2,0,Negative,False,False,accepted,calm
+DS-0357,courier_conduct,STAFF_BEHAVIOR,COURIER_MISCONDUCT,CUSTOMER_RELATIONS,Medium,P2,0,Negative,False,False,accepted,frustrated
+DS-0358,courier_conduct,STAFF_BEHAVIOR,COURIER_MISCONDUCT,CUSTOMER_RELATIONS,Medium,P2,0,Strongly Negative,False,False,accepted,angry
+DS-0359,courier_conduct,STAFF_BEHAVIOR,COURIER_MISCONDUCT,CUSTOMER_RELATIONS,Medium,P2,0,Negative,False,False,accepted,calm
+DS-0360,courier_conduct,STAFF_BEHAVIOR,COURIER_MISCONDUCT,CUSTOMER_RELATIONS,Medium,P2,0,Negative,False,False,accepted,frustrated
+DS-0361,courier_conduct,STAFF_BEHAVIOR,COURIER_MISCONDUCT,CUSTOMER_RELATIONS,Medium,P2,0,Strongly Negative,False,False,accepted,angry
+DS-0362,courier_conduct,STAFF_BEHAVIOR,COURIER_MISCONDUCT,CUSTOMER_RELATIONS,Medium,P2,0,Negative,False,False,accepted,calm
+DS-0363,calm_critical,SAFETY,OVERHEATING_BATTERY,PRODUCT_SAFETY,Critical,P0,5,Neutral,False,False,accepted,calm;calm_critical
+DS-0364,calm_critical,SAFETY,OVERHEATING_BATTERY,PRODUCT_SAFETY,Critical,P0,5,Neutral,False,False,accepted,calm;calm_critical
+DS-0365,calm_critical,SAFETY,OVERHEATING_BATTERY,PRODUCT_SAFETY,Critical,P0,5,Neutral,False,False,accepted,calm;calm_critical
+DS-0366,calm_critical,SAFETY,OVERHEATING_BATTERY,PRODUCT_SAFETY,Critical,P0,5,Neutral,False,False,accepted,calm;calm_critical
+DS-0367,calm_critical,SAFETY,OVERHEATING_BATTERY,PRODUCT_SAFETY,Critical,P0,5,Neutral,False,False,accepted,calm;calm_critical
+DS-0368,calm_critical,SAFETY,OVERHEATING_BATTERY,PRODUCT_SAFETY,Critical,P0,5,Neutral,False,False,accepted,calm;calm_critical
+DS-0369,calm_critical,SAFETY,OVERHEATING_BATTERY,PRODUCT_SAFETY,Critical,P0,5,Neutral,False,False,accepted,calm;calm_critical
+DS-0370,calm_critical,SAFETY,OVERHEATING_BATTERY,PRODUCT_SAFETY,Critical,P0,5,Neutral,False,False,accepted,calm;calm_critical
+DS-0371,calm_critical,SAFETY,OVERHEATING_BATTERY,PRODUCT_SAFETY,Critical,P0,5,Neutral,False,False,accepted,calm;calm_critical
+DS-0372,calm_critical,SAFETY,OVERHEATING_BATTERY,PRODUCT_SAFETY,Critical,P0,5,Neutral,False,False,accepted,calm;calm_critical
+DS-0373,angry_low,TECHNICAL_SUPPORT,CONNECTIVITY_ISSUE,TECH_SUPPORT,Low,P3,0,Strongly Negative,False,False,accepted,angry;angry_low_priority
+DS-0374,angry_low,TECHNICAL_SUPPORT,CONNECTIVITY_ISSUE,TECH_SUPPORT,Low,P3,0,Strongly Negative,False,False,accepted,angry;angry_low_priority
+DS-0375,angry_low,TECHNICAL_SUPPORT,CONNECTIVITY_ISSUE,TECH_SUPPORT,Low,P3,0,Strongly Negative,False,False,accepted,angry;angry_low_priority
+DS-0376,angry_low,TECHNICAL_SUPPORT,CONNECTIVITY_ISSUE,TECH_SUPPORT,Low,P3,0,Strongly Negative,False,False,accepted,angry;angry_low_priority
+DS-0377,angry_low,TECHNICAL_SUPPORT,CONNECTIVITY_ISSUE,TECH_SUPPORT,Low,P3,0,Strongly Negative,False,False,accepted,angry;angry_low_priority
+DS-0378,angry_low,TECHNICAL_SUPPORT,CONNECTIVITY_ISSUE,TECH_SUPPORT,Low,P3,0,Strongly Negative,False,False,accepted,angry;angry_low_priority
+DS-0379,angry_low_promo,BILLING,PROMO_NOT_APPLIED,BILLING,Low,P3,0,Strongly Negative,False,False,accepted,angry;angry_low_priority
+DS-0380,angry_low_promo,BILLING,PROMO_NOT_APPLIED,BILLING,Low,P3,0,Strongly Negative,False,False,accepted,angry;angry_low_priority
+DS-0381,angry_low_promo,BILLING,PROMO_NOT_APPLIED,BILLING,Low,P3,0,Strongly Negative,False,False,accepted,angry;angry_low_priority
+DS-0382,angry_low_promo,BILLING,PROMO_NOT_APPLIED,BILLING,Low,P3,0,Strongly Negative,False,False,accepted,angry;angry_low_priority
+DS-0383,vip_minor,TECHNICAL_SUPPORT,SETUP_ASSISTANCE,TECH_SUPPORT,Low,P3,0,Negative,False,False,accepted,calm;vip_minor
+DS-0384,vip_minor,TECHNICAL_SUPPORT,SETUP_ASSISTANCE,TECH_SUPPORT,Low,P3,0,Negative,False,False,accepted,frustrated;vip_minor
+DS-0385,vip_minor,TECHNICAL_SUPPORT,SETUP_ASSISTANCE,TECH_SUPPORT,Low,P3,0,Strongly Negative,False,False,accepted,angry;vip_minor
+DS-0386,vip_minor,TECHNICAL_SUPPORT,SETUP_ASSISTANCE,TECH_SUPPORT,Low,P3,0,Negative,False,False,accepted,calm;vip_minor
+DS-0387,vip_minor,TECHNICAL_SUPPORT,SETUP_ASSISTANCE,TECH_SUPPORT,Low,P3,0,Negative,False,False,accepted,frustrated;vip_minor
+DS-0388,vip_minor,TECHNICAL_SUPPORT,SETUP_ASSISTANCE,TECH_SUPPORT,Low,P3,0,Strongly Negative,False,False,accepted,angry;vip_minor
+DS-0389,vip_minor,TECHNICAL_SUPPORT,SETUP_ASSISTANCE,TECH_SUPPORT,Low,P3,0,Negative,False,False,accepted,calm;vip_minor
+DS-0390,vip_minor,TECHNICAL_SUPPORT,SETUP_ASSISTANCE,TECH_SUPPORT,Low,P3,0,Negative,False,False,accepted,frustrated;vip_minor
+DS-0391,cheap_privacy,PRIVACY,DATA_EXPOSURE,PRIVACY_COMPLIANCE,Critical,P0,4,Negative,False,False,accepted,calm;low_value_privacy
+DS-0392,cheap_privacy,PRIVACY,DATA_EXPOSURE,PRIVACY_COMPLIANCE,Critical,P0,4,Negative,False,False,accepted,frustrated;low_value_privacy
+DS-0393,cheap_privacy,PRIVACY,DATA_EXPOSURE,PRIVACY_COMPLIANCE,Critical,P0,4,Strongly Negative,False,False,accepted,angry;low_value_privacy
+DS-0394,cheap_privacy,PRIVACY,DATA_EXPOSURE,PRIVACY_COMPLIANCE,Critical,P0,4,Negative,False,False,accepted,calm;low_value_privacy
+DS-0395,cheap_privacy,PRIVACY,DATA_EXPOSURE,PRIVACY_COMPLIANCE,Critical,P0,4,Negative,False,False,accepted,frustrated;low_value_privacy
+DS-0396,cheap_privacy,PRIVACY,DATA_EXPOSURE,PRIVACY_COMPLIANCE,Critical,P0,4,Strongly Negative,False,False,accepted,angry;low_value_privacy
+DS-0397,legal_refund,REFUND,REFUND_DELAY,RETURNS,High,P1,4,Negative,False,False,accepted,calm;legal_threat
+DS-0398,legal_refund,REFUND,REFUND_DELAY,RETURNS,High,P1,4,Negative,False,False,accepted,frustrated;legal_threat
+DS-0399,legal_refund,REFUND,REFUND_DELAY,RETURNS,High,P1,4,Strongly Negative,False,False,accepted,angry;legal_threat
+DS-0400,legal_refund,REFUND,REFUND_DELAY,RETURNS,High,P1,4,Negative,False,False,accepted,calm;legal_threat
+DS-0401,legal_refund,REFUND,REFUND_DELAY,RETURNS,High,P1,4,Negative,False,False,accepted,frustrated;legal_threat
+DS-0402,legal_refund,REFUND,REFUND_DELAY,RETURNS,High,P1,4,Strongly Negative,False,False,accepted,angry;legal_threat
+DS-0403,legal_refund,REFUND,REFUND_DELAY,RETURNS,High,P1,4,Negative,False,False,accepted,calm;legal_threat
+DS-0404,legal_refund,REFUND,REFUND_DELAY,RETURNS,High,P1,4,Negative,False,False,accepted,frustrated;legal_threat
+DS-0405,multi_damage_refund,DELIVERY,DAMAGED_IN_TRANSIT,RETURNS,Medium,P2,0,Negative,False,False,accepted,calm;multi_issue
+DS-0406,multi_damage_refund,DELIVERY,DAMAGED_IN_TRANSIT,RETURNS,Medium,P2,0,Negative,False,False,accepted,frustrated;multi_issue
+DS-0407,multi_damage_refund,DELIVERY,DAMAGED_IN_TRANSIT,RETURNS,Medium,P2,0,Strongly Negative,False,False,accepted,angry;multi_issue
+DS-0408,multi_damage_refund,DELIVERY,DAMAGED_IN_TRANSIT,RETURNS,Medium,P2,0,Negative,False,False,accepted,calm;multi_issue
+DS-0409,multi_damage_refund,DELIVERY,DAMAGED_IN_TRANSIT,RETURNS,Medium,P2,0,Negative,False,False,accepted,frustrated;multi_issue
+DS-0410,multi_damage_refund,DELIVERY,DAMAGED_IN_TRANSIT,RETURNS,Medium,P2,0,Strongly Negative,False,False,accepted,angry;multi_issue
+DS-0411,multi_damage_refund,DELIVERY,DAMAGED_IN_TRANSIT,RETURNS,Medium,P2,0,Negative,False,False,accepted,calm;multi_issue
+DS-0412,multi_damage_refund,DELIVERY,DAMAGED_IN_TRANSIT,RETURNS,Medium,P2,0,Negative,False,False,accepted,frustrated;multi_issue
+DS-0413,multi_late_courier,DELIVERY,DELAYED_DELIVERY,LOGISTICS,Medium,P2,0,Negative,False,False,accepted,calm;multi_issue
+DS-0414,multi_late_courier,DELIVERY,DELAYED_DELIVERY,LOGISTICS,Medium,P2,0,Negative,False,False,accepted,frustrated;multi_issue
+DS-0415,multi_late_courier,DELIVERY,DELAYED_DELIVERY,LOGISTICS,Medium,P2,0,Strongly Negative,False,False,accepted,angry;multi_issue
+DS-0416,multi_late_courier,DELIVERY,DELAYED_DELIVERY,LOGISTICS,Medium,P2,0,Negative,False,False,accepted,calm;multi_issue
+DS-0417,multi_late_courier,DELIVERY,DELAYED_DELIVERY,LOGISTICS,Medium,P2,0,Negative,False,False,accepted,frustrated;multi_issue
+DS-0418,multi_late_courier,DELIVERY,DELAYED_DELIVERY,LOGISTICS,Medium,P2,0,Strongly Negative,False,False,accepted,angry;multi_issue
+DS-0419,multi_three,DELIVERY,DELAYED_DELIVERY,RETURNS,Medium,P2,0,Negative,False,False,accepted,calm;multi_issue;three_issues
+DS-0420,multi_three,DELIVERY,DELAYED_DELIVERY,RETURNS,Medium,P2,0,Negative,False,False,accepted,frustrated;multi_issue;three_issues
+DS-0421,multi_three,DELIVERY,DELAYED_DELIVERY,RETURNS,Medium,P2,0,Strongly Negative,False,False,accepted,angry;multi_issue;three_issues
+DS-0422,multi_three,DELIVERY,DELAYED_DELIVERY,RETURNS,Medium,P2,0,Negative,False,False,accepted,calm;multi_issue;three_issues
+DS-0423,multi_three,DELIVERY,DELAYED_DELIVERY,RETURNS,Medium,P2,0,Negative,False,False,accepted,frustrated;multi_issue;three_issues
+DS-0424,multi_three,DELIVERY,DELAYED_DELIVERY,RETURNS,Medium,P2,0,Strongly Negative,False,False,accepted,angry;multi_issue;three_issues
+DS-0425,multi_safety_hidden,SAFETY,OVERHEATING_BATTERY,PRODUCT_SAFETY,Critical,P0,5,Negative,False,False,accepted,calm;escalation_trap;multi_issue
+DS-0426,multi_safety_hidden,SAFETY,OVERHEATING_BATTERY,PRODUCT_SAFETY,Critical,P0,5,Negative,False,False,accepted,escalation_trap;frustrated;multi_issue
+DS-0427,multi_safety_hidden,SAFETY,OVERHEATING_BATTERY,PRODUCT_SAFETY,Critical,P0,5,Strongly Negative,False,False,accepted,angry;escalation_trap;multi_issue
+DS-0428,multi_safety_hidden,SAFETY,OVERHEATING_BATTERY,PRODUCT_SAFETY,Critical,P0,5,Negative,False,False,accepted,calm;escalation_trap;multi_issue
+DS-0429,multi_safety_hidden,SAFETY,OVERHEATING_BATTERY,PRODUCT_SAFETY,Critical,P0,5,Negative,False,False,accepted,escalation_trap;frustrated;multi_issue
+DS-0430,multi_safety_hidden,SAFETY,OVERHEATING_BATTERY,PRODUCT_SAFETY,Critical,P0,5,Strongly Negative,False,False,accepted,angry;escalation_trap;multi_issue
+DS-0431,multi_billing_account,ACCOUNT,ACCOUNT_LOCKED,ACCOUNT_SECURITY,Medium,P2,0,Negative,False,False,accepted,calm;multi_issue
+DS-0432,multi_billing_account,ACCOUNT,ACCOUNT_LOCKED,ACCOUNT_SECURITY,Medium,P2,0,Negative,False,False,accepted,frustrated;multi_issue
+DS-0433,multi_billing_account,ACCOUNT,ACCOUNT_LOCKED,ACCOUNT_SECURITY,Medium,P2,0,Strongly Negative,False,False,accepted,angry;multi_issue
+DS-0434,multi_billing_account,ACCOUNT,ACCOUNT_LOCKED,ACCOUNT_SECURITY,Medium,P2,0,Negative,False,False,accepted,calm;multi_issue
+DS-0435,vague_product,PRODUCT_DEFECT,MALFUNCTION_AFTER_USE,RETURNS,Medium,P2,0,Negative,True,False,accepted,ambiguous;calm;incomplete
+DS-0436,vague_product,PRODUCT_DEFECT,MALFUNCTION_AFTER_USE,RETURNS,Medium,P2,0,Negative,True,False,accepted,ambiguous;frustrated;incomplete
+DS-0437,vague_product,PRODUCT_DEFECT,MALFUNCTION_AFTER_USE,RETURNS,Medium,P2,0,Strongly Negative,True,False,accepted,ambiguous;angry;incomplete
+DS-0438,vague_product,PRODUCT_DEFECT,MALFUNCTION_AFTER_USE,RETURNS,Medium,P2,0,Negative,True,False,accepted,ambiguous;calm;incomplete
+DS-0439,vague_product,PRODUCT_DEFECT,MALFUNCTION_AFTER_USE,RETURNS,Medium,P2,0,Negative,True,False,accepted,ambiguous;frustrated;incomplete
+DS-0440,vague_product,PRODUCT_DEFECT,MALFUNCTION_AFTER_USE,RETURNS,Medium,P2,0,Negative,True,False,accepted,ambiguous;calm;incomplete
+DS-0441,vague_product,PRODUCT_DEFECT,MALFUNCTION_AFTER_USE,RETURNS,Medium,P2,0,Negative,True,False,accepted,ambiguous;frustrated;incomplete
+DS-0442,vague_product,PRODUCT_DEFECT,MALFUNCTION_AFTER_USE,RETURNS,Medium,P2,0,Strongly Negative,True,False,accepted,ambiguous;angry;incomplete
+DS-0443,vague_product,PRODUCT_DEFECT,MALFUNCTION_AFTER_USE,RETURNS,Medium,P2,0,Negative,True,False,accepted,ambiguous;calm;incomplete
+DS-0444,vague_order,DELIVERY,DELAYED_DELIVERY,LOGISTICS,Low,P3,0,Negative,True,False,accepted,ambiguous;calm;incomplete
+DS-0445,vague_order,DELIVERY,DELAYED_DELIVERY,LOGISTICS,Low,P3,0,Negative,True,False,accepted,ambiguous;frustrated;incomplete
+DS-0446,vague_order,DELIVERY,DELAYED_DELIVERY,LOGISTICS,Low,P3,0,Strongly Negative,True,False,accepted,ambiguous;angry;incomplete
+DS-0447,vague_order,DELIVERY,DELAYED_DELIVERY,LOGISTICS,Low,P3,0,Negative,True,False,accepted,ambiguous;calm;incomplete
+DS-0448,vague_order,DELIVERY,DELAYED_DELIVERY,LOGISTICS,Low,P3,0,Negative,True,False,accepted,ambiguous;frustrated;incomplete
+DS-0449,vague_order,DELIVERY,DELAYED_DELIVERY,LOGISTICS,Low,P3,0,Strongly Negative,True,False,accepted,ambiguous;angry;incomplete
+DS-0450,vague_order,DELIVERY,DELAYED_DELIVERY,LOGISTICS,Low,P3,0,Negative,True,False,accepted,ambiguous;calm;incomplete
+DS-0451,vague_order,DELIVERY,DELAYED_DELIVERY,LOGISTICS,Low,P3,0,Negative,True,False,accepted,ambiguous;frustrated;incomplete
+DS-0452,vague_money,BILLING,INCORRECT_CHARGE,BILLING,Medium,P2,0,Negative,True,False,accepted,ambiguous;calm;incomplete
+DS-0453,vague_money,BILLING,INCORRECT_CHARGE,BILLING,Medium,P2,0,Negative,True,False,accepted,ambiguous;frustrated;incomplete
+DS-0454,vague_money,BILLING,INCORRECT_CHARGE,BILLING,Medium,P2,0,Strongly Negative,True,False,accepted,ambiguous;angry;incomplete
+DS-0455,vague_money,BILLING,INCORRECT_CHARGE,BILLING,Medium,P2,0,Negative,True,False,accepted,ambiguous;calm;incomplete
+DS-0456,vague_money,BILLING,INCORRECT_CHARGE,BILLING,Medium,P2,0,Negative,True,False,accepted,ambiguous;frustrated;incomplete
+DS-0457,vague_money,BILLING,INCORRECT_CHARGE,BILLING,Medium,P2,0,Strongly Negative,True,False,accepted,ambiguous;angry;incomplete
+DS-0458,vague_money,BILLING,INCORRECT_CHARGE,BILLING,Medium,P2,0,Negative,True,False,accepted,ambiguous;calm;incomplete
+DS-0459,vague_money,BILLING,INCORRECT_CHARGE,BILLING,Medium,P2,0,Negative,True,False,accepted,ambiguous;frustrated;incomplete
+DS-0460,faq_refund_speed,REFUND,REFUND_DELAY,RETURNS,Medium,P2,1,Negative,False,False,accepted,calm;contradictory;policy_conflict
+DS-0461,faq_refund_speed,REFUND,REFUND_DELAY,RETURNS,Medium,P2,1,Negative,False,False,accepted,contradictory;frustrated;policy_conflict
+DS-0462,faq_refund_speed,REFUND,REFUND_DELAY,RETURNS,Medium,P2,1,Strongly Negative,False,False,accepted,angry;contradictory;policy_conflict
+DS-0463,faq_refund_speed,REFUND,REFUND_DELAY,RETURNS,Medium,P2,1,Negative,False,False,accepted,calm;contradictory;policy_conflict
+DS-0464,faq_opened_return,REFUND,REFUND_DENIED,RETURNS,Medium,P2,1,Negative,False,False,accepted,calm;contradictory;policy_conflict
+DS-0465,faq_opened_return,REFUND,REFUND_DENIED,RETURNS,Medium,P2,1,Negative,False,False,accepted,contradictory;frustrated;policy_conflict
+DS-0466,faq_opened_return,REFUND,REFUND_DENIED,RETURNS,Medium,P2,1,Strongly Negative,False,False,accepted,angry;contradictory;policy_conflict
+DS-0467,faq_opened_return,REFUND,REFUND_DENIED,RETURNS,Medium,P2,1,Negative,False,False,accepted,calm;contradictory;policy_conflict
+DS-0468,old_policy_claim,DELIVERY,DELAYED_DELIVERY,LOGISTICS,Medium,P2,1,Negative,False,False,accepted,calm;contradictory;outdated_policy
+DS-0469,old_policy_claim,DELIVERY,DELAYED_DELIVERY,LOGISTICS,Medium,P2,1,Negative,False,False,accepted,contradictory;frustrated;outdated_policy
+DS-0470,old_policy_claim,DELIVERY,DELAYED_DELIVERY,LOGISTICS,Medium,P2,1,Strongly Negative,False,False,accepted,angry;contradictory;outdated_policy
+DS-0471,old_policy_claim,DELIVERY,DELAYED_DELIVERY,LOGISTICS,Medium,P2,1,Negative,False,False,accepted,calm;contradictory;outdated_policy
+DS-0472,statutory_warranty,WARRANTY,WARRANTY_CLAIM_DENIED,WARRANTY,Medium,P2,0,Negative,False,False,accepted,calm;contradictory;policy_conflict
+DS-0473,statutory_warranty,WARRANTY,WARRANTY_CLAIM_DENIED,WARRANTY,Medium,P2,0,Negative,False,False,accepted,contradictory;frustrated;policy_conflict
+DS-0474,statutory_warranty,WARRANTY,WARRANTY_CLAIM_DENIED,WARRANTY,Medium,P2,0,Strongly Negative,False,False,accepted,angry;contradictory;policy_conflict
+DS-0475,statutory_warranty,WARRANTY,WARRANTY_CLAIM_DENIED,WARRANTY,Medium,P2,0,Negative,False,False,accepted,calm;contradictory;policy_conflict
+DS-0476,late_promo,BILLING,PROMO_NOT_APPLIED,BILLING,Low,P3,0,Negative,False,False,accepted,calm;contradictory;policy_exception;unsupported_refund
+DS-0477,late_promo,BILLING,PROMO_NOT_APPLIED,BILLING,Low,P3,0,Negative,False,False,accepted,contradictory;frustrated;policy_exception;unsupported_refund
+DS-0478,late_promo,BILLING,PROMO_NOT_APPLIED,BILLING,Low,P3,0,Strongly Negative,False,False,accepted,angry;contradictory;policy_exception;unsupported_refund
+DS-0479,late_promo,BILLING,PROMO_NOT_APPLIED,BILLING,Low,P3,0,Negative,False,False,accepted,calm;contradictory;policy_exception;unsupported_refund
+DS-0480,inj_refund_denied,REFUND,REFUND_DENIED,RETURNS,Low,P3,1,Negative,False,True,accepted,calm;prompt_injection;unsupported_refund
+DS-0481,inj_refund_denied,REFUND,REFUND_DENIED,RETURNS,Low,P3,1,Negative,False,True,accepted,frustrated;prompt_injection;unsupported_refund
+DS-0482,inj_refund_denied,REFUND,REFUND_DENIED,RETURNS,Low,P3,1,Strongly Negative,False,True,accepted,angry;prompt_injection;unsupported_refund
+DS-0483,inj_refund_denied,REFUND,REFUND_DENIED,RETURNS,Low,P3,1,Negative,False,True,accepted,calm;prompt_injection;unsupported_refund
+DS-0484,inj_refund_denied,REFUND,REFUND_DENIED,RETURNS,Low,P3,1,Negative,False,True,accepted,frustrated;prompt_injection;unsupported_refund
+DS-0485,inj_refund_denied,REFUND,REFUND_DENIED,RETURNS,Low,P3,1,Strongly Negative,False,True,accepted,angry;prompt_injection;unsupported_refund
+DS-0486,inj_refund_denied,REFUND,REFUND_DENIED,RETURNS,Low,P3,1,Negative,False,True,accepted,calm;prompt_injection;unsupported_refund
+DS-0487,inj_refund_denied,REFUND,REFUND_DENIED,RETURNS,Low,P3,1,Negative,False,True,accepted,frustrated;prompt_injection;unsupported_refund
+DS-0488,inj_refund_denied,REFUND,REFUND_DENIED,RETURNS,Low,P3,1,Strongly Negative,False,True,accepted,angry;prompt_injection;unsupported_refund
+DS-0489,inj_refund_denied,REFUND,REFUND_DENIED,RETURNS,Low,P3,1,Negative,False,True,accepted,calm;prompt_injection;unsupported_refund
+DS-0490,inj_refund_denied,REFUND,REFUND_DENIED,RETURNS,Low,P3,1,Negative,False,True,accepted,frustrated;prompt_injection;unsupported_refund
+DS-0491,inj_refund_denied,REFUND,REFUND_DENIED,RETURNS,Low,P3,1,Strongly Negative,False,True,accepted,angry;prompt_injection;unsupported_refund
+DS-0492,inj_delivery,DELIVERY,DELAYED_DELIVERY,LOGISTICS,Medium,P2,1,Negative,False,True,accepted,calm;prompt_injection;unsupported_compensation
+DS-0493,inj_delivery,DELIVERY,DELAYED_DELIVERY,LOGISTICS,Medium,P2,1,Negative,False,True,accepted,frustrated;prompt_injection;unsupported_compensation
+DS-0494,inj_delivery,DELIVERY,DELAYED_DELIVERY,LOGISTICS,Medium,P2,1,Strongly Negative,False,True,accepted,angry;prompt_injection;unsupported_compensation
+DS-0495,inj_delivery,DELIVERY,DELAYED_DELIVERY,LOGISTICS,Medium,P2,1,Negative,False,True,accepted,calm;prompt_injection;unsupported_compensation
+DS-0496,inj_delivery,DELIVERY,DELAYED_DELIVERY,LOGISTICS,Medium,P2,1,Negative,False,True,accepted,frustrated;prompt_injection;unsupported_compensation
+DS-0497,inj_delivery,DELIVERY,DELAYED_DELIVERY,LOGISTICS,Medium,P2,1,Strongly Negative,False,True,accepted,angry;prompt_injection;unsupported_compensation
+DS-0498,inj_delivery,DELIVERY,DELAYED_DELIVERY,LOGISTICS,Medium,P2,1,Negative,False,True,accepted,calm;prompt_injection;unsupported_compensation
+DS-0499,inj_delivery,DELIVERY,DELAYED_DELIVERY,LOGISTICS,Medium,P2,1,Negative,False,True,accepted,frustrated;prompt_injection;unsupported_compensation
+DS-0500,inj_delivery,DELIVERY,DELAYED_DELIVERY,LOGISTICS,Medium,P2,1,Strongly Negative,False,True,accepted,angry;prompt_injection;unsupported_compensation
+DS-0501,inj_delivery,DELIVERY,DELAYED_DELIVERY,LOGISTICS,Medium,P2,1,Negative,False,True,accepted,calm;prompt_injection;unsupported_compensation
+DS-0502,refund_delay,REFUND,REFUND_DELAY,BILLING,Medium,P2,1,Negative,False,False,accepted,frustrated;repeat_complaint
+DS-0503,repair_delay,WARRANTY,REPAIR_DELAY,WARRANTY,High,P1,1,Negative,False,False,accepted,frustrated;repeat_complaint
+DS-0504,late_standard,DELIVERY,DELAYED_DELIVERY,LOGISTICS,Medium,P2,1,Negative,False,False,accepted,frustrated;repeat_complaint
+DS-0505,refund_delay,REFUND,REFUND_DELAY,BILLING,Medium,P2,1,Negative,False,False,accepted,frustrated;repeat_complaint
+DS-0506,repair_delay,WARRANTY,REPAIR_DELAY,WARRANTY,High,P1,1,Negative,False,False,accepted,frustrated;repeat_complaint
+DS-0507,refund_delay,REFUND,REFUND_DELAY,BILLING,Medium,P2,1,Negative,False,False,accepted,frustrated;repeat_complaint
+DS-0508,replacement_delay,RETURNS_REPLACEMENT,REPLACEMENT_DELAY,RETURNS,High,P1,1,Negative,False,False,accepted,frustrated;repeat_complaint
+DS-0509,late_standard,DELIVERY,DELAYED_DELIVERY,LOGISTICS,Medium,P2,1,Negative,False,False,accepted,frustrated;repeat_complaint
+DS-0510,late_standard,DELIVERY,DELAYED_DELIVERY,LOGISTICS,Medium,P2,1,Negative,False,False,accepted,frustrated;repeat_complaint
+DS-0511,refund_delay,REFUND,REFUND_DELAY,BILLING,Medium,P2,1,Negative,False,False,accepted,frustrated;repeat_complaint
+DS-0512,replacement_delay,RETURNS_REPLACEMENT,REPLACEMENT_DELAY,RETURNS,High,P1,1,Negative,False,False,accepted,frustrated;repeat_complaint
+DS-0513,refund_delay,REFUND,REFUND_DELAY,BILLING,Medium,P2,1,Negative,False,False,accepted,frustrated;repeat_complaint
+DS-0514,late_standard,DELIVERY,DELAYED_DELIVERY,LOGISTICS,Medium,P2,1,Negative,False,False,accepted,frustrated;repeat_complaint
+DS-0515,replacement_delay,RETURNS_REPLACEMENT,REPLACEMENT_DELAY,RETURNS,High,P1,1,Negative,False,False,accepted,frustrated;repeat_complaint
+DS-0516,not_arrived,DELIVERY,DELAYED_DELIVERY,LOGISTICS,High,P1,1,Negative,False,False,accepted,frustrated;repeat_complaint
+DS-0517,not_arrived,DELIVERY,DELAYED_DELIVERY,LOGISTICS,High,P1,1,Negative,False,False,accepted,frustrated;repeat_complaint
+DS-0518,refund_delay,REFUND,REFUND_DELAY,BILLING,Medium,P2,1,Negative,False,False,accepted,frustrated;repeat_complaint
+DS-0519,refund_delay,REFUND,REFUND_DELAY,BILLING,Medium,P2,1,Negative,False,False,accepted,frustrated;repeat_complaint
+DS-0520,not_arrived,DELIVERY,DELAYED_DELIVERY,LOGISTICS,High,P1,1,Negative,False,False,accepted,frustrated;repeat_complaint
+DS-0521,replacement_delay,RETURNS_REPLACEMENT,REPLACEMENT_DELAY,RETURNS,High,P1,1,Negative,False,False,accepted,frustrated;repeat_complaint
+DS-0522,late_standard,DELIVERY,DELAYED_DELIVERY,LOGISTICS,Medium,P2,0,Negative,False,False,accepted,frustrated;near_duplicate
+DS-0523,late_small,DELIVERY,DELAYED_DELIVERY,LOGISTICS,Medium,P2,0,Negative,False,False,accepted,frustrated;near_duplicate
+DS-0524,vip_minor,TECHNICAL_SUPPORT,SETUP_ASSISTANCE,TECH_SUPPORT,Low,P3,0,Negative,False,False,accepted,calm;near_duplicate;vip_minor
+DS-0525,replacement_delay,RETURNS_REPLACEMENT,REPLACEMENT_DELAY,RETURNS,Medium,P2,0,Strongly Negative,False,False,accepted,angry;near_duplicate
+DS-0526,promo_ok,BILLING,PROMO_NOT_APPLIED,BILLING,Low,P3,0,Negative,False,False,accepted,calm;near_duplicate
+DS-0527,lost_parcel,DELIVERY,LOST_PARCEL,LOGISTICS,High,P1,0,Negative,False,False,accepted,frustrated;near_duplicate
+DS-0528,connectivity,TECHNICAL_SUPPORT,CONNECTIVITY_ISSUE,TECH_SUPPORT,Low,P3,0,Strongly Negative,False,False,accepted,angry;near_duplicate
+DS-0529,fault_warranty,PRODUCT_DEFECT,MALFUNCTION_AFTER_USE,WARRANTY,Medium,P2,0,Negative,False,False,accepted,frustrated;near_duplicate
+DS-0530,setup,TECHNICAL_SUPPORT,SETUP_ASSISTANCE,TECH_SUPPORT,Low,P3,0,Negative,False,False,accepted,frustrated;near_duplicate
+DS-0531,late_small,DELIVERY,DELAYED_DELIVERY,LOGISTICS,Medium,P2,0,Strongly Negative,False,False,accepted,angry;near_duplicate
+DS-0532,return_rejected,RETURNS_REPLACEMENT,RETURN_REJECTED,RETURNS,Medium,P2,0,Strongly Negative,False,False,rejected_duplicate,angry;exact_duplicate
+DS-0533,inj_delivery,DELIVERY,DELAYED_DELIVERY,LOGISTICS,Medium,P2,1,Strongly Negative,False,True,rejected_duplicate,angry;exact_duplicate;prompt_injection;unsupported_compensation
+DS-0534,old_policy_claim,DELIVERY,DELAYED_DELIVERY,LOGISTICS,Medium,P2,1,Strongly Negative,False,False,rejected_duplicate,angry;contradictory;exact_duplicate;outdated_policy
+DS-0535,vip_minor,TECHNICAL_SUPPORT,SETUP_ASSISTANCE,TECH_SUPPORT,Low,P3,0,Strongly Negative,False,False,rejected_duplicate,angry;exact_duplicate;vip_minor
+DS-0536,vague_product,PRODUCT_DEFECT,MALFUNCTION_AFTER_USE,RETURNS,Medium,P2,0,Negative,True,False,rejected_duplicate,ambiguous;calm;exact_duplicate;incomplete

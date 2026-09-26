@@ -47,7 +47,7 @@ services:
     build: .
     env_file: .env
     environment: *container_env
-    command: celery -A src.worker worker --loglevel INFO -Q default,ingest --concurrency 2
+    command: celery -A src.worker worker --loglevel INFO -Q default,ingest,analysis --concurrency 2
     volumes: [storage:/app/.data/storage]
     depends_on:
       postgres: {condition: service_healthy}

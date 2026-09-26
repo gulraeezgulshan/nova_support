@@ -1,15 +1,35 @@
 # Complaint taxonomy for VoltHaven Electronics. Seeded into the database; editable at runtime.
 departments:
-  - {code: BILLING,            name: Billing & Payments,       description: Charges, invoices, payment disputes, subscriptions}
-  - {code: LOGISTICS,          name: Logistics & Delivery,     description: Shipping, couriers, delivery delays and lost parcels}
-  - {code: RETURNS,            name: Returns & Refunds,        description: Returns, refunds, replacements and exchanges}
-  - {code: WARRANTY,           name: Warranty & Repairs,       description: Warranty claims, repairs and service centres}
-  - {code: TECH_SUPPORT,       name: Technical Support,        description: Device setup, software, connectivity and troubleshooting}
-  - {code: CUSTOMER_RELATIONS, name: Customer Relations,       description: Service quality, staff behaviour, goodwill}
-  - {code: ACCOUNT_SECURITY,   name: Account Security,         description: Login, account access, fraud and unauthorised activity}
-  - {code: PRIVACY_COMPLIANCE, name: Privacy & Compliance,     description: Personal data, consent, legal and regulatory matters}
-  - {code: PRODUCT_SAFETY,     name: Product Safety,           description: Hazards, battery incidents, injuries and recalls}
-  - {code: MGMT_ESCALATIONS,   name: Management Escalations,   description: Critical, high-value and executive escalations}
+  - code: BILLING
+    name: Billing & Payments
+    description: "Charges, invoices, payment disputes, subscriptions"
+  - code: LOGISTICS
+    name: Logistics & Delivery
+    description: "Shipping, couriers, delivery delays and lost parcels"
+  - code: RETURNS
+    name: Returns & Refunds
+    description: "Returns, refunds, replacements and exchanges"
+  - code: WARRANTY
+    name: Warranty & Repairs
+    description: "Warranty claims, repairs and service centres"
+  - code: TECH_SUPPORT
+    name: Technical Support
+    description: "Device setup, software, connectivity and troubleshooting"
+  - code: CUSTOMER_RELATIONS
+    name: Customer Relations
+    description: "Service quality, staff behaviour, goodwill"
+  - code: ACCOUNT_SECURITY
+    name: Account Security
+    description: "Login, account access, fraud and unauthorised activity"
+  - code: PRIVACY_COMPLIANCE
+    name: Privacy & Compliance
+    description: "Personal data, consent, legal and regulatory matters"
+  - code: PRODUCT_SAFETY
+    name: Product Safety
+    description: "Hazards, battery incidents, injuries and recalls"
+  - code: MGMT_ESCALATIONS
+    name: Management Escalations
+    description: "Critical, high-value and executive escalations"
 
 categories:
   - code: DELIVERY
@@ -73,7 +93,7 @@ categories:
     name: Safety
     subcategories:
       - {code: OVERHEATING_BATTERY, name: Overheating or swelling battery}
-      - {code: ELECTRICAL_HAZARD,   name: Electrical hazard (sparks, shock, smoke)}
+      - {code: ELECTRICAL_HAZARD,   name: "Electrical hazard (sparks, shock, smoke)"}
       - {code: INJURY_REPORTED,     name: Injury or property damage reported}
   - code: SERVICE_QUALITY
     name: Service Quality

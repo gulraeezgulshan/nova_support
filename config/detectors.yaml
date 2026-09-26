@@ -1,0 +1,159 @@
+# Deterministic risk-signal lexicons (Python, no LLM). Each pattern is a regular expression,
+# matched case-insensitively on word boundaries against the complaint text. These signals
+# feed the rule matrix, so urgency and escalation never depend on the GenAI model or on
+# emotional wording alone. Keep every pattern single-quoted (regex characters are YAML
+# syntax otherwise).
+signals:
+  safety_hazard:
+    description: Product may be dangerous (heat, fire, smoke, sparks, swelling, shock)
+    patterns:
+      - 'overheat\w*'
+      - 'very hot'
+      - 'too hot to (?:touch|hold)'
+      - 'burn(?:ing|t)? smell'
+      - 'smok(?:e|ed|ing)'
+      - 'sparks?'
+      - 'sparking'
+      - 'fire'
+      - 'flames?'
+      - 'melt(?:ed|ing)'
+      - 'swell(?:ing|ed|s)?'
+      - 'swollen'
+      - 'bulg(?:e|ing|ed)'
+      - 'explod\w*'
+      - 'short[- ]circuit\w*'
+      - 'electric(?:al)? shock'
+      - 'shocked me'
+      - 'scorch\w*'
+  injury:
+    description: A person was hurt or property damaged
+    patterns:
+      - 'injur\w*'
+      - 'burn(?:ed|t) (?:my|his|her|their) (?:hand|finger|fingers|arm|skin|leg)'
+      - 'blister\w*'
+      - 'hospital'
+      - 'doctor'
+      - 'first aid'
+      - 'damaged (?:my|the) (?:table|desk|sofa|carpet|floor|wall|bed)'
+  privacy_exposure:
+    description: Personal data exposed to another person
+    patterns:
+      - "someone else'?s (?:order|details|address|name|invoice|data)"
+      - "another (?:customer|person)'?s (?:details|data|address|invoice|order|name)"
+      - 'my (?:personal )?(?:data|details|address|information) (?:was|were|is|has been) (?:shared|leaked|exposed|visible|sent|given)'
+      - 'data (?:breach|leak)'
+      - 'leaked'
+      - "(?:saw|see|seeing|can see) (?:other people'?s|another customer'?s)"
+      - 'gdpr'
+  account_compromise:
+    description: Unauthorised account access or transactions
+    patterns:
+      - 'hacked'
+      - 'unauthori[sz]ed (?:access|login|log-in|purchases?|orders?|transactions?|charges?)'
+      - 'someone (?:logged|got|broke) into my account'
+      - "i did(?: not|n'?t) (?:place|make|authori[sz]e) (?:this |these |that |those )?(?:orders?|purchases?|charges?)"
+      - 'password (?:was )?changed without'
+      - 'suspicious (?:login|log-in|activity)'
+      - 'stolen (?:card|account)'
+  legal_threat:
+    description: Mentions legal action or regulators
+    patterns:
+      - 'lawyers?'
+      - 'solicitors?'
+      - 'attorneys?'
+      - 'legal action'
+      - 'sue'
+      - 'suing'
+      - 'court'
+      - 'lawsuit'
+      - 'small claims'
+      - 'consumer (?:protection|rights) (?:authority|agency|council|tribunal)'
+      - 'ombudsman'
+      - 'regulator'
+      - 'trading standards'
+  repeat_contact:
+    description: Customer says the issue was raised before
+    patterns:
+      - '(?:second|third|fourth|fifth|2nd|3rd|4th|5th) time'
+      - 'again and again'
+      - "(?:still|yet) (?:not|no|nothing|haven'?t|hasn'?t|waiting)"
+      - 'already (?:complained|contacted|reported|called|emailed|raised|written)'
+      - '(?:previous|earlier|last|my other) complaint'
+      - '(?:weeks|days|months) (?:and|with) no (?:reply|response|resolution)'
+      - 'keep (?:getting|being) told'
+  cancellation_threat:
+    description: Customer threatens to leave
+    patterns:
+      - 'cancel my account'
+      - 'close my account'
+      - 'never (?:buy|shop|order)(?: from you)? again'
+      - 'switching to'
+      - 'take my business elsewhere'
+  emotional_intensity:
+    description: Strong emotional wording (reported, but never drives urgency on its own)
+    patterns:
+      - 'furious'
+      - 'disgusted'
+      - 'outraged'
+      - 'unacceptable'
+      - 'ridiculous'
+      - 'worst'
+      - 'horrible'
+      - 'terrible'
+      - 'pathetic'
+      - 'scam'
+      - 'livid'
+      - 'fed up'
+  prompt_injection:
+    description: Text that tries to instruct the AI or impersonate staff
+    patterns:
+      - 'ignore (?:all |any |your |the )?(?:previous |prior |above )?(?:instructions|rules|guidelines|policies|policy)'
+      - 'disregard (?:all |your |the )?(?:previous |prior )?(?:instructions|rules|policy|policies)'
+      - 'you are now'
+      - '(?:act|pretend) (?:as|to be) (?:an? |the )?(?:\w+ )?(?:admin|administrator|manager|supervisor|system)'
+      - 'system prompt'
+      - '(?:new|updated) instructions?'
+      - '(?:approve|authori[sz]e|issue) (?:my|a|the) (?:full )?(?:refund|compensation|replacement) (?:immediately|now|automatically)'
+      - 'as (?:an? |the )?(?:\w+ )?(?:admin|administrator|agent|supervisor|manager),? i (?:approve|authori[sz]e)'
+      - '(?:agent|staff|internal) note:'
+      - 'no verification (?:is )?(?:needed|required)'
+      - '\[(?:system|admin|assistant)\]'
+      - '<\s*/?\s*(?:system|instructions?|policy|policies|complaint)\s*>'
+      - 'respond only with'
+      - 'override (?:the )?(?:policy|rules|validation)'
+  policy_claim:
+    description: Customer asserts a policy or entitlement (must be verified, never trusted)
+    patterns:
+      - '(?:your|the) (?:policy|faq|website) (?:says|states|guarantees|promises)'
+      - 'i am (?:entitled|owed)'
+      - '(?:agent|someone|staff|your colleague) (?:already )?(?:promised|approved|agreed|told me i would get)'
+      - 'guaranteed (?:refund|replacement|compensation)'
+  repeated_repair:
+    description: Same fault repaired before
+    patterns:
+      - 'repaired (?:twice|two times|three times|again|before)'
+      - '(?:second|third|2nd|3rd) repair'
+      - '(?:back|sent it) (?:for|to) repair again'
+      - 'same (?:fault|problem|issue) (?:again|keeps coming back|came back)'
+  requests_refund:
+    description: Customer asks for money back
+    patterns:
+      - 'refund'
+      - 'money back'
+      - 'reimburse\w*'
+      - 'chargeback'
+  requests_replacement:
+    description: Customer asks for a replacement
+    patterns:
+      - 'replac(?:e|ement|ed)'
+      - 'new (?:one|unit|device)'
+      - 'swap (?:it|the unit)'
+  requests_compensation:
+    description: Customer asks for compensation beyond a refund
+    patterns:
+      - 'compensat\w*'
+      - 'voucher'
+      - 'store credit'
+      - 'goodwill'
+      - 'free (?:upgrade|gift|month|months|product)'
+      - 'discount (?:for|on) (?:my|the) (?:trouble|inconvenience)'

@@ -1,0 +1,35 @@
+# Controlled values used in complaint analysis. The GenAI output schema is generated from
+# these lists (plus the taxonomy in the database), so adding a value here needs no code change.
+sentiments: [Positive, Neutral, Negative, Strongly Negative]
+emotions: [Frustration, Anger, Disappointment, Confusion, Anxiety, Urgency, Satisfaction]
+urgencies: [Low, Medium, High, Critical]
+priorities: [P0, P1, P2, P3]   # must match sla_policies
+escalation_levels:
+  - {level: 0, code: NONE,        name: No Escalation}
+  - {level: 1, code: SUPERVISOR,  name: Supervisor Review}
+  - {level: 2, code: DEPT_MANAGER, name: Department Manager}
+  - {level: 3, code: SPECIALIST,  name: Specialist Team}
+  - {level: 4, code: COMPLIANCE,  name: Compliance Review}
+  - {level: 5, code: CRITICAL,    name: Critical Management Escalation}
+response_tones: [Professional, Empathetic, Concise, Formal]
+response_types:
+  - Apology and Resolution Update
+  - Information Request
+  - Escalation Acknowledgement
+  - Refund Status Update
+  - Replacement Status Update
+  - Resolution Confirmation
+  - Safety Advisory
+  - Policy Explanation
+follow_up_types:
+  - REQUEST_INFORMATION
+  - RESOLUTION_CONFIRMATION
+  - REFUND_STATUS_UPDATE
+  - REPLACEMENT_STATUS_UPDATE
+  - DELIVERY_STATUS_UPDATE
+  - REPAIR_STATUS_UPDATE
+  - ESCALATION_ACKNOWLEDGEMENT
+  - CLOSURE_CONFIRMATION
+compensation_types: [none, store_credit, shipping_fee_refund, partial_refund, full_refund, replacement, repair, voucher]
+policy_applicability: [applicable, conditionally_applicable, not_applicable, outdated]
+complaint_channels: [web_form, email, live_chat, whatsapp, phone_callback]

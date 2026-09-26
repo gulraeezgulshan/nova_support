@@ -1,0 +1,64 @@
+# Controlled vocabulary of resolution actions. The GenAI pipeline must express every
+# resolution step with one of these codes, so the rule matrix can check required and
+# prohibited actions deterministically.
+# kind: verification | communication | remedy | escalation | internal
+actions:
+  # verification
+  - {code: VERIFY_ACCOUNT,              kind: verification, description: Verify the customer's identity and account}
+  - {code: VERIFY_ORDER,                kind: verification, description: "Verify the order, purchase date and items"}
+  - {code: VERIFY_SHIPMENT_STATUS,      kind: verification, description: Check courier tracking and shipment status}
+  - {code: VERIFY_TRANSACTION,          kind: verification, description: Check the payment transaction and charges}
+  - {code: VERIFY_WARRANTY_STATUS,      kind: verification, description: "Confirm warranty coverage, dates and serial number"}
+  - {code: VERIFY_REFUND_STATUS,        kind: verification, description: Trace the refund status and processing date}
+  - {code: VERIFY_REPAIR_HISTORY,       kind: verification, description: Review previous repairs and replacements}
+  - {code: VERIFY_COMPLAINT_HISTORY,    kind: verification, description: Review the customer's previous complaints}
+  - {code: REQUEST_EVIDENCE,            kind: verification, description: "Request photos, video or documents as evidence"}
+  - {code: REQUEST_MISSING_INFORMATION, kind: verification, description: Ask the customer for missing details}
+  - {code: CHECK_REFUND_ELIGIBILITY,    kind: verification, description: Check refund eligibility against the Refund Policy}
+  - {code: CHECK_REPLACEMENT_ELIGIBILITY, kind: verification, description: Check replacement eligibility against the Warranty and Replacement Policy}
+  - {code: CHECK_COMPENSATION_ELIGIBILITY, kind: verification, description: Check delivery compensation eligibility}
+  # communication
+  - {code: CONFIRM_DELIVERY_DATE,       kind: communication, description: Confirm a revised delivery date with the courier and customer}
+  - {code: EXPLAIN_POLICY,              kind: communication, description: Explain the applicable policy to the customer}
+  - {code: PROVIDE_TROUBLESHOOTING,     kind: communication, description: Provide troubleshooting or setup steps}
+  - {code: ADVISE_STOP_USING_PRODUCT,   kind: communication, description: Tell the customer to stop using the product immediately}
+  - {code: APOLOGISE,                   kind: communication, description: Apologise for the experience}
+  - {code: SEND_STATUS_UPDATE,          kind: communication, description: Send a status update to the customer}
+  # remedies
+  - {code: OFFER_STORE_CREDIT,          kind: remedy, description: Offer store credit within policy limits}
+  - {code: REFUND_SHIPPING_FEE,         kind: remedy, description: Refund the express shipping fee}
+  - {code: ISSUE_FULL_REFUND,           kind: remedy, description: Issue a full refund}
+  - {code: ISSUE_PARTIAL_REFUND,        kind: remedy, description: Issue a partial refund within policy limits}
+  - {code: ARRANGE_REPLACEMENT,         kind: remedy, description: Arrange a replacement unit}
+  - {code: ARRANGE_REPAIR,              kind: remedy, description: Arrange a warranty repair}
+  - {code: ARRANGE_RETURN_PICKUP,       kind: remedy, description: Schedule a return pickup}
+  - {code: REVERSE_DUPLICATE_CHARGE,    kind: remedy, description: Reverse a verified duplicate charge}
+  - {code: CORRECT_CHARGE,              kind: remedy, description: Correct a verified incorrect charge}
+  - {code: CANCEL_SUBSCRIPTION,         kind: remedy, description: Cancel the subscription as requested}
+  - {code: APPLY_PROMOTION,             kind: remedy, description: Apply a valid promotion retroactively}
+  - {code: REDIRECT_PARCEL,             kind: remedy, description: Help redirect a parcel}
+  - {code: RESET_ACCOUNT_ACCESS,        kind: remedy, description: Reset account access after verification}
+  - {code: SECURE_ACCOUNT,              kind: remedy, description: Lock the account and revoke sessions}
+  - {code: PROCESS_DATA_DELETION,       kind: remedy, description: Process a verified data deletion request}
+  - {code: UPDATE_MARKETING_CONSENT,    kind: remedy, description: Remove marketing consent}
+  - {code: OFFER_GOODWILL_GESTURE,      kind: remedy, description: Offer a goodwill gesture (requires approval)}
+  # escalation / internal
+  - {code: ESCALATE_TO_SUPERVISOR,      kind: escalation, description: Escalate for supervisor review}
+  - {code: ESCALATE_TO_MANAGER,         kind: escalation, description: Escalate to the department manager}
+  - {code: ESCALATE_TO_SPECIALIST,      kind: escalation, description: Escalate to a specialist team}
+  - {code: ESCALATE_TO_COMPLIANCE,      kind: escalation, description: Escalate for compliance review}
+  - {code: ESCALATE_TO_CRITICAL_MANAGEMENT, kind: escalation, description: Critical management escalation}
+  - {code: OPEN_COURIER_INVESTIGATION,  kind: internal, description: Open a courier investigation}
+  - {code: OPEN_SAFETY_INCIDENT,        kind: internal, description: Open a product safety incident}
+  - {code: OPEN_SECURITY_INCIDENT,      kind: internal, description: Open an account security incident}
+  - {code: OPEN_PRIVACY_INCIDENT,       kind: internal, description: Open a data privacy incident}
+  - {code: RECORD_STAFF_FEEDBACK,       kind: internal, description: Record feedback on staff or courier conduct}
+  - {code: RECORD_POLICY_EXCEPTION,     kind: internal, description: Record an approved policy exception}
+  # prohibited-only codes (appear in rules as things that must NOT be done)
+  - {code: PROMISE_REFUND_BEFORE_VERIFICATION, kind: remedy, description: Promise a refund before eligibility is verified}
+  - {code: PROMISE_CASH_COMPENSATION,  kind: remedy, description: Promise cash compensation}
+  - {code: PROMISE_DELIVERY_DATE_UNVERIFIED, kind: communication, description: Promise a delivery date not confirmed by the courier}
+  - {code: GUARANTEE_REPLACEMENT_BEFORE_ASSESSMENT, kind: remedy, description: Guarantee replacement before the product is assessed}
+  - {code: PROMISE_BANK_POSTING_DATE,  kind: communication, description: Promise a specific date the bank will post a refund}
+  - {code: DISCUSS_LIABILITY,          kind: communication, description: Discuss legal liability}
+  - {code: GRANT_POLICY_EXCEPTION,     kind: remedy, description: Grant an exception to company policy without approval}

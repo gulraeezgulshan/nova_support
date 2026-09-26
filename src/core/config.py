@@ -54,6 +54,15 @@ class Settings(BaseSettings):
     embedding_dim: int = 384
     chunk_max_tokens: int = 450
     chunk_overlap_tokens: int = 60
+    retrieval_limit: int = 8
+
+    # GenAI pipeline (the model is configuration, not code)
+    genai_provider: Literal["anthropic"] = "anthropic"
+    genai_model: str = "claude-opus-5"
+    genai_effort: Literal["low", "medium", "high", "xhigh", "max"] = "low"
+    genai_timeout_seconds: float = 60.0
+    genai_max_attempts: int = Field(default=2, ge=1, le=3)  # 1 call + 1 repair retry
+    anthropic_api_key: str | None = None
 
     @computed_field  # type: ignore[prop-decorator]
     @property

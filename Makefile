@@ -1,5 +1,5 @@
 # Common development tasks. Run `make help` for the list.
-.PHONY: help setup infra migrate seed import-docs api worker web test lint format openapi check
+.PHONY: help setup infra migrate seed import-docs load-dataset analyze api worker web test lint format openapi check
 
 help:           ## Show this help
 	@grep -E '^[a-z-]+:.*##' $(MAKEFILE_LIST) | awk -F':.*## ' '{printf "  %-12s %s\n", $$1, $$2}'
@@ -14,18 +14,25 @@ infra:          ## Start Postgres (pgvector) and Redis in Docker
 migrate:        ## Apply database migrations
 	uv run alembic upgrade head
 
-seed:           ## Load the complaint taxonomy and SLAs from config/
+seed:           ## Load the taxonomy, SLAs and the rule matrix
 	uv run python -m database.seed
 
 import-docs:    ## Build and import the sample knowledge-base documents
 	uv run python -m sample_documents.build_documents
+	uv run python -m knowledge_base.import_documents sample_documents/generated/archive
 	uv run python -m knowledge_base.import_documents sample_documents/generated
+
+load-dataset:   ## Load the 536-complaint labelled dataset (customers, orders, complaints)
+	uv run python -m sample_complaints.load_dataset
+
+analyze:        ## Analyse 10 unanalysed dataset complaints with the configured model (needs ANTHROPIC_API_KEY)
+	uv run python -m genai_pipeline.analyze --limit 10
 
 api:            ## Run the FastAPI server (http://localhost:8000/docs)
 	uv run uvicorn src.main:app --reload --port 8000
 
 worker:         ## Run the Celery worker
-	uv run celery -A src.worker worker --loglevel INFO -Q default,ingest --concurrency 2
+	uv run celery -A src.worker worker --loglevel INFO -Q default,ingest,analysis --concurrency 2
 
 web:            ## Run the Next.js app (http://localhost:3000)
 	pnpm --dir web dev

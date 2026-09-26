@@ -23,12 +23,15 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
-import { listComplaintsOptions } from "@/lib/api/generated/@tanstack/react-query.gen";
+import {
+  getVocabularyOptions,
+  listComplaintsOptions,
+} from "@/lib/api/generated/@tanstack/react-query.gen";
 import type { ComplaintStatus } from "@/lib/api/generated/types.gen";
 import { apiErrorMessage } from "@/lib/api/errors";
-import { formatDateTime, humanize, STATUS_LABELS } from "@/lib/format";
+import { formatDate, formatDateTime, humanize, STATUS_LABELS } from "@/lib/format";
 
-import { EscalationBadge, PriorityBadge, StatusBadge } from "./badges";
+import { EscalationBadge, PriorityBadge, SLA_LABELS, SlaBadge, StatusBadge } from "./badges";
 import { VerdictBadge } from "./validation-panel";
 
 const ALL = "__all__";
@@ -39,7 +42,13 @@ export function ComplaintsTable({ staff }: { staff: boolean }) {
   const [status, setStatus] = useState<string>(ALL);
   const [priority, setPriority] = useState<string>(ALL);
   const [reviewOnly, setReviewOnly] = useState(false);
+  const [sentiment, setSentiment] = useState<string>(ALL);
+  const [sla, setSla] = useState<string>(ALL);
+  const [escalated, setEscalated] = useState<string>(ALL);
+  const [dateFrom, setDateFrom] = useState("");
+  const [dateTo, setDateTo] = useState("");
   const [page, setPage] = useState(1);
+  const vocabulary = useQuery({ ...getVocabularyOptions(), enabled: staff, staleTime: Infinity });
 
   const query = useQuery({
     ...listComplaintsOptions({
@@ -48,6 +57,11 @@ export function ComplaintsTable({ staff }: { staff: boolean }) {
         status: status === ALL ? undefined : (status as ComplaintStatus),
         priority: priority === ALL ? undefined : priority,
         needs_review: reviewOnly ? true : undefined,
+        sentiment: sentiment === ALL ? undefined : sentiment,
+        sla_status: sla === ALL ? undefined : sla,
+        escalated: escalated === ALL ? undefined : escalated === "yes",
+        date_from: dateFrom || undefined,
+        date_to: dateTo || undefined,
         page,
         page_size: PAGE_SIZE,
       },
@@ -98,6 +112,56 @@ export function ComplaintsTable({ staff }: { staff: boolean }) {
               ))}
             </SelectContent>
           </Select>
+          <Select value={sentiment} onValueChange={reset(setSentiment)}>
+            <SelectTrigger className="w-44">
+              <SelectValue />
+            </SelectTrigger>
+            <SelectContent>
+              <SelectItem value={ALL}>All sentiments</SelectItem>
+              {(vocabulary.data?.sentiments ?? []).map((s) => (
+                <SelectItem key={s} value={s}>
+                  {s}
+                </SelectItem>
+              ))}
+            </SelectContent>
+          </Select>
+          <Select value={escalated} onValueChange={reset(setEscalated)}>
+            <SelectTrigger className="w-40">
+              <SelectValue />
+            </SelectTrigger>
+            <SelectContent>
+              <SelectItem value={ALL}>Any escalation</SelectItem>
+              <SelectItem value="yes">Escalated</SelectItem>
+              <SelectItem value="no">Not escalated</SelectItem>
+            </SelectContent>
+          </Select>
+          <Select value={sla} onValueChange={reset(setSla)}>
+            <SelectTrigger className="w-36">
+              <SelectValue />
+            </SelectTrigger>
+            <SelectContent>
+              <SelectItem value={ALL}>Any SLA</SelectItem>
+              {Object.entries(SLA_LABELS).map(([value, label]) => (
+                <SelectItem key={value} value={value}>
+                  {label}
+                </SelectItem>
+              ))}
+            </SelectContent>
+          </Select>
+          <Input
+            type="date"
+            className="w-40"
+            aria-label="Submitted from"
+            value={dateFrom}
+            onChange={(e) => reset(setDateFrom)(e.target.value)}
+          />
+          <Input
+            type="date"
+            className="w-40"
+            aria-label="Submitted to"
+            value={dateTo}
+            onChange={(e) => reset(setDateTo)(e.target.value)}
+          />
           <Button
             variant={reviewOnly ? "default" : "outline"}
             onClick={() => reset(setReviewOnly)(!reviewOnly)}
@@ -130,10 +194,17 @@ export function ComplaintsTable({ staff }: { staff: boolean }) {
                     <TableHead>Priority</TableHead>
                     <TableHead>Escalation</TableHead>
                     <TableHead>Validation</TableHead>
+                    <TableHead>SLA</TableHead>
                   </>
                 ) : null}
                 <TableHead>Department</TableHead>
                 <TableHead>Submitted</TableHead>
+                {staff ? null : (
+                  <>
+                    <TableHead>Latest update</TableHead>
+                    <TableHead>Resolution</TableHead>
+                  </>
+                )}
               </TableRow>
             </TableHeader>
             <TableBody>
@@ -171,12 +242,28 @@ export function ComplaintsTable({ staff }: { staff: boolean }) {
                       <TableCell>
                         <VerdictBadge verdict={c.verification} />
                       </TableCell>
+                      <TableCell>
+                        <SlaBadge status={c.sla_status} />
+                      </TableCell>
                     </>
                   ) : null}
                   <TableCell>{humanize(c.department_code)}</TableCell>
                   <TableCell className="whitespace-nowrap text-muted-foreground">
                     {formatDateTime(c.created_at)}
                   </TableCell>
+                  {staff ? null : (
+                    <>
+                      <TableCell className="max-w-80 text-muted-foreground">
+                        <p className="truncate" title={c.latest_update ?? undefined}>
+                          {c.latest_update ?? "—"}
+                        </p>
+                        <p className="text-xs">{formatDateTime(c.latest_update_at)}</p>
+                      </TableCell>
+                      <TableCell className="whitespace-nowrap">
+                        {c.resolved_at ? `Resolved ${formatDate(c.resolved_at)}` : "Open"}
+                      </TableCell>
+                    </>
+                  )}
                 </TableRow>
               ))}
             </TableBody>

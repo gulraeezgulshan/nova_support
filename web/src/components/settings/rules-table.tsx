@@ -1,7 +1,7 @@
 "use client";
 
 import { useQuery } from "@tanstack/react-query";
-import { Download } from "lucide-react";
+import { Download, Pencil, Plus } from "lucide-react";
 import { useMemo, useState } from "react";
 
 import { Badge } from "@/components/ui/badge";
@@ -18,13 +18,21 @@ import {
 } from "@/components/ui/table";
 import { exportRules } from "@/lib/api/generated";
 import { listRulesOptions } from "@/lib/api/generated/@tanstack/react-query.gen";
+import type { RuleOut } from "@/lib/api/generated/types.gen";
 import { apiErrorMessage } from "@/lib/api/errors";
 
 import { PriorityBadge } from "../complaints/badges";
+import { RuleEditor } from "./rule-editor";
 
-export function RulesTable() {
+export function RulesTable({ canEdit }: { canEdit: boolean }) {
   const rules = useQuery(listRulesOptions());
   const [filter, setFilter] = useState("");
+  const [editing, setEditing] = useState<RuleOut | undefined>();
+  const [editorOpen, setEditorOpen] = useState(false);
+  const openEditor = (rule?: RuleOut) => {
+    setEditing(rule);
+    setEditorOpen(true);
+  };
   const visible = useMemo(() => {
     const needle = filter.trim().toLowerCase();
     return (rules.data ?? []).filter((r) =>
@@ -64,6 +72,11 @@ export function RulesTable() {
         <Button variant="outline" onClick={download}>
           <Download /> Export CSV
         </Button>
+        {canEdit ? (
+          <Button onClick={() => openEditor()}>
+            <Plus /> New rule
+          </Button>
+        ) : null}
         <span className="self-center text-sm text-muted-foreground">
           {visible.length} of {rules.data.length} rules
         </span>
@@ -78,6 +91,7 @@ export function RulesTable() {
               <TableHead>Outcome</TableHead>
               <TableHead>Required / prohibited</TableHead>
               <TableHead>Policy</TableHead>
+              {canEdit ? <TableHead className="w-10" /> : null}
             </TableRow>
           </TableHeader>
           <TableBody>
@@ -117,11 +131,25 @@ export function RulesTable() {
                 <TableCell className="align-top font-mono text-[11px]">
                   {r.policy_refs.join(" ")}
                 </TableCell>
+                {canEdit ? (
+                  <TableCell className="align-top">
+                    <Button
+                      variant="ghost"
+                      size="icon"
+                      className="size-7"
+                      aria-label={`Edit ${r.rule_id}`}
+                      onClick={() => openEditor(r)}
+                    >
+                      <Pencil />
+                    </Button>
+                  </TableCell>
+                ) : null}
               </TableRow>
             ))}
           </TableBody>
         </Table>
       </div>
+      <RuleEditor rule={editing} open={editorOpen} onOpenChange={setEditorOpen} />
     </div>
   );
 }

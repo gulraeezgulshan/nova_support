@@ -39,3 +39,28 @@ export function EscalationBadge({ level }: { level?: number | null }) {
     </Badge>
   );
 }
+
+const SLA_STYLES: Record<string, string> = {
+  on_track: "border-emerald-600/40 bg-emerald-500/10 text-emerald-700 dark:text-emerald-400",
+  at_risk: "border-amber-600/40 bg-amber-500/10 text-amber-700 dark:text-amber-400",
+  breached: "border-red-600/40 bg-red-500/10 text-red-700 dark:text-red-400",
+  met: "text-muted-foreground",
+  missed: "border-red-600/30 text-red-700 dark:text-red-400",
+};
+export const SLA_LABELS: Record<string, string> = {
+  pending: "Awaiting triage",
+  on_track: "On track",
+  at_risk: "At risk",
+  breached: "Breached",
+  met: "Met",
+  missed: "Missed",
+};
+
+export function SlaBadge({ status }: { status?: string | null }) {
+  if (!status || status === "pending") return <span className="text-muted-foreground">—</span>;
+  return (
+    <Badge variant="outline" className={SLA_STYLES[status]}>
+      {SLA_LABELS[status] ?? status}
+    </Badge>
+  );
+}

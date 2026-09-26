@@ -15,9 +15,9 @@ export default async function RulesPage() {
     <>
       <PageHeader
         title="Complaint Resolution Rule Matrix"
-        description="The Python ground truth: resolution rules per category and escalation rules that apply to every complaint."
+        description="The Python ground truth: resolution rules per category and escalation rules that apply to every complaint. Administrators can add and edit rules."
       />
-      <RulesTable />
+      <RulesTable canEdit={result.user.role === "admin"} />
     </>
   );
 }

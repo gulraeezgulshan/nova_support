@@ -25,7 +25,7 @@ import { AnalysisPanel } from "./analysis-panel";
 import { ReviewPanel } from "./review-panel";
 import { StatusControl } from "./status-control";
 import { ValidationPanel, VerdictBadge } from "./validation-panel";
-import { EscalationBadge, PriorityBadge, StatusBadge } from "./badges";
+import { EscalationBadge, PriorityBadge, SlaBadge, StatusBadge } from "./badges";
 
 const SIGNAL_LABELS: Record<string, string> = {
   safety_hazard: "Safety hazard",
@@ -208,6 +208,29 @@ export function ComplaintView({
                 ) : null}
                 {staff && c.supporting_departments?.length ? (
                   <Row label="Supporting">{c.supporting_departments.map(humanize).join(", ")}</Row>
+                ) : null}
+                {staff ? (
+                  <>
+                    <Row label="SLA">
+                      <SlaBadge status={c.sla_status} />
+                    </Row>
+                    {c.first_response_due_at ? (
+                      <Row label="First response">
+                        {c.first_responded_at
+                          ? `Sent ${formatDateTime(c.first_responded_at)}`
+                          : `Due ${formatDateTime(c.first_response_due_at)}`}
+                      </Row>
+                    ) : null}
+                    {c.resolution_due_at ? (
+                      <Row label="Resolution">
+                        {c.resolved_at
+                          ? `Resolved ${formatDateTime(c.resolved_at)}`
+                          : `Due ${formatDateTime(c.resolution_due_at)}`}
+                      </Row>
+                    ) : null}
+                  </>
+                ) : c.resolved_at ? (
+                  <Row label="Resolved">{formatDateTime(c.resolved_at)}</Row>
                 ) : null}
               </dl>
             </CardContent>

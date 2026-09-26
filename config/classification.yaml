@@ -1,0 +1,157 @@
+# Python keyword classifier used by the Ground-Truth Validation Pipeline to check the GenAI
+# category independently. Each subcategory lists regular expressions (matched
+# case-insensitively on word boundaries) with a weight: 3 = decisive phrase, 2 = strong hint,
+# 1 = weak hint. A new subcategory only needs an entry here (no code change).
+# Keep every pattern single-quoted.
+thresholds:
+  confident: 3      # top score needed to call a category
+  secondary: 3      # score needed to report another category as a secondary issue
+subcategories:
+  DELIVERY:
+    DELAYED_DELIVERY:
+      - [3, 'arriv\w* (?:\w+ ){0,4}late|(?:was|were|is|came|turned up) (?:\w+ ){0,3}late']
+      - [3, 'late (?:delivery|order|parcel)|delivery (?:was |is )?(?:late|delayed)|delayed (?:delivery|order|parcel)']
+      - [3, '(?:has not|hasn''t|never|not yet) (?:arrived|come|been delivered)|not arrived|overdue|where is my (?:order|parcel|package)']
+      - [2, 'business days? (?:late|after)|promised (?:date|delivery)|delivery date|committed date']
+      - [1, 'express (?:delivery|shipping)|standard delivery']
+      - [3, '(?:supposed|due|meant) to (?:arrive|be delivered)|express (?:fee|shipping fee|delivery was not)']
+    LOST_PARCEL:
+      - [3, 'lost (?:parcel|package|order)|parcel (?:was |is |got )?lost|lost by (?:the )?courier']
+      - [3, '(?:says|shows|marked) (?:as )?delivered (?:but|and) (?:\w+ ){0,4}(?:nothing|not|never)']
+      - [2, 'tracking (?:stopped|has not (?:changed|moved|updated)|shows no movement|stuck)']
+      - [3, '(?:says|shows|marked|tracking) (?:\w+ ){0,6}delivered (?:\w+ ){0,3}(?:but|and) (?:\w+ ){0,4}(?:nothing|not|never)']
+    WRONG_ADDRESS_DELIVERY:
+      - [3, '(?:wrong|different) (?:address|house|street|flat)|another (?:house|address)|not my (?:house|address)']
+      - [2, 'left (?:it )?(?:at|with) (?:a |my )?(?:neighbou?r|another)']
+    DAMAGED_IN_TRANSIT:
+      - [3, '(?:box|package|parcel|packaging) (?:was |arrived )?(?:crushed|dented|torn|damaged|dropped|smashed)']
+      - [3, '(?:arrived|came|delivered) (?:\w+ ){0,3}(?:damaged|broken|cracked|smashed|dented)']
+      - [2, 'damaged in (?:transit|delivery)|broken on arrival']
+  PRODUCT_DEFECT:
+    DEAD_ON_ARRIVAL:
+      - [3, 'dead on arrival|(?:will|does|would) not (?:turn|power|switch) on|won''t (?:turn|power|switch) on']
+      - [3, '(?:completely|totally) dead|never worked|not working (?:from|out of) the box']
+      - [2, 'no (?:lights|response|power)|brand new (?:\w+ ){0,3}(?:not working|dead|broken)']
+    MALFUNCTION_AFTER_USE:
+      - [3, 'stopped (?:working|charging)|keeps? (?:restarting|rebooting|freezing|crashing|shutting down)']
+      - [2, '(?:developed|has) a fault|faulty|malfunction\w*|flickering|shuts? down (?:randomly|by itself)']
+      - [2, 'battery (?:no longer|does not|doesn''t) hold\w*|losing sound|charging port|(?:no longer|does not|doesn''t) (?:charge|hold charge)']
+      - [1, 'not working (?:properly|right)|stopped working right|does not work|doesn''t work']
+      - [2, 'freez\w*|crash\w*|reboot\w*|restart\w*']
+    MISSING_PARTS:
+      - [3, '(?:missing|without) (?:the )?(?:charger|cable|accessor\w*|parts?|ear tips|adapter|manual|remote)']
+      - [3, '(?:charger|cable|accessor\w*|parts?) (?:is |are |were )?(?:missing|not included|not in the box)']
+      - [2, 'incomplete (?:package|box|order)|box (?:was )?missing']
+    WRONG_ITEM:
+      - [3, 'wrong (?:item|product|model|colou?r|size|version)|not what i ordered|different model']
+      - [2, 'received (?:the wrong|a different|someone else''s item)|instead of my']
+  BILLING:
+    DUPLICATE_CHARGE:
+      - [3, 'charged (?:me )?twice|double (?:charge|charged|payment)|duplicate (?:charge|payment)|two (?:identical )?charges']
+      - [2, '(?:two|2) (?:times|payments)|taken (?:\w+ ){0,5}(?:two|2) times']
+    INCORRECT_CHARGE:
+      - [3, 'overcharged|charged (?:the )?wrong (?:amount|price)|wrong amount|charged more than']
+      - [2, 'amount (?:taken|charged) (?:does not|doesn''t) match|price (?:different|higher) (?:from|than)']
+      - [1, 'payment (?:\w+ ){0,4}(?:don''t|do not) (?:understand|recognise)|charge on my statement']
+      - [2, 'on my (?:bank |card )?statement|charged wrongly|(?:strange|unknown|unexpected) (?:charge|payment)']
+    SUBSCRIPTION_RENEWAL:
+      - [3, '(?:renewed|renewal) (?:automatically|without)|unwanted (?:renewal|subscription)|did not want to renew|voltcare\+? (?:plan )?renew\w*']
+      - [2, 'subscription (?:renewed|charge|fee)|auto[- ]?renew\w*']
+    PROMO_NOT_APPLIED:
+      - [3, '(?:discount|promo(?:tion)?|coupon|voucher) (?:code )?(?:was )?(?:not applied|not work\w*|ignored|missing|did not work)']
+      - [2, '(?:discount|promo(?:tion)?|coupon) code|full price']
+  REFUND:
+    REFUND_DELAY:
+      - [3, 'refund (?:has not|hasn''t|not yet|never|still not) (?:\w+ ){0,2}(?:arrived|received|appeared|come|reached|been paid)']
+      - [3, 'where is my refund|refund (?:is )?(?:missing|late|delayed|not received)|(?:have not|haven''t) received (?:my |the )?refund']
+      - [2, 'refund (?:was )?approved|when will (?:the )?refund|nothing has reached my account']
+      - [3, 'refund (?:\w+ ){0,6}(?:has not|hasn''t|not|never) (?:\w+ ){0,2}(?:arrived|reached|been paid|come)|refund (?:you )?owe']
+      - [1, 'refund']
+    REFUND_DENIED:
+      - [3, 'refund (?:was )?(?:refused|denied|declined|rejected)|(?:refused|denied|declined|rejected) my refund']
+      - [2, 'not eligible for (?:a )?refund|reconsider the refund']
+      - [3, 'refund (?:\w+ ){0,3}(?:was )?(?:refused|denied|declined|rejected)']
+    PARTIAL_REFUND:
+      - [3, 'partial refund|only (?:received|got|refunded) (?:\w+ ){0,3}back|(?:rest|remainder) (?:was )?deducted|refund (?:was )?less than']
+      - [2, 'deduction|deducted']
+  RETURNS_REPLACEMENT:
+    RETURN_REJECTED:
+      - [3, 'return (?:was )?(?:rejected|refused|declined)|(?:rejected|refused) (?:the |my )?return']
+      - [2, 'inspection (?:rejected|result)|returns centre rejected']
+    REPLACEMENT_DELAY:
+      - [3, 'replacement (?:has not|hasn''t|not yet|never|still not|was not) (?:\w+ ){0,2}(?:been )?(?:sent|dispatched|arrived)|waiting for (?:my |the )?replacement']
+      - [2, 'replacement (?:delayed|not sent)']
+      - [3, 'promised a replacement|replacement (?:\w+ ){0,4}(?:approved|promised)']
+    RETURN_PICKUP_MISSED:
+      - [3, '(?:missed|never came for) (?:the |my )?(?:return )?(?:pickup|pick-up|collection)|(?:pickup|collection) (?:was )?missed']
+      - [2, 'nobody came to collect|no one arrived (?:\w+ ){0,3}(?:window|pickup|collect)|return (?:pickup|collection)']
+  WARRANTY:
+    WARRANTY_CLAIM_DENIED:
+      - [3, 'warranty (?:claim )?(?:was )?(?:rejected|refused|denied|declined)|(?:rejected|refused|denied) (?:my )?warranty']
+      - [2, 'refused to repair|honou?r the warranty|statutory (?:consumer )?rights']
+    REPAIR_DELAY:
+      - [3, 'repair (?:is )?(?:taking|delayed|not finished)|(?:at|in) the service cent(?:re|er) (?:since|for)']
+      - [2, 'where is my repaired|update on the repair|repair (?:for|of) order']
+    REPEATED_REPAIR:
+      - [3, 'repaired (?:twice|two times|three times|again)|(?:same|this) (?:fault|problem|issue) (?:for the )?(?:third|second) time|two earlier repairs']
+      - [2, 'broken again|failed again|sent to repair again']
+  ACCOUNT:
+    LOGIN_ISSUE:
+      - [3, '(?:cannot|can''t|unable to) (?:log|sign) ?in|password reset (?:e-?mail )?(?:not working|never arrives)']
+      - [2, 'error (?:when|every time) (?:i )?(?:try to )?log']
+    ACCOUNT_LOCKED:
+      - [3, 'account (?:has been |is |was )?(?:locked|blocked|suspended)|locked out']
+    UNAUTHORIZED_ACCESS:
+      - [3, 'hacked|(?:did not|didn''t) (?:place|make) (?:this|these|that)? ?(?:orders?|purchases?)|someone (?:logged|got) into my account']
+      - [3, 'password (?:was )?changed without|unauthori[sz]ed (?:access|orders?|purchases?|login)']
+  TECHNICAL_SUPPORT:
+    SETUP_ASSISTANCE:
+      - [3, 'set ?up|setup|setting up|pairing|asks? for a code|chang\w* the language']
+      - [1, 'how do i|what am i doing wrong']
+    SOFTWARE_UPDATE_ISSUE:
+      - [3, '(?:software|firmware|system) update|update (?:failed|broke)|since the (?:latest )?update']
+      - [2, 'update']
+    CONNECTIVITY_ISSUE:
+      - [3, 'bluetooth|wi-?fi|disconnect\w*|(?:will not|won''t) stay connected|drops? (?:the )?connection']
+  PRIVACY:
+    DATA_EXPOSURE:
+      - [3, '(?:someone else|another (?:customer|person))''?s? (?:\w+ ){0,3}(?:details|name|address|order|invoice|data)']
+      - [3, 'data (?:breach|leak)|personal (?:data|details) (?:exposed|shared|leaked)']
+      - [2, 'packing slip|wrong invoice']
+    MARKETING_CONSENT:
+      - [3, 'marketing (?:e-?mails?|messages|texts?)|unsubscribed|(?:never agreed|without (?:my )?consent) to (?:marketing|messages)']
+      - [2, 'promotional (?:e-?mails?|texts?)|stop sending me']
+    DATA_DELETION_REQUEST:
+      - [3, 'delete (?:my )?(?:account and )?(?:all )?(?:my )?(?:personal )?(?:data|information|details)|data deletion|(?:information|data) removed']
+  SAFETY:
+    OVERHEATING_BATTERY:
+      - [3, 'overheat\w*|swell(?:ing|ed)?|swollen|bulg\w*|too hot to (?:touch|hold)|(?:very|extremely) hot']
+      - [2, 'burning (?:plastic )?smell|smells? like burning|warped']
+    ELECTRICAL_HAZARD:
+      - [3, 'sparks?|electric(?:al)? shock|short[- ]circuit|smok(?:e|ing)']
+    INJURY_REPORTED:
+      - [3, 'burn(?:ed|t) (?:my|his|her|their) (?:hand|finger|fingers|arm|skin)|injur\w*|blister|scorched my|melted']
+  SERVICE_QUALITY:
+    UNRESOLVED_PREVIOUS:
+      - [3, '(?:previous|earlier) complaint (?:was )?(?:closed|never|not) (?:\w+ ){0,3}(?:resolved|fixed)|marked (?:as )?resolved but|never (?:actually )?(?:resolved|fixed)']
+      - [2, 'reopen']
+      - [3, 'marked (?:as )?resolved|(?:complained|complaint) (?:\w+ ){0,4}(?:nothing was done|not fixed|never fixed)']
+    POOR_COMMUNICATION:
+      - [3, '(?:no|never got a|nobody) (?:reply|response|replies)|closed my (?:conversation|chat) without']
+      - [2, 'nobody (?:replies|answers|told me)']
+    LONG_WAIT:
+      - [3, '(?:waited|waiting) (?:over |more than )?(?:an? )?(?:hour|\d+ minutes)|queue (?:said|was) \d+|wait times?']
+      - [2, 'callback (?:that )?never|far too long']
+  STAFF_BEHAVIOR:
+    RUDE_STAFF:
+      - [3, '(?:rude|unprofessional|dismissive|sarcastic) (?:\w+ ){0,3}(?:agent|staff|employee|advisor)|(?:agent|staff member) (?:was )?(?:rude|dismissive|sarcastic)|hung up']
+    COURIER_MISCONDUCT:
+      - [3, '(?:courier|driver) (?:\w+ ){0,5}(?:threw|swore|rude|refused)|threw (?:my |the )?(?:parcel|package|it)']
+      - [2, 'over the (?:gate|fence)|report the courier']
+# Deterministic risk signals that decide the subcategory outright (weight added to its score).
+signal_boosts:
+  safety_hazard: [SAFETY, OVERHEATING_BATTERY, 3]
+  injury: [SAFETY, INJURY_REPORTED, 4]
+  privacy_exposure: [PRIVACY, DATA_EXPOSURE, 3]
+  account_compromise: [ACCOUNT, UNAUTHORIZED_ACCESS, 3]
+  repeated_repair: [WARRANTY, REPEATED_REPAIR, 2]

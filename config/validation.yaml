@@ -1,0 +1,66 @@
+# Ground-Truth Validation Pipeline settings (Pipeline 2). Editable without code changes.
+
+# Verification score: weight of each check by severity. A passed check earns its full weight,
+# a warning half, a failure nothing; skipped checks are left out. The score summarises the
+# checks that actually ran; the verdict is decided by the rules below, not by the score alone.
+score_weights: {critical: 5, major: 3, minor: 1}
+verified_min_score: 80
+
+# Complaints at or above this escalation level always get a human review (SRS Step 57:
+# sensitive complaints). Level 4 = compliance review, 5 = critical management escalation.
+always_review_escalation_level: 4
+
+# Categories that cannot be resolved without an order reference.
+orders_required_for: [DELIVERY, PRODUCT_DEFECT, REFUND, RETURNS_REPLACEMENT, WARRANTY]
+
+# An escalation action counts as done when the GenAI escalation level reaches its level.
+escalation_action_levels:
+  ESCALATE_TO_SUPERVISOR: 1
+  ESCALATE_TO_MANAGER: 2
+  ESCALATE_TO_SPECIALIST: 3
+  ESCALATE_TO_COMPLIANCE: 4
+  ESCALATE_TO_CRITICAL_MANAGEMENT: 5
+
+# Compensation the GenAI may offer, and what the rule matrix must require for it to be allowed.
+# Limits come from DEL-POL-04 5.2, REF-POL-01 5 and SRV-POL-01 5.
+compensation:
+  store_credit:
+    requires_any: [CHECK_COMPENSATION_ELIGIBILITY, OFFER_STORE_CREDIT]
+    max_pct_of_order: 10
+    max_amount: 50
+  shipping_fee_refund:
+    requires_any: [REFUND_SHIPPING_FEE]
+  partial_refund:
+    requires_any: [ISSUE_PARTIAL_REFUND, CHECK_REFUND_ELIGIBILITY]
+    max_pct_of_order: 20
+  full_refund:
+    requires_any: [ISSUE_FULL_REFUND, CHECK_REFUND_ELIGIBILITY]
+  replacement:
+    requires_any: [ARRANGE_REPLACEMENT, CHECK_REPLACEMENT_ELIGIBILITY]
+  repair:
+    requires_any: [ARRANGE_REPAIR, VERIFY_WARRANTY_STATUS]
+  voucher:
+    requires_any: [OFFER_GOODWILL_GESTURE]
+    max_amount: 25
+
+# Unsupported-promise detection in customer-facing text (SRS Step 34).
+promises:
+  # A sentence is a commitment when it states that something will happen or has been decided.
+  commitment: "\\b(?:we will|we'll|we have|we've|you will|you'll|i will|i'll|we are going to|will be|has been|have been|is being|are being|guarantee\\w*|promise\\w*|definitely|certainly)\\b"
+  # Wording that makes a commitment conditional (not a promise).
+  conditional: "\\b(?:if|once|after (?:we|our|verification|checking|reviewing)|subject to|provided|eligib\\w*|may|might|could|depending|pending|whether|we will (?:check|review|investigate|look into|confirm|assess|verify)|we are (?:checking|reviewing|investigating))\\b"
+  kinds:
+    refund:
+      pattern: "\\b(?:refund\\w*|reimburs\\w*|money back)\\b"
+      supported_by: [ISSUE_FULL_REFUND, ISSUE_PARTIAL_REFUND, REFUND_SHIPPING_FEE, REVERSE_DUPLICATE_CHARGE, CORRECT_CHARGE]
+    replacement:
+      pattern: "\\b(?:replacement|replace (?:it|your|the)|new (?:unit|device|one))\\b"
+      supported_by: [ARRANGE_REPLACEMENT]
+    compensation:
+      pattern: "\\b(?:compensation|store credit|voucher|goodwill|credit of|discount)\\b"
+      supported_by: [OFFER_STORE_CREDIT, OFFER_GOODWILL_GESTURE, APPLY_PROMOTION]
+    policy_exception:
+      pattern: "\\b(?:exception|waive\\w*|make an exception|outside (?:of )?(?:our|the) policy)\\b"
+      supported_by: [RECORD_POLICY_EXCEPTION]
+  # Deadlines must come from a policy passage, the SLA or the rule follow-up time.
+  deadline: "\\b(?:within|in) (\\d+) (business |working )?(hours?|days?|weeks?)\\b|\\bby (?:\\d{1,2}(?:st|nd|rd|th)? \\w+|monday|tuesday|wednesday|thursday|friday|saturday|sunday|tomorrow|tonight|the end of (?:the )?(?:day|week))\\b"

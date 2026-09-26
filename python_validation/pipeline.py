@@ -14,6 +14,7 @@ from sqlalchemy import select
 from sqlalchemy.orm import Session
 
 from comparison_engine.labels import expected_labels
+from complaint_processing import sla
 from complaint_processing.facts import build_facts
 from complaint_rules.matrix import load_specs
 from database import audit
@@ -205,6 +206,7 @@ def _apply(
     if final.get("sentiment"):
         complaint.sentiment = final["sentiment"]
     complaint.verification = verdict
+    sla.refresh(complaint, sla.policy_for(db, complaint.priority), datetime.now(UTC))
 
     if verdict == Verdict.NEEDS_REVIEW:
         complaint.needs_review = True
@@ -259,6 +261,7 @@ def change_status(
 ) -> None:
     if complaint.status == to_status:
         return
+    now = datetime.now(UTC)
     db.add(
         ComplaintEvent(
             complaint_id=complaint.id,
@@ -267,7 +270,9 @@ def change_status(
             to_status=to_status,
             message=message,
             actor_user_id=actor_user_id,
-            created_at=datetime.now(UTC),
+            created_at=now,
         )
     )
     complaint.status = to_status
+    sla.on_status_change(complaint, to_status, now)
+    sla.refresh(complaint, sla.policy_for(db, complaint.priority), now)

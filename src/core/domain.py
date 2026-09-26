@@ -74,3 +74,10 @@ def signal_lexicons() -> dict[str, Signal]:
 def organization() -> dict[str, Any]:
     data: dict[str, Any] = _load("organization.yaml")
     return data
+
+
+@lru_cache
+def analytics_config() -> dict[str, Any]:
+    """SLA monitoring, trend detection and dashboard settings (`config/analytics.yaml`)."""
+    data: dict[str, Any] = _load("analytics.yaml")
+    return data

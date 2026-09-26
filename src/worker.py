@@ -1,9 +1,10 @@
-"""Celery application (background jobs: document ingestion now; batch analysis,
-SLA scans and report exports in later phases)."""
+"""Celery application: document ingestion, complaint analysis and validation, and the
+periodic SLA risk scan (Celery Beat)."""
 
 from celery import Celery
 
-from src.core.config import get_settings
+from src.core.config import ROOT_DIR, get_settings
+from src.core.domain import analytics_config
 from src.core.logging import configure_logging
 
 settings = get_settings()
@@ -26,4 +27,11 @@ celery_app.conf.update(
     },
     broker_connection_retry_on_startup=True,
     timezone="UTC",
+    beat_schedule={
+        "sla-risk-scan": {
+            "task": "complaint_processing.tasks.scan_sla",
+            "schedule": 60.0 * analytics_config()["sla"]["scan_interval_minutes"],
+        },
+    },
+    beat_schedule_filename=str(ROOT_DIR / ".data" / "celerybeat-schedule"),
 )

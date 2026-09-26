@@ -137,6 +137,14 @@ class Complaint(UUIDPrimaryKeyMixin, TimestampMixin, Base):
     # The customer response a reviewer approved or edited; drafts stay in the analysis run.
     approved_response: Mapped[str | None] = mapped_column(Text)
 
+    # SLA tracking (SRS Steps 55-56). Deadlines come from the priority's SLA policy and are
+    # measured from submission; `sla_status` is kept current by the periodic SLA scan.
+    first_response_due_at: Mapped[datetime | None] = mapped_column(DateTime(timezone=True))
+    resolution_due_at: Mapped[datetime | None] = mapped_column(DateTime(timezone=True))
+    first_responded_at: Mapped[datetime | None] = mapped_column(DateTime(timezone=True))
+    resolved_at: Mapped[datetime | None] = mapped_column(DateTime(timezone=True))
+    sla_status: Mapped[str] = mapped_column(String(20), default="pending", index=True)
+
     customer: Mapped[Customer] = relationship(lazy="joined")
     order: Mapped[Order | None] = relationship(lazy="joined")
 

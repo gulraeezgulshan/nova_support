@@ -1,0 +1,36 @@
+# SLA monitoring, trend detection and dashboard settings.
+# The SLA targets themselves (response and resolution minutes per priority) live in the
+# sla_policies table and are edited under Taxonomy & SLAs.
+
+sla:
+  # How often the Celery Beat scan re-evaluates open complaints.
+  scan_interval_minutes: 5
+  # Statuses that count as a first response to the customer.
+  first_response_statuses:
+    - assigned
+    - in_progress
+    - awaiting_customer
+    - escalated
+    - resolved
+  # Statuses that stop the resolution clock.
+  resolved_statuses:
+    - resolved
+    - closed
+
+trends:
+  # Compare the latest window with the window before it.
+  window_days: 7
+  # A group needs at least this many complaints in the latest window to be reported.
+  min_count: 3
+  # ...and at least this ratio over the previous window (previous 0 counts as 1).
+  rise_ratio: 1.5
+  # Recurring product issue: same product line and subcategory at least this often in the window.
+  recurring_min_count: 3
+  # Categories watched explicitly (the SRS examples); every category is checked anyway.
+  watched_categories:
+    - DELIVERY
+    - BILLING
+
+dashboard:
+  # How many rows the SLA-risk and trend lists show.
+  list_limit: 10

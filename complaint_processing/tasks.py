@@ -4,6 +4,7 @@ them in order."""
 
 import uuid
 
+from complaint_processing import sla
 from database.session import sync_session
 from genai_pipeline.pipeline import run_analysis
 from genai_pipeline.providers import ProviderUnavailableError, get_provider
@@ -45,3 +46,11 @@ def process_complaint(self, complaint_id: str, triggered_by: str | None = None) 
         with sync_session() as db:
             run_validation(db, cid, actor)
         raise self.retry(exc=exc, countdown=15 * (self.request.retries + 1)) from exc
+
+
+@celery_app.task(name="complaint_processing.tasks.scan_sla")  # type: ignore[untyped-decorator]
+def scan_sla() -> dict[str, int]:
+    """Periodic SLA risk scan (scheduled by Celery Beat, see src/worker.py)."""
+    with sync_session() as db:
+        result = sla.scan(db)
+    return {"scanned": result.scanned, "changed": result.changed}

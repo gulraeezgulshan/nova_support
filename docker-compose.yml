@@ -53,6 +53,15 @@ services:
       postgres: {condition: service_healthy}
       redis: {condition: service_healthy}
 
+  beat:  # schedules the periodic SLA risk scan; run exactly one
+    profiles: [app]
+    build: .
+    env_file: .env
+    environment: *container_env
+    command: celery -A src.worker beat --loglevel INFO --schedule /tmp/celerybeat-schedule
+    depends_on:
+      redis: {condition: service_healthy}
+
 volumes:
   pgdata:
   storage:  # shared by api + worker (production uses Cloudflare R2 instead)

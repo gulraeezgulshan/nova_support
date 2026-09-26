@@ -11,6 +11,7 @@ from typing import Any
 from sqlalchemy import select
 from sqlalchemy.ext.asyncio import AsyncSession
 
+from complaint_processing import sla
 from complaint_processing.facts import build_facts
 from complaint_rules.engine import Issue, decide
 from complaint_rules.matrix import load_specs_async
@@ -115,6 +116,9 @@ async def change_status(
     )
     before = complaint.status
     complaint.status = to_status
+    now = datetime.now(UTC)
+    sla.on_status_change(complaint, to_status, now)
+    sla.refresh(complaint, await sla.policy_for_async(db, complaint.priority), now)
     await audit.record(
         db, "complaint.status_changed", "complaint", complaint.id, actor_user_id=actor.id,
         before={"status": before}, after={"status": to_status, "note": note},
@@ -186,11 +190,13 @@ async def apply_review(
         if not body:
             raise ReviewError("There is no drafted response to approve; write one or regenerate.")
         complaint.approved_response = body
+        sla.on_response_approved(complaint, datetime.now(UTC))
         resolve = True
     elif action == ReviewAction.MODIFY:
         if not (data.response_body or "").strip():
             raise ReviewError("The modified response text is required.")
         complaint.approved_response = data.response_body
+        sla.on_response_approved(complaint, datetime.now(UTC))
         resolve = True
     elif action == ReviewAction.REJECT:
         complaint.approved_response = None
@@ -235,6 +241,7 @@ async def apply_review(
         if target in TRANSITIONS.get(complaint.status, set()):
             await change_status(db, complaint, target, reviewer, None)
 
+    sla.refresh(complaint, await sla.policy_for_async(db, complaint.priority), datetime.now(UTC))
     db.add(
         _event(
             complaint,

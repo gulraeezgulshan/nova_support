@@ -1,7 +1,8 @@
-"""Seed the configurable taxonomy from `config/taxonomy.yaml`.
+"""Seed the configurable taxonomy (`config/taxonomy.yaml`) and the Complaint Resolution
+Rule Matrix (`complaint_rules/`, `escalation_rules/`).
 
-Idempotent: existing rows (matched by code) are updated, new ones inserted, nothing deleted.
-Run with: `uv run python -m database.seed`
+Idempotent: existing rows (matched by code / rule_id) are updated, new ones inserted,
+nothing deleted. Run with: `uv run python -m database.seed`
 """
 
 from pathlib import Path
@@ -73,10 +74,31 @@ def seed_taxonomy(db: Session, data: dict[str, Any]) -> dict[str, int]:
     return counts
 
 
+def seed_rules(db: Session) -> dict[str, int]:
+    from complaint_rules.matrix import RuleMatrixError, read_default_matrix, sync_rules
+
+    departments = set(db.scalars(select(Department.code)).all())
+    categories: dict[str, set[str]] = {}
+    for category in db.scalars(select(Category)).all():
+        categories[category.code] = {s.code for s in category.subcategories}
+    records = read_default_matrix()
+    errors: list[str] = []
+    for record in records:
+        try:
+            record.check_references(departments, categories)
+        except RuleMatrixError as exc:
+            errors += exc.errors
+    if errors:
+        raise RuleMatrixError(errors)
+    return sync_rules(db, records)
+
+
 def main() -> None:
     with sync_session() as db:
         counts = seed_taxonomy(db, load_taxonomy())
+        rule_counts = seed_rules(db)
     print("Seeded:", ", ".join(f"{k}={v}" for k, v in counts.items()))
+    print("Rules:", ", ".join(f"{k}={v}" for k, v in rule_counts.items()))
 
 
 if __name__ == "__main__":

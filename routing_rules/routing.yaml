@@ -1,0 +1,29 @@
+# Department routing configuration (mirrors RTG-RUL-01). Used by the rule engine when
+# several departments are involved: the most severe one becomes primary, the others
+# supporting (SRS Step 24).
+severity_order:
+  - PRODUCT_SAFETY
+  - PRIVACY_COMPLIANCE
+  - ACCOUNT_SECURITY
+  - BILLING
+  - RETURNS
+  - WARRANTY
+  - LOGISTICS
+  - TECH_SUPPORT
+  - CUSTOMER_RELATIONS
+  - MGMT_ESCALATIONS
+# Used when no resolution rule matches (e.g. a newly configured subcategory).
+category_default_department:
+  DELIVERY: LOGISTICS
+  PRODUCT_DEFECT: RETURNS
+  BILLING: BILLING
+  REFUND: RETURNS
+  RETURNS_REPLACEMENT: RETURNS
+  WARRANTY: WARRANTY
+  ACCOUNT: ACCOUNT_SECURITY
+  TECHNICAL_SUPPORT: TECH_SUPPORT
+  PRIVACY: PRIVACY_COMPLIANCE
+  SAFETY: PRODUCT_SAFETY
+  SERVICE_QUALITY: CUSTOMER_RELATIONS
+  STAFF_BEHAVIOR: CUSTOMER_RELATIONS
+fallback_department: CUSTOMER_RELATIONS

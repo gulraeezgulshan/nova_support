@@ -19,6 +19,7 @@ from document_processing.validation import (
     sha256_hex,
 )
 from knowledge_base.config import get_kb_config
+from knowledge_base.impact import flag_affected_complaints, superseded_by
 from knowledge_base.versioning import plan_activation, plan_retirement, to_state
 from src.core.config import Settings
 from src.core.logging import get_logger
@@ -162,6 +163,13 @@ async def activate_version(db: AsyncSession, version: DocumentVersion, actor: Us
         actor_user_id=actor.id,
         after={str(k): v for k, v in changes.items()},
     )
+    if changes.get(version.id) == "active":
+        superseded = superseded_by(changes, list(siblings))
+        await db.run_sync(
+            lambda session: flag_affected_complaints(
+                session, version.document_id, superseded, version.version, actor.id
+            )
+        )
     await db.commit()
 
 

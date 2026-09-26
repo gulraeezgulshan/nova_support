@@ -6,10 +6,12 @@ import uuid
 from dataclasses import dataclass, field
 from datetime import UTC, datetime, timedelta
 
+from fastapi.concurrency import run_in_threadpool
 from sqlalchemy import func, select
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from complaint_processing.detectors import detect_signals
+from complaint_processing.duplicates import find_similar
 from complaint_processing.preprocessing import (
     content_hash,
     extract_entities,
@@ -28,6 +30,7 @@ from database.models import (
     Order,
     User,
 )
+from knowledge_base.embeddings import get_embedder
 from src.core.domain import analysis_config
 from src.core.logging import get_logger
 
@@ -73,10 +76,10 @@ class ComplaintInput:
 
 
 def enqueue_analysis(complaint_id: uuid.UUID, triggered_by: uuid.UUID | None = None) -> None:
-    """Hand the complaint to a Celery worker. Tests replace this function."""
-    from genai_pipeline.tasks import analyze_complaint
+    """Hand the complaint to a Celery worker (analysis + validation). Tests replace this."""
+    from complaint_processing.tasks import process_complaint
 
-    analyze_complaint.delay(str(complaint_id), str(triggered_by) if triggered_by else None)
+    process_complaint.delay(str(complaint_id), str(triggered_by) if triggered_by else None)
 
 
 def safe_enqueue_analysis(complaint_id: uuid.UUID, triggered_by: uuid.UUID | None = None) -> None:
@@ -203,6 +206,12 @@ async def submit_complaint(
     full_text = "\n".join(
         filter(None, [clean.title, clean.description, clean.requested_resolution])
     )
+    normalized = normalize_for_matching(full_text)
+    embedding = await run_in_threadpool(get_embedder().embed_query, full_text)
+    similar = await find_similar(db, customer.id, normalized, embedding, now)
+    if similar is not None:
+        label = "near-duplicate of" if similar.kind == "near_duplicate" else "possibly related to"
+        warnings.append(f"Looks like a {label} {similar.complaint_ref} ({similar.similarity:.0%}).")
     complaint = Complaint(
         complaint_ref=await next_ref(db, "CMP", COMPLAINT_REF_SEQ),
         # Set relationships directly: async sessions cannot lazy-load them later.
@@ -211,7 +220,15 @@ async def submit_complaint(
         submitted_by_id=submitted_by.id if submitted_by else None,
         title=clean.title,
         description=clean.description,
-        normalized_text=normalize_for_matching(full_text),
+        normalized_text=normalized,
+        embedding=embedding,
+        duplicate_of_id=similar.complaint_id
+        if similar and similar.kind == "near_duplicate"
+        else None,
+        related_complaint_id=similar.complaint_id
+        if similar and similar.kind == "related"
+        else None,
+        similarity=similar.similarity if similar else None,
         content_hash=digest,
         product_service=clean.product_service or (order.product_name if order else None),
         channel=clean.channel,

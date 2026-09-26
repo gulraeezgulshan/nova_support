@@ -12,6 +12,7 @@ from document_processing.chunking import chunk_sections
 from document_processing.parsers import parse_document
 from document_processing.validation import FILE_TYPE_BY_MEDIA_TYPE
 from knowledge_base.embeddings import Embedder
+from knowledge_base.impact import flag_affected_complaints, superseded_by
 from knowledge_base.versioning import VersionTransitionError, plan_activation, to_state
 from src.core.config import Settings
 from src.core.logging import get_logger
@@ -139,3 +140,11 @@ def apply_activation_sync(
         actor_user_id=actor_user_id,
         after={str(k): v for k, v in changes.items()},
     )
+    if changes.get(version.id) == "active":
+        flag_affected_complaints(
+            db,
+            version.document_id,
+            superseded_by(changes, list(siblings)),
+            version.version,
+            actor_user_id,
+        )

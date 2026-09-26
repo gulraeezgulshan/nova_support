@@ -12,6 +12,7 @@ dependencies = [
     "fastembed>=0.8.1",
     "httpx>=0.28.1",
     "jinja2>=3.1.6",
+    "openpyxl>=3.1.5",
     "pgvector>=0.5.0",
     "psycopg[binary]>=3.3.6",
     "pydantic>=2.13.5",
@@ -23,6 +24,7 @@ dependencies = [
     "pyyaml>=6.0.3",
     "rapidfuzz>=3.14.6",
     "redis>=6.4.0",
+    "reportlab>=5.0.1",
     "sqlalchemy[asyncio]>=2.1.1",
     "structlog>=26.1.0",
     "svix>=2.5.0",
@@ -37,7 +39,9 @@ dev = [
     "pytest>=9.1.1",
     "pytest-asyncio>=1.4.0",
     "ruff>=0.16.9",
+    "types-openpyxl>=3.1.5.20260827",
     "types-pyyaml>=6.0.12.20260906",
+    "types-reportlab>=5.0.0.20260911",
 ]
 
 [tool.uv]

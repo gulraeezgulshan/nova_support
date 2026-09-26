@@ -2,10 +2,12 @@
 analysis, signals or review notes; staff see everything."""
 
 import uuid
+from datetime import UTC, date, datetime, time, timedelta
 from typing import Any
 
 from fastapi import APIRouter, Depends, HTTPException, Query, status
 from sqlalchemy import func, or_, select
+from sqlalchemy.dialects.postgresql import distinct_on
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy.orm import selectinload
 
@@ -59,6 +61,7 @@ def _summary(complaint: Complaint, staff_view: bool) -> dict[str, Any]:
         "customer_ref": complaint.customer.customer_ref,
         "customer_name": complaint.customer.full_name,
         "department_code": complaint.department_code,
+        "resolved_at": complaint.resolved_at,
     }
     if staff_view:
         data.update(
@@ -69,8 +72,29 @@ def _summary(complaint: Complaint, staff_view: bool) -> dict[str, Any]:
             escalation_level=complaint.escalation_level,
             needs_review=complaint.needs_review,
             verification=complaint.verification,
+            sla_status=complaint.sla_status,
+            first_response_due_at=complaint.first_response_due_at,
+            resolution_due_at=complaint.resolution_due_at,
+            first_responded_at=complaint.first_responded_at,
         )
     return data
+
+
+async def _latest_updates(
+    db: AsyncSession, ids: list[uuid.UUID]
+) -> dict[uuid.UUID, ComplaintEvent]:
+    """The latest customer-visible timeline entry of each complaint."""
+    if not ids:
+        return {}
+    events = await db.scalars(
+        select(ComplaintEvent)
+        .where(ComplaintEvent.complaint_id.in_(ids), ComplaintEvent.customer_visible)
+        .ext(distinct_on(ComplaintEvent.complaint_id))
+        .order_by(
+            ComplaintEvent.complaint_id, ComplaintEvent.created_at.desc(), ComplaintEvent.id.desc()
+        )
+    )
+    return {e.complaint_id: e for e in events}
 
 
 async def _load_for(db: AsyncSession, ref: str, user: User) -> Complaint:
@@ -117,6 +141,12 @@ async def list_complaints(
     priority: str | None = None,
     department: str | None = None,
     needs_review: bool | None = None,
+    sentiment: str | None = None,
+    escalated: bool | None = Query(None, description="Escalation level 1 or higher"),
+    sla_status: str | None = None,
+    verification: str | None = None,
+    date_from: date | None = Query(None, description="Submitted on or after (UTC)"),
+    date_to: date | None = Query(None, description="Submitted on or before (UTC)"),
     q: str | None = Query(None, max_length=100, description="Reference, title or customer"),
     page: int = Query(1, ge=1),
     page_size: int = Query(25, ge=1, le=100),
@@ -136,6 +166,20 @@ async def list_complaints(
         stmt = stmt.where(Complaint.department_code == department)
     if needs_review is not None:
         stmt = stmt.where(Complaint.needs_review == needs_review)
+    if sentiment:
+        stmt = stmt.where(Complaint.sentiment == sentiment)
+    if escalated is not None:
+        level = func.coalesce(Complaint.escalation_level, 0)
+        stmt = stmt.where(level >= 1 if escalated else level == 0)
+    if sla_status:
+        stmt = stmt.where(Complaint.sla_status == sla_status)
+    if verification:
+        stmt = stmt.where(Complaint.verification == verification)
+    if date_from:
+        stmt = stmt.where(Complaint.created_at >= datetime.combine(date_from, time(), UTC))
+    if date_to:
+        end = datetime.combine(date_to + timedelta(days=1), time(), UTC)
+        stmt = stmt.where(Complaint.created_at < end)
     if q:
         pattern = f"%{q.strip()}%"
         stmt = stmt.where(
@@ -151,9 +195,19 @@ async def list_complaints(
         stmt.order_by(Complaint.created_at.desc()).offset((page - 1) * page_size).limit(page_size)
     )
     staff_view = _is_staff(user)
-    return ComplaintPage(
-        items=[ComplaintSummary(**_summary(c, staff_view)) for c in rows.unique()], total=total
-    )
+    complaints = list(rows.unique())
+    updates = await _latest_updates(db, [c.id for c in complaints])
+    items = []
+    for c in complaints:
+        latest = updates.get(c.id)
+        items.append(
+            ComplaintSummary(
+                **_summary(c, staff_view),
+                latest_update=latest.message if latest else None,
+                latest_update_at=latest.created_at if latest else None,
+            )
+        )
+    return ComplaintPage(items=items, total=total)
 
 
 async def _ref(db: AsyncSession, complaint_id: uuid.UUID | None) -> str | None:

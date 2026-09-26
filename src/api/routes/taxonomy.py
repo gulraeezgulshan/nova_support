@@ -23,7 +23,9 @@ from src.api.schemas import (
     SlaPolicyUpdate,
     SubcategoryCreate,
     SubcategoryOut,
+    VocabularyOut,
 )
+from src.core.domain import actions, analysis_config
 
 router = APIRouter(prefix="/taxonomy", tags=["taxonomy"])
 admin_only = require_roles(Role.ADMIN)
@@ -196,3 +198,24 @@ async def update_sla_policy(
         raise HTTPException(status.HTTP_404_NOT_FOUND, "SLA policy not found")
     await _apply_update(db, sla, payload.model_dump(exclude_unset=True), actor, "sla_policy")
     return sla
+
+
+# --- controlled vocabulary ---------------------------------------------------------------
+
+
+@router.get("/vocabulary", response_model=VocabularyOut)
+async def get_vocabulary(_: User = Depends(require_roles(*STAFF_ROLES))) -> VocabularyOut:
+    """Controlled values from `config/analysis.yaml` and `config/actions.yaml`, for filters
+    and the rule editor (so the UI never hard-codes them)."""
+    cfg = analysis_config()
+    return VocabularyOut.model_validate(
+        {
+            "sentiments": cfg.sentiments,
+            "urgencies": cfg.urgencies,
+            "priorities": cfg.priorities,
+            "channels": cfg.complaint_channels,
+            "follow_up_types": cfg.follow_up_types,
+            "escalation_levels": [lv.model_dump() for lv in cfg.escalation_levels],
+            "actions": [a.model_dump() for a in actions().values()],
+        }
+    )

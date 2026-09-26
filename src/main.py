@@ -9,6 +9,7 @@ from document_processing.validation import DocumentValidationError
 from knowledge_base.service import DuplicateDocumentError
 from knowledge_base.versioning import VersionTransitionError
 from src.api.routes import (
+    analytics,
     complaints,
     documents,
     health,
@@ -38,8 +39,9 @@ def create_app() -> FastAPI:
         CORSMiddleware,
         allow_origins=settings.cors_origins,
         allow_credentials=False,  # auth uses the Authorization header, not cookies
-        allow_methods=["GET", "POST", "PATCH", "DELETE"],
+        allow_methods=["GET", "POST", "PUT", "PATCH", "DELETE"],
         allow_headers=["Authorization", "Content-Type"],
+        expose_headers=["Content-Disposition"],  # file names of report exports
     )
 
     app.include_router(health.router)
@@ -49,6 +51,7 @@ def create_app() -> FastAPI:
         documents.router,
         complaints.router,
         review.router,
+        analytics.router,
         rules.router,
         webhooks.router,
     ):

@@ -237,6 +237,14 @@ class ComplaintSummary(BaseModel):
     escalation_level: int | None = None
     needs_review: bool = False
     verification: str | None = None
+    # Customer-facing progress (SRS Step 61) and SLA tracking (Steps 55-56, staff only).
+    resolved_at: datetime | None = None
+    latest_update: str | None = None
+    latest_update_at: datetime | None = None
+    sla_status: str | None = None
+    first_response_due_at: datetime | None = None
+    resolution_due_at: datetime | None = None
+    first_responded_at: datetime | None = None
 
 
 class ComplaintPage(BaseModel):
@@ -421,3 +429,229 @@ class ReviewerDecisionOut(ORMModel):
 class StatusChangeIn(BaseModel):
     status: ComplaintStatus
     note: str | None = Field(default=None, max_length=500)
+
+
+# --- dashboards, analytics and reports -----------------------------------------------
+
+
+class DistributionItem(BaseModel):
+    key: str
+    label: str
+    count: int
+    pct: float | None
+
+
+class OverviewOut(BaseModel):
+    total: int
+    open: int
+    resolved: int
+    escalated: int
+    open_escalated: int
+    unclassified: int
+    needs_review: int
+    sla_at_risk: int
+    sla_breached: int
+    sla_met: int
+    sla_missed: int
+    repeat: int
+    verified: int
+    corrected: int
+    flagged: int
+    avg_resolution_hours: float | None
+    sla_compliance_pct: float | None
+    analysed: int
+    mismatches: int
+    open_reviews: int
+
+
+class VolumePoint(BaseModel):
+    period: str
+    total: int
+    escalated: int
+    repeat: int
+    resolved: int
+
+
+class ResolutionTimeRow(BaseModel):
+    priority: str
+    resolved: int
+    avg_hours: float | None
+    median_hours: float | None
+    within_sla_pct: float | None
+
+
+class DepartmentRow(BaseModel):
+    department: str
+    label: str
+    total: int
+    open: int
+    resolved: int
+    escalated: int
+    in_review: int
+    at_risk: int
+    breached: int
+    repeat: int
+    avg_resolution_hours: float | None
+    sla_compliance_pct: float | None
+
+
+class ComplaintRow(BaseModel):
+    complaint_ref: str
+    customer_ref: str
+    created_at: datetime
+    title: str
+    category_code: str | None
+    subcategory_code: str | None
+    department_code: str | None
+    priority: str | None
+    urgency: str | None
+    sentiment: str | None
+    escalation_level: int | None
+    status: str
+    verification: str | None
+    sla_status: str
+    resolution_due_at: datetime | None
+    resolved_at: datetime | None
+    product: str
+    needs_review: bool
+
+
+class TrendOut(BaseModel):
+    kind: str
+    key: str
+    label: str
+    current: int
+    previous: int
+    change_pct: float | None
+    message: str
+
+
+class AgreementOut(BaseModel):
+    compared: int
+    mismatched: int
+    verdicts: dict[str, int]
+    agreement_pct: dict[str, float | None]
+
+
+class ReasonCount(BaseModel):
+    reason: str
+    count: int
+
+
+class ReviewStatsOut(BaseModel):
+    open: int
+    resolved: int
+    avg_hours_to_resolve: float | None
+    decisions: dict[str, int]
+    top_reasons: list[ReasonCount]
+
+
+class PolicyUsageRow(BaseModel):
+    doc_code: str
+    versions: str
+    retrieved: int
+    cited: int
+    required_by_rules: int
+
+
+class AdminDashboardOut(BaseModel):
+    overview: OverviewOut
+    distributions: dict[str, list[DistributionItem]]
+    departments: list[DepartmentRow]
+    sla_risks: list[ComplaintRow]
+    trends: list[TrendOut]
+    agreement: AgreementOut
+    reviews: ReviewStatsOut
+
+
+class AnalyticsOut(BaseModel):
+    overview: OverviewOut
+    volume: list[VolumePoint]
+    distributions: dict[str, list[DistributionItem]]
+    resolution_time: list[ResolutionTimeRow]
+    departments: list[DepartmentRow]
+    trends: list[TrendOut]
+    policy_usage: list[PolicyUsageRow]
+
+
+class AgentQueueItem(BaseModel):
+    complaint_ref: str
+    title: str
+    created_at: datetime
+    status: ComplaintStatus
+    category_code: str | None
+    subcategory_code: str | None
+    department_code: str | None
+    priority: str | None
+    urgency: str | None
+    sentiment: str | None
+    escalation_level: int | None
+    verification: str | None
+    needs_review: bool
+    sla_status: str
+    resolution_due_at: datetime | None
+    summary: str | None
+    recommended_steps: list[str]
+    suggested_response: str | None
+    response_approved: bool
+    escalation_warnings: list[str]
+
+
+class AgentDashboardOut(BaseModel):
+    department: str | None
+    items: list[AgentQueueItem]
+
+
+class ReportSpecOut(BaseModel):
+    code: str
+    title: str
+    description: str
+
+
+class ReportColumn(BaseModel):
+    key: str
+    header: str
+
+
+class ReportTableOut(BaseModel):
+    title: str
+    columns: list[ReportColumn]
+    rows: list[dict[str, Any]]
+    total_rows: int
+
+
+class LabelValue(BaseModel):
+    label: str
+    value: str | None
+
+
+class ReportOut(BaseModel):
+    code: str
+    title: str
+    description: str
+    generated_at: datetime
+    filters: list[LabelValue]
+    summary: list[LabelValue]
+    tables: list[ReportTableOut]
+
+
+class EscalationLevelOut(BaseModel):
+    level: int
+    code: str
+    name: str
+
+
+class ActionOut(BaseModel):
+    code: str
+    kind: str
+    description: str
+
+
+class VocabularyOut(BaseModel):
+    sentiments: list[str]
+    urgencies: list[str]
+    priorities: list[str]
+    channels: list[str]
+    follow_up_types: list[str]
+    escalation_levels: list[EscalationLevelOut]
+    actions: list[ActionOut]

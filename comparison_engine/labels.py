@@ -1,7 +1,7 @@
 """Expected labels for dataset and evaluation-pack complaints (matched by `external_ref`).
 
 Labels come from `sample_complaints/complaints.jsonl` and, when present, any
-`hidden_test_ready/*.jsonl` evaluation file with the same record format.
+`hidden_test_ready/**/*.jsonl` evaluation file with the same record format.
 """
 
 import json
@@ -11,7 +11,7 @@ from typing import Any
 from src.core.config import ROOT_DIR
 
 LABEL_FILES = [ROOT_DIR / "sample_complaints" / "complaints.jsonl"]
-LABEL_GLOB = (ROOT_DIR / "hidden_test_ready", "*.jsonl")
+LABEL_GLOB = (ROOT_DIR / "hidden_test_ready", "**/*.jsonl")
 
 
 @lru_cache

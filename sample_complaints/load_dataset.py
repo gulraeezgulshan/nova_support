@@ -5,6 +5,10 @@ duplicate detection and risk signals run exactly as for portal submissions. Comp
 stored with `source="dataset"` and their dataset ID in `external_ref`. They are not analysed
 here; run the analysis CLI afterwards.
 
+The same loader imports evaluation packs (`hidden_test_ready/<pack>/`) with
+`source="evaluation"`; `customers.csv` and `orders.csv` are optional there, and customers
+named in the complaints but not in a customers file are created on the fly.
+
 Usage (repo root): `uv run python -m sample_complaints.load_dataset`
 """
 
@@ -36,55 +40,78 @@ def _date(value: str) -> date | None:
     return date.fromisoformat(value) if value else None
 
 
-async def load(folder: Path = HERE) -> Counter[str]:
+def _rows(path: Path) -> list[dict[str, str]]:
+    if not path.exists():
+        return []
+    with path.open(encoding="utf-8") as handle:
+        return list(csv.DictReader(handle))
+
+
+async def load(folder: Path = HERE, source: str = "dataset") -> Counter[str]:
     outcomes: Counter[str] = Counter()
+    records: list[dict[str, Any]] = [
+        json.loads(line)
+        for line in (folder / "complaints.jsonl").open(encoding="utf-8")
+        if line.strip()
+    ]
+    for record in records:  # evaluation packs may leave these out
+        record.setdefault("customer_ref", None)
+        record["customer_ref"] = record["customer_ref"] or f"CUST-{record['dataset_id']}"[:20]
+        record["created_at"] = record.get("created_at") or datetime.now().isoformat()
     async with async_session_factory()() as db:
         customers: dict[str, Customer] = {
             c.customer_ref: c for c in (await db.scalars(select(Customer))).all()
         }
-        with (folder / "customers.csv").open(encoding="utf-8") as handle:
-            for row in csv.DictReader(handle):
-                if row["customer_ref"] not in customers:
-                    customer = Customer(
-                        customer_ref=row["customer_ref"],
-                        full_name=row["full_name"],
-                        email=row["email"],
-                        customer_type=CustomerType(row["customer_type"]),
-                    )
-                    db.add(customer)
-                    customers[row["customer_ref"]] = customer
+        customer_rows = _rows(folder / "customers.csv")
+        named = {row["customer_ref"] for row in customer_rows}
+        customer_rows += [
+            {
+                "customer_ref": ref,
+                "full_name": f"Evaluation customer {ref}",
+                "email": "",
+                "customer_type": "STANDARD",
+            }
+            for ref in dict.fromkeys(r["customer_ref"] for r in records)
+            if ref not in named
+        ]
+        for row in customer_rows:
+            if row["customer_ref"] not in customers:
+                customer = Customer(
+                    customer_ref=row["customer_ref"],
+                    full_name=row["full_name"],
+                    email=row["email"] or None,
+                    customer_type=CustomerType(row["customer_type"]),
+                )
+                db.add(customer)
+                customers[row["customer_ref"]] = customer
         await db.flush()
 
         existing_orders = set((await db.scalars(select(Order.order_ref))).all())
-        with (folder / "orders.csv").open(encoding="utf-8") as handle:
-            for row in csv.DictReader(handle):
-                if row["order_ref"] in existing_orders:
-                    continue
-                db.add(
-                    Order(
-                        order_ref=row["order_ref"],
-                        transaction_ref=row["transaction_ref"] or None,
-                        customer_id=customers[row["customer_ref"]].id,
-                        product_name=row["product_name"],
-                        product_category=row["product_category"],
-                        amount=Decimal(row["amount"]),
-                        shipping_method=row["shipping_method"],
-                        order_date=_date(row["order_date"]),
-                        committed_delivery_date=_date(row["committed_delivery_date"]),
-                        delivered_date=_date(row["delivered_date"]),
-                        status=row["status"],
-                    )
+        for row in _rows(folder / "orders.csv"):
+            if row["order_ref"] in existing_orders:
+                continue
+            db.add(
+                Order(
+                    order_ref=row["order_ref"],
+                    transaction_ref=row["transaction_ref"] or None,
+                    customer_id=customers[row["customer_ref"]].id,
+                    product_name=row["product_name"],
+                    product_category=row["product_category"],
+                    amount=Decimal(row["amount"]),
+                    shipping_method=row["shipping_method"],
+                    order_date=_date(row["order_date"]),
+                    committed_delivery_date=_date(row["committed_delivery_date"]),
+                    delivered_date=_date(row["delivered_date"]),
+                    status=row["status"],
                 )
+            )
         await db.commit()
         # Keep IDs, not ORM objects: a rollback after a rejected complaint expires objects.
         customer_ids = {ref: c.id for ref, c in customers.items()}
 
         loaded = set(
-            await db.scalars(select(Complaint.external_ref).where(Complaint.source == "dataset"))
+            await db.scalars(select(Complaint.external_ref).where(Complaint.source == source))
         )
-        records: list[dict[str, Any]] = [
-            json.loads(line) for line in (folder / "complaints.jsonl").open(encoding="utf-8")
-        ]
         refs: dict[str, str] = {}
         for record in sorted(records, key=lambda r: r["created_at"]):
             if record["dataset_id"] in loaded:
@@ -100,13 +127,13 @@ async def load(folder: Path = HERE) -> Counter[str]:
                     data=ComplaintInput(
                         title=record["title"],
                         description=record["description"],
-                        order_ref=record["order_ref"],
+                        order_ref=record.get("order_ref"),
                         previous_complaint_ref=previous,
-                        channel=record["channel"],
-                        requested_resolution=record["requested_resolution"],
+                        channel=record.get("channel") or "web_form",
+                        requested_resolution=record.get("requested_resolution"),
                     ),
                     submitted_by=None,
-                    source="dataset",
+                    source=source,
                     enqueue=False,
                     created_at=datetime.fromisoformat(record["created_at"]).astimezone(),
                     external_ref=record["dataset_id"],
@@ -115,7 +142,7 @@ async def load(folder: Path = HERE) -> Counter[str]:
                 outcomes["accepted"] += 1
             except DuplicateComplaintError:
                 await db.rollback()
-                expected = record["expected"]["expected_intake"] == "rejected_duplicate"
+                expected = record.get("expected", {}).get("expected_intake") == "rejected_duplicate"
                 outcomes["rejected duplicate (expected)" if expected else "rejected duplicate"] += 1
             except ComplaintValidationError as exc:
                 await db.rollback()

@@ -1,0 +1,10 @@
+{
+  "mode": "python-only",
+  "complaints": 108,
+  "labelled": 108,
+  "python_category_accuracy_pct": 66.7,
+  "python_escalation_agreement_pct": 94.4,
+  "verdicts": {
+    "needs_review": 108
+  }
+}

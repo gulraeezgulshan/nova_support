@@ -10,10 +10,10 @@ signals:
       - 'overheat\w*'
       - 'very hot'
       - 'too hot to (?:touch|hold)'
-      - 'burn(?:ing|t)? smell'
+      - 'burn(?:ing|t)? (?:plastic )?smell'
+      - 'smell(?:s|ed|ing)? (?:a bit |slightly |strongly )?(?:of |like )?(?:burn\w*|plastic|smoke|electrical)'
       - 'smok(?:e|ed|ing)'
-      - 'sparks?'
-      - 'sparking'
+      - 'spark(?:s|ed|ing)?'
       - 'fire'
       - 'flames?'
       - 'melt(?:ed|ing)'
@@ -25,6 +25,9 @@ signals:
       - 'electric(?:al)? shock'
       - 'shocked me'
       - 'scorch\w*'
+      - 'swallow\w*'
+      - 'button (?:cell )?batter(?:y|ies)'
+      - 'battery (?:cover|door|compartment) (?:came|comes|fell|falls|was) (?:loose|off|open)'
   injury:
     description: A person was hurt or property damaged
     patterns:
@@ -34,12 +37,24 @@ signals:
       - 'hospital'
       - 'doctor'
       - 'first aid'
+      - 'a ?& ?e'
+      - 'emergency (?:room|department)'
+      - 'ambulance'
+      - 'paramedics?'
+      - 'pharmacist'
+      - 'burn(?:ed|t)? mark'
+      - 'cut (?:my|his|her|their) (?:finger|fingers|hand|thumb|arm|leg)'
+      - 'bleed\w*'
       - 'damaged (?:my|the) (?:table|desk|sofa|carpet|floor|wall|bed)'
   privacy_exposure:
     description: Personal data exposed to another person
     patterns:
       - "someone else'?s (?:order|details|address|name|invoice|data)"
-      - "another (?:customer|person)'?s (?:details|data|address|invoice|order|name)"
+      - "another (?:customer|person)'?s (?:full )?(?:details|data|address|invoice|order|name|phone)"
+      - '(?:neighbou?r|stranger|wrong (?:person|customer)|someone else|another (?:person|customer)) (?:received|got|was sent|has) (?:an? |my )?(?:email|letter|invoice|details|data|order confirmation)'
+      - 'sent to the wrong (?:person|customer|email)'
+      - 'did you (?:share|sell|give|pass on) my (?:details|data|information|number|email)'
+      - '(?:shared|sold|passed on) my (?:details|data|information|number|email) (?:with|to)'
       - 'my (?:personal )?(?:data|details|address|information) (?:was|were|is|has been) (?:shared|leaked|exposed|visible|sent|given)'
       - 'data (?:breach|leak)'
       - 'leaked'
@@ -55,6 +70,13 @@ signals:
       - 'password (?:was )?changed without'
       - 'suspicious (?:login|log-in|activity)'
       - 'stolen (?:card|account)'
+      - 'i never (?:ordered|placed|made|bought)'
+      - "(?:it )?wasn'?t me"
+      - '(?:email|password|phone number|address) (?:on|for|of) my account (?:was|has been) changed'
+      - 'changed without (?:my )?(?:permission|consent|knowledge)'
+      - "(?:login|log-in|sign-in) (?:from|on) (?:a|an) (?:unknown|unrecogni[sz]ed|new|strange) (?:device|location)"
+      - "device i (?:don'?t|do not) own"
+      - 'someone (?:has|had|got|gained) access to my (?:account|card)'
   legal_threat:
     description: Mentions legal action or regulators
     patterns:

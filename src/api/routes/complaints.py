@@ -1,6 +1,7 @@
 """Complaint endpoints. Customers see only their own complaints and never see internal
 analysis, signals or review notes; staff see everything."""
 
+import uuid
 from typing import Any
 
 from fastapi import APIRouter, Depends, HTTPException, Query, status
@@ -67,6 +68,7 @@ def _summary(complaint: Complaint, staff_view: bool) -> dict[str, Any]:
             sentiment=complaint.sentiment,
             escalation_level=complaint.escalation_level,
             needs_review=complaint.needs_review,
+            verification=complaint.verification,
         )
     return data
 
@@ -154,6 +156,12 @@ async def list_complaints(
     )
 
 
+async def _ref(db: AsyncSession, complaint_id: uuid.UUID | None) -> str | None:
+    if complaint_id is None:
+        return None
+    return await db.scalar(select(Complaint.complaint_ref).where(Complaint.id == complaint_id))
+
+
 async def _detail(db: AsyncSession, complaint: Complaint, staff_view: bool) -> ComplaintDetail:
     events_stmt = (
         select(ComplaintEvent)
@@ -187,6 +195,12 @@ async def _detail(db: AsyncSession, complaint: Complaint, staff_view: bool) -> C
             entities=complaint.entities,
             intake_warnings=complaint.intake_warnings,
             review_reason=complaint.review_reason,
+            verification=complaint.verification,
+            supporting_departments=complaint.supporting_departments,
+            duplicate_of_ref=await _ref(db, complaint.duplicate_of_id),
+            related_complaint_ref=await _ref(db, complaint.related_complaint_id),
+            similarity=complaint.similarity,
+            approved_response=complaint.approved_response,
         )
     return ComplaintDetail(**data)
 

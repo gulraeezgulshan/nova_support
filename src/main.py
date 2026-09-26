@@ -8,7 +8,16 @@ from complaint_processing.service import ComplaintValidationError, DuplicateComp
 from document_processing.validation import DocumentValidationError
 from knowledge_base.service import DuplicateDocumentError
 from knowledge_base.versioning import VersionTransitionError
-from src.api.routes import complaints, documents, health, rules, taxonomy, users, webhooks
+from src.api.routes import (
+    complaints,
+    documents,
+    health,
+    review,
+    rules,
+    taxonomy,
+    users,
+    webhooks,
+)
 from src.core.config import get_settings
 from src.core.logging import configure_logging
 
@@ -39,6 +48,7 @@ def create_app() -> FastAPI:
         taxonomy.router,
         documents.router,
         complaints.router,
+        review.router,
         rules.router,
         webhooks.router,
     ):

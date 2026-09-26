@@ -6,7 +6,15 @@ from typing import Any
 
 from pydantic import BaseModel, ConfigDict, Field
 
-from database.models import ComplaintStatus, IngestStatus, Role, RuleType, RunStatus, VersionStatus
+from database.models import (
+    ComplaintStatus,
+    IngestStatus,
+    ReviewAction,
+    Role,
+    RuleType,
+    RunStatus,
+    VersionStatus,
+)
 from schemas.complaint_analysis import ComplaintAnalysis
 
 
@@ -228,6 +236,7 @@ class ComplaintSummary(BaseModel):
     sentiment: str | None = None
     escalation_level: int | None = None
     needs_review: bool = False
+    verification: str | None = None
 
 
 class ComplaintPage(BaseModel):
@@ -251,6 +260,11 @@ class ComplaintDetail(ComplaintSummary):
     entities: dict[str, Any] | None = None
     intake_warnings: list[str] | None = None
     review_reason: str | None = None
+    supporting_departments: list[str] | None = None
+    duplicate_of_ref: str | None = None
+    related_complaint_ref: str | None = None
+    similarity: float | None = None
+    approved_response: str | None = None
 
 
 class AnalysisRunSummary(ORMModel):
@@ -333,3 +347,77 @@ class FactOut(BaseModel):
     name: str
     type: str
     description: str
+
+
+# --- validation and review -------------------------------------------------------
+
+
+class CheckResultOut(BaseModel):
+    code: str
+    name: str
+    status: str
+    severity: str
+    message: str
+    expected: Any = None
+    actual: Any = None
+    evidence: list[str] = []
+    correctable: bool = False
+
+
+class ComparisonRowOut(BaseModel):
+    field: str
+    genai: Any
+    python: Any
+    match: bool
+    explanation: str
+    expected: Any = None
+
+
+class ValidationRunOut(ORMModel):
+    id: uuid.UUID
+    analysis_run_id: uuid.UUID | None
+    verdict: str
+    score: float
+    checks: list[CheckResultOut]
+    python_decision: dict[str, Any]
+    comparison: list[ComparisonRowOut]
+    final_recommendation: dict[str, Any]
+    corrections: list[str]
+    review_reasons: list[str]
+    rules_version: str
+    created_at: datetime
+
+
+class ReviewTaskOut(BaseModel):
+    id: uuid.UUID
+    status: str
+    reasons: list[str]
+    priority: str | None
+    created_at: datetime
+    resolved_at: datetime | None
+    complaint: ComplaintSummary
+
+
+class ReviewActionIn(BaseModel):
+    action: ReviewAction
+    comment: str | None = Field(default=None, max_length=2000)
+    response_body: str | None = Field(default=None, max_length=5000)
+    category: str | None = None
+    subcategory: str | None = None
+    department: str | None = None
+    escalation_level: int | None = None
+
+
+class ReviewerDecisionOut(ORMModel):
+    id: int
+    action: ReviewAction
+    comment: str | None
+    before: dict[str, Any]
+    after: dict[str, Any]
+    created_at: datetime
+    reviewer_id: uuid.UUID
+
+
+class StatusChangeIn(BaseModel):
+    status: ComplaintStatus
+    note: str | None = Field(default=None, max_length=500)

@@ -7,12 +7,15 @@ can blur; embeddings catch paraphrases. Superseded, previous and draft versions 
 excluded, so outdated policy can never be retrieved as a resolution basis.
 """
 
+from collections.abc import Sequence
 from dataclasses import dataclass
+from typing import Any
 
 from fastapi.concurrency import run_in_threadpool
 from sqlalchemy import Select, Text, cast, func, select
 from sqlalchemy.dialects.postgresql import TSQUERY
 from sqlalchemy.ext.asyncio import AsyncSession
+from sqlalchemy.orm import Session
 
 from database.models import Chunk, Document, DocumentVersion, IngestStatus, VersionStatus
 from knowledge_base.config import get_kb_config
@@ -49,52 +52,48 @@ def _active_chunks_query() -> Select[int]:
     )
 
 
-async def search_chunks(
-    db: AsyncSession, query: str, embedder: Embedder, limit: int = 8
-) -> list[RetrievedChunk]:
-    query = query.strip()
-    if not query:
-        return []
+def _semantic_stmt(query_vector: list[float]) -> Select[int]:
+    return (
+        _active_chunks_query()
+        .order_by(Chunk.embedding.cosine_distance(query_vector))
+        .limit(CANDIDATES_PER_RANKER)
+    )
 
-    query_vector = await run_in_threadpool(embedder.embed_query, query)
-    semantic_ids = (
-        await db.scalars(
-            _active_chunks_query()
-            .order_by(Chunk.embedding.cosine_distance(query_vector))
-            .limit(CANDIDATES_PER_RANKER)
-        )
-    ).all()
 
+def _keyword_stmt(query: str) -> Select[int]:
     # OR the query terms together: complaints are prose, and requiring every word (AND)
     # would almost never match. ts_rank_cd still rewards chunks matching more terms.
     ts_query = cast(
         func.replace(cast(func.plainto_tsquery("english", query), Text), "&", "|"), TSQUERY
     )
-    keyword_ids = (
-        await db.scalars(
-            _active_chunks_query()
-            .where(Chunk.search_vector.op("@@")(ts_query))
-            .order_by(func.ts_rank_cd(Chunk.search_vector, ts_query).desc())
-            .limit(CANDIDATES_PER_RANKER)
-        )
-    ).all()
+    return (
+        _active_chunks_query()
+        .where(Chunk.search_vector.op("@@")(ts_query))
+        .order_by(func.ts_rank_cd(Chunk.search_vector, ts_query).desc())
+        .limit(CANDIDATES_PER_RANKER)
+    )
 
+
+def _fuse(rankings: Sequence[Sequence[int]], limit: int) -> dict[int, float]:
+    """Reciprocal Rank Fusion: sum of 1 / (k + rank) across rankers; keep the top `limit`."""
     scores: dict[int, float] = {}
-    for ranking in (semantic_ids, keyword_ids):
+    for ranking in rankings:
         for rank, chunk_id in enumerate(ranking, start=1):
             scores[chunk_id] = scores.get(chunk_id, 0.0) + 1.0 / (RRF_K + rank)
-    top_ids = sorted(scores, key=lambda cid: scores[cid], reverse=True)[:limit]
-    if not top_ids:
-        return []
+    top = sorted(scores, key=lambda cid: scores[cid], reverse=True)[:limit]
+    return {cid: scores[cid] for cid in top}
 
-    rows = (
-        await db.execute(
-            select(Chunk, Document.title, Document.doc_type)
-            .join(DocumentVersion, Chunk.document_version_id == DocumentVersion.id)
-            .join(Document, DocumentVersion.document_id == Document.id)
-            .where(Chunk.id.in_(top_ids))
-        )
-    ).all()
+
+def _details_stmt(ids: Sequence[int]) -> Select[Chunk, str, str]:
+    return (
+        select(Chunk, Document.title, Document.doc_type)
+        .join(DocumentVersion, Chunk.document_version_id == DocumentVersion.id)
+        .join(Document, DocumentVersion.document_id == Document.id)
+        .where(Chunk.id.in_(ids))
+    )
+
+
+def _to_results(rows: Sequence[Any], scores: dict[int, float]) -> list[RetrievedChunk]:
     precedence = {t.code: t.precedence for t in get_kb_config().document_types}
     results = [
         RetrievedChunk(
@@ -114,3 +113,36 @@ async def search_chunks(
         for chunk, title, doc_type in rows
     ]
     return sorted(results, key=lambda r: r.score, reverse=True)
+
+
+async def search_chunks(
+    db: AsyncSession, query: str, embedder: Embedder, limit: int = 8
+) -> list[RetrievedChunk]:
+    query = query.strip()
+    if not query:
+        return []
+    query_vector = await run_in_threadpool(embedder.embed_query, query)
+    semantic = (await db.scalars(_semantic_stmt(query_vector))).all()
+    keyword = (await db.scalars(_keyword_stmt(query))).all()
+    scores = _fuse([semantic, keyword], limit)
+    if not scores:
+        return []
+    rows = (await db.execute(_details_stmt(list(scores)))).all()
+    return _to_results(rows, scores)
+
+
+def search_chunks_sync(
+    db: Session, query: str, embedder: Embedder, limit: int = 8
+) -> list[RetrievedChunk]:
+    """Same retrieval for background workers (synchronous session)."""
+    query = query.strip()
+    if not query:
+        return []
+    query_vector = embedder.embed_query(query)
+    semantic = db.scalars(_semantic_stmt(query_vector)).all()
+    keyword = db.scalars(_keyword_stmt(query)).all()
+    scores = _fuse([semantic, keyword], limit)
+    if not scores:
+        return []
+    rows = db.execute(_details_stmt(list(scores))).all()
+    return _to_results(rows, scores)

@@ -1,0 +1,94 @@
+# Complaint taxonomy for VoltHaven Electronics. Seeded into the database; editable at runtime.
+departments:
+  - {code: BILLING,            name: Billing & Payments,       description: Charges, invoices, payment disputes, subscriptions}
+  - {code: LOGISTICS,          name: Logistics & Delivery,     description: Shipping, couriers, delivery delays and lost parcels}
+  - {code: RETURNS,            name: Returns & Refunds,        description: Returns, refunds, replacements and exchanges}
+  - {code: WARRANTY,           name: Warranty & Repairs,       description: Warranty claims, repairs and service centres}
+  - {code: TECH_SUPPORT,       name: Technical Support,        description: Device setup, software, connectivity and troubleshooting}
+  - {code: CUSTOMER_RELATIONS, name: Customer Relations,       description: Service quality, staff behaviour, goodwill}
+  - {code: ACCOUNT_SECURITY,   name: Account Security,         description: Login, account access, fraud and unauthorised activity}
+  - {code: PRIVACY_COMPLIANCE, name: Privacy & Compliance,     description: Personal data, consent, legal and regulatory matters}
+  - {code: PRODUCT_SAFETY,     name: Product Safety,           description: Hazards, battery incidents, injuries and recalls}
+  - {code: MGMT_ESCALATIONS,   name: Management Escalations,   description: Critical, high-value and executive escalations}
+
+categories:
+  - code: DELIVERY
+    name: Delivery
+    subcategories:
+      - {code: DELAYED_DELIVERY,       name: Delayed delivery}
+      - {code: LOST_PARCEL,            name: Lost parcel}
+      - {code: WRONG_ADDRESS_DELIVERY, name: Delivered to wrong address}
+      - {code: DAMAGED_IN_TRANSIT,     name: Damaged in transit}
+  - code: PRODUCT_DEFECT
+    name: Product Defect
+    subcategories:
+      - {code: DEAD_ON_ARRIVAL,       name: Dead on arrival}
+      - {code: MALFUNCTION_AFTER_USE, name: Malfunction after use}
+      - {code: MISSING_PARTS,         name: Missing parts or accessories}
+      - {code: WRONG_ITEM,            name: Wrong item received}
+  - code: BILLING
+    name: Billing
+    subcategories:
+      - {code: DUPLICATE_CHARGE,     name: Duplicate charge}
+      - {code: INCORRECT_CHARGE,     name: Incorrect charge}
+      - {code: SUBSCRIPTION_RENEWAL, name: Unwanted subscription renewal}
+      - {code: PROMO_NOT_APPLIED,    name: Promotion or coupon not applied}
+  - code: REFUND
+    name: Refund
+    subcategories:
+      - {code: REFUND_DELAY,   name: Refund delayed}
+      - {code: REFUND_DENIED,  name: Refund denied}
+      - {code: PARTIAL_REFUND, name: Partial refund disputed}
+  - code: RETURNS_REPLACEMENT
+    name: Returns & Replacement
+    subcategories:
+      - {code: RETURN_REJECTED,      name: Return rejected}
+      - {code: REPLACEMENT_DELAY,    name: Replacement delayed}
+      - {code: RETURN_PICKUP_MISSED, name: Return pickup missed}
+  - code: WARRANTY
+    name: Warranty
+    subcategories:
+      - {code: WARRANTY_CLAIM_DENIED, name: Warranty claim denied}
+      - {code: REPAIR_DELAY,          name: Repair delayed}
+      - {code: REPEATED_REPAIR,       name: Repeated repair of same fault}
+  - code: ACCOUNT
+    name: Account
+    subcategories:
+      - {code: LOGIN_ISSUE,         name: Cannot log in}
+      - {code: ACCOUNT_LOCKED,      name: Account locked or suspended}
+      - {code: UNAUTHORIZED_ACCESS, name: Unauthorised account access}
+  - code: TECHNICAL_SUPPORT
+    name: Technical Support
+    subcategories:
+      - {code: SETUP_ASSISTANCE,      name: Setup assistance}
+      - {code: SOFTWARE_UPDATE_ISSUE, name: Software or firmware update problem}
+      - {code: CONNECTIVITY_ISSUE,    name: Connectivity problem}
+  - code: PRIVACY
+    name: Privacy
+    subcategories:
+      - {code: DATA_EXPOSURE,          name: Personal data exposed}
+      - {code: MARKETING_CONSENT,      name: Marketing without consent}
+      - {code: DATA_DELETION_REQUEST,  name: Data deletion request ignored}
+  - code: SAFETY
+    name: Safety
+    subcategories:
+      - {code: OVERHEATING_BATTERY, name: Overheating or swelling battery}
+      - {code: ELECTRICAL_HAZARD,   name: Electrical hazard (sparks, shock, smoke)}
+      - {code: INJURY_REPORTED,     name: Injury or property damage reported}
+  - code: SERVICE_QUALITY
+    name: Service Quality
+    subcategories:
+      - {code: UNRESOLVED_PREVIOUS, name: Previous complaint unresolved}
+      - {code: POOR_COMMUNICATION,  name: Poor or no communication}
+      - {code: LONG_WAIT,           name: Long wait for support}
+  - code: STAFF_BEHAVIOR
+    name: Staff Behaviour
+    subcategories:
+      - {code: RUDE_STAFF,         name: Rude or unprofessional staff}
+      - {code: COURIER_MISCONDUCT, name: Courier misconduct}
+
+sla_policies:
+  - {priority: P0, name: Critical, first_response_minutes: 30,   resolution_minutes: 240,   at_risk_threshold_pct: 50}
+  - {priority: P1, name: High,     first_response_minutes: 120,  resolution_minutes: 1440,  at_risk_threshold_pct: 70}
+  - {priority: P2, name: Medium,   first_response_minutes: 480,  resolution_minutes: 4320,  at_risk_threshold_pct: 75}
+  - {priority: P3, name: Low,      first_response_minutes: 1440, resolution_minutes: 10080, at_risk_threshold_pct: 80}

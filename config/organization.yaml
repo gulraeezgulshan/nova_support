@@ -1,0 +1,20 @@
+# Fictional organisation used for all SupportNova data. Not a real company.
+name: VoltHaven Electronics
+legal_name: VoltHaven Electronics Ltd. (fictional)
+industry: Consumer electronics e-commerce
+description: >
+  Online retailer of smartphones, laptops, tablets, smart-home devices, audio gear and
+  accessories, selling direct to consumers and small businesses, with its own
+  "VoltCare+" paid protection-plan subscription.
+support_channels: [web_form, email, live_chat, whatsapp, phone_callback]
+customer_types:
+  - code: STANDARD
+    name: Standard customer
+  - code: VOLTCARE_PLUS
+    name: VoltCare+ subscriber
+  - code: VIP
+    name: VIP / high-value customer (lifetime spend > 5,000)
+  - code: BUSINESS
+    name: Small-business account
+currency: USD
+timezone: UTC

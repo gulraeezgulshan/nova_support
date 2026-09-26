@@ -18,6 +18,7 @@ from complaint_processing.preprocessing import (
     normalize_for_matching,
     sanitize_text,
 )
+from complaint_processing.sensitive import redact
 from database import audit
 from database.models import (
     COMPLAINT_REF_SEQ,
@@ -112,8 +113,11 @@ async def get_or_create_customer(db: AsyncSession, user: User) -> Customer:
 def validate_input(data: ComplaintInput) -> tuple[ComplaintInput, list[str]]:
     """Return the sanitised input and non-blocking warnings, or raise with every problem."""
     issues: list[str] = []
-    title = sanitize_text(data.title)
-    description = sanitize_text(data.description)
+    # Card numbers, passwords and ID numbers are removed before anything is stored or sent on.
+    redactions = [redact(sanitize_text(v)) for v in (data.title, data.description,
+                                                      data.requested_resolution or "")]  # fmt: skip
+    title, description, requested = (r.text for r in redactions)
+    removed = list(dict.fromkeys(kind for r in redactions for kind in r.kinds))
     config = analysis_config()
 
     if len(title) < MIN_TITLE_CHARS:
@@ -146,6 +150,8 @@ def validate_input(data: ComplaintInput) -> tuple[ComplaintInput, list[str]]:
         raise ComplaintValidationError(issues)
 
     warnings = []
+    if removed:
+        warnings.append(f"Sensitive data removed: {', '.join(removed)}.")
     if not order_ref and ORDER_WORDS.search(description.lower()):
         warnings.append("No order reference provided.")
     clean = ComplaintInput(
@@ -156,7 +162,7 @@ def validate_input(data: ComplaintInput) -> tuple[ComplaintInput, list[str]]:
         previous_complaint_ref=previous_ref,
         channel=data.channel,
         preferred_contact_channel=data.preferred_contact_channel,
-        requested_resolution=sanitize_text(data.requested_resolution or "") or None,
+        requested_resolution=requested or None,
     )
     return clean, warnings
 

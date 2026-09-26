@@ -176,7 +176,7 @@ def validate(inp: ValidationInput) -> ValidationOutcome:
         ),
         _check_escalation(a, decision, inp.vocab),
         _check_required_actions(a, decision, inp.vocab, cfg),
-        _check_prohibited_actions(a, decision),
+        _check_prohibited_actions(a, decision, cfg),
         _check_compensation(a, decision, inp.facts, cfg),
         _check_policies(a, decision, inp.passages),
         _check_promises(a, decision, inp, cfg),
@@ -441,8 +441,16 @@ def _check_required_actions(
     )
 
 
-def _check_prohibited_actions(a: ComplaintAnalysis, d: Decision) -> CheckResult:
-    used = [s.action_code for s in a.resolution_steps if s.action_code in d.prohibited_actions]
+def blocked_actions(d: Decision, cfg: dict[str, Any]) -> list[str]:
+    """What the rules prohibit for this complaint plus what is never allowed at all."""
+    return list(dict.fromkeys([*d.prohibited_actions, *cfg.get("never_allowed_actions", [])]))
+
+
+def _check_prohibited_actions(
+    a: ComplaintAnalysis, d: Decision, cfg: dict[str, Any]
+) -> CheckResult:
+    blocked = blocked_actions(d, cfg)
+    used = [s.action_code for s in a.resolution_steps if s.action_code in blocked]
     if not used:
         return CheckResult(
             "prohibited_actions",
@@ -838,7 +846,7 @@ def _finish(
         steps = [
             s.action_code
             for s in a.resolution_steps
-            if s.action_code not in decision.prohibited_actions
+            if s.action_code not in blocked_actions(decision, cfg)
         ]
         category: str = a.primary_issue.category
         subcategory: str | None = a.primary_issue.subcategory
@@ -866,7 +874,7 @@ def _finish(
         "priority": priority,
         "escalation_level": escalation,
         "sentiment": sentiment,
-        "actions": [a for a in actions if a not in decision.prohibited_actions],
+        "actions": [a for a in actions if a not in blocked_actions(decision, cfg)],
         "follow_up_type": decision.follow_up_type,
         "follow_up_hours": decision.follow_up_hours,
     }

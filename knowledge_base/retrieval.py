@@ -48,6 +48,7 @@ def _active_chunks_query() -> Select[int]:
         .where(
             DocumentVersion.status == VersionStatus.ACTIVE,
             DocumentVersion.ingest_status == IngestStatus.READY,
+            Chunk.flagged.is_(False),  # quarantined passages are never used as grounding
         )
     )
 

@@ -5,6 +5,7 @@ import { MoreHorizontal } from "lucide-react";
 import { useState } from "react";
 import { toast } from "sonner";
 
+import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import {
   DropdownMenu,
@@ -158,6 +159,15 @@ export function DocumentsTable({ canManage }: { canManage: boolean }) {
                 </TableCell>
                 <TableCell>
                   <IngestStatusBadge status={version.ingest_status} error={version.ingest_error} />
+                  {version.warnings?.length ? (
+                    <Badge
+                      variant="outline"
+                      className="ml-1 border-amber-600/40 bg-amber-500/10 text-amber-700 dark:text-amber-400"
+                      title={version.warnings.join("\n")}
+                    >
+                      {version.warnings.length} quarantined
+                    </Badge>
+                  ) : null}
                 </TableCell>
                 <TableCell>
                   {version.effective_date}

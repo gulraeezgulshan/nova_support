@@ -5549,6 +5549,14 @@
             "type": "integer",
             "title": "Chunk Count"
           },
+          "warnings": {
+            "items": {
+              "type": "string"
+            },
+            "type": "array",
+            "title": "Warnings",
+            "default": []
+          },
           "created_at": {
             "type": "string",
             "format": "date-time",

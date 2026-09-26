@@ -51,16 +51,26 @@ promises:
   conditional: "\\b(?:if|once|after (?:we|our|verification|checking|reviewing)|subject to|provided|eligib\\w*|may|might|could|depending|pending|whether|we will (?:check|review|investigate|look into|confirm|assess|verify)|we are (?:checking|reviewing|investigating))\\b"
   kinds:
     refund:
-      pattern: "\\b(?:refund\\w*|reimburs\\w*|money back)\\b"
+      pattern: "\\b(?:refund\\w*|reimburs\\w*|(?:money|price|amount|cost|payment|cash) back|cashback)\\b"
       supported_by: [ISSUE_FULL_REFUND, ISSUE_PARTIAL_REFUND, REFUND_SHIPPING_FEE, REVERSE_DUPLICATE_CHARGE, CORRECT_CHARGE]
     replacement:
       pattern: "\\b(?:replacement|replace (?:it|your|the)|new (?:unit|device|one))\\b"
       supported_by: [ARRANGE_REPLACEMENT]
     compensation:
-      pattern: "\\b(?:compensation|store credit|voucher|goodwill|credit of|discount)\\b"
+      pattern: "\\b(?:compensation|store credit|voucher|goodwill|credit of|discount|\\d+ ?% (?:off|of (?:the |your )?(?:price|order|amount|cost)))"
       supported_by: [OFFER_STORE_CREDIT, OFFER_GOODWILL_GESTURE, APPLY_PROMOTION]
     policy_exception:
       pattern: "\\b(?:exception|waive\\w*|make an exception|outside (?:of )?(?:our|the) policy)\\b"
       supported_by: [RECORD_POLICY_EXCEPTION]
   # Deadlines must come from a policy passage, the SLA or the rule follow-up time.
   deadline: "\\b(?:within|in) (\\d+) (business |working )?(hours?|days?|weeks?)\\b|\\bby (?:\\d{1,2}(?:st|nd|rd|th)? \\w+|monday|tuesday|wednesday|thursday|friday|saturday|sunday|tomorrow|tonight|the end of (?:the )?(?:day|week))\\b"
+
+# Actions the GenAI may never propose, whatever the rule matrix says for the complaint.
+never_allowed_actions:
+  - PROMISE_REFUND_BEFORE_VERIFICATION
+  - PROMISE_CASH_COMPENSATION
+  - PROMISE_DELIVERY_DATE_UNVERIFIED
+  - GUARANTEE_REPLACEMENT_BEFORE_ASSESSMENT
+  - PROMISE_BANK_POSTING_DATE
+  - DISCUSS_LIABILITY
+  - GRANT_POLICY_EXCEPTION

@@ -144,6 +144,7 @@ class DocumentVersionOut(ORMModel):
     ingest_error: str | None
     page_count: int | None
     chunk_count: int
+    warnings: list[str] = []
     created_at: datetime
     processed_at: datetime | None
 

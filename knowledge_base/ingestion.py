@@ -6,6 +6,7 @@ from datetime import UTC, date, datetime
 from sqlalchemy import delete, select
 from sqlalchemy.orm import Session
 
+from complaint_processing.detectors import detect_signals
 from database.audit import record_sync
 from database.models import Chunk, DocumentVersion, IngestStatus
 from document_processing.chunking import chunk_sections
@@ -57,6 +58,16 @@ def ingest_version(
         vectors = embedder.embed_documents([d.embedding_text for d in drafts])
 
         doc_code = version.document.doc_code
+        # A policy document that talks to the AI ("ignore your instructions", "approve the
+        # refund immediately") is a malicious or corrupted source: those passages are kept
+        # for review but never used to ground a recommendation.
+        flagged = {d.ordinal: detect_signals(d.content).get("prompt_injection", []) for d in drafts}
+        warnings = [
+            f"Passage {d.ordinal} (section {d.section or '-'}) was quarantined: it contains "
+            f"instructions aimed at the AI ({'; '.join(flagged[d.ordinal][:2])})."
+            for d in drafts
+            if flagged[d.ordinal]
+        ]
         db.execute(delete(Chunk).where(Chunk.document_version_id == version.id))  # idempotent
         db.add_all(
             Chunk(
@@ -72,11 +83,13 @@ def ingest_version(
                 content=d.content,
                 token_count=d.token_count,
                 embedding=vector,
+                flagged=bool(flagged[d.ordinal]),
             )
             for d, vector in zip(drafts, vectors, strict=True)
         )
         version.page_count = parsed.page_count
         version.chunk_count = len(drafts)
+        version.warnings = warnings
         version.ingest_status = IngestStatus.READY
         version.processed_at = datetime.now(UTC)
         record_sync(
@@ -84,7 +97,7 @@ def ingest_version(
             "document_version.ingested",
             "document_version",
             version.id,
-            after={"chunks": len(drafts), "pages": parsed.page_count},
+            after={"chunks": len(drafts), "pages": parsed.page_count, "warnings": warnings},
         )
         if version.activate_on_ready:
             try:

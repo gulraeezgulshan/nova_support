@@ -1378,6 +1378,10 @@ export type DocumentVersionOut = {
      */
     chunk_count: number;
     /**
+     * Warnings
+     */
+    warnings?: Array<string>;
+    /**
      * Created At
      */
     created_at: string;

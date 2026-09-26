@@ -23,7 +23,7 @@ from sqlalchemy import (
     UniqueConstraint,
     text,
 )
-from sqlalchemy.dialects.postgresql import TSVECTOR
+from sqlalchemy.dialects.postgresql import JSONB, TSVECTOR
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 
 from database.base import Base, TimestampMixin, UUIDPrimaryKeyMixin
@@ -88,6 +88,8 @@ class DocumentVersion(UUIDPrimaryKeyMixin, TimestampMixin, Base):
     ingest_error: Mapped[str | None] = mapped_column(Text)
     page_count: Mapped[int | None] = mapped_column(Integer)
     chunk_count: Mapped[int] = mapped_column(Integer, default=0)
+    # Problems found while processing, e.g. passages quarantined for instructing the AI.
+    warnings: Mapped[list[str]] = mapped_column(JSONB, default=list)
     processed_at: Mapped[datetime | None] = mapped_column(DateTime(timezone=True))
     uploaded_by_id: Mapped[uuid.UUID | None] = mapped_column(ForeignKey("users.id"))
 
@@ -120,6 +122,8 @@ class Chunk(Base):
     page_end: Mapped[int | None] = mapped_column(Integer)
     content: Mapped[str] = mapped_column(Text)
     token_count: Mapped[int] = mapped_column(Integer)
+    # Passages that try to instruct the AI are kept for review but never retrieved.
+    flagged: Mapped[bool] = mapped_column(default=False)
     embedding: Mapped[list[float]] = mapped_column(Vector(get_settings().embedding_dim))
     search_vector: Mapped[str] = mapped_column(
         TSVECTOR,

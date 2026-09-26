@@ -19,6 +19,7 @@ from database.session import sync_session
 from genai_pipeline.pipeline import run_analysis
 from genai_pipeline.providers import ProviderUnavailableError, get_provider
 from knowledge_base.embeddings import get_embedder
+from python_validation.pipeline import run_validation
 from src.core.config import get_settings
 from src.core.logging import configure_logging
 
@@ -66,10 +67,11 @@ def main() -> int:
             except ProviderUnavailableError as exc:
                 print(f"  provider unavailable: {exc}")
                 return 2
+            validation = run_validation(db, run.complaint_id)
             complaint = db.get(Complaint, run.complaint_id)
             assert complaint is not None
             print(
-                f"  {complaint.complaint_ref} {run.status:>12} "
+                f"  {complaint.complaint_ref} {run.status:>12} {validation.verdict:>12} "
                 f"{time.monotonic() - started:5.1f}s attempts={run.attempts} -> "
                 f"{complaint.category_code}/{complaint.subcategory_code} "
                 f"{complaint.priority} {complaint.department_code}"

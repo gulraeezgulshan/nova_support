@@ -12,7 +12,7 @@ configure_logging(settings.log_level, json=settings.environment == "production")
 celery_app = Celery(
     "supportnova",
     broker=settings.redis_url,
-    include=["knowledge_base.tasks", "genai_pipeline.tasks"],
+    include=["knowledge_base.tasks", "complaint_processing.tasks"],
 )
 celery_app.conf.update(
     task_ignore_result=True,
@@ -22,7 +22,7 @@ celery_app.conf.update(
     task_default_queue="default",
     task_routes={
         "knowledge_base.tasks.*": {"queue": "ingest"},
-        "genai_pipeline.tasks.*": {"queue": "analysis"},
+        "complaint_processing.tasks.*": {"queue": "analysis"},
     },
     broker_connection_retry_on_startup=True,
     timezone="UTC",

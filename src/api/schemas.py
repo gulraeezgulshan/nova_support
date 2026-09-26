@@ -2,10 +2,12 @@
 
 import uuid
 from datetime import date, datetime
+from typing import Any
 
 from pydantic import BaseModel, ConfigDict, Field
 
-from database.models import IngestStatus, Role, VersionStatus
+from database.models import ComplaintStatus, IngestStatus, Role, RuleType, RunStatus, VersionStatus
+from schemas.complaint_analysis import ComplaintAnalysis
 
 
 class ORMModel(BaseModel):
@@ -170,3 +172,164 @@ class SearchResultOut(BaseModel):
     page_end: int | None
     content: str
     score: float
+
+
+# --- complaints ----------------------------------------------------------------
+
+
+class ComplaintCreate(BaseModel):
+    title: str = Field(max_length=200)
+    description: str = Field(max_length=6000)
+    product_service: str | None = Field(default=None, max_length=200)
+    order_ref: str | None = Field(default=None, max_length=20)
+    previous_complaint_ref: str | None = Field(default=None, max_length=20)
+    channel: str = "web_form"
+    preferred_contact_channel: str | None = None
+    requested_resolution: str | None = Field(default=None, max_length=1000)
+    customer_ref: str | None = Field(
+        default=None, description="Staff only: submit on behalf of this customer"
+    )
+
+
+class ComplaintEventOut(ORMModel):
+    event_type: str
+    from_status: str | None
+    to_status: str | None
+    message: str
+    created_at: datetime
+
+
+class OrderOut(ORMModel):
+    order_ref: str
+    product_name: str
+    product_category: str
+    amount: float
+    shipping_method: str
+    order_date: date
+    committed_delivery_date: date
+    delivered_date: date | None
+    status: str
+
+
+class ComplaintSummary(BaseModel):
+    """List row. Classification fields are empty for customers."""
+
+    complaint_ref: str
+    title: str
+    status: ComplaintStatus
+    created_at: datetime
+    updated_at: datetime
+    customer_ref: str
+    customer_name: str
+    department_code: str | None
+    category_code: str | None = None
+    priority: str | None = None
+    urgency: str | None = None
+    sentiment: str | None = None
+    escalation_level: int | None = None
+    needs_review: bool = False
+
+
+class ComplaintPage(BaseModel):
+    items: list[ComplaintSummary]
+    total: int
+
+
+class ComplaintDetail(ComplaintSummary):
+    description: str
+    product_service: str | None
+    order: OrderOut | None
+    channel: str
+    preferred_contact_channel: str | None
+    requested_resolution: str | None
+    previous_complaint_ref: str | None
+    events: list[ComplaintEventOut]
+    # staff-only details (None for customers)
+    customer_type: str | None = None
+    subcategory_code: str | None = None
+    signals: dict[str, list[str]] | None = None
+    entities: dict[str, Any] | None = None
+    intake_warnings: list[str] | None = None
+    review_reason: str | None = None
+
+
+class AnalysisRunSummary(ORMModel):
+    id: uuid.UUID
+    status: RunStatus
+    created_at: datetime
+    completed_at: datetime | None
+    provider: str | None
+    model: str | None
+    prompt_name: str | None
+    prompt_version: str | None
+    schema_version: str | None
+    attempts: int
+    latency_ms: int
+    input_tokens: int
+    output_tokens: int
+
+
+class AnalysisRunOut(AnalysisRunSummary):
+    retrieved_policies: list[dict[str, Any]]
+    output: ComplaintAnalysis | None
+    validation_errors: list[str]
+    error: str | None
+
+
+class ComplaintAnalysisOut(BaseModel):
+    latest: AnalysisRunOut | None
+    history: list[AnalysisRunSummary]
+
+
+# --- rule matrix ---------------------------------------------------------------
+
+
+class RuleOut(ORMModel):
+    rule_id: str
+    rule_type: RuleType
+    description: str
+    category: str | None
+    subcategory: str | None
+    condition: str
+    department: str | None
+    supporting_departments: list[str]
+    urgency: str | None
+    priority: str | None
+    escalation_level: int
+    required_actions: list[str]
+    prohibited_actions: list[str]
+    policy_refs: list[str]
+    follow_up_type: str | None
+    follow_up_hours: int | None
+    rule_priority: int
+    is_active: bool
+    version: int
+
+
+class RuleWrite(BaseModel):
+    """Create or replace a rule (all fields validated like the CSV import)."""
+
+    rule_id: str
+    rule_type: RuleType
+    description: str = Field(min_length=3)
+    category: str | None = None
+    subcategory: str | None = None
+    condition: str = ""
+    department: str | None = None
+    supporting_departments: list[str] = []
+    urgency: str | None = None
+    priority: str | None = None
+    escalation_level: int = 0
+    required_actions: list[str] = []
+    prohibited_actions: list[str] = []
+    policy_refs: list[str] = []
+    follow_up_type: str | None = None
+    follow_up_hours: int | None = None
+    rule_priority: int = 50
+    is_active: bool = True
+
+
+class FactOut(BaseModel):
+    name: str
+    type: str
+    description: str

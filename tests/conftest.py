@@ -38,7 +38,7 @@ from sqlalchemy import text  # noqa: E402
 
 from database.base import Base  # noqa: E402
 from database.models import Role, User  # noqa: E402
-from database.seed import load_taxonomy, seed_taxonomy  # noqa: E402
+from database.seed import load_taxonomy, seed_rules, seed_taxonomy  # noqa: E402
 from database.session import get_sync_engine, sync_session  # noqa: E402
 from security.clerk import ClerkTokenVerifier  # noqa: E402
 from security.dependencies import get_token_verifier  # noqa: E402
@@ -108,6 +108,7 @@ def clean_db(database: None) -> Iterator[None]:
     """Seeded taxonomy for each test; everything truncated afterwards."""
     with sync_session() as db:
         seed_taxonomy(db, load_taxonomy())
+        seed_rules(db)
     yield
     tables = ", ".join(f'"{t.name}"' for t in reversed(Base.metadata.sorted_tables))
     with get_sync_engine().begin() as conn:
@@ -136,14 +137,20 @@ def create_user(clean_db: None) -> Callable[..., User]:
 async def client(
     clean_db: None, verifier: ClerkTokenVerifier, monkeypatch: pytest.MonkeyPatch
 ) -> AsyncIterator[httpx.AsyncClient]:
+    from complaint_processing import service as complaint_service
     from knowledge_base import service
     from src.main import create_app
 
     enqueued: list[uuid.UUID] = []
+    analyses: list[uuid.UUID] = []
     monkeypatch.setattr(service, "enqueue_ingest", enqueued.append)
+    monkeypatch.setattr(
+        complaint_service, "enqueue_analysis", lambda cid, _by=None: analyses.append(cid)
+    )
     app = create_app()
     app.dependency_overrides[get_token_verifier] = lambda: verifier
     app.state.enqueued = enqueued
+    app.state.analyses = analyses
     transport = httpx.ASGITransport(app=app)
     async with httpx.AsyncClient(transport=transport, base_url="http://test") as http:
         http.app = app  # type: ignore[attr-defined]

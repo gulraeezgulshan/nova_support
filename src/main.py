@@ -4,10 +4,11 @@ from fastapi import FastAPI, Request, status
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import JSONResponse
 
+from complaint_processing.service import ComplaintValidationError, DuplicateComplaintError
 from document_processing.validation import DocumentValidationError
 from knowledge_base.service import DuplicateDocumentError
 from knowledge_base.versioning import VersionTransitionError
-from src.api.routes import documents, health, taxonomy, users, webhooks
+from src.api.routes import complaints, documents, health, rules, taxonomy, users, webhooks
 from src.core.config import get_settings
 from src.core.logging import configure_logging
 
@@ -33,7 +34,14 @@ def create_app() -> FastAPI:
     )
 
     app.include_router(health.router)
-    for router in (users.router, taxonomy.router, documents.router, webhooks.router):
+    for router in (
+        users.router,
+        taxonomy.router,
+        documents.router,
+        complaints.router,
+        rules.router,
+        webhooks.router,
+    ):
         app.include_router(router, prefix=settings.api_prefix)
 
     @app.exception_handler(DocumentValidationError)
@@ -46,6 +54,20 @@ def create_app() -> FastAPI:
     @app.exception_handler(DuplicateDocumentError)
     async def _duplicate(_: Request, exc: DuplicateDocumentError) -> JSONResponse:
         return JSONResponse(status_code=status.HTTP_409_CONFLICT, content={"detail": str(exc)})
+
+    @app.exception_handler(ComplaintValidationError)
+    async def _complaint_invalid(_: Request, exc: ComplaintValidationError) -> JSONResponse:
+        return JSONResponse(
+            status_code=status.HTTP_422_UNPROCESSABLE_CONTENT,
+            content={"detail": "Complaint failed validation", "issues": exc.issues},
+        )
+
+    @app.exception_handler(DuplicateComplaintError)
+    async def _complaint_duplicate(_: Request, exc: DuplicateComplaintError) -> JSONResponse:
+        return JSONResponse(
+            status_code=status.HTTP_409_CONFLICT,
+            content={"detail": str(exc), "existing_ref": exc.existing_ref},
+        )
 
     @app.exception_handler(VersionTransitionError)
     async def _transition(_: Request, exc: VersionTransitionError) -> JSONResponse:

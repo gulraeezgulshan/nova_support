@@ -20,6 +20,7 @@ from pathlib import Path
 from typing import Any
 
 from sqlalchemy import select
+from sqlalchemy.dialects.postgresql import distinct_on
 
 from comparison_engine.labels import expected_labels
 from database.models import Complaint, ValidationRun
@@ -49,7 +50,7 @@ def comparison_report(limit: int | None = None) -> tuple[Path, dict[str, Any]]:
     with sync_session() as db:
         latest = (
             select(ValidationRun)
-            .distinct(ValidationRun.complaint_id)
+            .ext(distinct_on(ValidationRun.complaint_id))
             .where(ValidationRun.analysis_run_id.is_not(None))
             .order_by(ValidationRun.complaint_id, ValidationRun.created_at.desc())
         )

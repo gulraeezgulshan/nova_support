@@ -1,0 +1,79 @@
+[project]
+name = "supportnova"
+version = "0.1.0"
+requires-python = ">=3.13"
+dependencies = [
+    "alembic>=1.20.0",
+    "boto3>=1.43.103",
+    "celery[redis]>=5.6.3",
+    "cryptography>=50.0.1",
+    "fastapi>=0.141.1",
+    "fastembed>=0.8.1",
+    "httpx>=0.28.1",
+    "pgvector>=0.5.0",
+    "psycopg[binary]>=3.3.6",
+    "pydantic>=2.13.5",
+    "pydantic-settings>=2.15.0",
+    "pyjwt>=2.15.0",
+    "pymupdf>=1.28.2",
+    "python-docx>=1.2.0",
+    "python-multipart>=0.0.32",
+    "pyyaml>=6.0.3",
+    "redis>=6.4.0",
+    "sqlalchemy[asyncio]>=2.1.1",
+    "structlog>=26.1.0",
+    "svix>=2.5.0",
+    "tenacity>=9.1.4",
+    "uvicorn[standard]>=0.54.0",
+]
+
+[dependency-groups]
+dev = [
+    "boto3-stubs>=1.43.103",
+    "mypy>=2.3.1",
+    "pytest>=9.1.1",
+    "pytest-asyncio>=1.4.0",
+    "ruff>=0.16.9",
+    "types-pyyaml>=6.0.12.20260906",
+]
+
+[tool.uv]
+# The repository layout is mandated by the SRS (top-level module folders),
+# so the project is run from the repo root instead of being installed as a package.
+package = false
+
+[tool.pytest.ini_options]
+pythonpath = ["."]
+testpaths = ["tests"]
+asyncio_mode = "auto"
+asyncio_default_fixture_loop_scope = "session"
+asyncio_default_test_loop_scope = "session"
+markers = ["db: tests that need the PostgreSQL test database"]
+
+[tool.ruff]
+line-length = 100
+target-version = "py313"
+extend-exclude = ["web", "database/migrations/versions"]
+
+[tool.ruff.lint]
+select = ["E", "F", "I", "B", "UP", "S", "ASYNC", "RUF", "SIM"]
+ignore = ["S101", "B008"]  # asserts in tests; FastAPI Depends() in defaults
+
+[tool.ruff.lint.per-file-ignores]
+"tests/**" = ["S105", "S106"]
+
+[tool.mypy]
+python_version = "3.13"
+strict = true
+explicit_package_bases = true
+plugins = ["pydantic.mypy"]
+exclude = ["web/", "database/migrations/"]
+
+[[tool.mypy.overrides]]
+module = ["fitz.*", "pymupdf.*", "docx.*", "fastembed.*", "celery.*", "pgvector.*", "svix.*"]
+ignore_missing_imports = true
+
+[[tool.mypy.overrides]]
+# PyMuPDF and python-docx ship without complete type hints.
+module = ["document_processing.parsers", "tests.fixtures.documents", "sample_documents.build_documents"]
+disallow_untyped_calls = false

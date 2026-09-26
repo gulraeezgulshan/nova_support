@@ -1,0 +1,58 @@
+# Local development stack.
+#   docker compose up -d                  -> infrastructure only (run API/worker with uv)
+#   docker compose --profile app up -d    -> infrastructure + API + worker in containers
+name: supportnova
+
+services:
+  postgres:
+    image: pgvector/pgvector:pg18
+    environment:
+      POSTGRES_USER: supportnova
+      POSTGRES_PASSWORD: supportnova
+      POSTGRES_DB: supportnova
+    ports: ["5432:5432"]
+    volumes:
+      - pgdata:/var/lib/postgresql
+      - ./docker/postgres-init.sql:/docker-entrypoint-initdb.d/01-init.sql:ro
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U supportnova -d supportnova"]
+      interval: 5s
+      retries: 10
+
+  redis:
+    image: redis:8-alpine
+    ports: ["6379:6379"]
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 5s
+      retries: 10
+
+  api:
+    profiles: [app]
+    build: .
+    env_file: .env
+    environment: &container_env
+      DATABASE_URL: postgresql+psycopg://supportnova:supportnova@postgres:5432/supportnova
+      REDIS_URL: redis://redis:6379/0
+      STORAGE_BACKEND: local
+    command: sh -c "alembic upgrade head && uvicorn src.main:app --host 0.0.0.0 --port 8000"
+    ports: ["8000:8000"]
+    volumes: [storage:/app/.data/storage]
+    depends_on:
+      postgres: {condition: service_healthy}
+      redis: {condition: service_healthy}
+
+  worker:
+    profiles: [app]
+    build: .
+    env_file: .env
+    environment: *container_env
+    command: celery -A src.worker worker --loglevel INFO -Q default,ingest --concurrency 2
+    volumes: [storage:/app/.data/storage]
+    depends_on:
+      postgres: {condition: service_healthy}
+      redis: {condition: service_healthy}
+
+volumes:
+  pgdata:
+  storage:  # shared by api + worker (production uses Cloudflare R2 instead)

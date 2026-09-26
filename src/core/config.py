@@ -8,7 +8,7 @@ from functools import lru_cache
 from pathlib import Path
 from typing import Literal
 
-from pydantic import Field, computed_field
+from pydantic import Field, computed_field, field_validator, model_validator
 from pydantic_settings import BaseSettings, SettingsConfigDict
 
 ROOT_DIR = Path(__file__).resolve().parents[2]
@@ -63,6 +63,36 @@ class Settings(BaseSettings):
     genai_timeout_seconds: float = 60.0
     genai_max_attempts: int = Field(default=2, ge=1, le=3)  # 1 call + 1 repair retry
     anthropic_api_key: str | None = None
+
+    @field_validator("database_url")
+    @classmethod
+    def _psycopg_driver(cls, value: str) -> str:
+        """Hosting platforms hand out postgres:// URLs; SQLAlchemy needs the driver named."""
+        for prefix in ("postgres://", "postgresql://"):
+            if value.startswith(prefix):
+                return "postgresql+psycopg://" + value.removeprefix(prefix)
+        return value
+
+    @model_validator(mode="after")
+    def _production_ready(self) -> "Settings":
+        """Refuse to start a production deployment that is missing something essential."""
+        if self.environment != "production":
+            return self
+        problems = []
+        if not self.clerk_issuer or "your-app" in self.clerk_issuer:
+            problems.append("CLERK_ISSUER must be your Clerk Frontend API URL")
+        if any("localhost" in origin for origin in self.cors_origins):
+            problems.append("ALLOWED_ORIGINS must be the deployed web address, not localhost")
+        if self.storage_backend != "s3" or not (
+            self.s3_endpoint_url and self.s3_access_key_id and self.s3_secret_access_key
+        ):
+            problems.append(
+                "STORAGE_BACKEND=s3 with S3_ENDPOINT_URL, S3_ACCESS_KEY_ID and "
+                "S3_SECRET_ACCESS_KEY is required (container disks are not persistent)"
+            )
+        if problems:
+            raise ValueError("Production configuration incomplete: " + "; ".join(problems))
+        return self
 
     @computed_field  # type: ignore[prop-decorator]
     @property

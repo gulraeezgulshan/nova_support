@@ -1,5 +1,5 @@
 # Common development tasks. Run `make help` for the list.
-.PHONY: help setup infra migrate seed import-docs load-dataset analyze triage-python reports sla-scan report-baseline report-comparison api worker web test lint format openapi check
+.PHONY: help setup infra migrate seed import-docs load-dataset bootstrap analyze triage-python reports sla-scan report-baseline report-comparison evaluate evaluate-python evidence final-evidence requirements api worker web test lint format openapi check
 
 help:           ## Show this help
 	@grep -E '^[a-z-]+:.*##' $(MAKEFILE_LIST) | awk -F':.*## ' '{printf "  %-18s %s\n", $$1, $$2}'
@@ -25,6 +25,9 @@ import-docs:    ## Build and import the sample knowledge-base documents
 load-dataset:   ## Load the 536-complaint labelled dataset (customers, orders, complaints)
 	uv run python -m sample_complaints.load_dataset
 
+bootstrap:      ## Seed taxonomy and rules, import documents and load the dataset in one go (after migrate)
+	uv run python -m database.bootstrap
+
 analyze:        ## Analyse 10 unanalysed dataset complaints with the configured model (needs ANTHROPIC_API_KEY)
 	uv run python -m genai_pipeline.analyze --limit 10
 
@@ -33,6 +36,20 @@ report-baseline: ## Python-only validation of the dataset, scored on its labels 
 
 report-comparison: ## GenAI vs Python comparison report for analysed complaints
 	uv run python -m comparison_engine.report comparison
+
+evaluate:       ## GenAI + Python on the 108 unseen hold-out complaints, with timing (needs ANTHROPIC_API_KEY)
+	uv run python -m comparison_engine.evaluate hidden_test_ready/holdout
+
+evaluate-python: ## Python-only evaluation of the hold-out pack (no GenAI, no database writes)
+	uv run python -m comparison_engine.evaluate hidden_test_ready/holdout --python-only
+
+evidence:       ## Export GenAI evidence (config, sample request/response, invalid outputs, retries)
+	uv run python -m genai_pipeline.evidence
+
+final-evidence: evaluate report-comparison reports evidence ## Everything that needs the API key, in one go
+
+requirements:   ## Regenerate requirements.txt from uv.lock
+	uv export --no-dev --no-hashes --no-emit-project -o requirements.txt
 
 api:            ## Run the FastAPI server (http://localhost:8000/docs)
 	uv run uvicorn src.main:app --reload --port 8000

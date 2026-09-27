@@ -27,9 +27,11 @@ const PILLARS = [
   },
 ];
 
-export default function Home() {
+export const metadata = { title: "About SupportNova" };
+
+export default function AboutSupportNovaPage() {
   return (
-    <main className="mx-auto flex min-h-svh max-w-5xl flex-col justify-center gap-12 px-6 py-16">
+    <div className="mx-auto flex max-w-5xl flex-col justify-center gap-12 px-6 py-16">
       <div className="space-y-5">
         <p className="text-sm font-medium text-muted-foreground">
           VoltHaven Electronics · Customer Care
@@ -66,6 +68,6 @@ export default function Home() {
           </div>
         ))}
       </div>
-    </main>
+    </div>
   );
 }

@@ -82,6 +82,10 @@ class Order(UUIDPrimaryKeyMixin, TimestampMixin, Base):
     committed_delivery_date: Mapped[date] = mapped_column(Date)
     delivered_date: Mapped[date | None] = mapped_column(Date)
     status: Mapped[str] = mapped_column(String(20), default="delivered")
+    # Set for orders placed in the demo shop (dataset orders have none).
+    product_id: Mapped[uuid.UUID | None] = mapped_column(ForeignKey("products.id"))
+    quantity: Mapped[int] = mapped_column(default=1)
+    checkout_ref: Mapped[str | None] = mapped_column(String(20), index=True)
 
     customer: Mapped[Customer] = relationship(back_populates="orders")
 

@@ -60,6 +60,20 @@ async def get_current_user(
     return user
 
 
+async def get_optional_user(
+    credentials: HTTPAuthorizationCredentials | None = Depends(bearer_scheme),
+    verifier: ClerkTokenVerifier = Depends(get_token_verifier),
+    db: AsyncSession = Depends(get_db),
+) -> User | None:
+    """The signed-in user, or None for anonymous visitors (public forms).
+
+    A token that is present but invalid is still rejected with 401.
+    """
+    if credentials is None:
+        return None
+    return await get_current_user(credentials=credentials, verifier=verifier, db=db)
+
+
 def require_roles(*roles: Role) -> Callable[..., Awaitable[User]]:
     allowed = frozenset(roles)
 

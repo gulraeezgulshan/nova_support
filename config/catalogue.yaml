@@ -1,0 +1,159 @@
+# VoltHaven demo catalogue. Product lines must be the order product-category codes that the
+# rules and policies use. Edit and re-run `make seed` (idempotent, matched by SKU).
+products:
+  - sku: VH-PHN-NX5
+    name: Nova X5 smartphone
+    product_line: SMARTPHONE
+    price: 749.00
+    description: 6.4-inch OLED phone with a 50 MP camera and all-day battery.
+    specs:
+      - "6.4\" OLED 120 Hz"
+      - "256 GB storage"
+      - "50 MP main camera"
+      - "4,700 mAh battery"
+  - sku: VH-PHN-NX5L
+    name: Nova X5 Lite smartphone
+    product_line: SMARTPHONE
+    price: 399.00
+    description: The essentials of the Nova X5 at a friendlier price.
+    specs:
+      - "6.1\" LCD"
+      - "128 GB storage"
+      - "48 MP camera"
+      - "4,000 mAh battery"
+  - sku: VH-LAP-AB14
+    name: AeroBook 14 laptop
+    product_line: LAPTOP
+    price: 1199.00
+    description: Light 14-inch laptop for work and study.
+    specs:
+      - "14\" 2.8K display"
+      - "16 GB RAM"
+      - "512 GB SSD"
+      - "18-hour battery"
+  - sku: VH-LAP-AB16P
+    name: AeroBook 16 Pro laptop
+    product_line: LAPTOP
+    price: 1899.00
+    description: 16-inch performance laptop for creators.
+    specs:
+      - "16\" 3.2K display"
+      - "32 GB RAM"
+      - "1 TB SSD"
+      - "dedicated graphics"
+  - sku: VH-TAB-T11
+    name: TabOne 11 tablet
+    product_line: TABLET
+    price: 399.00
+    description: 11-inch tablet for streaming, notes and reading.
+    specs:
+      - "11\" display"
+      - "128 GB storage"
+      - "stylus support"
+      - "10-hour battery"
+  - sku: VH-AUD-PBP
+    name: Pulse Buds Pro earbuds
+    product_line: AUDIO
+    price: 149.00
+    description: Noise-cancelling wireless earbuds with a pocket charging case.
+    specs:
+      - "Active noise cancelling"
+      - "8 h + 24 h case"
+      - "IPX4"
+      - "Bluetooth 5.3"
+  - sku: VH-AUD-P700
+    name: Pulse 700 headphones
+    product_line: AUDIO
+    price: 279.00
+    description: Over-ear headphones with 40-hour battery life.
+    specs:
+      - "Over-ear ANC"
+      - "40 h battery"
+      - "multipoint Bluetooth"
+      - "fold-flat design"
+  - sku: VH-WEA-ST3
+    name: Stride 3 smartwatch
+    product_line: WEARABLE
+    price: 229.00
+    description: Fitness and health smartwatch with GPS.
+    specs:
+      - "1.4\" AMOLED"
+      - "GPS"
+      - "heart-rate and sleep tracking"
+      - "7-day battery"
+  - sku: VH-WEA-FB2
+    name: Stride Band 2 fitness tracker
+    product_line: WEARABLE
+    price: 79.00
+    description: Slim activity tracker with a 14-day battery.
+    specs:
+      - "Step and sleep tracking"
+      - "14-day battery"
+      - "water resistant"
+  - sku: VH-NET-MW3
+    name: MeshWave AX3000 router
+    product_line: NETWORKING
+    price: 189.00
+    description: Wi-Fi 6 mesh router covering up to 200 m².
+    specs:
+      - "Wi-Fi 6 AX3000"
+      - "mesh-ready"
+      - "4 gigabit ports"
+      - "app setup"
+  - sku: VH-NET-MW3X2
+    name: MeshWave AX3000 twin pack
+    product_line: NETWORKING
+    price: 329.00
+    description: Two mesh units for whole-home coverage.
+    specs:
+      - "2 × AX3000 units"
+      - "up to 400 m²"
+      - "seamless roaming"
+  - sku: VH-SMH-HHM
+    name: HomeHub Mini speaker
+    product_line: SMART_HOME
+    price: 79.00
+    description: Compact smart speaker with a voice assistant.
+    specs:
+      - "360° sound"
+      - "voice assistant"
+      - "smart-home hub"
+      - "Wi-Fi and Bluetooth"
+  - sku: VH-SMH-CAM
+    name: HomeHub Cam doorbell
+    product_line: SMART_HOME
+    price: 129.00
+    description: Video doorbell with night vision and app alerts.
+    specs:
+      - "1080p video"
+      - "night vision"
+      - "two-way audio"
+      - "battery or wired"
+  - sku: VH-ACC-VC65
+    name: VoltCharge 65W charger
+    product_line: ACCESSORY
+    price: 39.00
+    description: Fast USB-C charger for phones, tablets and laptops.
+    specs:
+      - "65 W USB-C PD"
+      - "foldable plug"
+      - "overheating protection"
+  - sku: VH-ACC-PB20
+    name: VoltCharge 20000 power bank
+    product_line: ACCESSORY
+    price: 59.00
+    description: 20,000 mAh power bank with fast charging.
+    specs:
+      - "20,000 mAh"
+      - "30 W USB-C"
+      - "two ports"
+      - "charge-level display"
+  - sku: VH-ACC-USBC2
+    name: VoltLink USB-C cable (2 m)
+    product_line: ACCESSORY
+    price: 19.00
+    description: Braided 2-metre USB-C cable, 100 W.
+    specs:
+      - "2 m braided"
+      - "100 W"
+      - "USB 3.2 data"

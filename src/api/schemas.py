@@ -2,9 +2,9 @@
 
 import uuid
 from datetime import date, datetime
-from typing import Any
+from typing import Any, Literal
 
-from pydantic import BaseModel, ConfigDict, Field
+from pydantic import BaseModel, ConfigDict, Field, computed_field
 
 from database.models import (
     ComplaintStatus,
@@ -656,3 +656,154 @@ class VocabularyOut(BaseModel):
     follow_up_types: list[str]
     escalation_levels: list[EscalationLevelOut]
     actions: list[ActionOut]
+
+
+# --- storefront ------------------------------------------------------------------------
+
+
+class ProductImageOut(ORMModel):
+    id: uuid.UUID
+
+    @computed_field  # type: ignore[prop-decorator]
+    @property
+    def url(self) -> str:
+        """Public address of the image (relative to the API host)."""
+        return f"/api/v1/product-images/{self.id}"
+
+
+class ProductOut(ORMModel):
+    sku: str
+    name: str
+    product_line: str
+    price: float
+    description: str
+    specs: list[str]
+    is_active: bool
+    images: list[ProductImageOut]
+
+
+class ProductCreate(BaseModel):
+    sku: str = Field(pattern=r"^[A-Z0-9][A-Z0-9-]{2,39}$", description="e.g. VH-PHN-NX6")
+    name: str = Field(min_length=2, max_length=200)
+    product_line: str
+    price: float = Field(gt=0, le=100_000)
+    description: str = Field(min_length=2, max_length=2000)
+    specs: list[str] = Field(default_factory=list, max_length=12)
+
+
+class ProductUpdate(BaseModel):
+    name: str | None = Field(default=None, min_length=2, max_length=200)
+    product_line: str | None = None
+    price: float | None = Field(default=None, gt=0, le=100_000)
+    description: str | None = Field(default=None, min_length=2, max_length=2000)
+    specs: list[str] | None = Field(default=None, max_length=12)
+    is_active: bool | None = None
+
+
+class ImageOrderIn(BaseModel):
+    image_ids: list[uuid.UUID]
+
+
+class CheckoutLineIn(BaseModel):
+    sku: str
+    quantity: int = Field(ge=1, le=5)
+
+
+class CheckoutIn(BaseModel):
+    lines: list[CheckoutLineIn] = Field(min_length=1, max_length=10)
+    shipping_method: Literal["standard", "express"] = "standard"
+
+
+class ShopOrderOut(ORMModel):
+    order_ref: str
+    checkout_ref: str | None
+    product_name: str
+    product_category: str
+    quantity: int
+    amount: float
+    shipping_method: str
+    order_date: date
+    committed_delivery_date: date
+    delivered_date: date | None
+    status: str
+    image_url: str | None = None  # the product's main image, if it has one
+
+
+class SimulateIn(BaseModel):
+    outcome: Literal["on_time", "late", "lost", "damaged"]
+    days: int = Field(default=3, ge=0, le=30)
+
+
+# --- support chat -----------------------------------------------------------------------
+
+
+class ChatMessageOut(ORMModel):
+    id: int
+    role: str
+    kind: str
+    content: str
+    payload: dict[str, Any]
+    created_at: datetime
+
+
+class ChatConversationOut(BaseModel):
+    id: uuid.UUID
+    state: str
+    order_ref: str | None
+    complaint_ref: str | None
+    messages: list[ChatMessageOut]
+
+
+class ChatStartIn(BaseModel):
+    order_ref: str | None = None
+    new: bool = Field(default=False, description="Close an unfinished conversation and start over")
+
+
+class ChatMessageIn(BaseModel):
+    text: str = Field(min_length=1, max_length=2000)
+
+
+class ChatOrderIn(BaseModel):
+    order_ref: str | None = None
+
+
+# ------------------------------------------------------------------ contact us
+
+EMAIL_PATTERN = r"^[^@\s]+@[^@\s]+\.[^@\s]+$"
+ContactTopic = Literal["order_problem", "product_question", "business", "feedback", "other"]
+
+
+class ContactIn(BaseModel):
+    name: str = Field(min_length=1, max_length=200)
+    email: str = Field(max_length=320, pattern=EMAIL_PATTERN)
+    topic: ContactTopic
+    message: str = Field(min_length=10, max_length=5000)
+    order_ref: str | None = Field(default=None, max_length=20)
+    website: str | None = Field(default=None, description="Honeypot: leave empty")
+
+
+class ContactOut(BaseModel):
+    kind: Literal["complaint", "enquiry", "ignored"]
+    reference: str | None
+
+
+class EnquiryOut(BaseModel):
+    ref: str
+    name: str
+    email: str
+    topic: str
+    message: str
+    status: Literal["new", "handled"]
+    created_at: datetime
+    handled_at: datetime | None
+    complaint_ref: str | None
+    can_convert: bool
+
+
+class EnquiryUpdate(BaseModel):
+    status: Literal["new", "handled"]
+
+
+class NewsletterIn(BaseModel):
+    email: str = Field(max_length=320, pattern=EMAIL_PATTERN)
+    source: str = Field(default="footer", max_length=40)

@@ -8,11 +8,13 @@ import {
   FilePlus2,
   Inbox,
   ListChecks,
+  Package,
   LayoutDashboard,
   type LucideIcon,
   Scale,
   Tags,
   Users,
+  Mail,
 } from "lucide-react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
@@ -58,6 +60,7 @@ const NAV: { label: string; items: NavItem[] }[] = [
         roles: ["customer"],
       },
       { title: "Complaint queue", href: "/complaints", icon: Inbox, roles: STAFF },
+      { title: "Enquiries", href: "/enquiries", icon: Mail, roles: STAFF },
       {
         title: "Manual review",
         href: "/review",
@@ -87,6 +90,7 @@ const NAV: { label: string; items: NavItem[] }[] = [
     items: [
       { title: "Taxonomy & SLAs", href: "/settings/taxonomy", icon: Tags, roles: STAFF },
       { title: "Rule matrix", href: "/settings/rules", icon: ListChecks, roles: STAFF },
+      { title: "Products", href: "/settings/products", icon: Package, roles: ["admin"] },
       { title: "Users & roles", href: "/settings/users", icon: Users, roles: ["manager", "admin"] },
     ],
   },

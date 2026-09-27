@@ -1,0 +1,48 @@
+# Shop facts shown on the website. Policy numbers MUST match the knowledge-base documents
+# (tests/unit/test_storefront_config.py checks them).
+company:
+  name: VoltHaven Electronics
+  tagline: Electronics that just work, and support that listens.
+  address: "Unit 12, Riverside Tech Park, 88 Canal Road, Lahore 54000, Pakistan (fictional)"
+  phone: "+92 42 3000 0000"
+  support_email: support@volthaven.example
+  hours: "Mon–Sat, 9:00–18:00 PKT · AI assistant 24/7"
+  socials:
+    - {name: Instagram, url: "https://instagram.com/"}
+    - {name: X, url: "https://x.com/"}
+    - {name: YouTube, url: "https://youtube.com/"}
+shipping:           # DEL-POL-04
+  standard_days: 5
+  express_days: 2
+  late_threshold_days: 5
+  late_credit_pct: 10
+  late_credit_cap_usd: 50
+  lost_after_days: 7
+  tracking_hours: 24
+  damage_report_hours: 48
+returns:            # REF-POL-01
+  window_days: 30
+  refund_min_days: 7
+  refund_max_days: 10
+  store_credit_days: 1
+  defect_report_days: 14
+warranty:           # WAR-POL-02
+  months: 12
+  extended_months: 24
+  replacement_days: 30
+  repair_days: 15
+faq:
+  - question: How long does delivery take?
+    answer: "Standard delivery arrives within {standard_days} business days of dispatch and express within {express_days}."
+  - question: What if my order is late?
+    answer: "If a standard order arrives more than {late_threshold_days} business days late you can receive store credit of {late_credit_pct}% of the order value, up to USD {late_credit_cap_usd}. Late express orders get the express fee back."
+  - question: Can I return something I don't want?
+    answer: "Unused items in original packaging can be returned within {window_days} days of delivery for a refund of the item price."
+  - question: When will I get my refund?
+    answer: "Approved refunds reach your original payment method within {refund_min_days} to {refund_max_days} business days of us receiving the item."
+  - question: What does the warranty cover?
+    answer: "Every product has a {months}-month limited warranty from delivery; VoltCare+ extends it to {extended_months} months."
+  - question: What if my parcel never arrives?
+    answer: "A parcel with no tracking movement for {lost_after_days} business days is treated as lost; you can choose a free replacement or a full refund."
+  - question: How do I report a problem?
+    answer: "Use Get help on your order or the chat on any page; our assistant files it for the right team straight away."

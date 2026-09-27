@@ -6,6 +6,9 @@
 
 @theme inline {
   --color-background: var(--background);
+  --color-brand: var(--brand);
+  --color-brand-foreground: var(--brand-foreground);
+  --color-brand-soft: var(--brand-soft);
   --color-foreground: var(--foreground);
   --font-sans: var(--font-sans);
   --font-mono: var(--font-geist-mono);
@@ -49,6 +52,10 @@
 }
 
 :root {
+  /* VoltHaven accent: electric blue (shop pages) */
+  --brand: oklch(0.58 0.22 262);
+  --brand-foreground: oklch(0.985 0 0);
+  --brand-soft: oklch(0.95 0.03 262);
   --background: oklch(1 0 0);
   --foreground: oklch(0.145 0 0);
   --card: oklch(1 0 0);
@@ -84,6 +91,9 @@
 }
 
 .dark {
+  --brand: oklch(0.7 0.17 258);
+  --brand-foreground: oklch(0.16 0.03 262);
+  --brand-soft: oklch(0.28 0.06 262);
   --background: oklch(0.145 0 0);
   --foreground: oklch(0.985 0 0);
   --card: oklch(0.205 0 0);
@@ -126,5 +136,27 @@
   }
   html {
     @apply font-sans;
+  }
+}
+
+@layer utilities {
+  .no-scrollbar {
+    scrollbar-width: none;
+  }
+  .no-scrollbar::-webkit-scrollbar {
+    display: none;
+  }
+}
+
+/* Respect the OS "reduce motion" setting for CSS transitions and keyframes too
+   (motion components already follow MotionConfig reducedMotion="user"). */
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
   }
 }

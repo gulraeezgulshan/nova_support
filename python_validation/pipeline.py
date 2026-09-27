@@ -178,7 +178,8 @@ def run_validation(
     )
     db.add(validation)
     db.flush()
-    _apply(db, complaint, validation, outcome.final, verdict, reasons)
+    draft = analysis.customer_response.body if analysis else None
+    _apply(db, complaint, validation, outcome.final, verdict, reasons, draft)
     audit.record_sync(
         db, "complaint.validated", "complaint", complaint.id, actor_user_id=actor_user_id,
         after={"verdict": verdict, "score": outcome.score, "corrections": len(outcome.corrections)},
@@ -195,6 +196,7 @@ def _apply(
     final: dict[str, Any],
     verdict: Verdict,
     reasons: list[str],
+    draft: str | None = None,
 ) -> None:
     complaint.category_code = final["category"]
     complaint.subcategory_code = final["subcategory"]
@@ -224,6 +226,10 @@ def _apply(
                 f"Your complaint has been escalated to a senior {department} team."
                 if escalated else f"Your complaint has been assigned to our {department} team.",
             )  # fmt: skip
+
+    from support_chat.notify import after_validation  # local import: avoids an import cycle
+
+    after_validation(db, complaint, verdict, draft)
 
 
 def open_review_task(

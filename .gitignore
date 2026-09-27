@@ -19,3 +19,6 @@ htmlcov/
 .DS_Store
 .idea/
 .vscode/
+
+# Local agent working files
+.superpowers/

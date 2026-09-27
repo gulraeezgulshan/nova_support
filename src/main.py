@@ -10,11 +10,14 @@ from knowledge_base.service import DuplicateDocumentError
 from knowledge_base.versioning import VersionTransitionError
 from src.api.routes import (
     analytics,
+    chat,
     complaints,
+    contact,
     documents,
     health,
     review,
     rules,
+    storefront,
     taxonomy,
     users,
     webhooks,
@@ -52,6 +55,9 @@ def create_app() -> FastAPI:
         complaints.router,
         review.router,
         analytics.router,
+        storefront.router,
+        chat.router,
+        contact.router,
         rules.router,
         webhooks.router,
     ):

@@ -20,6 +20,7 @@ from sample_complaints.load_dataset import HERE as DATASET_DIR
 from sample_complaints.load_dataset import load
 from src.core.config import ROOT_DIR
 from src.core.logging import configure_logging
+from storefront.catalogue import sync_catalogue
 
 DOCUMENTS = ROOT_DIR / "sample_documents" / "generated"
 
@@ -34,7 +35,8 @@ def main() -> int:
     with sync_session() as db:
         counts = seed_taxonomy(db, load_taxonomy())
         rules = seed_rules(db)
-    print(f"Taxonomy: {counts}; rules: {rules}")
+        products = sync_catalogue(db)
+    print(f"Taxonomy: {counts}; rules: {rules}; products: {products}")
 
     # Archived versions first, so the current versions supersede them.
     for folder in (DOCUMENTS / "archive", DOCUMENTS):

@@ -28,7 +28,7 @@ load-dataset:   ## Load the 536-complaint labelled dataset (customers, orders, c
 bootstrap:      ## Seed taxonomy and rules, import documents and load the dataset in one go (after migrate)
 	uv run python -m database.bootstrap
 
-analyze:        ## Analyse 10 unanalysed dataset complaints with the configured model (needs ANTHROPIC_API_KEY)
+analyze:        ## Analyse 10 unanalysed dataset complaints with the configured provider (needs its API key)
 	uv run python -m genai_pipeline.analyze --limit 10
 
 report-baseline: ## Python-only validation of the dataset, scored on its labels (no GenAI)
@@ -37,7 +37,7 @@ report-baseline: ## Python-only validation of the dataset, scored on its labels 
 report-comparison: ## GenAI vs Python comparison report for analysed complaints
 	uv run python -m comparison_engine.report comparison
 
-evaluate:       ## GenAI + Python on the 108 unseen hold-out complaints, with timing (needs ANTHROPIC_API_KEY)
+evaluate:       ## GenAI + Python on the 108 unseen hold-out complaints, with timing (needs the provider's API key)
 	uv run python -m comparison_engine.evaluate hidden_test_ready/holdout
 
 evaluate-python: ## Python-only evaluation of the hold-out pack (no GenAI, no database writes)
@@ -54,8 +54,11 @@ requirements:   ## Regenerate requirements.txt from uv.lock
 api:            ## Run the FastAPI server (http://localhost:8000/docs)
 	uv run uvicorn src.main:app --reload --port 8000
 
+# Threads pool: on macOS the default pool starts "spawn" child processes, in which Celery's
+# task table is empty and every task fails ("not enough values to unpack"). Linux containers
+# (docker-compose, Railway) use the normal prefork pool.
 worker:         ## Run the Celery worker with the SLA scan scheduler (Beat) embedded
-	uv run celery -A src.worker worker --beat --loglevel INFO -Q default,ingest,analysis --concurrency 2
+	uv run celery -A src.worker worker --beat --pool threads --concurrency 4 --loglevel INFO -Q default,ingest,analysis
 
 triage-python:  ## Python-only validation of 100 unvalidated dataset complaints (no GenAI; all go to review)
 	uv run python -m python_validation.triage --limit 100

@@ -387,6 +387,16 @@ export type BodyUploadDocument = {
 };
 
 /**
+ * Body_upload_product_image
+ */
+export type BodyUploadProductImage = {
+    /**
+     * File
+     */
+    file: Blob | File;
+};
+
+/**
  * CategoryCreate
  */
 export type CategoryCreate = {
@@ -453,6 +463,100 @@ export type CategoryUpdate = {
 };
 
 /**
+ * ChatConversationOut
+ */
+export type ChatConversationOut = {
+    /**
+     * Id
+     */
+    id: string;
+    /**
+     * State
+     */
+    state: string;
+    /**
+     * Order Ref
+     */
+    order_ref: string | null;
+    /**
+     * Complaint Ref
+     */
+    complaint_ref: string | null;
+    /**
+     * Messages
+     */
+    messages: Array<ChatMessageOut>;
+};
+
+/**
+ * ChatMessageIn
+ */
+export type ChatMessageIn = {
+    /**
+     * Text
+     */
+    text: string;
+};
+
+/**
+ * ChatMessageOut
+ */
+export type ChatMessageOut = {
+    /**
+     * Id
+     */
+    id: number;
+    /**
+     * Role
+     */
+    role: string;
+    /**
+     * Kind
+     */
+    kind: string;
+    /**
+     * Content
+     */
+    content: string;
+    /**
+     * Payload
+     */
+    payload: {
+        [key: string]: unknown;
+    };
+    /**
+     * Created At
+     */
+    created_at: string;
+};
+
+/**
+ * ChatOrderIn
+ */
+export type ChatOrderIn = {
+    /**
+     * Order Ref
+     */
+    order_ref?: string | null;
+};
+
+/**
+ * ChatStartIn
+ */
+export type ChatStartIn = {
+    /**
+     * Order Ref
+     */
+    order_ref?: string | null;
+    /**
+     * New
+     *
+     * Close an unfinished conversation and start over
+     */
+    new?: boolean;
+};
+
+/**
  * CheckResultOut
  */
 export type CheckResultOut = {
@@ -495,6 +599,34 @@ export type CheckResultOut = {
 };
 
 /**
+ * CheckoutIn
+ */
+export type CheckoutIn = {
+    /**
+     * Lines
+     */
+    lines: Array<CheckoutLineIn>;
+    /**
+     * Shipping Method
+     */
+    shipping_method?: 'standard' | 'express';
+};
+
+/**
+ * CheckoutLineIn
+ */
+export type CheckoutLineIn = {
+    /**
+     * Sku
+     */
+    sku: string;
+    /**
+     * Quantity
+     */
+    quantity: number;
+};
+
+/**
  * ChunkOut
  */
 export type ChunkOut = {
@@ -530,6 +662,40 @@ export type ChunkOut = {
      * Token Count
      */
     token_count: number;
+};
+
+/**
+ * Company
+ */
+export type Company = {
+    /**
+     * Name
+     */
+    name: string;
+    /**
+     * Tagline
+     */
+    tagline: string;
+    /**
+     * Address
+     */
+    address: string;
+    /**
+     * Phone
+     */
+    phone: string;
+    /**
+     * Support Email
+     */
+    support_email: string;
+    /**
+     * Hours
+     */
+    hours: string;
+    /**
+     * Socials
+     */
+    socials: Array<Social>;
 };
 
 /**
@@ -1108,6 +1274,52 @@ export type ComplaintSummary = {
 };
 
 /**
+ * ContactIn
+ */
+export type ContactIn = {
+    /**
+     * Name
+     */
+    name: string;
+    /**
+     * Email
+     */
+    email: string;
+    /**
+     * Topic
+     */
+    topic: 'order_problem' | 'product_question' | 'business' | 'feedback' | 'other';
+    /**
+     * Message
+     */
+    message: string;
+    /**
+     * Order Ref
+     */
+    order_ref?: string | null;
+    /**
+     * Website
+     *
+     * Honeypot: leave empty
+     */
+    website?: string | null;
+};
+
+/**
+ * ContactOut
+ */
+export type ContactOut = {
+    /**
+     * Kind
+     */
+    kind: 'complaint' | 'enquiry' | 'ignored';
+    /**
+     * Reference
+     */
+    reference: string | null;
+};
+
+/**
  * CustomerResponse
  */
 export type CustomerResponse = {
@@ -1392,6 +1604,67 @@ export type DocumentVersionOut = {
 };
 
 /**
+ * EnquiryOut
+ */
+export type EnquiryOut = {
+    /**
+     * Ref
+     */
+    ref: string;
+    /**
+     * Name
+     */
+    name: string;
+    /**
+     * Email
+     */
+    email: string;
+    /**
+     * Topic
+     */
+    topic: string;
+    /**
+     * Message
+     */
+    message: string;
+    /**
+     * Status
+     */
+    status: 'new' | 'handled';
+    /**
+     * Created At
+     */
+    created_at: string;
+    /**
+     * Handled At
+     */
+    handled_at: string | null;
+    /**
+     * Complaint Ref
+     */
+    complaint_ref: string | null;
+    /**
+     * Can Convert
+     */
+    can_convert: boolean;
+};
+
+/**
+ * EnquiryStatus
+ */
+export type EnquiryStatus = 'new' | 'handled';
+
+/**
+ * EnquiryUpdate
+ */
+export type EnquiryUpdate = {
+    /**
+     * Status
+     */
+    status: 'new' | 'handled';
+};
+
+/**
  * Entities
  */
 export type Entities = {
@@ -1530,6 +1803,20 @@ export type FactOut = {
 };
 
 /**
+ * FaqItem
+ */
+export type FaqItem = {
+    /**
+     * Question
+     */
+    question: string;
+    /**
+     * Answer
+     */
+    answer: string;
+};
+
+/**
  * FollowUp
  */
 export type FollowUp = {
@@ -1539,10 +1826,14 @@ export type FollowUp = {
     required: boolean;
     /**
      * Type
+     *
+     * Follow-up type; required when required is true
      */
     type: string | null;
     /**
      * Within Hours
+     *
+     * Hours until follow-up; required when required is true
      */
     within_hours: number | null;
     /**
@@ -1561,6 +1852,16 @@ export type HttpValidationError = {
      * Detail
      */
     detail?: Array<ValidationError>;
+};
+
+/**
+ * ImageOrderIn
+ */
+export type ImageOrderIn = {
+    /**
+     * Image Ids
+     */
+    image_ids: Array<string>;
 };
 
 /**
@@ -1604,6 +1905,20 @@ export type LabelValue = {
      * Value
      */
     value: string | null;
+};
+
+/**
+ * NewsletterIn
+ */
+export type NewsletterIn = {
+    /**
+     * Email
+     */
+    email: string;
+    /**
+     * Source
+     */
+    source?: string;
 };
 
 /**
@@ -1791,6 +2106,122 @@ export type PolicyUsageRow = {
 };
 
 /**
+ * ProductCreate
+ */
+export type ProductCreate = {
+    /**
+     * Sku
+     *
+     * e.g. VH-PHN-NX6
+     */
+    sku: string;
+    /**
+     * Name
+     */
+    name: string;
+    /**
+     * Product Line
+     */
+    product_line: string;
+    /**
+     * Price
+     */
+    price: number;
+    /**
+     * Description
+     */
+    description: string;
+    /**
+     * Specs
+     */
+    specs?: Array<string>;
+};
+
+/**
+ * ProductImageOut
+ */
+export type ProductImageOut = {
+    /**
+     * Id
+     */
+    id: string;
+    /**
+     * Url
+     *
+     * Public address of the image (relative to the API host).
+     */
+    readonly url: string;
+};
+
+/**
+ * ProductOut
+ */
+export type ProductOut = {
+    /**
+     * Sku
+     */
+    sku: string;
+    /**
+     * Name
+     */
+    name: string;
+    /**
+     * Product Line
+     */
+    product_line: string;
+    /**
+     * Price
+     */
+    price: number;
+    /**
+     * Description
+     */
+    description: string;
+    /**
+     * Specs
+     */
+    specs: Array<string>;
+    /**
+     * Is Active
+     */
+    is_active: boolean;
+    /**
+     * Images
+     */
+    images: Array<ProductImageOut>;
+};
+
+/**
+ * ProductUpdate
+ */
+export type ProductUpdate = {
+    /**
+     * Name
+     */
+    name?: string | null;
+    /**
+     * Product Line
+     */
+    product_line?: string | null;
+    /**
+     * Price
+     */
+    price?: number | null;
+    /**
+     * Description
+     */
+    description?: string | null;
+    /**
+     * Specs
+     */
+    specs?: Array<string> | null;
+    /**
+     * Is Active
+     */
+    is_active?: boolean | null;
+};
+
+/**
  * ReasonCount
  */
 export type ReasonCount = {
@@ -1942,6 +2373,32 @@ export type ResolutionTimeRow = {
      * Within Sla Pct
      */
     within_sla_pct: number | null;
+};
+
+/**
+ * Returns
+ */
+export type Returns = {
+    /**
+     * Window Days
+     */
+    window_days: number;
+    /**
+     * Refund Min Days
+     */
+    refund_min_days: number;
+    /**
+     * Refund Max Days
+     */
+    refund_max_days: number;
+    /**
+     * Store Credit Days
+     */
+    store_credit_days: number;
+    /**
+     * Defect Report Days
+     */
+    defect_report_days: number;
 };
 
 /**
@@ -2305,6 +2762,112 @@ export type SearchResultOut = {
 };
 
 /**
+ * Shipping
+ */
+export type Shipping = {
+    /**
+     * Standard Days
+     */
+    standard_days: number;
+    /**
+     * Express Days
+     */
+    express_days: number;
+    /**
+     * Late Threshold Days
+     */
+    late_threshold_days: number;
+    /**
+     * Late Credit Pct
+     */
+    late_credit_pct: number;
+    /**
+     * Late Credit Cap Usd
+     */
+    late_credit_cap_usd: number;
+    /**
+     * Lost After Days
+     */
+    lost_after_days: number;
+    /**
+     * Tracking Hours
+     */
+    tracking_hours: number;
+    /**
+     * Damage Report Hours
+     */
+    damage_report_hours: number;
+};
+
+/**
+ * ShopOrderOut
+ */
+export type ShopOrderOut = {
+    /**
+     * Order Ref
+     */
+    order_ref: string;
+    /**
+     * Checkout Ref
+     */
+    checkout_ref: string | null;
+    /**
+     * Product Name
+     */
+    product_name: string;
+    /**
+     * Product Category
+     */
+    product_category: string;
+    /**
+     * Quantity
+     */
+    quantity: number;
+    /**
+     * Amount
+     */
+    amount: number;
+    /**
+     * Shipping Method
+     */
+    shipping_method: string;
+    /**
+     * Order Date
+     */
+    order_date: string;
+    /**
+     * Committed Delivery Date
+     */
+    committed_delivery_date: string;
+    /**
+     * Delivered Date
+     */
+    delivered_date: string | null;
+    /**
+     * Status
+     */
+    status: string;
+    /**
+     * Image Url
+     */
+    image_url?: string | null;
+};
+
+/**
+ * SimulateIn
+ */
+export type SimulateIn = {
+    /**
+     * Outcome
+     */
+    outcome: 'on_time' | 'late' | 'lost' | 'damaged';
+    /**
+     * Days
+     */
+    days?: number;
+};
+
+/**
  * SlaPolicyOut
  */
 export type SlaPolicyOut = {
@@ -2353,6 +2916,20 @@ export type SlaPolicyUpdate = {
 };
 
 /**
+ * Social
+ */
+export type Social = {
+    /**
+     * Name
+     */
+    name: string;
+    /**
+     * Url
+     */
+    url: string;
+};
+
+/**
  * StatusChangeIn
  */
 export type StatusChangeIn = {
@@ -2361,6 +2938,20 @@ export type StatusChangeIn = {
      * Note
      */
     note?: string | null;
+};
+
+/**
+ * StorefrontConfig
+ */
+export type StorefrontConfig = {
+    company: Company;
+    shipping: Shipping;
+    returns: Returns;
+    warranty: Warranty;
+    /**
+     * Faq
+     */
+    faq: Array<FaqItem>;
 };
 
 /**
@@ -2629,6 +3220,76 @@ export type VolumePoint = {
      * Resolved
      */
     resolved: number;
+};
+
+/**
+ * Warranty
+ */
+export type Warranty = {
+    /**
+     * Months
+     */
+    months: number;
+    /**
+     * Extended Months
+     */
+    extended_months: number;
+    /**
+     * Replacement Days
+     */
+    replacement_days: number;
+    /**
+     * Repair Days
+     */
+    repair_days: number;
+};
+
+/**
+ * ProductImageOut
+ */
+export type ProductImageOutWritable = {
+    /**
+     * Id
+     */
+    id: string;
+};
+
+/**
+ * ProductOut
+ */
+export type ProductOutWritable = {
+    /**
+     * Sku
+     */
+    sku: string;
+    /**
+     * Name
+     */
+    name: string;
+    /**
+     * Product Line
+     */
+    product_line: string;
+    /**
+     * Price
+     */
+    price: number;
+    /**
+     * Description
+     */
+    description: string;
+    /**
+     * Specs
+     */
+    specs: Array<string>;
+    /**
+     * Is Active
+     */
+    is_active: boolean;
+    /**
+     * Images
+     */
+    images: Array<ProductImageOutWritable>;
 };
 
 export type LivenessData = {
@@ -3967,6 +4628,732 @@ export type ExportReportResponses = {
      */
     200: unknown;
 };
+
+export type GetStorefrontConfigData = {
+    body?: never;
+    path?: never;
+    query?: never;
+    url: '/api/v1/storefront/config';
+};
+
+export type GetStorefrontConfigResponses = {
+    /**
+     * Successful Response
+     */
+    200: StorefrontConfig;
+};
+
+export type GetStorefrontConfigResponse = GetStorefrontConfigResponses[keyof GetStorefrontConfigResponses];
+
+export type ListProductsData = {
+    body?: never;
+    path?: never;
+    query?: {
+        /**
+         * Product Line
+         */
+        product_line?: string | null;
+        /**
+         * Q
+         *
+         * Search name, description, specs
+         */
+        q?: string | null;
+        /**
+         * Min Price
+         */
+        min_price?: number | null;
+        /**
+         * Max Price
+         */
+        max_price?: number | null;
+        /**
+         * Sort
+         */
+        sort?: 'featured' | 'price_asc' | 'price_desc' | 'newest' | 'best_selling';
+    };
+    url: '/api/v1/products';
+};
+
+export type ListProductsErrors = {
+    /**
+     * Validation Error
+     */
+    422: HttpValidationError;
+};
+
+export type ListProductsError = ListProductsErrors[keyof ListProductsErrors];
+
+export type ListProductsResponses = {
+    /**
+     * Response List Products
+     *
+     * Successful Response
+     */
+    200: Array<ProductOut>;
+};
+
+export type ListProductsResponse = ListProductsResponses[keyof ListProductsResponses];
+
+export type GetProductData = {
+    body?: never;
+    path: {
+        /**
+         * Sku
+         */
+        sku: string;
+    };
+    query?: never;
+    url: '/api/v1/products/{sku}';
+};
+
+export type GetProductErrors = {
+    /**
+     * Validation Error
+     */
+    422: HttpValidationError;
+};
+
+export type GetProductError = GetProductErrors[keyof GetProductErrors];
+
+export type GetProductResponses = {
+    /**
+     * Successful Response
+     */
+    200: ProductOut;
+};
+
+export type GetProductResponse = GetProductResponses[keyof GetProductResponses];
+
+export type PlaceOrderData = {
+    body: CheckoutIn;
+    path?: never;
+    query?: never;
+    url: '/api/v1/checkout';
+};
+
+export type PlaceOrderErrors = {
+    /**
+     * Validation Error
+     */
+    422: HttpValidationError;
+};
+
+export type PlaceOrderError = PlaceOrderErrors[keyof PlaceOrderErrors];
+
+export type PlaceOrderResponses = {
+    /**
+     * Response Place Order
+     *
+     * Successful Response
+     */
+    201: Array<ShopOrderOut>;
+};
+
+export type PlaceOrderResponse = PlaceOrderResponses[keyof PlaceOrderResponses];
+
+export type MyShopOrdersData = {
+    body?: never;
+    path?: never;
+    query?: never;
+    url: '/api/v1/orders';
+};
+
+export type MyShopOrdersResponses = {
+    /**
+     * Response My Shop Orders
+     *
+     * Successful Response
+     */
+    200: Array<ShopOrderOut>;
+};
+
+export type MyShopOrdersResponse = MyShopOrdersResponses[keyof MyShopOrdersResponses];
+
+export type SimulateDeliveryData = {
+    body: SimulateIn;
+    path: {
+        /**
+         * Order Ref
+         */
+        order_ref: string;
+    };
+    query?: never;
+    url: '/api/v1/orders/{order_ref}/simulate';
+};
+
+export type SimulateDeliveryErrors = {
+    /**
+     * Validation Error
+     */
+    422: HttpValidationError;
+};
+
+export type SimulateDeliveryError = SimulateDeliveryErrors[keyof SimulateDeliveryErrors];
+
+export type SimulateDeliveryResponses = {
+    /**
+     * Successful Response
+     */
+    200: ShopOrderOut;
+};
+
+export type SimulateDeliveryResponse = SimulateDeliveryResponses[keyof SimulateDeliveryResponses];
+
+export type ProductImageData = {
+    body?: never;
+    path: {
+        /**
+         * Image Id
+         */
+        image_id: string;
+    };
+    query?: never;
+    url: '/api/v1/product-images/{image_id}';
+};
+
+export type ProductImageErrors = {
+    /**
+     * Validation Error
+     */
+    422: HttpValidationError;
+};
+
+export type ProductImageError = ProductImageErrors[keyof ProductImageErrors];
+
+export type ProductImageResponses = {
+    /**
+     * Successful Response
+     */
+    200: unknown;
+};
+
+export type AdminListProductsData = {
+    body?: never;
+    path?: never;
+    query?: never;
+    url: '/api/v1/admin/products';
+};
+
+export type AdminListProductsResponses = {
+    /**
+     * Response Admin List Products
+     *
+     * Successful Response
+     */
+    200: Array<ProductOut>;
+};
+
+export type AdminListProductsResponse = AdminListProductsResponses[keyof AdminListProductsResponses];
+
+export type CreateProductData = {
+    body: ProductCreate;
+    path?: never;
+    query?: never;
+    url: '/api/v1/admin/products';
+};
+
+export type CreateProductErrors = {
+    /**
+     * Validation Error
+     */
+    422: HttpValidationError;
+};
+
+export type CreateProductError = CreateProductErrors[keyof CreateProductErrors];
+
+export type CreateProductResponses = {
+    /**
+     * Successful Response
+     */
+    201: ProductOut;
+};
+
+export type CreateProductResponse = CreateProductResponses[keyof CreateProductResponses];
+
+export type UpdateProductData = {
+    body: ProductUpdate;
+    path: {
+        /**
+         * Sku
+         */
+        sku: string;
+    };
+    query?: never;
+    url: '/api/v1/admin/products/{sku}';
+};
+
+export type UpdateProductErrors = {
+    /**
+     * Validation Error
+     */
+    422: HttpValidationError;
+};
+
+export type UpdateProductError = UpdateProductErrors[keyof UpdateProductErrors];
+
+export type UpdateProductResponses = {
+    /**
+     * Successful Response
+     */
+    200: ProductOut;
+};
+
+export type UpdateProductResponse = UpdateProductResponses[keyof UpdateProductResponses];
+
+export type UploadProductImageData = {
+    body: BodyUploadProductImage;
+    path: {
+        /**
+         * Sku
+         */
+        sku: string;
+    };
+    query?: never;
+    url: '/api/v1/admin/products/{sku}/images';
+};
+
+export type UploadProductImageErrors = {
+    /**
+     * Validation Error
+     */
+    422: HttpValidationError;
+};
+
+export type UploadProductImageError = UploadProductImageErrors[keyof UploadProductImageErrors];
+
+export type UploadProductImageResponses = {
+    /**
+     * Successful Response
+     */
+    201: ProductImageOut;
+};
+
+export type UploadProductImageResponse = UploadProductImageResponses[keyof UploadProductImageResponses];
+
+export type ReorderProductImagesData = {
+    body: ImageOrderIn;
+    path: {
+        /**
+         * Sku
+         */
+        sku: string;
+    };
+    query?: never;
+    url: '/api/v1/admin/products/{sku}/images/order';
+};
+
+export type ReorderProductImagesErrors = {
+    /**
+     * Validation Error
+     */
+    422: HttpValidationError;
+};
+
+export type ReorderProductImagesError = ReorderProductImagesErrors[keyof ReorderProductImagesErrors];
+
+export type ReorderProductImagesResponses = {
+    /**
+     * Successful Response
+     */
+    200: ProductOut;
+};
+
+export type ReorderProductImagesResponse = ReorderProductImagesResponses[keyof ReorderProductImagesResponses];
+
+export type DeleteProductImageData = {
+    body?: never;
+    path: {
+        /**
+         * Sku
+         */
+        sku: string;
+        /**
+         * Image Id
+         */
+        image_id: string;
+    };
+    query?: never;
+    url: '/api/v1/admin/products/{sku}/images/{image_id}';
+};
+
+export type DeleteProductImageErrors = {
+    /**
+     * Validation Error
+     */
+    422: HttpValidationError;
+};
+
+export type DeleteProductImageError = DeleteProductImageErrors[keyof DeleteProductImageErrors];
+
+export type DeleteProductImageResponses = {
+    /**
+     * Successful Response
+     */
+    200: ProductOut;
+};
+
+export type DeleteProductImageResponse = DeleteProductImageResponses[keyof DeleteProductImageResponses];
+
+export type StartChatData = {
+    body: ChatStartIn;
+    path?: never;
+    query?: never;
+    url: '/api/v1/chat/conversations';
+};
+
+export type StartChatErrors = {
+    /**
+     * Validation Error
+     */
+    422: HttpValidationError;
+};
+
+export type StartChatError = StartChatErrors[keyof StartChatErrors];
+
+export type StartChatResponses = {
+    /**
+     * Successful Response
+     */
+    200: ChatConversationOut;
+};
+
+export type StartChatResponse = StartChatResponses[keyof StartChatResponses];
+
+export type GetChatData = {
+    body?: never;
+    path: {
+        /**
+         * Conversation Id
+         */
+        conversation_id: string;
+    };
+    query?: never;
+    url: '/api/v1/chat/conversations/{conversation_id}';
+};
+
+export type GetChatErrors = {
+    /**
+     * Validation Error
+     */
+    422: HttpValidationError;
+};
+
+export type GetChatError = GetChatErrors[keyof GetChatErrors];
+
+export type GetChatResponses = {
+    /**
+     * Successful Response
+     */
+    200: ChatConversationOut;
+};
+
+export type GetChatResponse = GetChatResponses[keyof GetChatResponses];
+
+export type PollChatData = {
+    body?: never;
+    path: {
+        /**
+         * Conversation Id
+         */
+        conversation_id: string;
+    };
+    query?: {
+        /**
+         * After
+         */
+        after?: number;
+    };
+    url: '/api/v1/chat/conversations/{conversation_id}/messages';
+};
+
+export type PollChatErrors = {
+    /**
+     * Validation Error
+     */
+    422: HttpValidationError;
+};
+
+export type PollChatError = PollChatErrors[keyof PollChatErrors];
+
+export type PollChatResponses = {
+    /**
+     * Response Poll Chat
+     *
+     * Successful Response
+     */
+    200: Array<ChatMessageOut>;
+};
+
+export type PollChatResponse = PollChatResponses[keyof PollChatResponses];
+
+export type SendChatMessageData = {
+    body: ChatMessageIn;
+    path: {
+        /**
+         * Conversation Id
+         */
+        conversation_id: string;
+    };
+    query?: never;
+    url: '/api/v1/chat/conversations/{conversation_id}/messages';
+};
+
+export type SendChatMessageErrors = {
+    /**
+     * Validation Error
+     */
+    422: HttpValidationError;
+};
+
+export type SendChatMessageError = SendChatMessageErrors[keyof SendChatMessageErrors];
+
+export type SendChatMessageResponses = {
+    /**
+     * Successful Response
+     */
+    200: ChatConversationOut;
+};
+
+export type SendChatMessageResponse = SendChatMessageResponses[keyof SendChatMessageResponses];
+
+export type ChooseChatOrderData = {
+    body: ChatOrderIn;
+    path: {
+        /**
+         * Conversation Id
+         */
+        conversation_id: string;
+    };
+    query?: never;
+    url: '/api/v1/chat/conversations/{conversation_id}/order';
+};
+
+export type ChooseChatOrderErrors = {
+    /**
+     * Validation Error
+     */
+    422: HttpValidationError;
+};
+
+export type ChooseChatOrderError = ChooseChatOrderErrors[keyof ChooseChatOrderErrors];
+
+export type ChooseChatOrderResponses = {
+    /**
+     * Successful Response
+     */
+    200: ChatConversationOut;
+};
+
+export type ChooseChatOrderResponse = ChooseChatOrderResponses[keyof ChooseChatOrderResponses];
+
+export type ConfirmChatData = {
+    body?: never;
+    path: {
+        /**
+         * Conversation Id
+         */
+        conversation_id: string;
+    };
+    query?: never;
+    url: '/api/v1/chat/conversations/{conversation_id}/confirm';
+};
+
+export type ConfirmChatErrors = {
+    /**
+     * Validation Error
+     */
+    422: HttpValidationError;
+};
+
+export type ConfirmChatError = ConfirmChatErrors[keyof ConfirmChatErrors];
+
+export type ConfirmChatResponses = {
+    /**
+     * Successful Response
+     */
+    200: ChatConversationOut;
+};
+
+export type ConfirmChatResponse = ConfirmChatResponses[keyof ConfirmChatResponses];
+
+export type ComplaintChatData = {
+    body?: never;
+    path: {
+        /**
+         * Ref
+         */
+        ref: string;
+    };
+    query?: never;
+    url: '/api/v1/complaints/{ref}/chat';
+};
+
+export type ComplaintChatErrors = {
+    /**
+     * Validation Error
+     */
+    422: HttpValidationError;
+};
+
+export type ComplaintChatError = ComplaintChatErrors[keyof ComplaintChatErrors];
+
+export type ComplaintChatResponses = {
+    /**
+     * Response Complaint Chat
+     *
+     * Successful Response
+     */
+    200: Array<ChatMessageOut>;
+};
+
+export type ComplaintChatResponse = ComplaintChatResponses[keyof ComplaintChatResponses];
+
+export type ContactData = {
+    body: ContactIn;
+    path?: never;
+    query?: never;
+    url: '/api/v1/contact';
+};
+
+export type ContactErrors = {
+    /**
+     * Validation Error
+     */
+    422: HttpValidationError;
+};
+
+export type ContactError = ContactErrors[keyof ContactErrors];
+
+export type ContactResponses = {
+    /**
+     * Successful Response
+     */
+    201: ContactOut;
+};
+
+export type ContactResponse = ContactResponses[keyof ContactResponses];
+
+export type ListEnquiriesData = {
+    body?: never;
+    path?: never;
+    query?: {
+        /**
+         * Status
+         */
+        status?: EnquiryStatus | null;
+        /**
+         * Topic
+         */
+        topic?: 'order_problem' | 'product_question' | 'business' | 'feedback' | 'other' | null;
+    };
+    url: '/api/v1/enquiries';
+};
+
+export type ListEnquiriesErrors = {
+    /**
+     * Validation Error
+     */
+    422: HttpValidationError;
+};
+
+export type ListEnquiriesError = ListEnquiriesErrors[keyof ListEnquiriesErrors];
+
+export type ListEnquiriesResponses = {
+    /**
+     * Response List Enquiries
+     *
+     * Successful Response
+     */
+    200: Array<EnquiryOut>;
+};
+
+export type ListEnquiriesResponse = ListEnquiriesResponses[keyof ListEnquiriesResponses];
+
+export type UpdateEnquiryData = {
+    body: EnquiryUpdate;
+    path: {
+        /**
+         * Ref
+         */
+        ref: string;
+    };
+    query?: never;
+    url: '/api/v1/enquiries/{ref}';
+};
+
+export type UpdateEnquiryErrors = {
+    /**
+     * Validation Error
+     */
+    422: HttpValidationError;
+};
+
+export type UpdateEnquiryError = UpdateEnquiryErrors[keyof UpdateEnquiryErrors];
+
+export type UpdateEnquiryResponses = {
+    /**
+     * Successful Response
+     */
+    200: EnquiryOut;
+};
+
+export type UpdateEnquiryResponse = UpdateEnquiryResponses[keyof UpdateEnquiryResponses];
+
+export type ConvertEnquiryData = {
+    body?: never;
+    path: {
+        /**
+         * Ref
+         */
+        ref: string;
+    };
+    query?: never;
+    url: '/api/v1/enquiries/{ref}/convert';
+};
+
+export type ConvertEnquiryErrors = {
+    /**
+     * Validation Error
+     */
+    422: HttpValidationError;
+};
+
+export type ConvertEnquiryError = ConvertEnquiryErrors[keyof ConvertEnquiryErrors];
+
+export type ConvertEnquiryResponses = {
+    /**
+     * Successful Response
+     */
+    200: EnquiryOut;
+};
+
+export type ConvertEnquiryResponse = ConvertEnquiryResponses[keyof ConvertEnquiryResponses];
+
+export type NewsletterData = {
+    body: NewsletterIn;
+    path?: never;
+    query?: never;
+    url: '/api/v1/newsletter';
+};
+
+export type NewsletterErrors = {
+    /**
+     * Validation Error
+     */
+    422: HttpValidationError;
+};
+
+export type NewsletterError = NewsletterErrors[keyof NewsletterErrors];
+
+export type NewsletterResponses = {
+    /**
+     * Successful Response
+     */
+    204: void;
+};
+
+export type NewsletterResponse = NewsletterResponses[keyof NewsletterResponses];
 
 export type ListRulesData = {
     body?: never;

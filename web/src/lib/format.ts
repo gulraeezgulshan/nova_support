@@ -39,3 +39,9 @@ export function humanize(code: string | null | undefined): string {
   const text = code.replaceAll("_", " ").toLowerCase();
   return text.charAt(0).toUpperCase() + text.slice(1);
 }
+
+const MONEY = new Intl.NumberFormat("en-US", { style: "currency", currency: "USD" });
+
+export function formatMoney(value: number): string {
+  return MONEY.format(value);
+}

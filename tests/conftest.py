@@ -42,6 +42,7 @@ from database.seed import load_taxonomy, seed_rules, seed_taxonomy  # noqa: E402
 from database.session import get_sync_engine, sync_session  # noqa: E402
 from security.clerk import ClerkTokenVerifier  # noqa: E402
 from security.dependencies import get_token_verifier  # noqa: E402
+from storefront.catalogue import sync_catalogue  # noqa: E402
 
 
 @pytest.fixture(scope="session")
@@ -109,6 +110,7 @@ def clean_db(database: None) -> Iterator[None]:
     with sync_session() as db:
         seed_taxonomy(db, load_taxonomy())
         seed_rules(db)
+        sync_catalogue(db)
     yield
     tables = ", ".join(f'"{t.name}"' for t in reversed(Base.metadata.sorted_tables))
     with get_sync_engine().begin() as conn:

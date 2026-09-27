@@ -3,8 +3,8 @@
 import { type DefaultError, type InfiniteData, infiniteQueryOptions, queryOptions, type UseMutationOptions } from '@tanstack/react-query';
 
 import { client } from '../client.gen';
-import { activateVersion, adminDashboard, agentDashboard, analytics, createCategory, createComplaint, createDepartment, createRule, createSubcategory, exportReport, exportRules, getComplaint, getComplaintAnalysis, getDocument, getValidation, getVocabulary, listCategories, listComplaints, listDecisions, listDepartments, listDocuments, listDocumentTypes, listFacts, listReports, listRules, listSlaPolicies, listUsers, listVersionChunks, liveness, myOrders, type Options, previewReport, readiness, readMe, reanalyzeComplaint, replaceRule, reprocessVersion, retireVersion, revalidate, reviewComplaint, reviewQueue, searchKnowledgeBase, updateCategory, updateDepartment, updateSlaPolicy, updateStatus, updateUser, uploadDocument } from '../sdk.gen';
-import type { ActivateVersionData, ActivateVersionError, ActivateVersionResponse, AdminDashboardData, AdminDashboardError, AdminDashboardResponse, AgentDashboardData, AgentDashboardError, AgentDashboardResponse, AnalyticsData, AnalyticsError, AnalyticsResponse, CreateCategoryData, CreateCategoryError, CreateCategoryResponse, CreateComplaintData, CreateComplaintError, CreateComplaintResponse, CreateDepartmentData, CreateDepartmentError, CreateDepartmentResponse, CreateRuleData, CreateRuleError, CreateRuleResponse, CreateSubcategoryData, CreateSubcategoryError, CreateSubcategoryResponse, ExportReportData, ExportReportError, ExportRulesData, GetComplaintAnalysisData, GetComplaintAnalysisError, GetComplaintAnalysisResponse, GetComplaintData, GetComplaintError, GetComplaintResponse, GetDocumentData, GetDocumentError, GetDocumentResponse, GetValidationData, GetValidationError, GetValidationResponse, GetVocabularyData, GetVocabularyResponse, ListCategoriesData, ListCategoriesResponse, ListComplaintsData, ListComplaintsError, ListComplaintsResponse, ListDecisionsData, ListDecisionsError, ListDecisionsResponse, ListDepartmentsData, ListDepartmentsResponse, ListDocumentsData, ListDocumentsResponse, ListDocumentTypesData, ListDocumentTypesResponse, ListFactsData, ListFactsResponse, ListReportsData, ListReportsResponse, ListRulesData, ListRulesResponse, ListSlaPoliciesData, ListSlaPoliciesResponse, ListUsersData, ListUsersResponse, ListVersionChunksData, ListVersionChunksError, ListVersionChunksResponse, LivenessData, LivenessResponse, MyOrdersData, MyOrdersResponse, PreviewReportData, PreviewReportError, PreviewReportResponse, ReadinessData, ReadinessResponse, ReadMeData, ReadMeResponse, ReanalyzeComplaintData, ReanalyzeComplaintError, ReanalyzeComplaintResponse, ReplaceRuleData, ReplaceRuleError, ReplaceRuleResponse, ReprocessVersionData, ReprocessVersionError, ReprocessVersionResponse, RetireVersionData, RetireVersionError, RetireVersionResponse, RevalidateData, RevalidateError, RevalidateResponse, ReviewComplaintData, ReviewComplaintError, ReviewComplaintResponse, ReviewQueueData, ReviewQueueError, ReviewQueueResponse, SearchKnowledgeBaseData, SearchKnowledgeBaseError, SearchKnowledgeBaseResponse, UpdateCategoryData, UpdateCategoryError, UpdateCategoryResponse, UpdateDepartmentData, UpdateDepartmentError, UpdateDepartmentResponse, UpdateSlaPolicyData, UpdateSlaPolicyError, UpdateSlaPolicyResponse, UpdateStatusData, UpdateStatusError, UpdateStatusResponse, UpdateUserData, UpdateUserError, UpdateUserResponse, UploadDocumentData, UploadDocumentError, UploadDocumentResponse } from '../types.gen';
+import { activateVersion, adminDashboard, adminListProducts, agentDashboard, analytics, chooseChatOrder, complaintChat, confirmChat, contact, convertEnquiry, createCategory, createComplaint, createDepartment, createProduct, createRule, createSubcategory, deleteProductImage, exportReport, exportRules, getChat, getComplaint, getComplaintAnalysis, getDocument, getProduct, getStorefrontConfig, getValidation, getVocabulary, listCategories, listComplaints, listDecisions, listDepartments, listDocuments, listDocumentTypes, listEnquiries, listFacts, listProducts, listReports, listRules, listSlaPolicies, listUsers, listVersionChunks, liveness, myOrders, myShopOrders, newsletter, type Options, placeOrder, pollChat, previewReport, productImage, readiness, readMe, reanalyzeComplaint, reorderProductImages, replaceRule, reprocessVersion, retireVersion, revalidate, reviewComplaint, reviewQueue, searchKnowledgeBase, sendChatMessage, simulateDelivery, startChat, updateCategory, updateDepartment, updateEnquiry, updateProduct, updateSlaPolicy, updateStatus, updateUser, uploadDocument, uploadProductImage } from '../sdk.gen';
+import type { ActivateVersionData, ActivateVersionError, ActivateVersionResponse, AdminDashboardData, AdminDashboardError, AdminDashboardResponse, AdminListProductsData, AdminListProductsResponse, AgentDashboardData, AgentDashboardError, AgentDashboardResponse, AnalyticsData, AnalyticsError, AnalyticsResponse, ChooseChatOrderData, ChooseChatOrderError, ChooseChatOrderResponse, ComplaintChatData, ComplaintChatError, ComplaintChatResponse, ConfirmChatData, ConfirmChatError, ConfirmChatResponse, ContactData, ContactError, ContactResponse, ConvertEnquiryData, ConvertEnquiryError, ConvertEnquiryResponse, CreateCategoryData, CreateCategoryError, CreateCategoryResponse, CreateComplaintData, CreateComplaintError, CreateComplaintResponse, CreateDepartmentData, CreateDepartmentError, CreateDepartmentResponse, CreateProductData, CreateProductError, CreateProductResponse, CreateRuleData, CreateRuleError, CreateRuleResponse, CreateSubcategoryData, CreateSubcategoryError, CreateSubcategoryResponse, DeleteProductImageData, DeleteProductImageError, DeleteProductImageResponse, ExportReportData, ExportReportError, ExportRulesData, GetChatData, GetChatError, GetChatResponse, GetComplaintAnalysisData, GetComplaintAnalysisError, GetComplaintAnalysisResponse, GetComplaintData, GetComplaintError, GetComplaintResponse, GetDocumentData, GetDocumentError, GetDocumentResponse, GetProductData, GetProductError, GetProductResponse, GetStorefrontConfigData, GetStorefrontConfigResponse, GetValidationData, GetValidationError, GetValidationResponse, GetVocabularyData, GetVocabularyResponse, ListCategoriesData, ListCategoriesResponse, ListComplaintsData, ListComplaintsError, ListComplaintsResponse, ListDecisionsData, ListDecisionsError, ListDecisionsResponse, ListDepartmentsData, ListDepartmentsResponse, ListDocumentsData, ListDocumentsResponse, ListDocumentTypesData, ListDocumentTypesResponse, ListEnquiriesData, ListEnquiriesError, ListEnquiriesResponse, ListFactsData, ListFactsResponse, ListProductsData, ListProductsError, ListProductsResponse, ListReportsData, ListReportsResponse, ListRulesData, ListRulesResponse, ListSlaPoliciesData, ListSlaPoliciesResponse, ListUsersData, ListUsersResponse, ListVersionChunksData, ListVersionChunksError, ListVersionChunksResponse, LivenessData, LivenessResponse, MyOrdersData, MyOrdersResponse, MyShopOrdersData, MyShopOrdersResponse, NewsletterData, NewsletterError, NewsletterResponse, PlaceOrderData, PlaceOrderError, PlaceOrderResponse, PollChatData, PollChatError, PollChatResponse, PreviewReportData, PreviewReportError, PreviewReportResponse, ProductImageData, ProductImageError, ReadinessData, ReadinessResponse, ReadMeData, ReadMeResponse, ReanalyzeComplaintData, ReanalyzeComplaintError, ReanalyzeComplaintResponse, ReorderProductImagesData, ReorderProductImagesError, ReorderProductImagesResponse, ReplaceRuleData, ReplaceRuleError, ReplaceRuleResponse, ReprocessVersionData, ReprocessVersionError, ReprocessVersionResponse, RetireVersionData, RetireVersionError, RetireVersionResponse, RevalidateData, RevalidateError, RevalidateResponse, ReviewComplaintData, ReviewComplaintError, ReviewComplaintResponse, ReviewQueueData, ReviewQueueError, ReviewQueueResponse, SearchKnowledgeBaseData, SearchKnowledgeBaseError, SearchKnowledgeBaseResponse, SendChatMessageData, SendChatMessageError, SendChatMessageResponse, SimulateDeliveryData, SimulateDeliveryError, SimulateDeliveryResponse, StartChatData, StartChatError, StartChatResponse, UpdateCategoryData, UpdateCategoryError, UpdateCategoryResponse, UpdateDepartmentData, UpdateDepartmentError, UpdateDepartmentResponse, UpdateEnquiryData, UpdateEnquiryError, UpdateEnquiryResponse, UpdateProductData, UpdateProductError, UpdateProductResponse, UpdateSlaPolicyData, UpdateSlaPolicyError, UpdateSlaPolicyResponse, UpdateStatusData, UpdateStatusError, UpdateStatusResponse, UpdateUserData, UpdateUserError, UpdateUserResponse, UploadDocumentData, UploadDocumentError, UploadDocumentResponse, UploadProductImageData, UploadProductImageError, UploadProductImageResponse } from '../types.gen';
 
 export type QueryKey<TOptions extends Options> = [
     Pick<TOptions, 'baseUrl' | 'body' | 'headers' | 'path' | 'query'> & {
@@ -848,6 +848,479 @@ export const exportReportOptions = (options: Options<ExportReportData>) => query
     },
     queryKey: exportReportQueryKey(options)
 });
+
+export const getStorefrontConfigQueryKey = (options?: Options<GetStorefrontConfigData>) => createQueryKey('getStorefrontConfig', options);
+
+/**
+ * Get Storefront Config
+ *
+ * Company details, delivery, returns and warranty facts, and the FAQ (public).
+ */
+export const getStorefrontConfigOptions = (options?: Options<GetStorefrontConfigData>) => queryOptions<GetStorefrontConfigResponse, DefaultError, GetStorefrontConfigResponse, ReturnType<typeof getStorefrontConfigQueryKey>>({
+    queryFn: async ({ queryKey, signal }) => {
+        const { data } = await getStorefrontConfig({
+            ...options,
+            ...queryKey[0],
+            signal,
+            throwOnError: true
+        });
+        return data;
+    },
+    queryKey: getStorefrontConfigQueryKey(options)
+});
+
+export const listProductsQueryKey = (options?: Options<ListProductsData>) => createQueryKey('listProducts', options);
+
+/**
+ * List Products
+ */
+export const listProductsOptions = (options?: Options<ListProductsData>) => queryOptions<ListProductsResponse, ListProductsError, ListProductsResponse, ReturnType<typeof listProductsQueryKey>>({
+    queryFn: async ({ queryKey, signal }) => {
+        const { data } = await listProducts({
+            ...options,
+            ...queryKey[0],
+            signal,
+            throwOnError: true
+        });
+        return data;
+    },
+    queryKey: listProductsQueryKey(options)
+});
+
+export const getProductQueryKey = (options: Options<GetProductData>) => createQueryKey('getProduct', options);
+
+/**
+ * Get Product
+ */
+export const getProductOptions = (options: Options<GetProductData>) => queryOptions<GetProductResponse, GetProductError, GetProductResponse, ReturnType<typeof getProductQueryKey>>({
+    queryFn: async ({ queryKey, signal }) => {
+        const { data } = await getProduct({
+            ...options,
+            ...queryKey[0],
+            signal,
+            throwOnError: true
+        });
+        return data;
+    },
+    queryKey: getProductQueryKey(options)
+});
+
+/**
+ * Place Order
+ */
+export const placeOrderMutation = (options?: Partial<Options<PlaceOrderData>>): UseMutationOptions<PlaceOrderResponse, PlaceOrderError, Options<PlaceOrderData>> => {
+    const mutationOptions: UseMutationOptions<PlaceOrderResponse, PlaceOrderError, Options<PlaceOrderData>> = {
+        mutationFn: async (fnOptions) => {
+            const { data } = await placeOrder({
+                ...options,
+                ...fnOptions,
+                throwOnError: true
+            });
+            return data;
+        }
+    };
+    return mutationOptions;
+};
+
+export const myShopOrdersQueryKey = (options?: Options<MyShopOrdersData>) => createQueryKey('myShopOrders', options);
+
+/**
+ * My Shop Orders
+ */
+export const myShopOrdersOptions = (options?: Options<MyShopOrdersData>) => queryOptions<MyShopOrdersResponse, DefaultError, MyShopOrdersResponse, ReturnType<typeof myShopOrdersQueryKey>>({
+    queryFn: async ({ queryKey, signal }) => {
+        const { data } = await myShopOrders({
+            ...options,
+            ...queryKey[0],
+            signal,
+            throwOnError: true
+        });
+        return data;
+    },
+    queryKey: myShopOrdersQueryKey(options)
+});
+
+/**
+ * Simulate Delivery
+ */
+export const simulateDeliveryMutation = (options?: Partial<Options<SimulateDeliveryData>>): UseMutationOptions<SimulateDeliveryResponse, SimulateDeliveryError, Options<SimulateDeliveryData>> => {
+    const mutationOptions: UseMutationOptions<SimulateDeliveryResponse, SimulateDeliveryError, Options<SimulateDeliveryData>> = {
+        mutationFn: async (fnOptions) => {
+            const { data } = await simulateDelivery({
+                ...options,
+                ...fnOptions,
+                throwOnError: true
+            });
+            return data;
+        }
+    };
+    return mutationOptions;
+};
+
+export const productImageQueryKey = (options: Options<ProductImageData>) => createQueryKey('productImage', options);
+
+/**
+ * Product Image
+ */
+export const productImageOptions = (options: Options<ProductImageData>) => queryOptions<unknown, ProductImageError, unknown, ReturnType<typeof productImageQueryKey>>({
+    queryFn: async ({ queryKey, signal }) => {
+        const { data } = await productImage({
+            ...options,
+            ...queryKey[0],
+            signal,
+            throwOnError: true
+        });
+        return data;
+    },
+    queryKey: productImageQueryKey(options)
+});
+
+export const adminListProductsQueryKey = (options?: Options<AdminListProductsData>) => createQueryKey('adminListProducts', options);
+
+/**
+ * Admin List Products
+ */
+export const adminListProductsOptions = (options?: Options<AdminListProductsData>) => queryOptions<AdminListProductsResponse, DefaultError, AdminListProductsResponse, ReturnType<typeof adminListProductsQueryKey>>({
+    queryFn: async ({ queryKey, signal }) => {
+        const { data } = await adminListProducts({
+            ...options,
+            ...queryKey[0],
+            signal,
+            throwOnError: true
+        });
+        return data;
+    },
+    queryKey: adminListProductsQueryKey(options)
+});
+
+/**
+ * Create Product
+ */
+export const createProductMutation = (options?: Partial<Options<CreateProductData>>): UseMutationOptions<CreateProductResponse, CreateProductError, Options<CreateProductData>> => {
+    const mutationOptions: UseMutationOptions<CreateProductResponse, CreateProductError, Options<CreateProductData>> = {
+        mutationFn: async (fnOptions) => {
+            const { data } = await createProduct({
+                ...options,
+                ...fnOptions,
+                throwOnError: true
+            });
+            return data;
+        }
+    };
+    return mutationOptions;
+};
+
+/**
+ * Update Product
+ */
+export const updateProductMutation = (options?: Partial<Options<UpdateProductData>>): UseMutationOptions<UpdateProductResponse, UpdateProductError, Options<UpdateProductData>> => {
+    const mutationOptions: UseMutationOptions<UpdateProductResponse, UpdateProductError, Options<UpdateProductData>> = {
+        mutationFn: async (fnOptions) => {
+            const { data } = await updateProduct({
+                ...options,
+                ...fnOptions,
+                throwOnError: true
+            });
+            return data;
+        }
+    };
+    return mutationOptions;
+};
+
+/**
+ * Upload Product Image
+ */
+export const uploadProductImageMutation = (options?: Partial<Options<UploadProductImageData>>): UseMutationOptions<UploadProductImageResponse, UploadProductImageError, Options<UploadProductImageData>> => {
+    const mutationOptions: UseMutationOptions<UploadProductImageResponse, UploadProductImageError, Options<UploadProductImageData>> = {
+        mutationFn: async (fnOptions) => {
+            const { data } = await uploadProductImage({
+                ...options,
+                ...fnOptions,
+                throwOnError: true
+            });
+            return data;
+        }
+    };
+    return mutationOptions;
+};
+
+/**
+ * Reorder Product Images
+ */
+export const reorderProductImagesMutation = (options?: Partial<Options<ReorderProductImagesData>>): UseMutationOptions<ReorderProductImagesResponse, ReorderProductImagesError, Options<ReorderProductImagesData>> => {
+    const mutationOptions: UseMutationOptions<ReorderProductImagesResponse, ReorderProductImagesError, Options<ReorderProductImagesData>> = {
+        mutationFn: async (fnOptions) => {
+            const { data } = await reorderProductImages({
+                ...options,
+                ...fnOptions,
+                throwOnError: true
+            });
+            return data;
+        }
+    };
+    return mutationOptions;
+};
+
+/**
+ * Delete Product Image
+ */
+export const deleteProductImageMutation = (options?: Partial<Options<DeleteProductImageData>>): UseMutationOptions<DeleteProductImageResponse, DeleteProductImageError, Options<DeleteProductImageData>> => {
+    const mutationOptions: UseMutationOptions<DeleteProductImageResponse, DeleteProductImageError, Options<DeleteProductImageData>> = {
+        mutationFn: async (fnOptions) => {
+            const { data } = await deleteProductImage({
+                ...options,
+                ...fnOptions,
+                throwOnError: true
+            });
+            return data;
+        }
+    };
+    return mutationOptions;
+};
+
+/**
+ * Start Chat
+ */
+export const startChatMutation = (options?: Partial<Options<StartChatData>>): UseMutationOptions<StartChatResponse, StartChatError, Options<StartChatData>> => {
+    const mutationOptions: UseMutationOptions<StartChatResponse, StartChatError, Options<StartChatData>> = {
+        mutationFn: async (fnOptions) => {
+            const { data } = await startChat({
+                ...options,
+                ...fnOptions,
+                throwOnError: true
+            });
+            return data;
+        }
+    };
+    return mutationOptions;
+};
+
+export const getChatQueryKey = (options: Options<GetChatData>) => createQueryKey('getChat', options);
+
+/**
+ * Get Chat
+ */
+export const getChatOptions = (options: Options<GetChatData>) => queryOptions<GetChatResponse, GetChatError, GetChatResponse, ReturnType<typeof getChatQueryKey>>({
+    queryFn: async ({ queryKey, signal }) => {
+        const { data } = await getChat({
+            ...options,
+            ...queryKey[0],
+            signal,
+            throwOnError: true
+        });
+        return data;
+    },
+    queryKey: getChatQueryKey(options)
+});
+
+export const pollChatQueryKey = (options: Options<PollChatData>) => createQueryKey('pollChat', options);
+
+/**
+ * Poll Chat
+ */
+export const pollChatOptions = (options: Options<PollChatData>) => queryOptions<PollChatResponse, PollChatError, PollChatResponse, ReturnType<typeof pollChatQueryKey>>({
+    queryFn: async ({ queryKey, signal }) => {
+        const { data } = await pollChat({
+            ...options,
+            ...queryKey[0],
+            signal,
+            throwOnError: true
+        });
+        return data;
+    },
+    queryKey: pollChatQueryKey(options)
+});
+
+export const pollChatInfiniteQueryKey = (options: Options<PollChatData>): QueryKey<Options<PollChatData>> => createQueryKey('pollChat', options, true);
+
+/**
+ * Poll Chat
+ */
+export const pollChatInfiniteOptions = (options: Options<PollChatData>) => {
+    const opts = infiniteQueryOptions<PollChatResponse, PollChatError, InfiniteData<PollChatResponse>, QueryKey<Options<PollChatData>>, number | Pick<QueryKey<Options<PollChatData>>[0], 'body' | 'headers' | 'path' | 'query'>>(
+    // @ts-ignore
+    {
+        queryFn: async ({ pageParam, queryKey, signal }) => {
+            // @ts-ignore
+            const page: Pick<QueryKey<Options<PollChatData>>[0], 'body' | 'headers' | 'path' | 'query'> = typeof pageParam === 'object' ? pageParam : {
+                query: {
+                    after: pageParam
+                }
+            };
+            const params = createInfiniteParams(queryKey, page);
+            const { data } = await pollChat({
+                ...options,
+                ...params,
+                signal,
+                throwOnError: true
+            });
+            return data;
+        },
+        queryKey: pollChatInfiniteQueryKey(options)
+    });
+    return opts as Omit<typeof opts, 'initialData'>;
+};
+
+/**
+ * Send Chat Message
+ */
+export const sendChatMessageMutation = (options?: Partial<Options<SendChatMessageData>>): UseMutationOptions<SendChatMessageResponse, SendChatMessageError, Options<SendChatMessageData>> => {
+    const mutationOptions: UseMutationOptions<SendChatMessageResponse, SendChatMessageError, Options<SendChatMessageData>> = {
+        mutationFn: async (fnOptions) => {
+            const { data } = await sendChatMessage({
+                ...options,
+                ...fnOptions,
+                throwOnError: true
+            });
+            return data;
+        }
+    };
+    return mutationOptions;
+};
+
+/**
+ * Choose Chat Order
+ */
+export const chooseChatOrderMutation = (options?: Partial<Options<ChooseChatOrderData>>): UseMutationOptions<ChooseChatOrderResponse, ChooseChatOrderError, Options<ChooseChatOrderData>> => {
+    const mutationOptions: UseMutationOptions<ChooseChatOrderResponse, ChooseChatOrderError, Options<ChooseChatOrderData>> = {
+        mutationFn: async (fnOptions) => {
+            const { data } = await chooseChatOrder({
+                ...options,
+                ...fnOptions,
+                throwOnError: true
+            });
+            return data;
+        }
+    };
+    return mutationOptions;
+};
+
+/**
+ * Confirm Chat
+ */
+export const confirmChatMutation = (options?: Partial<Options<ConfirmChatData>>): UseMutationOptions<ConfirmChatResponse, ConfirmChatError, Options<ConfirmChatData>> => {
+    const mutationOptions: UseMutationOptions<ConfirmChatResponse, ConfirmChatError, Options<ConfirmChatData>> = {
+        mutationFn: async (fnOptions) => {
+            const { data } = await confirmChat({
+                ...options,
+                ...fnOptions,
+                throwOnError: true
+            });
+            return data;
+        }
+    };
+    return mutationOptions;
+};
+
+export const complaintChatQueryKey = (options: Options<ComplaintChatData>) => createQueryKey('complaintChat', options);
+
+/**
+ * Complaint Chat
+ */
+export const complaintChatOptions = (options: Options<ComplaintChatData>) => queryOptions<ComplaintChatResponse, ComplaintChatError, ComplaintChatResponse, ReturnType<typeof complaintChatQueryKey>>({
+    queryFn: async ({ queryKey, signal }) => {
+        const { data } = await complaintChat({
+            ...options,
+            ...queryKey[0],
+            signal,
+            throwOnError: true
+        });
+        return data;
+    },
+    queryKey: complaintChatQueryKey(options)
+});
+
+/**
+ * Contact
+ *
+ * Order problems (sign-in required) become complaints; other topics become enquiries.
+ */
+export const contactMutation = (options?: Partial<Options<ContactData>>): UseMutationOptions<ContactResponse, ContactError, Options<ContactData>> => {
+    const mutationOptions: UseMutationOptions<ContactResponse, ContactError, Options<ContactData>> = {
+        mutationFn: async (fnOptions) => {
+            const { data } = await contact({
+                ...options,
+                ...fnOptions,
+                throwOnError: true
+            });
+            return data;
+        }
+    };
+    return mutationOptions;
+};
+
+export const listEnquiriesQueryKey = (options?: Options<ListEnquiriesData>) => createQueryKey('listEnquiries', options);
+
+/**
+ * List Enquiries
+ */
+export const listEnquiriesOptions = (options?: Options<ListEnquiriesData>) => queryOptions<ListEnquiriesResponse, ListEnquiriesError, ListEnquiriesResponse, ReturnType<typeof listEnquiriesQueryKey>>({
+    queryFn: async ({ queryKey, signal }) => {
+        const { data } = await listEnquiries({
+            ...options,
+            ...queryKey[0],
+            signal,
+            throwOnError: true
+        });
+        return data;
+    },
+    queryKey: listEnquiriesQueryKey(options)
+});
+
+/**
+ * Update Enquiry
+ */
+export const updateEnquiryMutation = (options?: Partial<Options<UpdateEnquiryData>>): UseMutationOptions<UpdateEnquiryResponse, UpdateEnquiryError, Options<UpdateEnquiryData>> => {
+    const mutationOptions: UseMutationOptions<UpdateEnquiryResponse, UpdateEnquiryError, Options<UpdateEnquiryData>> = {
+        mutationFn: async (fnOptions) => {
+            const { data } = await updateEnquiry({
+                ...options,
+                ...fnOptions,
+                throwOnError: true
+            });
+            return data;
+        }
+    };
+    return mutationOptions;
+};
+
+/**
+ * Convert Enquiry
+ *
+ * Create a complaint from an enquiry sent by a signed-in customer (once).
+ */
+export const convertEnquiryMutation = (options?: Partial<Options<ConvertEnquiryData>>): UseMutationOptions<ConvertEnquiryResponse, ConvertEnquiryError, Options<ConvertEnquiryData>> => {
+    const mutationOptions: UseMutationOptions<ConvertEnquiryResponse, ConvertEnquiryError, Options<ConvertEnquiryData>> = {
+        mutationFn: async (fnOptions) => {
+            const { data } = await convertEnquiry({
+                ...options,
+                ...fnOptions,
+                throwOnError: true
+            });
+            return data;
+        }
+    };
+    return mutationOptions;
+};
+
+/**
+ * Newsletter
+ *
+ * Demo newsletter sign-up: stored once, nothing is ever sent.
+ */
+export const newsletterMutation = (options?: Partial<Options<NewsletterData>>): UseMutationOptions<NewsletterResponse, NewsletterError, Options<NewsletterData>> => {
+    const mutationOptions: UseMutationOptions<NewsletterResponse, NewsletterError, Options<NewsletterData>> = {
+        mutationFn: async (fnOptions) => {
+            const { data } = await newsletter({
+                ...options,
+                ...fnOptions,
+                throwOnError: true
+            });
+            return data;
+        }
+    };
+    return mutationOptions;
+};
 
 export const listRulesQueryKey = (options?: Options<ListRulesData>) => createQueryKey('listRules', options);
 

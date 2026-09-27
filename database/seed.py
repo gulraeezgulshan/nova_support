@@ -94,11 +94,15 @@ def seed_rules(db: Session) -> dict[str, int]:
 
 
 def main() -> None:
+    from storefront.catalogue import sync_catalogue
+
     with sync_session() as db:
         counts = seed_taxonomy(db, load_taxonomy())
         rule_counts = seed_rules(db)
+        product_counts = sync_catalogue(db)
     print("Seeded:", ", ".join(f"{k}={v}" for k, v in counts.items()))
     print("Rules:", ", ".join(f"{k}={v}" for k, v in rule_counts.items()))
+    print("Products:", ", ".join(f"{k}={v}" for k, v in product_counts.items()))
 
 
 if __name__ == "__main__":

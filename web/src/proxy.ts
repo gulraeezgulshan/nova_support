@@ -1,6 +1,21 @@
 import { clerkMiddleware, createRouteMatcher } from "@clerk/nextjs/server";
 
-const isPublicRoute = createRouteMatcher(["/", "/sign-in(.*)", "/sign-up(.*)"]);
+const isPublicRoute = createRouteMatcher([
+  "/",
+  "/about",
+  "/about-supportnova",
+  "/shop(.*)",
+  "/cart",
+  "/contact",
+  "/help",
+  "/shipping",
+  "/returns",
+  "/warranty",
+  "/privacy",
+  "/terms",
+  "/sign-in(.*)",
+  "/sign-up(.*)",
+]);
 
 // Optimistic check only: signed-out visitors are sent to sign-in.
 // Real authorisation (roles) is enforced by the FastAPI backend on every request.

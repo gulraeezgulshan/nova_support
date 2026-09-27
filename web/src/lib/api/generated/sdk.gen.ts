@@ -2,7 +2,7 @@
 
 import { type Client, type ClientMeta, formDataBodySerializer, type Options as Options2, type RequestResult, type TDataShape } from './client';
 import { client } from './client.gen';
-import type { ActivateVersionData, ActivateVersionErrors, ActivateVersionResponses, AdminDashboardData, AdminDashboardErrors, AdminDashboardResponses, AgentDashboardData, AgentDashboardErrors, AgentDashboardResponses, AnalyticsData, AnalyticsErrors, AnalyticsResponses, CreateCategoryData, CreateCategoryErrors, CreateCategoryResponses, CreateComplaintData, CreateComplaintErrors, CreateComplaintResponses, CreateDepartmentData, CreateDepartmentErrors, CreateDepartmentResponses, CreateRuleData, CreateRuleErrors, CreateRuleResponses, CreateSubcategoryData, CreateSubcategoryErrors, CreateSubcategoryResponses, ExportReportData, ExportReportErrors, ExportReportResponses, ExportRulesData, ExportRulesResponses, GetComplaintAnalysisData, GetComplaintAnalysisErrors, GetComplaintAnalysisResponses, GetComplaintData, GetComplaintErrors, GetComplaintResponses, GetDocumentData, GetDocumentErrors, GetDocumentResponses, GetValidationData, GetValidationErrors, GetValidationResponses, GetVocabularyData, GetVocabularyResponses, ListCategoriesData, ListCategoriesResponses, ListComplaintsData, ListComplaintsErrors, ListComplaintsResponses, ListDecisionsData, ListDecisionsErrors, ListDecisionsResponses, ListDepartmentsData, ListDepartmentsResponses, ListDocumentsData, ListDocumentsResponses, ListDocumentTypesData, ListDocumentTypesResponses, ListFactsData, ListFactsResponses, ListReportsData, ListReportsResponses, ListRulesData, ListRulesResponses, ListSlaPoliciesData, ListSlaPoliciesResponses, ListUsersData, ListUsersResponses, ListVersionChunksData, ListVersionChunksErrors, ListVersionChunksResponses, LivenessData, LivenessResponses, MyOrdersData, MyOrdersResponses, PreviewReportData, PreviewReportErrors, PreviewReportResponses, ReadinessData, ReadinessResponses, ReadMeData, ReadMeResponses, ReanalyzeComplaintData, ReanalyzeComplaintErrors, ReanalyzeComplaintResponses, ReplaceRuleData, ReplaceRuleErrors, ReplaceRuleResponses, ReprocessVersionData, ReprocessVersionErrors, ReprocessVersionResponses, RetireVersionData, RetireVersionErrors, RetireVersionResponses, RevalidateData, RevalidateErrors, RevalidateResponses, ReviewComplaintData, ReviewComplaintErrors, ReviewComplaintResponses, ReviewQueueData, ReviewQueueErrors, ReviewQueueResponses, SearchKnowledgeBaseData, SearchKnowledgeBaseErrors, SearchKnowledgeBaseResponses, UpdateCategoryData, UpdateCategoryErrors, UpdateCategoryResponses, UpdateDepartmentData, UpdateDepartmentErrors, UpdateDepartmentResponses, UpdateSlaPolicyData, UpdateSlaPolicyErrors, UpdateSlaPolicyResponses, UpdateStatusData, UpdateStatusErrors, UpdateStatusResponses, UpdateUserData, UpdateUserErrors, UpdateUserResponses, UploadDocumentData, UploadDocumentErrors, UploadDocumentResponses } from './types.gen';
+import type { ActivateVersionData, ActivateVersionErrors, ActivateVersionResponses, AdminDashboardData, AdminDashboardErrors, AdminDashboardResponses, AdminListProductsData, AdminListProductsResponses, AgentDashboardData, AgentDashboardErrors, AgentDashboardResponses, AnalyticsData, AnalyticsErrors, AnalyticsResponses, ChooseChatOrderData, ChooseChatOrderErrors, ChooseChatOrderResponses, ComplaintChatData, ComplaintChatErrors, ComplaintChatResponses, ConfirmChatData, ConfirmChatErrors, ConfirmChatResponses, ContactData, ContactErrors, ContactResponses, ConvertEnquiryData, ConvertEnquiryErrors, ConvertEnquiryResponses, CreateCategoryData, CreateCategoryErrors, CreateCategoryResponses, CreateComplaintData, CreateComplaintErrors, CreateComplaintResponses, CreateDepartmentData, CreateDepartmentErrors, CreateDepartmentResponses, CreateProductData, CreateProductErrors, CreateProductResponses, CreateRuleData, CreateRuleErrors, CreateRuleResponses, CreateSubcategoryData, CreateSubcategoryErrors, CreateSubcategoryResponses, DeleteProductImageData, DeleteProductImageErrors, DeleteProductImageResponses, ExportReportData, ExportReportErrors, ExportReportResponses, ExportRulesData, ExportRulesResponses, GetChatData, GetChatErrors, GetChatResponses, GetComplaintAnalysisData, GetComplaintAnalysisErrors, GetComplaintAnalysisResponses, GetComplaintData, GetComplaintErrors, GetComplaintResponses, GetDocumentData, GetDocumentErrors, GetDocumentResponses, GetProductData, GetProductErrors, GetProductResponses, GetStorefrontConfigData, GetStorefrontConfigResponses, GetValidationData, GetValidationErrors, GetValidationResponses, GetVocabularyData, GetVocabularyResponses, ListCategoriesData, ListCategoriesResponses, ListComplaintsData, ListComplaintsErrors, ListComplaintsResponses, ListDecisionsData, ListDecisionsErrors, ListDecisionsResponses, ListDepartmentsData, ListDepartmentsResponses, ListDocumentsData, ListDocumentsResponses, ListDocumentTypesData, ListDocumentTypesResponses, ListEnquiriesData, ListEnquiriesErrors, ListEnquiriesResponses, ListFactsData, ListFactsResponses, ListProductsData, ListProductsErrors, ListProductsResponses, ListReportsData, ListReportsResponses, ListRulesData, ListRulesResponses, ListSlaPoliciesData, ListSlaPoliciesResponses, ListUsersData, ListUsersResponses, ListVersionChunksData, ListVersionChunksErrors, ListVersionChunksResponses, LivenessData, LivenessResponses, MyOrdersData, MyOrdersResponses, MyShopOrdersData, MyShopOrdersResponses, NewsletterData, NewsletterErrors, NewsletterResponses, PlaceOrderData, PlaceOrderErrors, PlaceOrderResponses, PollChatData, PollChatErrors, PollChatResponses, PreviewReportData, PreviewReportErrors, PreviewReportResponses, ProductImageData, ProductImageErrors, ProductImageResponses, ReadinessData, ReadinessResponses, ReadMeData, ReadMeResponses, ReanalyzeComplaintData, ReanalyzeComplaintErrors, ReanalyzeComplaintResponses, ReorderProductImagesData, ReorderProductImagesErrors, ReorderProductImagesResponses, ReplaceRuleData, ReplaceRuleErrors, ReplaceRuleResponses, ReprocessVersionData, ReprocessVersionErrors, ReprocessVersionResponses, RetireVersionData, RetireVersionErrors, RetireVersionResponses, RevalidateData, RevalidateErrors, RevalidateResponses, ReviewComplaintData, ReviewComplaintErrors, ReviewComplaintResponses, ReviewQueueData, ReviewQueueErrors, ReviewQueueResponses, SearchKnowledgeBaseData, SearchKnowledgeBaseErrors, SearchKnowledgeBaseResponses, SendChatMessageData, SendChatMessageErrors, SendChatMessageResponses, SimulateDeliveryData, SimulateDeliveryErrors, SimulateDeliveryResponses, StartChatData, StartChatErrors, StartChatResponses, UpdateCategoryData, UpdateCategoryErrors, UpdateCategoryResponses, UpdateDepartmentData, UpdateDepartmentErrors, UpdateDepartmentResponses, UpdateEnquiryData, UpdateEnquiryErrors, UpdateEnquiryResponses, UpdateProductData, UpdateProductErrors, UpdateProductResponses, UpdateSlaPolicyData, UpdateSlaPolicyErrors, UpdateSlaPolicyResponses, UpdateStatusData, UpdateStatusErrors, UpdateStatusResponses, UpdateUserData, UpdateUserErrors, UpdateUserResponses, UploadDocumentData, UploadDocumentErrors, UploadDocumentResponses, UploadProductImageData, UploadProductImageErrors, UploadProductImageResponses } from './types.gen';
 
 export type Options<TData extends TDataShape = TDataShape, ThrowOnError extends boolean = boolean, TResponse = unknown> = Options2<TData, ThrowOnError, TResponse> & {
     /**
@@ -442,6 +442,271 @@ export const exportReport = <ThrowOnError extends boolean = false>(options: Opti
     security: [{ scheme: 'bearer', type: 'http' }],
     url: '/api/v1/reports/{code}/export',
     ...options
+});
+
+/**
+ * Get Storefront Config
+ *
+ * Company details, delivery, returns and warranty facts, and the FAQ (public).
+ */
+export const getStorefrontConfig = <ThrowOnError extends boolean = false>(options?: Options<GetStorefrontConfigData, ThrowOnError>): RequestResult<GetStorefrontConfigResponses, unknown, ThrowOnError> => (options?.client ?? client).get<GetStorefrontConfigResponses, unknown, ThrowOnError>({ url: '/api/v1/storefront/config', ...options });
+
+/**
+ * List Products
+ */
+export const listProducts = <ThrowOnError extends boolean = false>(options?: Options<ListProductsData, ThrowOnError>): RequestResult<ListProductsResponses, ListProductsErrors, ThrowOnError> => (options?.client ?? client).get<ListProductsResponses, ListProductsErrors, ThrowOnError>({ url: '/api/v1/products', ...options });
+
+/**
+ * Get Product
+ */
+export const getProduct = <ThrowOnError extends boolean = false>(options: Options<GetProductData, ThrowOnError>): RequestResult<GetProductResponses, GetProductErrors, ThrowOnError> => (options.client ?? client).get<GetProductResponses, GetProductErrors, ThrowOnError>({ url: '/api/v1/products/{sku}', ...options });
+
+/**
+ * Place Order
+ */
+export const placeOrder = <ThrowOnError extends boolean = false>(options: Options<PlaceOrderData, ThrowOnError>): RequestResult<PlaceOrderResponses, PlaceOrderErrors, ThrowOnError> => (options.client ?? client).post<PlaceOrderResponses, PlaceOrderErrors, ThrowOnError>({
+    security: [{ scheme: 'bearer', type: 'http' }],
+    url: '/api/v1/checkout',
+    ...options,
+    headers: {
+        'Content-Type': 'application/json',
+        ...options.headers
+    }
+});
+
+/**
+ * My Shop Orders
+ */
+export const myShopOrders = <ThrowOnError extends boolean = false>(options?: Options<MyShopOrdersData, ThrowOnError>): RequestResult<MyShopOrdersResponses, unknown, ThrowOnError> => (options?.client ?? client).get<MyShopOrdersResponses, unknown, ThrowOnError>({
+    security: [{ scheme: 'bearer', type: 'http' }],
+    url: '/api/v1/orders',
+    ...options
+});
+
+/**
+ * Simulate Delivery
+ */
+export const simulateDelivery = <ThrowOnError extends boolean = false>(options: Options<SimulateDeliveryData, ThrowOnError>): RequestResult<SimulateDeliveryResponses, SimulateDeliveryErrors, ThrowOnError> => (options.client ?? client).post<SimulateDeliveryResponses, SimulateDeliveryErrors, ThrowOnError>({
+    security: [{ scheme: 'bearer', type: 'http' }],
+    url: '/api/v1/orders/{order_ref}/simulate',
+    ...options,
+    headers: {
+        'Content-Type': 'application/json',
+        ...options.headers
+    }
+});
+
+/**
+ * Product Image
+ */
+export const productImage = <ThrowOnError extends boolean = false>(options: Options<ProductImageData, ThrowOnError>): RequestResult<ProductImageResponses, ProductImageErrors, ThrowOnError> => (options.client ?? client).get<ProductImageResponses, ProductImageErrors, ThrowOnError>({ url: '/api/v1/product-images/{image_id}', ...options });
+
+/**
+ * Admin List Products
+ */
+export const adminListProducts = <ThrowOnError extends boolean = false>(options?: Options<AdminListProductsData, ThrowOnError>): RequestResult<AdminListProductsResponses, unknown, ThrowOnError> => (options?.client ?? client).get<AdminListProductsResponses, unknown, ThrowOnError>({
+    security: [{ scheme: 'bearer', type: 'http' }],
+    url: '/api/v1/admin/products',
+    ...options
+});
+
+/**
+ * Create Product
+ */
+export const createProduct = <ThrowOnError extends boolean = false>(options: Options<CreateProductData, ThrowOnError>): RequestResult<CreateProductResponses, CreateProductErrors, ThrowOnError> => (options.client ?? client).post<CreateProductResponses, CreateProductErrors, ThrowOnError>({
+    security: [{ scheme: 'bearer', type: 'http' }],
+    url: '/api/v1/admin/products',
+    ...options,
+    headers: {
+        'Content-Type': 'application/json',
+        ...options.headers
+    }
+});
+
+/**
+ * Update Product
+ */
+export const updateProduct = <ThrowOnError extends boolean = false>(options: Options<UpdateProductData, ThrowOnError>): RequestResult<UpdateProductResponses, UpdateProductErrors, ThrowOnError> => (options.client ?? client).patch<UpdateProductResponses, UpdateProductErrors, ThrowOnError>({
+    security: [{ scheme: 'bearer', type: 'http' }],
+    url: '/api/v1/admin/products/{sku}',
+    ...options,
+    headers: {
+        'Content-Type': 'application/json',
+        ...options.headers
+    }
+});
+
+/**
+ * Upload Product Image
+ */
+export const uploadProductImage = <ThrowOnError extends boolean = false>(options: Options<UploadProductImageData, ThrowOnError>): RequestResult<UploadProductImageResponses, UploadProductImageErrors, ThrowOnError> => (options.client ?? client).post<UploadProductImageResponses, UploadProductImageErrors, ThrowOnError>({
+    ...formDataBodySerializer,
+    security: [{ scheme: 'bearer', type: 'http' }],
+    url: '/api/v1/admin/products/{sku}/images',
+    ...options,
+    headers: {
+        'Content-Type': null,
+        ...options.headers
+    }
+});
+
+/**
+ * Reorder Product Images
+ */
+export const reorderProductImages = <ThrowOnError extends boolean = false>(options: Options<ReorderProductImagesData, ThrowOnError>): RequestResult<ReorderProductImagesResponses, ReorderProductImagesErrors, ThrowOnError> => (options.client ?? client).put<ReorderProductImagesResponses, ReorderProductImagesErrors, ThrowOnError>({
+    security: [{ scheme: 'bearer', type: 'http' }],
+    url: '/api/v1/admin/products/{sku}/images/order',
+    ...options,
+    headers: {
+        'Content-Type': 'application/json',
+        ...options.headers
+    }
+});
+
+/**
+ * Delete Product Image
+ */
+export const deleteProductImage = <ThrowOnError extends boolean = false>(options: Options<DeleteProductImageData, ThrowOnError>): RequestResult<DeleteProductImageResponses, DeleteProductImageErrors, ThrowOnError> => (options.client ?? client).delete<DeleteProductImageResponses, DeleteProductImageErrors, ThrowOnError>({
+    security: [{ scheme: 'bearer', type: 'http' }],
+    url: '/api/v1/admin/products/{sku}/images/{image_id}',
+    ...options
+});
+
+/**
+ * Start Chat
+ */
+export const startChat = <ThrowOnError extends boolean = false>(options: Options<StartChatData, ThrowOnError>): RequestResult<StartChatResponses, StartChatErrors, ThrowOnError> => (options.client ?? client).post<StartChatResponses, StartChatErrors, ThrowOnError>({
+    security: [{ scheme: 'bearer', type: 'http' }],
+    url: '/api/v1/chat/conversations',
+    ...options,
+    headers: {
+        'Content-Type': 'application/json',
+        ...options.headers
+    }
+});
+
+/**
+ * Get Chat
+ */
+export const getChat = <ThrowOnError extends boolean = false>(options: Options<GetChatData, ThrowOnError>): RequestResult<GetChatResponses, GetChatErrors, ThrowOnError> => (options.client ?? client).get<GetChatResponses, GetChatErrors, ThrowOnError>({
+    security: [{ scheme: 'bearer', type: 'http' }],
+    url: '/api/v1/chat/conversations/{conversation_id}',
+    ...options
+});
+
+/**
+ * Poll Chat
+ */
+export const pollChat = <ThrowOnError extends boolean = false>(options: Options<PollChatData, ThrowOnError>): RequestResult<PollChatResponses, PollChatErrors, ThrowOnError> => (options.client ?? client).get<PollChatResponses, PollChatErrors, ThrowOnError>({
+    security: [{ scheme: 'bearer', type: 'http' }],
+    url: '/api/v1/chat/conversations/{conversation_id}/messages',
+    ...options
+});
+
+/**
+ * Send Chat Message
+ */
+export const sendChatMessage = <ThrowOnError extends boolean = false>(options: Options<SendChatMessageData, ThrowOnError>): RequestResult<SendChatMessageResponses, SendChatMessageErrors, ThrowOnError> => (options.client ?? client).post<SendChatMessageResponses, SendChatMessageErrors, ThrowOnError>({
+    security: [{ scheme: 'bearer', type: 'http' }],
+    url: '/api/v1/chat/conversations/{conversation_id}/messages',
+    ...options,
+    headers: {
+        'Content-Type': 'application/json',
+        ...options.headers
+    }
+});
+
+/**
+ * Choose Chat Order
+ */
+export const chooseChatOrder = <ThrowOnError extends boolean = false>(options: Options<ChooseChatOrderData, ThrowOnError>): RequestResult<ChooseChatOrderResponses, ChooseChatOrderErrors, ThrowOnError> => (options.client ?? client).post<ChooseChatOrderResponses, ChooseChatOrderErrors, ThrowOnError>({
+    security: [{ scheme: 'bearer', type: 'http' }],
+    url: '/api/v1/chat/conversations/{conversation_id}/order',
+    ...options,
+    headers: {
+        'Content-Type': 'application/json',
+        ...options.headers
+    }
+});
+
+/**
+ * Confirm Chat
+ */
+export const confirmChat = <ThrowOnError extends boolean = false>(options: Options<ConfirmChatData, ThrowOnError>): RequestResult<ConfirmChatResponses, ConfirmChatErrors, ThrowOnError> => (options.client ?? client).post<ConfirmChatResponses, ConfirmChatErrors, ThrowOnError>({
+    security: [{ scheme: 'bearer', type: 'http' }],
+    url: '/api/v1/chat/conversations/{conversation_id}/confirm',
+    ...options
+});
+
+/**
+ * Complaint Chat
+ */
+export const complaintChat = <ThrowOnError extends boolean = false>(options: Options<ComplaintChatData, ThrowOnError>): RequestResult<ComplaintChatResponses, ComplaintChatErrors, ThrowOnError> => (options.client ?? client).get<ComplaintChatResponses, ComplaintChatErrors, ThrowOnError>({
+    security: [{ scheme: 'bearer', type: 'http' }],
+    url: '/api/v1/complaints/{ref}/chat',
+    ...options
+});
+
+/**
+ * Contact
+ *
+ * Order problems (sign-in required) become complaints; other topics become enquiries.
+ */
+export const contact = <ThrowOnError extends boolean = false>(options: Options<ContactData, ThrowOnError>): RequestResult<ContactResponses, ContactErrors, ThrowOnError> => (options.client ?? client).post<ContactResponses, ContactErrors, ThrowOnError>({
+    security: [{ scheme: 'bearer', type: 'http' }],
+    url: '/api/v1/contact',
+    ...options,
+    headers: {
+        'Content-Type': 'application/json',
+        ...options.headers
+    }
+});
+
+/**
+ * List Enquiries
+ */
+export const listEnquiries = <ThrowOnError extends boolean = false>(options?: Options<ListEnquiriesData, ThrowOnError>): RequestResult<ListEnquiriesResponses, ListEnquiriesErrors, ThrowOnError> => (options?.client ?? client).get<ListEnquiriesResponses, ListEnquiriesErrors, ThrowOnError>({
+    security: [{ scheme: 'bearer', type: 'http' }],
+    url: '/api/v1/enquiries',
+    ...options
+});
+
+/**
+ * Update Enquiry
+ */
+export const updateEnquiry = <ThrowOnError extends boolean = false>(options: Options<UpdateEnquiryData, ThrowOnError>): RequestResult<UpdateEnquiryResponses, UpdateEnquiryErrors, ThrowOnError> => (options.client ?? client).patch<UpdateEnquiryResponses, UpdateEnquiryErrors, ThrowOnError>({
+    security: [{ scheme: 'bearer', type: 'http' }],
+    url: '/api/v1/enquiries/{ref}',
+    ...options,
+    headers: {
+        'Content-Type': 'application/json',
+        ...options.headers
+    }
+});
+
+/**
+ * Convert Enquiry
+ *
+ * Create a complaint from an enquiry sent by a signed-in customer (once).
+ */
+export const convertEnquiry = <ThrowOnError extends boolean = false>(options: Options<ConvertEnquiryData, ThrowOnError>): RequestResult<ConvertEnquiryResponses, ConvertEnquiryErrors, ThrowOnError> => (options.client ?? client).post<ConvertEnquiryResponses, ConvertEnquiryErrors, ThrowOnError>({
+    security: [{ scheme: 'bearer', type: 'http' }],
+    url: '/api/v1/enquiries/{ref}/convert',
+    ...options
+});
+
+/**
+ * Newsletter
+ *
+ * Demo newsletter sign-up: stored once, nothing is ever sent.
+ */
+export const newsletter = <ThrowOnError extends boolean = false>(options: Options<NewsletterData, ThrowOnError>): RequestResult<NewsletterResponses, NewsletterErrors, ThrowOnError> => (options.client ?? client).post<NewsletterResponses, NewsletterErrors, ThrowOnError>({
+    url: '/api/v1/newsletter',
+    ...options,
+    headers: {
+        'Content-Type': 'application/json',
+        ...options.headers
+    }
 });
 
 /**

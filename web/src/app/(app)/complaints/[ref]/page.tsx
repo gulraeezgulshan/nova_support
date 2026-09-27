@@ -14,6 +14,7 @@ export default async function ComplaintPage({ params }: PageProps<"/complaints/[
       complaintRef={ref}
       staff={isStaff(role)}
       canReview={["reviewer", "manager", "admin"].includes(role)}
+      isAdmin={role === "admin"}
     />
   );
 }

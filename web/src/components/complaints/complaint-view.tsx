@@ -6,6 +6,7 @@ import Link from "next/link";
 import { toast } from "sonner";
 
 import { PageHeader } from "@/components/page-header";
+import { DeliveryControls } from "@/components/shop/delivery-controls";
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
@@ -22,6 +23,7 @@ import { apiErrorMessage } from "@/lib/api/errors";
 import { formatDate, formatDateTime, humanize } from "@/lib/format";
 
 import { AnalysisPanel } from "./analysis-panel";
+import { ChatTranscript } from "./chat-transcript";
 import { ReviewPanel } from "./review-panel";
 import { StatusControl } from "./status-control";
 import { ValidationPanel, VerdictBadge } from "./validation-panel";
@@ -56,10 +58,12 @@ export function ComplaintView({
   complaintRef,
   staff,
   canReview,
+  isAdmin = false,
 }: {
   complaintRef: string;
   staff: boolean;
   canReview: boolean;
+  isAdmin?: boolean;
 }) {
   const queryClient = useQueryClient();
   const complaint = useQuery(getComplaintOptions({ path: { ref: complaintRef } }));
@@ -141,6 +145,9 @@ export function ComplaintView({
             </Card>
           ) : null}
           {staff ? <ValidationPanel complaintRef={complaintRef} /> : null}
+          {staff && c.channel === "live_chat" ? (
+            <ChatTranscript complaintRef={complaintRef} />
+          ) : null}
           {staff ? (
             analysis.data?.latest ? (
               <AnalysisPanel run={analysis.data.latest} />
@@ -237,8 +244,9 @@ export function ComplaintView({
           </Card>
           {c.order ? (
             <Card>
-              <CardHeader>
+              <CardHeader className="flex flex-row items-center justify-between gap-2">
                 <CardTitle>Order {c.order.order_ref}</CardTitle>
+                {isAdmin ? <DeliveryControls orderRef={c.order.order_ref} /> : null}
               </CardHeader>
               <CardContent>
                 <dl className="space-y-2 text-sm">

@@ -237,3 +237,59 @@ architecture and is documented in the project report, not here.
 | Team member | Modules reviewed | Date |
 |---|---|---|
 | _to be completed by the team_ | | |
+
+## Entry 6: OpenAI as a second GenAI provider
+
+| Field | Details |
+|---|---|
+| **Date** | 2026-09-26 |
+| **Tool** | Claude Code (Anthropic), model Claude Opus 5.5 |
+| **Purpose** | Let the team switch the GenAI provider between Claude and OpenAI with one setting |
+| **Type of assistance** | Code generation and tests; checking the installed OpenAI SDK (3.19.2) types before writing the adapter |
+
+- **Files affected:** `genai_pipeline/providers.py`, `src/core/config.py`, `genai_pipeline/analyze.py`, `comparison_engine/evaluate.py`, `.env.example`, `Makefile`, `pyproject.toml`, `uv.lock`, `requirements.txt`, `tests/unit/test_openai_provider.py`, `README.md`, `documentation/{deployment,project_report}.md`.
+- **Changes made:** `GENAI_PROVIDER=anthropic|openai`; separate model and key per provider (`GENAI_MODEL` still sets the Claude model); an OpenAI adapter using the Responses API with strict JSON-schema output, mapping refusals, truncation and errors onto the pipeline's common types.
+- **Tests performed:** 11 new tests against a mocked HTTP transport (request shape, strict schema, reasoning on/off, refusal, truncation, transient and permanent errors, provider selection); full suite, ruff and mypy pass. Not yet run against the live OpenAI API (no key configured).
+- **Verified by:** _to be completed by the team_
+
+## Entry 7: Demo shop and support chat
+
+| Field | Details |
+|---|---|
+| **Date** | 2026-09-26 |
+| **Tool** | Claude Code (Anthropic), model Claude Opus 5.5 |
+| **Purpose** | Add a VoltHaven demo shop and a guided support chat that files complaints through the existing pipelines and posts the validated reply |
+| **Type of assistance** | Design (spec and plan in `docs/superpowers/`), code generation, tests, browser checks |
+
+- **Files affected:** `config/catalogue.yaml`, `database/models/{storefront,chat,complaints}.py`, two migrations, `storefront/**`, `support_chat/**`, `schemas/chat_intake.py`, `prompt_templates/chat_intake.yaml`, `genai_pipeline/output_schema.py`, `python_validation/pipeline.py`, `complaint_processing/review.py`, `src/api/routes/{storefront,chat}.py`, `src/api/schemas.py`, `src/main.py`, seeding and bootstrap, `web/src/app/(shop)/**`, `web/src/components/{shop,chat}/**`, `web/src/components/complaints/{chat-transcript,complaint-view}.tsx`, tests, docs.
+- **Changes made:** product catalogue, checkout (one order per line, server prices, business-day delivery dates), order tracking, admin demo delivery outcomes; chat conversations with GenAI intake turns, a promise guard, fixed-question fallback, confirm-to-file using the customer's own words, and reply/holding/approval messages posted from validation and review.
+- **Issues found and fixed:** inline YAML lists would have split specs such as "20,000 mAh"; a rollback after a rejected chat submission expired session objects (found by a test); the cart's first version failed the React hooks lint rule.
+- **Tests performed:** 32 new backend tests (catalogue, checkout, delivery outcomes, intake turn, chat flow, replies); full suite, ruff, mypy, ESLint, tsc and `next build` pass; shop pages, cart and the chat panel checked in the browser (signed-in chat flow to be walked through by the team).
+- **Verified by:** _to be completed by the team_
+
+## Entry 8: Product management and worker fix
+
+| Field | Details |
+|---|---|
+| **Date** | 2026-09-27 |
+| **Tool** | Claude Code (Anthropic), model Claude Opus 5.5 |
+| **Purpose** | Let administrators manage shop products and images; fix background tasks on macOS; show chat messages immediately |
+
+- **Files affected:** `database/models/storefront.py`, migration `*_product_images.py`, `storefront/{catalogue,images}.py`, `src/api/routes/storefront.py`, `src/api/schemas.py`, `web/src/components/settings/{products-manager,product-images}.tsx`, `web/src/components/shop/product-image.tsx` and the shop pages, `web/src/app/(app)/settings/products/page.tsx`, sidebar, chat panel, `Makefile`, tests, docs.
+- **Changes made:** product create/edit/hide and up to 5 content-checked images per product with ordering, served with long-lived caching; images in the shop, cart and orders; catalogue seeding no longer overwrites admin edits. `make worker` uses a threads pool: on macOS the default pool spawns child processes in which Celery's task table is empty, so every task failed. The chat now shows the customer's message as soon as it is sent.
+- **Tests performed:** 9 new integration tests (admin-only access, create/edit/hide, hidden products blocked at checkout, upload/order/serve/delete, invalid and oversized files, 5-image limit, seed not overwriting edits, order images); full suite 322 passed; ruff, mypy, ESLint, tsc and `next build` pass; image display checked in the browser; the worker fix verified by running an SLA scan on a threads-pool worker.
+- **Verified by:** _to be completed by the team_
+
+## Entry 9: Storefront redesign, Contact us and enquiries
+
+| Field | Details |
+|---|---|
+| **Date** | 2026-09-27 |
+| **Tool** | Claude Code (Anthropic), model Claude Opus 5.5 |
+| **Purpose** | Make the demo shop look and behave like a real e-commerce site, add Contact us (a web-form complaint channel) and a staff enquiries inbox |
+
+- **Files affected:** `config/storefront.yaml`, `storefront/{config,queries,orders}.py`, `support_contact/`, `database/models/contact.py`, migration `*_contact_and_newsletter.py`, `security/dependencies.py` (optional sign-in), `src/api/routes/{storefront,contact}.py`, `src/api/schemas.py`, `web/src/components/{motion,shop,enquiries}/`, the shop pages under `web/src/app/(shop)/`, `web/src/app/(app)/enquiries/`, `web/src/app/not-found.tsx`, `web/src/proxy.ts`, sidebar, docs.
+- **Changes made:** shop facts (company, delivery, returns, warranty, FAQ) in one config served by `GET /storefront/config`; checkout delivery days now follow the Delivery Policy (standard 5, express 2 business days; previously 3 and 1); product search, price range and sorting including best sellers from real orders; `POST /contact` routes order problems into the normal complaint intake and other topics into redacted enquiries (honeypot for bots); staff enquiries inbox with mark handled and convert to complaint; idempotent newsletter sign-up. New site: header with category menu, search suggestions and slide-in cart, animated home page, filterable shop, product gallery with zoom and delivery estimate, restyled cart, checkout with confirmation and orders with a timeline, About, Contact, Help centre, Shipping, Returns, Warranty, Privacy, Terms, 404, light/dark theme; all motion respects reduced-motion settings.
+- **Tests performed:** 28 new backend tests (policy figures vs knowledge-base documents, catalogue queries incl. literal search of SQL wildcard characters, contact routing, redaction incl. complaint titles, short first lines, duplicates, foreign orders, staff-only inbox, conversion rules, audit events, newsletter); full suite 350 passed; ruff, mypy, ESLint, tsc and `next build` pass; pages checked in the browser at desktop and phone widths and in dark mode.
+- **Verified by:** _to be completed by the team_
+

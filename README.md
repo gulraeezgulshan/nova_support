@@ -11,6 +11,11 @@ Rule Matrix and approved, versioned company policy before anything reaches a cus
 | **Demonstration video** | _add the .mp4 link_ |
 | **Technical blog** | _add the blog link_ (draft: [documentation/technical_blog.md](documentation/technical_blog.md)) |
 
+A demo VoltHaven shop (search, filters, cart, checkout without payment, order tracking, help
+and policy pages, Contact us) and a guided support chat that file complaints through both
+pipelines sit on top of the SRS scope. Contact-form messages that are not complaints go to a
+staff **Enquiries** inbox.
+
 All five days are complete: intake, knowledge base, rule matrix (111 rules), GenAI pipeline,
 Python ground-truth validation, comparison, manual review, SLA tracking, dashboards,
 analytics, reports, security hardening, evaluation tooling and deployment configuration.
@@ -24,7 +29,7 @@ analytics, reports, security hardening, evaluation tooling and deployment config
 | [Evaluator guide](documentation/evaluator_guide.md) | Hidden data, policy update, new category, traps, live modifications, deliberate defects |
 | [Evaluation](documentation/evaluation.md) | Unseen hold-out set, GenAI vs Python comparison, Python accuracy, latency |
 | [Security testing report](documentation/security_testing_report.md) | Adversarial tests and results |
-| [Test cases](documentation/test_cases.md) | SRS test categories mapped to the 256 automated tests |
+| [Test cases](documentation/test_cases.md) | SRS test categories mapped to the 350 automated tests |
 | [Deployment](documentation/deployment.md) | Vercel, Railway, Cloudflare R2, Clerk, evaluator accounts |
 | [Demo script](documentation/demo_script.md), [team contributions](documentation/team_contributions.md), [AI usage](AI_USAGE.md) | Submission material |
 
@@ -87,6 +92,7 @@ The top-level folders follow the SRS deliverable structure.
 | `src/analytics/` | Dashboards and analytics queries, trend detection, report builders and CSV/Excel/PDF exporters |
 | `reports/` | Generated reports |
 | `hidden_test_ready/` | Unseen evaluation packs (`holdout/`: 109 hand-written, labelled complaints) |
+| `storefront/`, `support_chat/`, `support_contact/` | Demo shop (catalogue queries, checkout, orders, shop facts from `config/storefront.yaml`), the support chat, and Contact us / enquiries / newsletter |
 | `deploy/` | Railway service configuration (api, worker, beat) |
 | `documentation/` | Project report, guides, evaluation, security report, test cases, blog draft, demo script |
 
@@ -122,9 +128,14 @@ make web      # http://localhost:3000
 - **Python**: uv installs Python 3.13 and creates the virtual environment in `.venv` on
   `make setup` (`uv sync`). Without uv: `python3.13 -m venv .venv`,
   `source .venv/bin/activate`, `pip install -r requirements.txt`.
-- **GenAI API**: put `ANTHROPIC_API_KEY` in `.env` (never in `.env.example` or any committed
-  file). Without a key the app runs; complaints are validated by Python alone and go to
-  manual review. `GENAI_MODEL` and `GENAI_EFFORT` choose the model.
+- **GenAI API**: Claude (Anthropic) or OpenAI, chosen by one line in `.env`:
+  `GENAI_PROVIDER=anthropic` with `ANTHROPIC_API_KEY` and `ANTHROPIC_MODEL`, or
+  `GENAI_PROVIDER=openai` with `OPENAI_API_KEY` and `OPENAI_MODEL` (any model with
+  JSON-schema structured outputs; `OPENAI_REASONING=false` for models without reasoning
+  effort). Keys go in `.env` only, never in `.env.example` or any committed file. Without
+  a key the app runs; complaints are validated by Python alone and go to manual review.
+  Both providers get the same prompt and JSON schema, and every analysis records the
+  provider and model that produced it.
 - **Database**: `make infra` starts PostgreSQL with pgvector and Redis in Docker; `DATABASE_URL`
   and `REDIS_URL` in `.env` point elsewhere if needed.
 - **Hold-out evaluation pack**: `uv run python -m database.bootstrap --with-holdout`.
@@ -379,7 +390,7 @@ product guide → response template → FAQ. `FAQ-GEN-01` intentionally contradi
 ## Testing and quality
 
 ```bash
-make test     # 256 backend tests (needs `make infra`; uses the supportnova_test database)
+make test     # 350 backend tests (needs `make infra`; uses the supportnova_test database)
 make lint     # ruff, mypy --strict, eslint, tsc
 ```
 

@@ -103,7 +103,7 @@ automatically, multiple languages.
 | Reliability | Background jobs with retries (Celery, acks-late); provider outages fall back to Python-only validation; invalid GenAI output never used |
 | Performance | Retrieval with indexes (pgvector, full-text); prompt caching of the system prompt; low-effort structured output; latency measured per complaint (`make evaluate`) |
 | Traceability | Every analysis stores prompt name/version/hash, model, schema fingerprint, retrieved passages (document, version, section, page), attempts, tokens, latency and raw responses; every change audited |
-| Maintainability | Typed Python (mypy strict), typed TypeScript client generated from OpenAPI, 256 automated tests, CI |
+| Maintainability | Typed Python (mypy strict), typed TypeScript client generated from OpenAPI, 350 automated tests, CI |
 | Configurability | Taxonomy, SLAs, rules and documents in the database; vocabularies, detectors, validation limits, analytics thresholds in YAML |
 | Usability | Accessible UI components (Radix/shadcn), light and dark themes, responsive layout |
 
@@ -155,7 +155,9 @@ flowchart LR
 | `hallucination_checks/` | Unsupported promises, untraceable facts |
 | `comparison_engine/` | GenAI vs Python comparison, baseline, evaluation of unseen packs |
 | `sample_documents/`, `sample_complaints/`, `hidden_test_ready/` | 20 policy documents, 536-complaint dataset, 109-complaint hold-out pack |
-| `web/` | Next.js frontend |
+| `storefront/` | Demo shop: product catalogue, checkout (one order per line, server prices), order tracking, admin demo delivery outcomes |
+| `support_chat/` | Support chat: guided intake (GenAI or fixed questions, promise guard), conversation state, reply hooks from validation and review |
+| `web/` | Next.js frontend: VoltHaven shop and chat (public) and the staff console |
 | `tests/` | Unit, integration and security tests |
 
 ## 11. Database design
@@ -308,6 +310,15 @@ sequenceDiagram
 4. **Outcome**: final values applied, status to Assigned or Escalated with a customer
    message, or a review task; SLA deadlines set.
 
+**Chat channel.** Customers can also complain through the support chat in the demo shop. A
+separate, versioned intake prompt (`prompt_templates/chat_intake.yaml`) asks one question at a
+time and returns structured JSON (`schemas/chat_intake.py`); any bot message that commits to a
+remedy or date is replaced with a neutral question, and fixed questions are used when the
+GenAI is unavailable. On Confirm the complaint is filed with `submit_complaint` (channel
+`live_chat`), with a description made only of the customer's own messages, and goes through
+Pipeline 1 and Pipeline 2 unchanged. Validation posts the reply into the chat when the verdict
+is verified or corrected, otherwise a holding message; reviewer approvals are posted too.
+
 ## 17. Knowledge-base processing
 
 1. Validation: file type by content (not only extension), size, metadata (Document ID
@@ -371,7 +382,13 @@ is still distinguishable in the run history. Current version: `complaint_analysi
 
 ## 21. GenAI API
 
-`genai_pipeline/providers.py` wraps the Anthropic Messages API (SDK 1.8):
+`genai_pipeline/providers.py` defines one provider interface with two adapters, selected
+by `GENAI_PROVIDER`: **Anthropic** (Claude) and **OpenAI**. Both receive the identical
+prompt and JSON schema and return the same response type, so validation, retries and
+Pipeline 2 are provider-independent; each run records provider and model. The OpenAI
+adapter uses the Responses API with strict JSON-schema output, maps refusals and truncation
+onto the common stop reasons, and classifies errors the same way. The Anthropic adapter
+wraps the Messages API (SDK 1.8):
 `output_config` with `format: json_schema` and `effort: low`, server-side refusal
 fallbacks, prompt caching of the system prompt, timeout 60 s. Errors are classified:
 transient (rate limit, overload, network) → the Celery task retries with back-off while
@@ -467,7 +484,7 @@ anything by itself.
 
 ## 29. Testing
 
-256 automated backend tests (unit, integration against real PostgreSQL/pgvector, security),
+350 automated backend tests (unit, integration against real PostgreSQL/pgvector, security),
 static typing and linting for Python and TypeScript, and the production web build, all in
 CI. The GenAI is replaced by a scripted test double in automated tests; live behaviour is
 measured with `make evaluate` on 108 unseen hold-out complaints. See

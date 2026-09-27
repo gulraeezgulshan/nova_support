@@ -1,7 +1,7 @@
 # Deployment
 
 Target: the web app on **Vercel**, the API, worker and scheduler on **Railway**, files on
-**Cloudflare R2**, sign-in with **Clerk**, analysis with the **Anthropic API**. All services
+**Cloudflare R2**, sign-in with **Clerk**, analysis with the **Anthropic API** or the **OpenAI API** (one setting). All services
 have free or trial tiers that are enough for the demonstration.
 
 ```
@@ -72,8 +72,9 @@ badge). A *production* instance needs your own domain.
    | `BOOTSTRAP_ADMIN_EMAILS` | your e-mail (and any administrator's) |
    | `STORAGE_BACKEND` | `s3` |
    | `S3_ENDPOINT_URL`, `S3_BUCKET`, `S3_ACCESS_KEY_ID`, `S3_SECRET_ACCESS_KEY` | from step 1 |
-   | `ANTHROPIC_API_KEY` | your key |
-   | `GENAI_MODEL` | `claude-opus-5` (or another model) |
+   | `GENAI_PROVIDER` | `anthropic` or `openai` |
+   | `ANTHROPIC_API_KEY`, `ANTHROPIC_MODEL` | for Claude (e.g. `claude-opus-5`) |
+   | `OPENAI_API_KEY`, `OPENAI_MODEL` | for OpenAI (e.g. `gpt-5-mini`) |
 
    The API refuses to start in production if the Clerk issuer, the CORS origin or R2 storage
    is missing, so misconfiguration shows up in the deploy log instead of at run time.

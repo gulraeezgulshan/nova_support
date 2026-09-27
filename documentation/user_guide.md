@@ -138,3 +138,65 @@ GenAI / Python Comparison, Manual Reviews), set filters, preview, then **Export 
 **Export Excel** or **Export PDF**.
 
 From the command line: `make reports` writes the Complaint Intelligence Report to `reports/`.
+
+## 15. Shopping and chat support (demo shop)
+
+The public site at `/` is the VoltHaven demo shop; the staff console stays under
+**Dashboard** (staff see a **Staff console** link in the shop header). The header has the
+**Shop** menu (a tile per category), a **Support** menu, a product search with instant
+suggestions and a slide-in cart; the footer has the newsletter sign-up (a demo: nothing is
+ever sent), policy links and a light/dark switch. Pages: Home, Shop, product pages, Cart,
+Checkout, My orders, About, Contact, Help centre, Shipping, Returns, Warranty, Privacy, Terms,
+and *How our support works* (`/about-supportnova`).
+
+1. **Browse** `/shop`: filter by category or price (presets or your own range), search, and
+   sort by featured, best selling (orders in the last 90 days, lost parcels excluded), newest
+   or price. Filters live in the address, so a filtered page can be shared.
+2. **Product page**: photos (hover to zoom), specifications, quantity (1–5), **Add to cart**,
+   an estimated arrival date, and Details / Shipping / Returns tabs.
+3. **Cart**: change quantities or remove lines at `/cart` or in the slide-in cart.
+4. **Checkout** (sign-in required): choose standard (within 5 business days) or express
+   (within 2 business days); each option shows its arrival date. **Place order** shows a
+   confirmation with the purchase reference. No payment is taken. Each product becomes its
+   own order number (`ORD-8…`), grouped under one purchase reference (`CHK-…`).
+5. **My orders** (`/orders`): status (processing, delivered, late by N business days, lost)
+   and a delivery timeline per item.
+6. **Get help** on an order (or the **Help** button on any shop page) opens the support chat:
+   - the assistant asks one question at a time (what happened, when, what you would like);
+   - it then shows a summary with **Confirm** / **Change something**;
+   - on Confirm the complaint is filed through the normal pipelines (channel *live chat*) and
+     you get the reference immediately;
+   - within about 20–40 seconds the reply appears in the chat if Python validation approved
+     it; otherwise a specialist-review message appears, and the reply follows once a reviewer
+     approves it in **Manual review**;
+   - anything you write afterwards is added to the complaint's timeline.
+   The complaint text is always your own words; the assistant never promises refunds, dates
+   or other outcomes.
+7. **Contact us** (`/contact`): choose a topic.
+   - *A problem with an order* needs sign-in; pick the order and describe the problem. It is
+     filed as a complaint (channel *web form*) and analysed like any other.
+   - Product questions, business enquiries, feedback and anything else become **enquiries**
+     (`ENQ-…`). Card numbers, passwords and ID numbers are hidden before storage.
+8. **Help centre** (`/help`): searchable questions and links to the Shipping, Returns and
+   Warranty pages. Every number on those pages comes from `config/storefront.yaml`, and a test
+   checks each one against the knowledge-base policy documents.
+
+**Enquiries inbox (staff).** **Enquiries** in the sidebar lists contact-form messages that are
+not complaints, filtered by status and topic. Open one to read it, **Reply by e-mail**,
+**Mark handled** / **Reopen**, or **Convert to complaint** (only for messages sent by a
+signed-in customer; the new complaint then goes through both pipelines).
+
+**Demo delivery controls (administrators).** On their own **My orders** page and on a
+complaint's order card, administrators see a **Demo** menu to make a delivery happen on time,
+late (2, 5 or 8 business days), damaged or lost, to stage realistic complaints.
+
+**Staff view.** Complaints from the chat show a **Chat transcript** card on the complaint page.
+
+**Products (administrators).** **Products** in the staff console lists the catalogue. **New
+product** takes a SKU (fixed once created), name, category, price, description and key specs;
+save it, then add images. Each product takes up to 5 images (JPG, PNG or WebP, 5 MB each,
+checked by content): drop them in or click to choose, use the arrows or the star to set the
+order (the first is the main image), or delete them. **Show in shop** hides or shows a product
+without deleting it, so existing orders and complaints keep working. Products without images
+show a category illustration. `make seed` only adds catalogue products that are missing, so it
+never overwrites these edits.

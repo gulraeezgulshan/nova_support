@@ -293,3 +293,16 @@ architecture and is documented in the project report, not here.
 - **Tests performed:** 28 new backend tests (policy figures vs knowledge-base documents, catalogue queries incl. literal search of SQL wildcard characters, contact routing, redaction incl. complaint titles, short first lines, duplicates, foreign orders, staff-only inbox, conversion rules, audit events, newsletter); full suite 350 passed; ruff, mypy, ESLint, tsc and `next build` pass; pages checked in the browser at desktop and phone widths and in dark mode.
 - **Verified by:** _to be completed by the team_
 
+## Entry 10: E-mail complaints, supporting documents and bulk upload
+
+| Field | Details |
+|---|---|
+| **Date** | 2026-09-27 |
+| **Tool** | Claude Code (Anthropic), model Claude Opus 5.5 |
+| **Purpose** | Complete the SRS intake channels (web form, e-mail, chat, complaint upload) and the "supporting documents" complaint field |
+
+- **Files affected:** `email_channel/` (parsing, processing, outbox, reply hooks, IMAP/SMTP transport, scheduled tasks), `bulk_import/` (reader, preview/run service, task), `complaint_processing/{attachments,customers}.py`, `database/models/{attachments,email,imports}.py` and three migrations, `database/session.py` (`task_session`), `src/api/routes/{attachments,mailbox,imports}.py`, `src/worker.py` (Beat: mailbox check every minute, outbox every 30 s), `python_validation/{checks,pipeline}.py` (evidence check), `genai_pipeline/pipeline.py` and prompt 1.2.0 (supporting-documents line), `complaint_processing/review.py` (e-mail reply hook), web: supporting-documents card, Contact us attachments, Mailbox and Import complaints pages; docs.
+- **Changes made:** e-mails to a real mailbox become complaints (channel e-mail) or thread replies; acknowledgement, holding and approved replies are sent in the same thread from an outbox with retries; automatic mail is ignored (no loops); a staff tool processes pasted or `.eml` e-mails the same way. Customers and staff attach photos/PDFs (checked by content, owner-or-staff access); the AI is told how many were attached. Managers upload CSV/Excel files of complaints, preview every row with the intake's rules, import in the background and download a formula-safe result file.
+- **Tests performed:** 82 new backend tests (parsing incl. encoded headers, unknown charsets and Gmail/Outlook quoted replies, processing and threading, loops, duplicates, reply hooks end to end, scheduled check and outbox with fake IMAP/SMTP, advisory lock, attachments access and limits, bulk upload preview/run/result/roles, and failure handling: IMAP, storage and worker outages); full suite 432 passed; ruff, mypy, ESLint, tsc and `next build` pass.
+- **Verified by:** _to be completed by the team_
+

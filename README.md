@@ -14,7 +14,9 @@ Rule Matrix and approved, versioned company policy before anything reaches a cus
 A demo VoltHaven shop (search, filters, cart, checkout without payment, order tracking, help
 and policy pages, Contact us) and a guided support chat that file complaints through both
 pipelines sit on top of the SRS scope. Contact-form messages that are not complaints go to a
-staff **Enquiries** inbox.
+staff **Enquiries** inbox. Complaints also arrive **by e-mail** (a real mailbox checked every
+minute, with replies sent back in the same thread) and by **bulk upload** (CSV/Excel), and
+customers can attach **supporting documents** (photos, PDFs) — the SRS intake channels.
 
 All five days are complete: intake, knowledge base, rule matrix (111 rules), GenAI pipeline,
 Python ground-truth validation, comparison, manual review, SLA tracking, dashboards,
@@ -29,7 +31,7 @@ analytics, reports, security hardening, evaluation tooling and deployment config
 | [Evaluator guide](documentation/evaluator_guide.md) | Hidden data, policy update, new category, traps, live modifications, deliberate defects |
 | [Evaluation](documentation/evaluation.md) | Unseen hold-out set, GenAI vs Python comparison, Python accuracy, latency |
 | [Security testing report](documentation/security_testing_report.md) | Adversarial tests and results |
-| [Test cases](documentation/test_cases.md) | SRS test categories mapped to the 350 automated tests |
+| [Test cases](documentation/test_cases.md) | SRS test categories mapped to the 432 automated tests |
 | [Deployment](documentation/deployment.md) | Vercel, Railway, Cloudflare R2, Clerk, evaluator accounts |
 | [Demo script](documentation/demo_script.md), [team contributions](documentation/team_contributions.md), [AI usage](AI_USAGE.md) | Submission material |
 
@@ -92,6 +94,7 @@ The top-level folders follow the SRS deliverable structure.
 | `src/analytics/` | Dashboards and analytics queries, trend detection, report builders and CSV/Excel/PDF exporters |
 | `reports/` | Generated reports |
 | `hidden_test_ready/` | Unseen evaluation packs (`holdout/`: 109 hand-written, labelled complaints) |
+| `email_channel/`, `bulk_import/` | E-mail complaints (parsing, processing, outbox, mailbox check) and bulk CSV/Excel upload |
 | `storefront/`, `support_chat/`, `support_contact/` | Demo shop (catalogue queries, checkout, orders, shop facts from `config/storefront.yaml`), the support chat, and Contact us / enquiries / newsletter |
 | `deploy/` | Railway service configuration (api, worker, beat) |
 | `documentation/` | Project report, guides, evaluation, security report, test cases, blog draft, demo script |
@@ -390,7 +393,7 @@ product guide → response template → FAQ. `FAQ-GEN-01` intentionally contradi
 ## Testing and quality
 
 ```bash
-make test     # 350 backend tests (needs `make infra`; uses the supportnova_test database)
+make test     # 432 backend tests (needs `make infra`; uses the supportnova_test database)
 make lint     # ruff, mypy --strict, eslint, tsc
 ```
 

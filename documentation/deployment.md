@@ -75,6 +75,7 @@ badge). A *production* instance needs your own domain.
    | `GENAI_PROVIDER` | `anthropic` or `openai` |
    | `ANTHROPIC_API_KEY`, `ANTHROPIC_MODEL` | for Claude (e.g. `claude-opus-5`) |
    | `OPENAI_API_KEY`, `OPENAI_MODEL` | for OpenAI (e.g. `gpt-5-mini`) |
+   | `MAIL_IMAP_HOST`, `MAIL_SMTP_HOST`, `MAIL_USERNAME`, `MAIL_PASSWORD` (+ ports, `MAIL_FROM_NAME`) | optional: the support mailbox for e-mail complaints (Gmail: an App password); the *beat* service checks it every minute |
 
    The API refuses to start in production if the Clerk issuer, the CORS origin or R2 storage
    is missing, so misconfiguration shows up in the deploy log instead of at run time.

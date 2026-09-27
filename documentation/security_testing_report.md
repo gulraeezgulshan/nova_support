@@ -117,6 +117,22 @@ and carry references, not complaint text.
   keys (path traversal blocked).
 - Every change (rules, taxonomy, documents, reviews, status, SLA alerts) is written to the
   append-only `audit_events` table.
+- E-mail, spreadsheet cells and attachment names are untrusted input: e-mail bodies go through
+  the same sanitising, redaction and injection detection as other complaints
+  (`tests/integration/test_email_channel.py`), and bulk-upload rows through the intake's own
+  validation (`tests/integration/test_bulk_import.py`).
+- Mail loops are prevented: automatic mail (`Auto-Submitted`, `Precedence: bulk`, list mail,
+  bounces) and mail from our own address are ignored, and our acknowledgements carry
+  `Auto-Submitted: auto-replied` so other auto-responders do not answer them
+  (`test_automatic_mail_is_ignored_and_never_answered`, `test_flush_sends_with_thread_headers_and_retries`).
+- Replies go only to the address that sent the complaint; only the approved customer response
+  is ever e-mailed. The mailbox password lives only in the environment and is never returned
+  (`test_status_never_reveals_the_password`).
+- Supporting documents: type by content, 5 MB and 5-file limits, owner-or-staff access with a
+  404 for other customers, `Content-Disposition: attachment` and `nosniff` on download, audit
+  of every upload and removal (`tests/integration/test_attachments_api.py`).
+- Bulk-upload result files neutralise spreadsheet formulas (`=`, `+`, `-`, `@`)
+  (`test_formula_cells_are_neutralised`).
 
 ## 5. Limitations
 

@@ -200,3 +200,63 @@ order (the first is the main image), or delete them. **Show in shop** hides or s
 without deleting it, so existing orders and complaints keep working. Products without images
 show a category illustration. `make seed` only adds catalogue products that are missing, so it
 never overwrites these edits.
+
+## 16. E-mail complaints
+
+Customers can e-mail the support mailbox (for example `care@…`). Every minute the worker
+reads new messages and:
+
+- **opens a complaint** (channel *e-mail*) through the same checks and pipelines as every other
+  channel, and e-mails back an acknowledgement with the reference, e.g. `[CMP-000123]`;
+- **adds a reply** in that thread from the same customer to the existing complaint (quoted
+  earlier messages and signatures are removed), including any attached photos or PDFs;
+- **ignores** automatic mail (out-of-office replies, bounces, newsletters) so no mail loops
+  happen;
+- **answers** a message that is too short ("please tell us what happened…") or that repeats
+  an open complaint (with its reference).
+
+The customer then receives, by e-mail and in the same thread, a holding message if the case
+needs specialist review, and the reply once Python validation or a reviewer approves it,
+exactly as in the chat.
+
+**Mailbox page (staff).** **Mailbox** in the sidebar shows whether the mailbox is configured
+and when it was last checked, the **Received** e-mails with what happened to each, and the
+**Sent** e-mails with their status (queued, sent, failed, or *not sent* when no mailbox is
+set up). **Process an e-mail** runs an e-mail by hand — paste the sender, subject and text, or
+upload a saved `.eml` file — exactly as if it had arrived; use it for demos or for complaints
+forwarded from elsewhere.
+
+**Setting up the mailbox (administrator).** Add the `MAIL_*` settings to `.env` (see
+`.env.example`; for Gmail create an *App password*) and restart the API and worker.
+
+## 17. Supporting documents
+
+Photos (JPG, PNG, WebP) and PDFs, up to 5 MB each and 5 per complaint, can be attached:
+
+- by customers from **My complaints** → the complaint → **Supporting documents → Add file**,
+  or on the Contact us form when reporting a problem with an order;
+- automatically from e-mail attachments;
+- by staff on the complaint page (staff can also remove a document).
+
+Files are checked by their content, not their name, and only the customer who owns the
+complaint and staff can download them. The AI analysis is told how many photos and PDFs were
+attached (it never reads the files), so replies do not ask for evidence already sent; the
+Python validation report lists them as *Supporting evidence*.
+
+## 18. Import complaints (managers and administrators)
+
+**Import complaints** in the sidebar loads many complaints from one file, for example a batch
+from the call centre.
+
+1. Download the **CSV** or **Excel template**. Required columns: `customer_email`, `title`,
+   `description`; optional: `customer_name`, `order_ref`, `channel` (default
+   `phone_callback`), `received_at` (e.g. `2026-09-20` or `2026-09-20T10:30`),
+   `requested_resolution`, `external_ref`. Up to 1,000 rows and 5 MB.
+2. Upload the file. Every row is checked with the normal intake rules — nothing is saved yet —
+   and marked *Ready*, *Warning* (e.g. no order reference, or instructions aimed at the AI) or
+   *Error* (e.g. too short, unknown channel, date in the future, order not theirs, duplicate).
+3. **Import** files the ready and warning rows (customers are matched by e-mail or created);
+   each new complaint is analysed as usual. Download the **result** file for the reference or
+   reason of every row. A file imported before is flagged, and its rows are skipped as
+   duplicates.
+

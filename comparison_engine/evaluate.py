@@ -252,8 +252,12 @@ def main() -> int:
     configure_logging("WARNING", json=False)
     folder: Path = args.pack.resolve()
     genai = not args.python_only
-    if genai and not get_settings().anthropic_api_key:
-        print("ANTHROPIC_API_KEY is not set in .env (use --python-only to run Pipeline 2 alone).")
+    settings = get_settings()
+    if genai and not settings.genai_api_key:
+        print(
+            f"{settings.genai_api_key_name} is not set in .env "
+            "(use --python-only to run Pipeline 2 alone)."
+        )
         return 1
 
     outcomes = asyncio.run(load(folder, source="evaluation"))

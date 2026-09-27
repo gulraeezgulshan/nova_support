@@ -84,8 +84,10 @@ class CustomerResponse(Strict):
 
 class FollowUp(Strict):
     required: bool
-    type: str | None
-    within_hours: int | None
+    type: str | None = Field(description="Follow-up type; required when required is true")
+    within_hours: int | None = Field(
+        description="Hours until follow-up; required when required is true"
+    )
     message: str | None = Field(description="Follow-up message to send, if required")
 
 

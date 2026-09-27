@@ -1,12 +1,13 @@
 # Complaint analysis prompt for the GenAI Complaint Intelligence Pipeline.
 # Change the text -> bump `version`. Every analysis run stores name, version and content hash.
 name: complaint_analysis
-version: 1.0.0
+version: 1.1.0
 description: Classify, route and draft a grounded response for one customer complaint.
 parameters:
   max_tokens: 8000
 changelog:
   - "1.0.0: initial version"
+  - "1.1.0: explicit follow-up rule (a required follow-up always has a type and within_hours)"
 
 system: |
   You analyse customer complaints for {{ organization.name }}, an online consumer-electronics
@@ -59,6 +60,11 @@ system: |
     the issue, explains the next step and when the customer will hear back (only timelines
     stated in policy), quotes the complaint reference, uses plain text without Markdown, and
     is signed "{{ organization.name }} Customer Care".
+  - Follow-up: if the customer must hear from us again (a status update, an information
+    request, a resolution check), set `follow_up.required` to true and always give both
+    `type` (one of: {{ vocab.follow_up_types | join(", ") }}) and `within_hours` (a whole
+    number of hours taken from the policy passages or SLA). Otherwise set `required` to false
+    and `type`, `within_hours` and `message` to null.
   - Agent guidance lists concrete checks and cautions for the agent, such as
     "Do not promise a refund before verifying eligibility".
 

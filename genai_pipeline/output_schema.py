@@ -9,6 +9,8 @@ import hashlib
 import json
 from typing import Any
 
+from pydantic import BaseModel
+
 from genai_pipeline.vocabulary import Vocabulary
 from schemas.complaint_analysis import ComplaintAnalysis
 
@@ -17,7 +19,12 @@ _DROP_KEYS = {"title", "default"}
 
 def _clean(node: Any) -> Any:
     if isinstance(node, dict):
-        cleaned = {k: _clean(v) for k, v in node.items() if k not in _DROP_KEYS}
+        cleaned = {
+            k: ({name: _clean(sub) for name, sub in v.items()} if k == "properties" else _clean(v))
+            for k, v in node.items()
+            # "title"/"default" are dropped as schema keywords, never as property names.
+            if k not in _DROP_KEYS
+        }
         if cleaned.get("type") == "object" and "properties" in cleaned:
             cleaned["additionalProperties"] = False
             cleaned["required"] = list(cleaned["properties"])
@@ -25,6 +32,12 @@ def _clean(node: Any) -> Any:
     if isinstance(node, list):
         return [_clean(v) for v in node]
     return node
+
+
+def strict_schema(model: type[BaseModel]) -> dict[str, Any]:
+    """Any Pydantic contract as a structured-output schema (all-required, closed objects)."""
+    schema: dict[str, Any] = _clean(model.model_json_schema())
+    return schema
 
 
 def _set_enum(node: dict[str, Any], values: list[str]) -> None:

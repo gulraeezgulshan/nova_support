@@ -4,7 +4,8 @@ Usage (repo root):
     uv run python -m genai_pipeline.analyze --limit 10   # unanalysed dataset complaints
     uv run python -m genai_pipeline.analyze --refs CMP-000012 CMP-000040
 
-Needs ANTHROPIC_API_KEY in .env. Each complaint costs one or two model calls.
+Needs the selected provider's API key in .env (ANTHROPIC_API_KEY or OPENAI_API_KEY, see
+GENAI_PROVIDER). Each complaint costs one or two model calls.
 """
 
 import argparse
@@ -46,8 +47,9 @@ def main() -> int:
     parser.add_argument("--include-analysed", action="store_true")
     args = parser.parse_args()
     settings = get_settings()
-    if not settings.anthropic_api_key:
-        print("ANTHROPIC_API_KEY is not set in .env")
+    if not settings.genai_api_key:
+        selected = settings.genai_provider
+        print(f"{settings.genai_api_key_name} is not set in .env (GENAI_PROVIDER={selected})")
         return 1
     configure_logging("WARNING", json=False)
     provider, embedder = get_provider(), get_embedder()

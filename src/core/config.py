@@ -8,7 +8,7 @@ from functools import lru_cache
 from pathlib import Path
 from typing import Literal
 
-from pydantic import Field, computed_field, field_validator, model_validator
+from pydantic import AliasChoices, Field, computed_field, field_validator, model_validator
 from pydantic_settings import BaseSettings, SettingsConfigDict
 
 ROOT_DIR = Path(__file__).resolve().parents[2]
@@ -56,13 +56,36 @@ class Settings(BaseSettings):
     chunk_overlap_tokens: int = 60
     retrieval_limit: int = 8
 
-    # GenAI pipeline (the model is configuration, not code)
-    genai_provider: Literal["anthropic"] = "anthropic"
-    genai_model: str = "claude-opus-5"
-    genai_effort: Literal["low", "medium", "high", "xhigh", "max"] = "low"
+    # GenAI pipeline. The provider is one setting; each provider keeps its own model and key,
+    # so switching between Claude and OpenAI is a one-line change.
+    genai_provider: Literal["anthropic", "openai"] = "anthropic"
+    # none and minimal are OpenAI-only (Claude uses low for both).
+    genai_effort: Literal["none", "minimal", "low", "medium", "high", "xhigh", "max"] = "low"
     genai_timeout_seconds: float = 60.0
     genai_max_attempts: int = Field(default=2, ge=1, le=3)  # 1 call + 1 repair retry
     anthropic_api_key: str | None = None
+    # GENAI_MODEL is the name used before OpenAI support was added.
+    anthropic_model: str = Field(
+        default="claude-opus-5", validation_alias=AliasChoices("ANTHROPIC_MODEL", "GENAI_MODEL")
+    )
+    openai_api_key: str | None = None
+    openai_model: str = "gpt-5-mini"
+    # Send the reasoning effort (GENAI_EFFORT). Turn off for models without reasoning support.
+    openai_reasoning: bool = True
+
+    @property
+    def genai_model(self) -> str:
+        return self.openai_model if self.genai_provider == "openai" else self.anthropic_model
+
+    @property
+    def genai_api_key(self) -> str | None:
+        """The API key of the selected provider (None means the GenAI pipeline is off)."""
+        key = self.openai_api_key if self.genai_provider == "openai" else self.anthropic_api_key
+        return key or None
+
+    @property
+    def genai_api_key_name(self) -> str:
+        return "OPENAI_API_KEY" if self.genai_provider == "openai" else "ANTHROPIC_API_KEY"
 
     @field_validator("database_url")
     @classmethod

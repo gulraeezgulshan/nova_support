@@ -90,6 +90,7 @@ async def test_full_conversation_files_a_complaint_in_the_customers_words(
     body = confirmed.json()
     assert body["state"] == "submitted" and body["complaint_ref"].startswith("CMP-")
     assert body["messages"][-1]["kind"] == "reference"
+    assert "add photos or documents" in body["messages"][-1]["content"]
     with sync_session() as db:
         complaint = db.scalar(
             select(Complaint).where(Complaint.complaint_ref == body["complaint_ref"])

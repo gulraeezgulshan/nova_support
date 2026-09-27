@@ -14,6 +14,8 @@ import {
   Scale,
   Tags,
   Users,
+  AtSign,
+  FileUp,
   Mail,
 } from "lucide-react";
 import Link from "next/link";
@@ -61,6 +63,13 @@ const NAV: { label: string; items: NavItem[] }[] = [
       },
       { title: "Complaint queue", href: "/complaints", icon: Inbox, roles: STAFF },
       { title: "Enquiries", href: "/enquiries", icon: Mail, roles: STAFF },
+      { title: "Mailbox", href: "/mailbox", icon: AtSign, roles: STAFF },
+      {
+        title: "Import complaints",
+        href: "/imports",
+        icon: FileUp,
+        roles: ["manager", "admin"],
+      },
       {
         title: "Manual review",
         href: "/review",

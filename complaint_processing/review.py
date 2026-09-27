@@ -265,9 +265,11 @@ async def apply_review(
         before=before, after=decision.after,
     )  # fmt: skip
     if action in (ReviewAction.APPROVE, ReviewAction.MODIFY):
+        from email_channel.notify import after_approval as email_after_approval
         from support_chat.notify import after_approval
 
         await after_approval(db, complaint)
+        await email_after_approval(db, complaint)
     await db.commit()
     if action == ReviewAction.REGENERATE:
         safe_enqueue_analysis(complaint.id, reviewer.id)

@@ -20,6 +20,7 @@ from dataclasses import dataclass, field
 from datetime import date
 from typing import Any
 
+from complaint_processing.attachments import describe
 from complaint_rules.engine import PRIORITY_ORDER, URGENCY_ORDER, Decision, Issue, RuleSpec, decide
 from genai_pipeline.validation import parse_and_validate
 from genai_pipeline.vocabulary import Vocabulary
@@ -64,6 +65,7 @@ class ValidationInput:
     record_texts: list[str] = field(default_factory=list)  # order/customer/history facts
     reference_date: date | None = None
     sla_hours: dict[str, tuple[float, float]] = field(default_factory=dict)  # P -> (first, res)
+    attachments: list[str] = field(default_factory=list)  # media types of supporting docs
 
 
 @dataclass
@@ -803,6 +805,16 @@ def _check_follow_up(a: ComplaintAnalysis, d: Decision) -> CheckResult:
     )
 
 
+def evidence_check(media_types: list[str]) -> CheckResult:
+    """Informational (SKIP, so it never changes the score): the evidence the customer sent."""
+    message = (
+        f"Supporting documents attached: {describe(media_types)}."
+        if media_types
+        else "No supporting documents attached."
+    )
+    return CheckResult("evidence", "Supporting evidence", SKIP, MINOR, message)
+
+
 # ------------------------------------------------------------------ verdict and final
 
 
@@ -830,6 +842,7 @@ def _finish(
     source: str,
     cfg: dict[str, Any],
 ) -> ValidationOutcome:
+    checks.append(evidence_check(inp.attachments))
     a = inp.analysis
     corrections: list[str] = []
     reasons: list[str] = []

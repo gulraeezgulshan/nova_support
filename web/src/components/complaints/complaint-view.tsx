@@ -26,6 +26,7 @@ import { AnalysisPanel } from "./analysis-panel";
 import { ChatTranscript } from "./chat-transcript";
 import { ReviewPanel } from "./review-panel";
 import { StatusControl } from "./status-control";
+import { SupportingDocuments } from "./supporting-documents";
 import { ValidationPanel, VerdictBadge } from "./validation-panel";
 import { EscalationBadge, PriorityBadge, SlaBadge, StatusBadge } from "./badges";
 
@@ -144,6 +145,7 @@ export function ComplaintView({
               </CardContent>
             </Card>
           ) : null}
+          <SupportingDocuments complaintRef={complaintRef} staff={staff} />
           {staff ? <ValidationPanel complaintRef={complaintRef} /> : null}
           {staff && c.channel === "live_chat" ? (
             <ChatTranscript complaintRef={complaintRef} />

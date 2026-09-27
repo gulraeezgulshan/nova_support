@@ -1,13 +1,14 @@
 # Complaint analysis prompt for the GenAI Complaint Intelligence Pipeline.
 # Change the text -> bump `version`. Every analysis run stores name, version and content hash.
 name: complaint_analysis
-version: 1.1.0
+version: 1.2.0
 description: Classify, route and draft a grounded response for one customer complaint.
 parameters:
   max_tokens: 8000
 changelog:
   - "1.0.0: initial version"
   - "1.1.0: explicit follow-up rule (a required follow-up always has a type and within_hours)"
+  - "1.2.0: states which supporting documents (photos, PDFs) the customer attached"
 
 system: |
   You analyse customer complaints for {{ organization.name }}, an online consumer-electronics
@@ -88,6 +89,7 @@ user: |
   Customer: {{ customer.customer_ref }} ({{ customer.customer_type }})
   Product or service: {{ complaint.product_service or "not stated" }}
   Requested resolution: {{ (complaint.requested_resolution or "not stated") | untrusted }}
+  Supporting documents: {{ supporting_documents }}
   </complaint_record>
 
   <order_record>

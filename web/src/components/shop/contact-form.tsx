@@ -23,9 +23,15 @@ import {
   myShopOrdersOptions,
   readMeOptions,
 } from "@/lib/api/generated/@tanstack/react-query.gen";
+import { uploadComplaintAttachment } from "@/lib/api/generated/sdk.gen";
 import type { ContactOut } from "@/lib/api/generated/types.gen";
 import { apiErrorMessage } from "@/lib/api/errors";
 import { openChat } from "@/lib/storefront";
+import {
+  ACCEPTED_TYPES,
+  MAX_ATTACHMENT_BYTES,
+  MAX_ATTACHMENTS,
+} from "@/components/complaints/supporting-documents";
 
 type Topic = "order_problem" | "product_question" | "business" | "feedback" | "other";
 
@@ -46,10 +52,47 @@ export function ContactForm() {
   const [topic, setTopic] = useState<Topic>("product_question");
   const [orderRef, setOrderRef] = useState(NO_ORDER);
   const [result, setResult] = useState<ContactOut | null>(null);
-  const send = useMutation({ ...contactMutation(), onSuccess: setResult });
+  const [files, setFiles] = useState<File[]>([]);
+  const [fileError, setFileError] = useState<string | null>(null);
+  const [uploaded, setUploaded] = useState<{ ok: number; failed: string[] }>({ ok: 0, failed: [] });
+  const send = useMutation({
+    ...contactMutation(),
+    onSuccess: async (out) => {
+      // The complaint exists now; attach the files to it (a failed upload never undoes it).
+      const outcome = { ok: 0, failed: [] as string[] };
+      if (out.kind === "complaint" && out.reference) {
+        for (const file of files) {
+          try {
+            await uploadComplaintAttachment({
+              path: { ref: out.reference },
+              body: { file },
+              throwOnError: true,
+            });
+            outcome.ok += 1;
+          } catch {
+            outcome.failed.push(file.name);
+          }
+        }
+      }
+      setUploaded(outcome);
+      setFiles([]);
+      setResult(out);
+    },
+  });
   const blocked = topic === "order_problem" && !isSignedIn;
 
-  if (result) return <Sent result={result} onAgain={() => setResult(null)} />;
+  if (result) return <Sent result={result} uploaded={uploaded} onAgain={() => setResult(null)} />;
+
+  const pickFiles = (list: FileList | null) => {
+    const chosen = Array.from(list ?? []);
+    const bad = chosen.find(
+      (f) => !ACCEPTED_TYPES.split(",").includes(f.type) || f.size > MAX_ATTACHMENT_BYTES,
+    );
+    if (chosen.length > MAX_ATTACHMENTS) setFileError(`Choose at most ${MAX_ATTACHMENTS} files.`);
+    else if (bad) setFileError(`${bad.name}: only photos or PDFs up to 5 MB.`);
+    else setFileError(null);
+    setFiles(chosen.length <= MAX_ATTACHMENTS && !bad ? chosen : []);
+  };
 
   return (
     <form
@@ -178,6 +221,29 @@ export function ContactForm() {
           }
         />
       </div>
+      {topic === "order_problem" && isSignedIn ? (
+        <div className="space-y-2">
+          <Label htmlFor="contact-files">Photos or documents (optional, up to 5)</Label>
+          <Input
+            id="contact-files"
+            type="file"
+            multiple
+            accept={ACCEPTED_TYPES}
+            onChange={(event) => pickFiles(event.target.files)}
+          />
+          {fileError ? (
+            <p className="text-sm text-destructive">{fileError}</p>
+          ) : files.length ? (
+            <p className="text-xs text-muted-foreground">
+              {files.length} file{files.length === 1 ? "" : "s"} will be attached.
+            </p>
+          ) : (
+            <p className="text-xs text-muted-foreground">
+              JPG, PNG, WebP or PDF, 5 MB each. Photos of damage help us act faster.
+            </p>
+          )}
+        </div>
+      ) : null}
       {/* Honeypot: hidden from people, bots fill it in and are ignored. */}
       <div aria-hidden className="absolute -left-[9999px] h-0 w-0 overflow-hidden">
         <label htmlFor="contact-website">Website</label>
@@ -209,7 +275,15 @@ export function ContactForm() {
   );
 }
 
-function Sent({ result, onAgain }: { result: ContactOut; onAgain: () => void }) {
+function Sent({
+  result,
+  uploaded,
+  onAgain,
+}: {
+  result: ContactOut;
+  uploaded: { ok: number; failed: string[] };
+  onAgain: () => void;
+}) {
   const complaint = result.kind === "complaint";
   return (
     <motion.div
@@ -244,6 +318,16 @@ function Sent({ result, onAgain }: { result: ContactOut; onAgain: () => void }) 
           "We'll be in touch."
         )}
       </p>
+      {uploaded.ok ? (
+        <p className="text-sm text-muted-foreground">
+          {uploaded.ok} document{uploaded.ok === 1 ? "" : "s"} attached.
+        </p>
+      ) : null}
+      {uploaded.failed.length ? (
+        <p className="text-sm text-destructive">
+          Not attached: {uploaded.failed.join(", ")}. You can add them from My complaints.
+        </p>
+      ) : null}
       <div className="flex flex-wrap justify-center gap-3">
         {complaint ? (
           <Button asChild className="rounded-full bg-brand text-brand-foreground">

@@ -73,6 +73,25 @@ class Settings(BaseSettings):
     # Send the reasoning effort (GENAI_EFFORT). Turn off for models without reasoning support.
     openai_reasoning: bool = True
 
+    # Support mailbox (e-mail complaints). Unset → the scheduled check does nothing and
+    # outgoing e-mails are recorded as not_configured.
+    mail_imap_host: str | None = None
+    mail_imap_port: int = 993
+    mail_smtp_host: str | None = None
+    mail_smtp_port: int = 465  # 465 = SSL, 587 = STARTTLS
+    mail_username: str | None = None
+    mail_password: str | None = None  # an app password; never logged or returned
+    mail_from_name: str = "VoltHaven Customer Care"
+
+    @property
+    def mailbox_configured(self) -> bool:
+        return bool(
+            self.mail_imap_host
+            and self.mail_smtp_host
+            and self.mail_username
+            and self.mail_password
+        )
+
     @property
     def genai_model(self) -> str:
         return self.openai_model if self.genai_provider == "openai" else self.anthropic_model

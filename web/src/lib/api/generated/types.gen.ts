@@ -345,6 +345,88 @@ export type AnalyticsOut = {
 };
 
 /**
+ * AttachmentOut
+ */
+export type AttachmentOut = {
+    /**
+     * Id
+     */
+    id: string;
+    /**
+     * Filename
+     */
+    filename: string;
+    /**
+     * Media Type
+     */
+    media_type: string;
+    /**
+     * Size Bytes
+     */
+    size_bytes: number;
+    /**
+     * Source
+     */
+    source: string;
+    /**
+     * Created At
+     */
+    created_at: string;
+};
+
+/**
+ * Body_preview_import
+ */
+export type BodyPreviewImport = {
+    /**
+     * File
+     */
+    file: Blob | File;
+};
+
+/**
+ * Body_process_manual_email
+ */
+export type BodyProcessManualEmail = {
+    /**
+     * Eml
+     *
+     * A saved e-mail (.eml)
+     */
+    eml?: Blob | File | null;
+    /**
+     * From Address
+     */
+    from_address?: string | null;
+    /**
+     * From Name
+     */
+    from_name?: string | null;
+    /**
+     * Subject
+     */
+    subject?: string;
+    /**
+     * Body
+     */
+    body?: string | null;
+    /**
+     * Files
+     */
+    files?: Array<Blob | File>;
+};
+
+/**
+ * Body_upload_complaint_attachment
+ */
+export type BodyUploadComplaintAttachment = {
+    /**
+     * File
+     */
+    file: Blob | File;
+};
+
+/**
  * Body_upload_document
  */
 export type BodyUploadDocument = {
@@ -1865,6 +1947,226 @@ export type ImageOrderIn = {
 };
 
 /**
+ * ImportBatchOut
+ */
+export type ImportBatchOut = {
+    /**
+     * Id
+     */
+    id: string;
+    /**
+     * Filename
+     */
+    filename: string;
+    /**
+     * Status
+     */
+    status: string;
+    /**
+     * Total
+     */
+    total: number;
+    /**
+     * Created
+     */
+    created: number;
+    /**
+     * Skipped
+     */
+    skipped: number;
+    /**
+     * Failed
+     */
+    failed: number;
+    /**
+     * Created At
+     */
+    created_at: string;
+    /**
+     * Finished At
+     */
+    finished_at: string | null;
+};
+
+/**
+ * ImportDetailOut
+ */
+export type ImportDetailOut = {
+    /**
+     * Id
+     */
+    id: string;
+    /**
+     * Filename
+     */
+    filename: string;
+    /**
+     * Status
+     */
+    status: string;
+    /**
+     * Total
+     */
+    total: number;
+    /**
+     * Created
+     */
+    created: number;
+    /**
+     * Skipped
+     */
+    skipped: number;
+    /**
+     * Failed
+     */
+    failed: number;
+    /**
+     * Created At
+     */
+    created_at: string;
+    /**
+     * Finished At
+     */
+    finished_at: string | null;
+    /**
+     * Rows
+     */
+    rows: Array<ImportRowOut>;
+};
+
+/**
+ * ImportPreviewOut
+ */
+export type ImportPreviewOut = {
+    /**
+     * Id
+     */
+    id: string;
+    /**
+     * Filename
+     */
+    filename: string;
+    /**
+     * Status
+     */
+    status: string;
+    /**
+     * Total
+     */
+    total: number;
+    /**
+     * Created
+     */
+    created: number;
+    /**
+     * Skipped
+     */
+    skipped: number;
+    /**
+     * Failed
+     */
+    failed: number;
+    /**
+     * Created At
+     */
+    created_at: string;
+    /**
+     * Finished At
+     */
+    finished_at: string | null;
+    /**
+     * Rows
+     */
+    rows: Array<ImportRowOut>;
+    /**
+     * Previously Imported
+     */
+    previously_imported: boolean;
+    /**
+     * Unknown Columns
+     */
+    unknown_columns: Array<string>;
+};
+
+/**
+ * ImportRowOut
+ */
+export type ImportRowOut = {
+    /**
+     * Row
+     */
+    row: number;
+    /**
+     * Status
+     */
+    status: string;
+    /**
+     * Messages
+     */
+    messages: Array<string>;
+    /**
+     * Values
+     */
+    values: {
+        [key: string]: string;
+    };
+    /**
+     * Result
+     */
+    result?: string | null;
+    /**
+     * Reference
+     */
+    reference?: string | null;
+    /**
+     * Reason
+     */
+    reason?: string | null;
+};
+
+/**
+ * InboundEmailOut
+ */
+export type InboundEmailOut = {
+    /**
+     * Id
+     */
+    id: string;
+    /**
+     * Created At
+     */
+    created_at: string;
+    /**
+     * From Address
+     */
+    from_address: string;
+    /**
+     * From Name
+     */
+    from_name: string | null;
+    /**
+     * Subject
+     */
+    subject: string;
+    /**
+     * Outcome
+     */
+    outcome: string;
+    /**
+     * Reason
+     */
+    reason: string | null;
+    /**
+     * Via
+     */
+    via: string;
+    /**
+     * Complaint Ref
+     */
+    complaint_ref: string | null;
+};
+
+/**
  * IngestStatus
  */
 export type IngestStatus = 'pending' | 'processing' | 'ready' | 'failed';
@@ -1905,6 +2207,28 @@ export type LabelValue = {
      * Value
      */
     value: string | null;
+};
+
+/**
+ * MailboxStatusOut
+ */
+export type MailboxStatusOut = {
+    /**
+     * Configured
+     */
+    configured: boolean;
+    /**
+     * Address
+     */
+    address: string | null;
+    /**
+     * Last Check At
+     */
+    last_check_at: string | null;
+    /**
+     * Last Error
+     */
+    last_error: string | null;
 };
 
 /**
@@ -1961,6 +2285,48 @@ export type OrderOut = {
      * Status
      */
     status: string;
+};
+
+/**
+ * OutboundEmailOut
+ */
+export type OutboundEmailOut = {
+    /**
+     * Id
+     */
+    id: string;
+    /**
+     * Created At
+     */
+    created_at: string;
+    /**
+     * To Address
+     */
+    to_address: string;
+    /**
+     * Kind
+     */
+    kind: string;
+    /**
+     * Subject
+     */
+    subject: string;
+    /**
+     * Status
+     */
+    status: string;
+    /**
+     * Error
+     */
+    error: string | null;
+    /**
+     * Sent At
+     */
+    sent_at: string | null;
+    /**
+     * Complaint Ref
+     */
+    complaint_ref: string | null;
 };
 
 /**
@@ -3889,6 +4255,270 @@ export type SearchKnowledgeBaseResponses = {
 
 export type SearchKnowledgeBaseResponse = SearchKnowledgeBaseResponses[keyof SearchKnowledgeBaseResponses];
 
+export type ImportTemplateCsvData = {
+    body?: never;
+    path?: never;
+    query?: never;
+    url: '/api/v1/imports/template.csv';
+};
+
+export type ImportTemplateCsvResponses = {
+    /**
+     * Successful Response
+     */
+    200: unknown;
+};
+
+export type ImportTemplateXlsxData = {
+    body?: never;
+    path?: never;
+    query?: never;
+    url: '/api/v1/imports/template.xlsx';
+};
+
+export type ImportTemplateXlsxResponses = {
+    /**
+     * Successful Response
+     */
+    200: unknown;
+};
+
+export type PreviewImportData = {
+    body: BodyPreviewImport;
+    path?: never;
+    query?: never;
+    url: '/api/v1/imports/preview';
+};
+
+export type PreviewImportErrors = {
+    /**
+     * Validation Error
+     */
+    422: HttpValidationError;
+};
+
+export type PreviewImportError = PreviewImportErrors[keyof PreviewImportErrors];
+
+export type PreviewImportResponses = {
+    /**
+     * Successful Response
+     */
+    201: ImportPreviewOut;
+};
+
+export type PreviewImportResponse = PreviewImportResponses[keyof PreviewImportResponses];
+
+export type RunImportData = {
+    body?: never;
+    path: {
+        /**
+         * Batch Id
+         */
+        batch_id: string;
+    };
+    query?: never;
+    url: '/api/v1/imports/{batch_id}/run';
+};
+
+export type RunImportErrors = {
+    /**
+     * Validation Error
+     */
+    422: HttpValidationError;
+};
+
+export type RunImportError = RunImportErrors[keyof RunImportErrors];
+
+export type RunImportResponses = {
+    /**
+     * Successful Response
+     */
+    202: ImportBatchOut;
+};
+
+export type RunImportResponse = RunImportResponses[keyof RunImportResponses];
+
+export type ListImportsData = {
+    body?: never;
+    path?: never;
+    query?: never;
+    url: '/api/v1/imports';
+};
+
+export type ListImportsResponses = {
+    /**
+     * Response List Imports
+     *
+     * Successful Response
+     */
+    200: Array<ImportBatchOut>;
+};
+
+export type ListImportsResponse = ListImportsResponses[keyof ListImportsResponses];
+
+export type GetImportData = {
+    body?: never;
+    path: {
+        /**
+         * Batch Id
+         */
+        batch_id: string;
+    };
+    query?: never;
+    url: '/api/v1/imports/{batch_id}';
+};
+
+export type GetImportErrors = {
+    /**
+     * Validation Error
+     */
+    422: HttpValidationError;
+};
+
+export type GetImportError = GetImportErrors[keyof GetImportErrors];
+
+export type GetImportResponses = {
+    /**
+     * Successful Response
+     */
+    200: ImportDetailOut;
+};
+
+export type GetImportResponse = GetImportResponses[keyof GetImportResponses];
+
+export type ImportResultData = {
+    body?: never;
+    path: {
+        /**
+         * Batch Id
+         */
+        batch_id: string;
+    };
+    query?: never;
+    url: '/api/v1/imports/{batch_id}/result.csv';
+};
+
+export type ImportResultErrors = {
+    /**
+     * Validation Error
+     */
+    422: HttpValidationError;
+};
+
+export type ImportResultError = ImportResultErrors[keyof ImportResultErrors];
+
+export type ImportResultResponses = {
+    /**
+     * Successful Response
+     */
+    200: unknown;
+};
+
+export type MailboxStatusData = {
+    body?: never;
+    path?: never;
+    query?: never;
+    url: '/api/v1/mailbox';
+};
+
+export type MailboxStatusResponses = {
+    /**
+     * Successful Response
+     */
+    200: MailboxStatusOut;
+};
+
+export type MailboxStatusResponse = MailboxStatusResponses[keyof MailboxStatusResponses];
+
+export type ListInboundEmailsData = {
+    body?: never;
+    path?: never;
+    query?: {
+        /**
+         * Limit
+         */
+        limit?: number;
+    };
+    url: '/api/v1/mailbox/inbound';
+};
+
+export type ListInboundEmailsErrors = {
+    /**
+     * Validation Error
+     */
+    422: HttpValidationError;
+};
+
+export type ListInboundEmailsError = ListInboundEmailsErrors[keyof ListInboundEmailsErrors];
+
+export type ListInboundEmailsResponses = {
+    /**
+     * Response List Inbound Emails
+     *
+     * Successful Response
+     */
+    200: Array<InboundEmailOut>;
+};
+
+export type ListInboundEmailsResponse = ListInboundEmailsResponses[keyof ListInboundEmailsResponses];
+
+export type ListOutboundEmailsData = {
+    body?: never;
+    path?: never;
+    query?: {
+        /**
+         * Limit
+         */
+        limit?: number;
+    };
+    url: '/api/v1/mailbox/outbound';
+};
+
+export type ListOutboundEmailsErrors = {
+    /**
+     * Validation Error
+     */
+    422: HttpValidationError;
+};
+
+export type ListOutboundEmailsError = ListOutboundEmailsErrors[keyof ListOutboundEmailsErrors];
+
+export type ListOutboundEmailsResponses = {
+    /**
+     * Response List Outbound Emails
+     *
+     * Successful Response
+     */
+    200: Array<OutboundEmailOut>;
+};
+
+export type ListOutboundEmailsResponse = ListOutboundEmailsResponses[keyof ListOutboundEmailsResponses];
+
+export type ProcessManualEmailData = {
+    body?: BodyProcessManualEmail;
+    path?: never;
+    query?: never;
+    url: '/api/v1/mailbox/process';
+};
+
+export type ProcessManualEmailErrors = {
+    /**
+     * Validation Error
+     */
+    422: HttpValidationError;
+};
+
+export type ProcessManualEmailError = ProcessManualEmailErrors[keyof ProcessManualEmailErrors];
+
+export type ProcessManualEmailResponses = {
+    /**
+     * Successful Response
+     */
+    201: InboundEmailOut;
+};
+
+export type ProcessManualEmailResponse = ProcessManualEmailResponses[keyof ProcessManualEmailResponses];
+
 export type ListComplaintsData = {
     body?: never;
     path?: never;
@@ -4628,6 +5258,136 @@ export type ExportReportResponses = {
      */
     200: unknown;
 };
+
+export type ListComplaintAttachmentsData = {
+    body?: never;
+    path: {
+        /**
+         * Ref
+         */
+        ref: string;
+    };
+    query?: never;
+    url: '/api/v1/complaints/{ref}/attachments';
+};
+
+export type ListComplaintAttachmentsErrors = {
+    /**
+     * Validation Error
+     */
+    422: HttpValidationError;
+};
+
+export type ListComplaintAttachmentsError = ListComplaintAttachmentsErrors[keyof ListComplaintAttachmentsErrors];
+
+export type ListComplaintAttachmentsResponses = {
+    /**
+     * Response List Complaint Attachments
+     *
+     * Successful Response
+     */
+    200: Array<AttachmentOut>;
+};
+
+export type ListComplaintAttachmentsResponse = ListComplaintAttachmentsResponses[keyof ListComplaintAttachmentsResponses];
+
+export type UploadComplaintAttachmentData = {
+    body: BodyUploadComplaintAttachment;
+    path: {
+        /**
+         * Ref
+         */
+        ref: string;
+    };
+    query?: never;
+    url: '/api/v1/complaints/{ref}/attachments';
+};
+
+export type UploadComplaintAttachmentErrors = {
+    /**
+     * Validation Error
+     */
+    422: HttpValidationError;
+};
+
+export type UploadComplaintAttachmentError = UploadComplaintAttachmentErrors[keyof UploadComplaintAttachmentErrors];
+
+export type UploadComplaintAttachmentResponses = {
+    /**
+     * Successful Response
+     */
+    201: AttachmentOut;
+};
+
+export type UploadComplaintAttachmentResponse = UploadComplaintAttachmentResponses[keyof UploadComplaintAttachmentResponses];
+
+export type DeleteComplaintAttachmentData = {
+    body?: never;
+    path: {
+        /**
+         * Ref
+         */
+        ref: string;
+        /**
+         * Attachment Id
+         */
+        attachment_id: string;
+    };
+    query?: never;
+    url: '/api/v1/complaints/{ref}/attachments/{attachment_id}';
+};
+
+export type DeleteComplaintAttachmentErrors = {
+    /**
+     * Validation Error
+     */
+    422: HttpValidationError;
+};
+
+export type DeleteComplaintAttachmentError = DeleteComplaintAttachmentErrors[keyof DeleteComplaintAttachmentErrors];
+
+export type DeleteComplaintAttachmentResponses = {
+    /**
+     * Successful Response
+     */
+    204: void;
+};
+
+export type DeleteComplaintAttachmentResponse = DeleteComplaintAttachmentResponses[keyof DeleteComplaintAttachmentResponses];
+
+export type DownloadComplaintAttachmentData = {
+    body?: never;
+    path: {
+        /**
+         * Ref
+         */
+        ref: string;
+        /**
+         * Attachment Id
+         */
+        attachment_id: string;
+    };
+    query?: never;
+    url: '/api/v1/complaints/{ref}/attachments/{attachment_id}';
+};
+
+export type DownloadComplaintAttachmentErrors = {
+    /**
+     * Validation Error
+     */
+    422: HttpValidationError;
+};
+
+export type DownloadComplaintAttachmentError = DownloadComplaintAttachmentErrors[keyof DownloadComplaintAttachmentErrors];
+
+export type DownloadComplaintAttachmentResponses = {
+    /**
+     * Successful Response
+     */
+    200: Blob | File;
+};
+
+export type DownloadComplaintAttachmentResponse = DownloadComplaintAttachmentResponses[keyof DownloadComplaintAttachmentResponses];
 
 export type GetStorefrontConfigData = {
     body?: never;

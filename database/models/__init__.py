@@ -1,6 +1,7 @@
 """Import every model so SQLAlchemy metadata (and Alembic autogenerate) sees all tables."""
 
 from database.models.analysis import AnalysisRun, LlmCall, PromptVersion, RunStatus
+from database.models.attachments import ComplaintAttachment
 from database.models.audit import AuditEvent
 from database.models.chat import ChatConversation, ChatMessage, ChatState
 from database.models.complaints import (
@@ -14,6 +15,8 @@ from database.models.complaints import (
     Order,
 )
 from database.models.contact import ENQUIRY_REF_SEQ, Enquiry, EnquiryStatus, NewsletterSubscriber
+from database.models.email import InboundEmail, MailboxState, OutboundEmail
+from database.models.imports import ImportBatch
 from database.models.knowledge_base import (
     Chunk,
     Document,
@@ -47,6 +50,7 @@ __all__ = [
     "ChatState",
     "Chunk",
     "Complaint",
+    "ComplaintAttachment",
     "ComplaintEvent",
     "ComplaintStatus",
     "Customer",
@@ -56,10 +60,14 @@ __all__ = [
     "DocumentVersion",
     "Enquiry",
     "EnquiryStatus",
+    "ImportBatch",
+    "InboundEmail",
     "IngestStatus",
     "LlmCall",
+    "MailboxState",
     "NewsletterSubscriber",
     "Order",
+    "OutboundEmail",
     "Product",
     "ProductImage",
     "PromptVersion",

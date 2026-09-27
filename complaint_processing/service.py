@@ -177,7 +177,12 @@ async def submit_complaint(
     enqueue: bool = True,
     created_at: datetime | None = None,
     external_ref: str | None = None,
+    commit: bool = True,
 ) -> Complaint:
+    """File a complaint. With `commit=False` the caller commits (and enqueues analysis after
+    that), so the complaint and the caller's own rows are saved together or not at all."""
+    if not commit and enqueue:
+        raise ValueError("enqueue=True needs commit=True (analysis must run after the commit)")
     clean, warnings = validate_input(data)
     issues: list[str] = []
 
@@ -269,6 +274,9 @@ async def submit_complaint(
         actor_user_id=submitted_by.id if submitted_by else None,
         after={"ref": complaint.complaint_ref, "signals": sorted(complaint.signals)},
     )
+    if not commit:
+        await db.flush()
+        return complaint
     await db.commit()
     if enqueue:
         safe_enqueue_analysis(complaint.id, submitted_by.id if submitted_by else None)

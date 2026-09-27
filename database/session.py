@@ -5,7 +5,7 @@ psycopg 3 driver and connection URL, so there is a single source of configuratio
 """
 
 from collections.abc import AsyncIterator, Iterator
-from contextlib import contextmanager
+from contextlib import asynccontextmanager, contextmanager
 from functools import lru_cache
 
 from sqlalchemy import Engine, create_engine
@@ -16,6 +16,7 @@ from sqlalchemy.ext.asyncio import (
     create_async_engine,
 )
 from sqlalchemy.orm import Session, sessionmaker
+from sqlalchemy.pool import NullPool
 
 from src.core.config import get_settings
 
@@ -62,3 +63,18 @@ def sync_session() -> Iterator[Session]:
         raise
     finally:
         session.close()
+
+
+@asynccontextmanager
+async def task_session() -> AsyncIterator[AsyncSession]:
+    """An async session on a fresh engine, for Celery tasks that call `asyncio.run`.
+
+    The cached engine's connection pool belongs to the event loop that created it, so a
+    task that starts a new loop each run must not reuse it.
+    """
+    engine = create_async_engine(get_settings().database_url, poolclass=NullPool)
+    try:
+        async with async_sessionmaker(engine, expire_on_commit=False)() as session:
+            yield session
+    finally:
+        await engine.dispose()

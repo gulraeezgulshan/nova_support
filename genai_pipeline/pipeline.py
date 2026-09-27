@@ -16,6 +16,7 @@ from datetime import UTC, datetime
 from sqlalchemy import select
 from sqlalchemy.orm import Session
 
+from complaint_processing.attachments import describe
 from complaint_processing.facts import build_facts
 from database.models import (
     AnalysisRun,
@@ -112,6 +113,7 @@ def run_analysis(
         "facts": build_facts(complaint, history, complaint.created_at.date()),
         "history": history,
         "policies": policies,
+        "supporting_documents": describe([a.media_type for a in complaint.attachments]),
     }
     errors: list[str] = []
     analysis: ComplaintAnalysis | None = None

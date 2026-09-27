@@ -141,6 +141,7 @@ def build_input(
         record_texts=_record_texts(complaint, history),
         reference_date=complaint.created_at.date(),
         sla_hours=sla,
+        attachments=[a.media_type for a in complaint.attachments],
     )
     return inp, run, analysis
 
@@ -227,9 +228,12 @@ def _apply(
                 if escalated else f"Your complaint has been assigned to our {department} team.",
             )  # fmt: skip
 
-    from support_chat.notify import after_validation  # local import: avoids an import cycle
+    # Local imports: avoid an import cycle. Each hook only acts on its own channel.
+    from email_channel.notify import after_validation as email_after_validation
+    from support_chat.notify import after_validation
 
     after_validation(db, complaint, verdict, draft)
+    email_after_validation(db, complaint, verdict, draft)
 
 
 def open_review_task(

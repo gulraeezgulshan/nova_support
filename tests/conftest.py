@@ -153,6 +153,11 @@ async def client(
     app.dependency_overrides[get_token_verifier] = lambda: verifier
     app.state.enqueued = enqueued
     app.state.analyses = analyses
+    from bulk_import import service as import_service
+
+    imports: list[str] = []
+    monkeypatch.setattr(import_service, "enqueue_run", lambda bid: imports.append(str(bid)))
+    app.state.imports = imports
     transport = httpx.ASGITransport(app=app)
     async with httpx.AsyncClient(transport=transport, base_url="http://test") as http:
         http.app = app  # type: ignore[attr-defined]

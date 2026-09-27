@@ -1,5 +1,5 @@
 """Celery application: document ingestion, complaint analysis and validation, and the
-periodic SLA risk scan (Celery Beat)."""
+periodic SLA risk scan, mailbox check and e-mail outbox (Celery Beat)."""
 
 from celery import Celery
 
@@ -13,7 +13,12 @@ configure_logging(settings.log_level, json=settings.environment == "production")
 celery_app = Celery(
     "supportnova",
     broker=settings.redis_url,
-    include=["knowledge_base.tasks", "complaint_processing.tasks"],
+    include=[
+        "knowledge_base.tasks",
+        "complaint_processing.tasks",
+        "email_channel.tasks",
+        "bulk_import.tasks",
+    ],
 )
 celery_app.conf.update(
     task_ignore_result=True,
@@ -24,6 +29,8 @@ celery_app.conf.update(
     task_routes={
         "knowledge_base.tasks.*": {"queue": "ingest"},
         "complaint_processing.tasks.*": {"queue": "analysis"},
+        "email_channel.tasks.*": {"queue": "default"},
+        "bulk_import.tasks.*": {"queue": "default"},
     },
     broker_connection_retry_on_startup=True,
     timezone="UTC",
@@ -32,6 +39,9 @@ celery_app.conf.update(
             "task": "complaint_processing.tasks.scan_sla",
             "schedule": 60.0 * analytics_config()["sla"]["scan_interval_minutes"],
         },
+        # E-mail complaints: read the support mailbox, then send queued e-mails.
+        "mailbox-check": {"task": "email_channel.tasks.check_mailbox", "schedule": 60.0},
+        "email-outbox": {"task": "email_channel.tasks.flush_outbox", "schedule": 30.0},
     },
     beat_schedule_filename=str(ROOT_DIR / ".data" / "celerybeat-schedule"),
 )

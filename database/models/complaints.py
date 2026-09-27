@@ -4,7 +4,7 @@ import uuid
 from datetime import date, datetime
 from decimal import Decimal
 from enum import StrEnum
-from typing import Any
+from typing import TYPE_CHECKING, Any
 
 from pgvector.sqlalchemy import Vector
 from sqlalchemy import (
@@ -25,6 +25,9 @@ from sqlalchemy.orm import Mapped, mapped_column, relationship
 
 from database.base import Base, TimestampMixin, UUIDPrimaryKeyMixin
 from src.core.config import get_settings
+
+if TYPE_CHECKING:
+    from database.models.attachments import ComplaintAttachment
 
 # Human-readable reference numbers (CMP-000123, CUST-000045) come from database sequences,
 # so they are unique even when several workers create records at the same time.
@@ -116,6 +119,9 @@ class Complaint(UUIDPrimaryKeyMixin, TimestampMixin, Base):
     source: Mapped[str] = mapped_column(String(20), default="portal")  # portal|dataset|evaluation
     # ID in an imported dataset or evaluation pack (e.g. DS-0042), for scoring against labels.
     external_ref: Mapped[str | None] = mapped_column(String(40), index=True)
+    import_batch_id: Mapped[uuid.UUID | None] = mapped_column(
+        ForeignKey("import_batches.id"), index=True
+    )  # set for bulk uploads
 
     status: Mapped[ComplaintStatus] = mapped_column(
         String(20), default=ComplaintStatus.NEW, index=True
@@ -151,6 +157,11 @@ class Complaint(UUIDPrimaryKeyMixin, TimestampMixin, Base):
 
     customer: Mapped[Customer] = relationship(lazy="joined")
     order: Mapped[Order | None] = relationship(lazy="joined")
+    attachments: Mapped[list["ComplaintAttachment"]] = relationship(
+        lazy="selectin",
+        order_by="ComplaintAttachment.created_at",
+        cascade="all, delete-orphan",
+    )
 
 
 class ComplaintEvent(Base):

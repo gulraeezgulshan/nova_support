@@ -807,3 +807,85 @@ class EnquiryUpdate(BaseModel):
 class NewsletterIn(BaseModel):
     email: str = Field(max_length=320, pattern=EMAIL_PATTERN)
     source: str = Field(default="footer", max_length=40)
+
+
+# ------------------------------------------------------------------ supporting documents
+
+
+class AttachmentOut(BaseModel):
+    model_config = ConfigDict(from_attributes=True)
+
+    id: uuid.UUID
+    filename: str
+    media_type: str
+    size_bytes: int
+    source: str
+    created_at: datetime
+
+
+# ------------------------------------------------------------------ mailbox (e-mail channel)
+
+
+class MailboxStatusOut(BaseModel):
+    configured: bool
+    address: str | None
+    last_check_at: datetime | None
+    last_error: str | None
+
+
+class InboundEmailOut(BaseModel):
+    id: uuid.UUID
+    created_at: datetime
+    from_address: str
+    from_name: str | None
+    subject: str
+    outcome: str
+    reason: str | None
+    via: str
+    complaint_ref: str | None
+
+
+class OutboundEmailOut(BaseModel):
+    id: uuid.UUID
+    created_at: datetime
+    to_address: str
+    kind: str
+    subject: str
+    status: str
+    error: str | None
+    sent_at: datetime | None
+    complaint_ref: str | None
+
+
+# ------------------------------------------------------------------ bulk complaint upload
+
+
+class ImportRowOut(BaseModel):
+    row: int  # spreadsheet row number (the header is row 1)
+    status: str  # ready | warning | error
+    messages: list[str]
+    values: dict[str, str]
+    result: str | None = None  # created | failed (after the import ran)
+    reference: str | None = None
+    reason: str | None = None
+
+
+class ImportBatchOut(BaseModel):
+    id: uuid.UUID
+    filename: str
+    status: str  # previewed | running | done | failed
+    total: int
+    created: int
+    skipped: int
+    failed: int
+    created_at: datetime
+    finished_at: datetime | None
+
+
+class ImportDetailOut(ImportBatchOut):
+    rows: list[ImportRowOut]
+
+
+class ImportPreviewOut(ImportDetailOut):
+    previously_imported: bool
+    unknown_columns: list[str]

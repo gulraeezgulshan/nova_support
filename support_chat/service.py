@@ -354,7 +354,8 @@ async def confirm(db: AsyncSession, conversation: ChatConversation, user: User) 
         submitted,
         "assistant",
         f"Thanks, I've sent this to our team. Your complaint reference is "
-        f"{complaint.complaint_ref}. I'll post the reply here as soon as it's ready.",
+        f"{complaint.complaint_ref}. I'll post the reply here as soon as it's ready. "
+        "You can add photos or documents to it from My complaints.",
         "reference",
         {"complaint_ref": complaint.complaint_ref},
     )

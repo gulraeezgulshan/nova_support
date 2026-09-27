@@ -8,9 +8,12 @@ have free or trial tiers that are enough for the demonstration.
 Browser ──► Vercel (Next.js, web/) ──► Railway: api (FastAPI) ──► Railway: PostgreSQL + pgvector
                                              │                     Railway: Redis
                                              │                         ▲
-                                             │        Railway: worker (Celery) ── Anthropic API
-                                             │        Railway: beat (SLA scan every 5 min)
-                                             └──► Cloudflare R2 (uploaded documents)
+                                             │        Railway: worker (Celery) ── Anthropic / OpenAI API
+                                             │                                 ── support mailbox (IMAP/SMTP)
+                                             │        Railway: beat (schedules: SLA scan every 5 min,
+                                             │                       mailbox check every 1 min,
+                                             │                       e-mail outbox every 30 s)
+                                             └──► Cloudflare R2 (uploaded documents and attachments)
 ```
 
 Keys are pasted into each platform's settings. **Never commit them.**
@@ -18,7 +21,9 @@ Keys are pasted into each platform's settings. **Never commit them.**
 ## 0. Before you start
 
 1. The code is on GitHub (public repository).
-2. Accounts: GitHub, Vercel, Railway, Cloudflare, Clerk, Anthropic (console.anthropic.com).
+2. Accounts: GitHub, Vercel, Railway, Cloudflare, Clerk, and Anthropic (console.anthropic.com)
+   or OpenAI (platform.openai.com). Optional: a Gmail account for e-mail complaints
+   (see `.env.example` for the App password steps).
 3. Decide who the evaluators are: you will create their sign-in accounts in step 6.
 
 ## 1. Cloudflare R2 (file storage)
@@ -35,6 +40,7 @@ badge). A *production* instance needs your own domain.
 
 1. Use the application you already created, or create a new one.
 2. **Configure → API keys**: note the Publishable key, the Secret key and the Frontend API URL.
+   If a secret key was ever shown or shared, **roll it** here first and use the new one.
 3. **Sessions → Customize session token** must contain
    `{ "email": "{{user.primary_email_address}}", "name": "{{user.full_name}}" }` (already
    done if you followed the local setup).
@@ -75,7 +81,10 @@ badge). A *production* instance needs your own domain.
    | `GENAI_PROVIDER` | `anthropic` or `openai` |
    | `ANTHROPIC_API_KEY`, `ANTHROPIC_MODEL` | for Claude (e.g. `claude-opus-5`) |
    | `OPENAI_API_KEY`, `OPENAI_MODEL` | for OpenAI (e.g. `gpt-5-mini`) |
-   | `MAIL_IMAP_HOST`, `MAIL_SMTP_HOST`, `MAIL_USERNAME`, `MAIL_PASSWORD` (+ ports, `MAIL_FROM_NAME`) | optional: the support mailbox for e-mail complaints (Gmail: an App password); the *beat* service checks it every minute |
+   | `MAIL_IMAP_HOST`, `MAIL_IMAP_PORT`, `MAIL_SMTP_HOST`, `MAIL_SMTP_PORT`, `MAIL_USERNAME`, `MAIL_PASSWORD`, `MAIL_FROM_NAME` | optional: the support mailbox for e-mail complaints (Gmail: `imap.gmail.com` 993, `smtp.gmail.com` 465, an App password). The *worker* reads and sends the mail (beat only schedules it) and the *api* shows its status, so set them on both — shared variables do that |
+
+   Use a mailbox that no other SupportNova (e.g. your local `make worker`) is reading: two
+   workers on one inbox each take whichever new e-mails they see first.
 
    The API refuses to start in production if the Clerk issuer, the CORS origin or R2 storage
    is missing, so misconfiguration shows up in the deploy log instead of at run time.
@@ -133,12 +142,17 @@ Clerk → **Configure → Webhooks → Add endpoint**:
 3. Submit a complaint as the customer account; within about 20 seconds it shows an analysis
    and a validation verdict (the worker processes it).
 4. **Reports**: export the Complaint Intelligence Report as PDF.
-5. Railway *beat* logs show `sla.scan` every 5 minutes.
+5. Railway *beat* logs show the SLA scan every 5 minutes and the mailbox check every minute.
+6. If the mailbox is configured: send a complaint e-mail to it. Within about a minute
+   **Mailbox** shows it under *Received → New complaint* and the acknowledgement under *Sent*,
+   and the sender receives it with the `[CMP-…]` reference.
+7. As a manager, **Import complaints** → download the CSV template → upload it → Import: one
+   complaint is created.
 
 ## 8. Running costs and limits
 
 - Railway's trial or hobby plan covers five small services. Stop the worker and beat when the
-  demonstration period ends.
-- Each complaint analysis is one or two Claude calls. Re-analysing all 645 complaints costs
+  demonstration period ends (this also stops the mailbox check).
+- Each complaint analysis is one or two GenAI calls. Re-analysing all 645 complaints costs
   real money: analyse a sample (`make analyze` does 10) plus the hold-out pack for the
   comparison report.

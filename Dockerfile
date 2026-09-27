@@ -4,7 +4,8 @@ COPY --from=ghcr.io/astral-sh/uv:0.12 /uv /usr/local/bin/uv
 ENV UV_COMPILE_BYTECODE=1 UV_LINK_MODE=copy UV_PYTHON_DOWNLOADS=never
 WORKDIR /app
 COPY pyproject.toml uv.lock ./
-RUN --mount=type=cache,target=/root/.cache/uv uv sync --frozen --no-dev --no-install-project
+# No cache mount: Railway's builder only accepts cache mounts with a service-specific id.
+RUN uv sync --frozen --no-dev --no-install-project
 
 FROM python:3.13-slim AS runtime
 ENV PATH="/app/.venv/bin:$PATH" PYTHONUNBUFFERED=1 PYTHONDONTWRITEBYTECODE=1 \

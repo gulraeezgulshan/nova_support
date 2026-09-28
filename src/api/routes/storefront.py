@@ -8,6 +8,7 @@ from fastapi import APIRouter, Depends, File, HTTPException, Query, Response, Up
 from sqlalchemy import select
 from sqlalchemy.ext.asyncio import AsyncSession
 
+import app_settings
 from complaint_processing.service import get_or_create_customer
 from database import audit
 from database.models import Customer, Order, Product, ProductImage, Role, User
@@ -58,8 +59,14 @@ async def _with_images(db: AsyncSession, orders: list[Order]) -> list[ShopOrderO
 
 @router.get("/storefront/config", response_model=StorefrontConfig)
 async def get_storefront_config() -> StorefrontConfig:
-    """Company details, delivery, returns and warranty facts, and the FAQ (public)."""
-    return storefront_config()
+    """Company details (from Settings), delivery, returns and warranty facts, and the FAQ."""
+    config = storefront_config()
+    b = app_settings.runtime().branding
+    company = config.company.model_copy(
+        update={"name": b.shop_name, "tagline": b.shop_tagline, "address": b.address,
+                "phone": b.phone, "support_email": b.support_email, "hours": b.hours}
+    )  # fmt: skip
+    return config.model_copy(update={"company": company})
 
 
 @router.get("/products", response_model=list[ProductOut])

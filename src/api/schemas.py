@@ -927,3 +927,15 @@ class SettingsUpdate(BaseModel):
     ai: AiSettings
     operations: OperationsSettings
     branding: BrandingText
+
+
+class BrandingOut(BaseModel):
+    shop_name: str
+    shop_tagline: str
+    console_name: str
+    support_email: str
+    phone: str
+    address: str
+    hours: str
+    shop_logo_url: str | None
+    console_logo_url: str | None

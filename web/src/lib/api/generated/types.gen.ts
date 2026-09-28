@@ -173,6 +173,32 @@ export type AgreementOut = {
 };
 
 /**
+ * AiSettings
+ */
+export type AiSettings = {
+    /**
+     * Provider
+     */
+    provider: 'openai' | 'anthropic';
+    /**
+     * Model
+     */
+    model: string;
+    /**
+     * Effort
+     */
+    effort: 'none' | 'minimal' | 'low' | 'medium' | 'high' | 'xhigh' | 'max';
+    /**
+     * Retrieval Limit
+     */
+    retrieval_limit: number;
+    /**
+     * Auto Analysis
+     */
+    auto_analysis: boolean;
+};
+
+/**
  * Amount
  */
 export type Amount = {
@@ -469,6 +495,16 @@ export type BodyUploadDocument = {
 };
 
 /**
+ * Body_upload_logo
+ */
+export type BodyUploadLogo = {
+    /**
+     * File
+     */
+    file: Blob | File;
+};
+
+/**
  * Body_upload_product_image
  */
 export type BodyUploadProductImage = {
@@ -476,6 +512,124 @@ export type BodyUploadProductImage = {
      * File
      */
     file: Blob | File;
+};
+
+/**
+ * BrandingOut
+ */
+export type BrandingOut = {
+    /**
+     * Shop Name
+     */
+    shop_name: string;
+    /**
+     * Shop Tagline
+     */
+    shop_tagline: string;
+    /**
+     * Console Name
+     */
+    console_name: string;
+    /**
+     * Support Email
+     */
+    support_email: string;
+    /**
+     * Phone
+     */
+    phone: string;
+    /**
+     * Address
+     */
+    address: string;
+    /**
+     * Hours
+     */
+    hours: string;
+    /**
+     * Shop Logo Url
+     */
+    shop_logo_url: string | null;
+    /**
+     * Console Logo Url
+     */
+    console_logo_url: string | null;
+};
+
+/**
+ * BrandingSettings
+ */
+export type BrandingSettings = {
+    /**
+     * Shop Name
+     */
+    shop_name: string;
+    /**
+     * Shop Tagline
+     */
+    shop_tagline: string;
+    /**
+     * Console Name
+     */
+    console_name: string;
+    /**
+     * Support Email
+     */
+    support_email: string;
+    /**
+     * Phone
+     */
+    phone: string;
+    /**
+     * Address
+     */
+    address: string;
+    /**
+     * Hours
+     */
+    hours: string;
+    /**
+     * Shop Logo Key
+     */
+    shop_logo_key?: string | null;
+    /**
+     * Console Logo Key
+     */
+    console_logo_key?: string | null;
+};
+
+/**
+ * BrandingText
+ */
+export type BrandingText = {
+    /**
+     * Shop Name
+     */
+    shop_name: string;
+    /**
+     * Shop Tagline
+     */
+    shop_tagline: string;
+    /**
+     * Console Name
+     */
+    console_name: string;
+    /**
+     * Support Email
+     */
+    support_email: string;
+    /**
+     * Phone
+     */
+    phone: string;
+    /**
+     * Address
+     */
+    address: string;
+    /**
+     * Hours
+     */
+    hours: string;
 };
 
 /**
@@ -1686,6 +1840,28 @@ export type DocumentVersionOut = {
 };
 
 /**
+ * EmailSettings
+ */
+export type EmailSettings = {
+    /**
+     * Mailbox Check Seconds
+     */
+    mailbox_check_seconds: number;
+    /**
+     * Outbox Flush Seconds
+     */
+    outbox_flush_seconds: number;
+    /**
+     * From Name
+     */
+    from_name: string;
+    /**
+     * Auto Replies
+     */
+    auto_replies: boolean;
+};
+
+/**
  * EnquiryOut
  */
 export type EnquiryOut = {
@@ -2246,6 +2422,24 @@ export type NewsletterIn = {
 };
 
 /**
+ * OperationsSettings
+ */
+export type OperationsSettings = {
+    /**
+     * Sla Scan Minutes
+     */
+    sla_scan_minutes: number;
+    /**
+     * Verified Min Score
+     */
+    verified_min_score: number;
+    /**
+     * Always Review Escalation Level
+     */
+    always_review_escalation_level: number;
+};
+
+/**
  * OrderOut
  */
 export type OrderOut = {
@@ -2413,6 +2607,28 @@ export type OverviewOut = {
      * Open Reviews
      */
     open_reviews: number;
+};
+
+/**
+ * PolicyFactOut
+ */
+export type PolicyFactOut = {
+    /**
+     * Fact
+     */
+    fact: string;
+    /**
+     * Value
+     */
+    value: string;
+    /**
+     * Source
+     */
+    source: string;
+    /**
+     * Version
+     */
+    version: string | null;
 };
 
 /**
@@ -3074,6 +3290,16 @@ export type RuleWrite = {
 export type RunStatus = 'queued' | 'running' | 'completed' | 'needs_review' | 'failed';
 
 /**
+ * RuntimeSettings
+ */
+export type RuntimeSettings = {
+    email: EmailSettings;
+    ai: AiSettings;
+    operations: OperationsSettings;
+    branding: BrandingSettings;
+};
+
+/**
  * SearchResultOut
  */
 export type SearchResultOut = {
@@ -3125,6 +3351,61 @@ export type SearchResultOut = {
      * Score
      */
     score: number;
+};
+
+/**
+ * SettingsOut
+ */
+export type SettingsOut = {
+    settings: RuntimeSettings;
+    /**
+     * Version
+     */
+    version: number;
+    /**
+     * Updated At
+     */
+    updated_at: string | null;
+    /**
+     * Updated By
+     */
+    updated_by: string | null;
+    /**
+     * Providers Available
+     */
+    providers_available: Array<string>;
+    /**
+     * Suggested Models
+     */
+    suggested_models: {
+        [key: string]: Array<string>;
+    };
+    /**
+     * Policy Facts
+     */
+    policy_facts: Array<PolicyFactOut>;
+    /**
+     * Shop Logo Url
+     */
+    shop_logo_url: string | null;
+    /**
+     * Console Logo Url
+     */
+    console_logo_url: string | null;
+};
+
+/**
+ * SettingsUpdate
+ */
+export type SettingsUpdate = {
+    /**
+     * Version
+     */
+    version: number;
+    email: EmailSettings;
+    ai: AiSettings;
+    operations: OperationsSettings;
+    branding: BrandingText;
 };
 
 /**
@@ -6253,3 +6534,148 @@ export type ReplaceRuleResponses = {
 };
 
 export type ReplaceRuleResponse = ReplaceRuleResponses[keyof ReplaceRuleResponses];
+
+export type ReadSettingsData = {
+    body?: never;
+    path?: never;
+    query?: never;
+    url: '/api/v1/settings';
+};
+
+export type ReadSettingsResponses = {
+    /**
+     * Successful Response
+     */
+    200: SettingsOut;
+};
+
+export type ReadSettingsResponse = ReadSettingsResponses[keyof ReadSettingsResponses];
+
+export type UpdateSettingsData = {
+    body: SettingsUpdate;
+    path?: never;
+    query?: never;
+    url: '/api/v1/settings';
+};
+
+export type UpdateSettingsErrors = {
+    /**
+     * Validation Error
+     */
+    422: HttpValidationError;
+};
+
+export type UpdateSettingsError = UpdateSettingsErrors[keyof UpdateSettingsErrors];
+
+export type UpdateSettingsResponses = {
+    /**
+     * Successful Response
+     */
+    200: SettingsOut;
+};
+
+export type UpdateSettingsResponse = UpdateSettingsResponses[keyof UpdateSettingsResponses];
+
+export type DeleteLogoData = {
+    body?: never;
+    path: {
+        /**
+         * Target
+         */
+        target: 'shop' | 'console';
+    };
+    query?: never;
+    url: '/api/v1/settings/logo/{target}';
+};
+
+export type DeleteLogoErrors = {
+    /**
+     * Validation Error
+     */
+    422: HttpValidationError;
+};
+
+export type DeleteLogoError = DeleteLogoErrors[keyof DeleteLogoErrors];
+
+export type DeleteLogoResponses = {
+    /**
+     * Successful Response
+     */
+    204: void;
+};
+
+export type DeleteLogoResponse = DeleteLogoResponses[keyof DeleteLogoResponses];
+
+export type UploadLogoData = {
+    body: BodyUploadLogo;
+    path: {
+        /**
+         * Target
+         */
+        target: 'shop' | 'console';
+    };
+    query?: never;
+    url: '/api/v1/settings/logo/{target}';
+};
+
+export type UploadLogoErrors = {
+    /**
+     * Validation Error
+     */
+    422: HttpValidationError;
+};
+
+export type UploadLogoError = UploadLogoErrors[keyof UploadLogoErrors];
+
+export type UploadLogoResponses = {
+    /**
+     * Successful Response
+     */
+    200: SettingsOut;
+};
+
+export type UploadLogoResponse = UploadLogoResponses[keyof UploadLogoResponses];
+
+export type ReadBrandingData = {
+    body?: never;
+    path?: never;
+    query?: never;
+    url: '/api/v1/branding';
+};
+
+export type ReadBrandingResponses = {
+    /**
+     * Successful Response
+     */
+    200: BrandingOut;
+};
+
+export type ReadBrandingResponse = ReadBrandingResponses[keyof ReadBrandingResponses];
+
+export type BrandingLogoData = {
+    body?: never;
+    path: {
+        /**
+         * Target
+         */
+        target: 'shop' | 'console';
+    };
+    query?: never;
+    url: '/api/v1/branding/logo/{target}';
+};
+
+export type BrandingLogoErrors = {
+    /**
+     * Validation Error
+     */
+    422: HttpValidationError;
+};
+
+export type BrandingLogoError = BrandingLogoErrors[keyof BrandingLogoErrors];
+
+export type BrandingLogoResponses = {
+    /**
+     * Successful Response
+     */
+    200: unknown;
+};

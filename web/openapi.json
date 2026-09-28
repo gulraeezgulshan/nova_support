@@ -3372,7 +3372,7 @@
           "storefront"
         ],
         "summary": "Get Storefront Config",
-        "description": "Company details, delivery, returns and warranty facts, and the FAQ (public).",
+        "description": "Company details (from Settings), delivery, returns and warranty facts, and the FAQ.",
         "operationId": "get_storefront_config",
         "responses": {
           "200": {
@@ -4858,6 +4858,242 @@
           }
         }
       }
+    },
+    "/api/v1/settings": {
+      "get": {
+        "tags": [
+          "settings"
+        ],
+        "summary": "Read Settings",
+        "operationId": "read_settings",
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/SettingsOut"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "HTTPBearer": []
+          }
+        ]
+      },
+      "put": {
+        "tags": [
+          "settings"
+        ],
+        "summary": "Update Settings",
+        "operationId": "update_settings",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/SettingsUpdate"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/SettingsOut"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "HTTPBearer": []
+          }
+        ]
+      }
+    },
+    "/api/v1/settings/logo/{target}": {
+      "post": {
+        "tags": [
+          "settings"
+        ],
+        "summary": "Upload Logo",
+        "operationId": "upload_logo",
+        "security": [
+          {
+            "HTTPBearer": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "target",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "enum": [
+                "shop",
+                "console"
+              ],
+              "type": "string",
+              "title": "Target"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "multipart/form-data": {
+              "schema": {
+                "$ref": "#/components/schemas/Body_upload_logo"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/SettingsOut"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      },
+      "delete": {
+        "tags": [
+          "settings"
+        ],
+        "summary": "Delete Logo",
+        "operationId": "delete_logo",
+        "security": [
+          {
+            "HTTPBearer": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "target",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "enum": [
+                "shop",
+                "console"
+              ],
+              "type": "string",
+              "title": "Target"
+            }
+          }
+        ],
+        "responses": {
+          "204": {
+            "description": "Successful Response"
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/branding": {
+      "get": {
+        "tags": [
+          "settings"
+        ],
+        "summary": "Read Branding",
+        "operationId": "read_branding",
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/BrandingOut"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/branding/logo/{target}": {
+      "get": {
+        "tags": [
+          "settings"
+        ],
+        "summary": "Branding Logo",
+        "operationId": "branding_logo",
+        "parameters": [
+          {
+            "name": "target",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "enum": [
+                "shop",
+                "console"
+              ],
+              "type": "string",
+              "title": "Target"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "image/*": {}
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
     }
   },
   "components": {
@@ -5200,6 +5436,57 @@
           "agreement_pct"
         ],
         "title": "AgreementOut"
+      },
+      "AiSettings": {
+        "properties": {
+          "provider": {
+            "type": "string",
+            "enum": [
+              "openai",
+              "anthropic"
+            ],
+            "title": "Provider"
+          },
+          "model": {
+            "type": "string",
+            "maxLength": 100,
+            "minLength": 1,
+            "title": "Model"
+          },
+          "effort": {
+            "type": "string",
+            "enum": [
+              "none",
+              "minimal",
+              "low",
+              "medium",
+              "high",
+              "xhigh",
+              "max"
+            ],
+            "title": "Effort"
+          },
+          "retrieval_limit": {
+            "type": "integer",
+            "maximum": 20.0,
+            "minimum": 3.0,
+            "title": "Retrieval Limit"
+          },
+          "auto_analysis": {
+            "type": "boolean",
+            "title": "Auto Analysis"
+          }
+        },
+        "additionalProperties": false,
+        "type": "object",
+        "required": [
+          "provider",
+          "model",
+          "effort",
+          "retrieval_limit",
+          "auto_analysis"
+        ],
+        "title": "AiSettings"
       },
       "Amount": {
         "properties": {
@@ -5781,6 +6068,20 @@
         ],
         "title": "Body_upload_document"
       },
+      "Body_upload_logo": {
+        "properties": {
+          "file": {
+            "type": "string",
+            "contentMediaType": "application/octet-stream",
+            "title": "File"
+          }
+        },
+        "type": "object",
+        "required": [
+          "file"
+        ],
+        "title": "Body_upload_logo"
+      },
       "Body_upload_product_image": {
         "properties": {
           "file": {
@@ -5794,6 +6095,207 @@
           "file"
         ],
         "title": "Body_upload_product_image"
+      },
+      "BrandingOut": {
+        "properties": {
+          "shop_name": {
+            "type": "string",
+            "title": "Shop Name"
+          },
+          "shop_tagline": {
+            "type": "string",
+            "title": "Shop Tagline"
+          },
+          "console_name": {
+            "type": "string",
+            "title": "Console Name"
+          },
+          "support_email": {
+            "type": "string",
+            "title": "Support Email"
+          },
+          "phone": {
+            "type": "string",
+            "title": "Phone"
+          },
+          "address": {
+            "type": "string",
+            "title": "Address"
+          },
+          "hours": {
+            "type": "string",
+            "title": "Hours"
+          },
+          "shop_logo_url": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Shop Logo Url"
+          },
+          "console_logo_url": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Console Logo Url"
+          }
+        },
+        "type": "object",
+        "required": [
+          "shop_name",
+          "shop_tagline",
+          "console_name",
+          "support_email",
+          "phone",
+          "address",
+          "hours",
+          "shop_logo_url",
+          "console_logo_url"
+        ],
+        "title": "BrandingOut"
+      },
+      "BrandingSettings": {
+        "properties": {
+          "shop_name": {
+            "type": "string",
+            "maxLength": 60,
+            "minLength": 1,
+            "title": "Shop Name"
+          },
+          "shop_tagline": {
+            "type": "string",
+            "maxLength": 140,
+            "title": "Shop Tagline"
+          },
+          "console_name": {
+            "type": "string",
+            "maxLength": 40,
+            "minLength": 1,
+            "title": "Console Name"
+          },
+          "support_email": {
+            "type": "string",
+            "maxLength": 120,
+            "title": "Support Email"
+          },
+          "phone": {
+            "type": "string",
+            "maxLength": 40,
+            "minLength": 1,
+            "title": "Phone"
+          },
+          "address": {
+            "type": "string",
+            "maxLength": 200,
+            "minLength": 1,
+            "title": "Address"
+          },
+          "hours": {
+            "type": "string",
+            "maxLength": 100,
+            "minLength": 1,
+            "title": "Hours"
+          },
+          "shop_logo_key": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Shop Logo Key"
+          },
+          "console_logo_key": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Console Logo Key"
+          }
+        },
+        "additionalProperties": false,
+        "type": "object",
+        "required": [
+          "shop_name",
+          "shop_tagline",
+          "console_name",
+          "support_email",
+          "phone",
+          "address",
+          "hours"
+        ],
+        "title": "BrandingSettings"
+      },
+      "BrandingText": {
+        "properties": {
+          "shop_name": {
+            "type": "string",
+            "maxLength": 60,
+            "minLength": 1,
+            "title": "Shop Name"
+          },
+          "shop_tagline": {
+            "type": "string",
+            "maxLength": 140,
+            "title": "Shop Tagline"
+          },
+          "console_name": {
+            "type": "string",
+            "maxLength": 40,
+            "minLength": 1,
+            "title": "Console Name"
+          },
+          "support_email": {
+            "type": "string",
+            "maxLength": 120,
+            "title": "Support Email"
+          },
+          "phone": {
+            "type": "string",
+            "maxLength": 40,
+            "minLength": 1,
+            "title": "Phone"
+          },
+          "address": {
+            "type": "string",
+            "maxLength": 200,
+            "minLength": 1,
+            "title": "Address"
+          },
+          "hours": {
+            "type": "string",
+            "maxLength": 100,
+            "minLength": 1,
+            "title": "Hours"
+          }
+        },
+        "additionalProperties": false,
+        "type": "object",
+        "required": [
+          "shop_name",
+          "shop_tagline",
+          "console_name",
+          "support_email",
+          "phone",
+          "address",
+          "hours"
+        ],
+        "title": "BrandingText"
       },
       "CategoryCreate": {
         "properties": {
@@ -8067,6 +8569,41 @@
         ],
         "title": "DocumentVersionOut"
       },
+      "EmailSettings": {
+        "properties": {
+          "mailbox_check_seconds": {
+            "type": "integer",
+            "maximum": 3600.0,
+            "minimum": 60.0,
+            "title": "Mailbox Check Seconds"
+          },
+          "outbox_flush_seconds": {
+            "type": "integer",
+            "maximum": 600.0,
+            "minimum": 15.0,
+            "title": "Outbox Flush Seconds"
+          },
+          "from_name": {
+            "type": "string",
+            "maxLength": 80,
+            "minLength": 1,
+            "title": "From Name"
+          },
+          "auto_replies": {
+            "type": "boolean",
+            "title": "Auto Replies"
+          }
+        },
+        "additionalProperties": false,
+        "type": "object",
+        "required": [
+          "mailbox_check_seconds",
+          "outbox_flush_seconds",
+          "from_name",
+          "auto_replies"
+        ],
+        "title": "EmailSettings"
+      },
       "EnquiryOut": {
         "properties": {
           "ref": {
@@ -8992,6 +9529,36 @@
         ],
         "title": "NewsletterIn"
       },
+      "OperationsSettings": {
+        "properties": {
+          "sla_scan_minutes": {
+            "type": "integer",
+            "maximum": 60.0,
+            "minimum": 1.0,
+            "title": "Sla Scan Minutes"
+          },
+          "verified_min_score": {
+            "type": "integer",
+            "maximum": 100.0,
+            "minimum": 50.0,
+            "title": "Verified Min Score"
+          },
+          "always_review_escalation_level": {
+            "type": "integer",
+            "maximum": 5.0,
+            "minimum": 1.0,
+            "title": "Always Review Escalation Level"
+          }
+        },
+        "additionalProperties": false,
+        "type": "object",
+        "required": [
+          "sla_scan_minutes",
+          "verified_min_score",
+          "always_review_escalation_level"
+        ],
+        "title": "OperationsSettings"
+      },
       "OrderOut": {
         "properties": {
           "order_ref": {
@@ -9253,6 +9820,41 @@
           "open_reviews"
         ],
         "title": "OverviewOut"
+      },
+      "PolicyFactOut": {
+        "properties": {
+          "fact": {
+            "type": "string",
+            "title": "Fact"
+          },
+          "value": {
+            "type": "string",
+            "title": "Value"
+          },
+          "source": {
+            "type": "string",
+            "title": "Source"
+          },
+          "version": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Version"
+          }
+        },
+        "type": "object",
+        "required": [
+          "fact",
+          "value",
+          "source",
+          "version"
+        ],
+        "title": "PolicyFactOut"
       },
       "PolicyReference": {
         "properties": {
@@ -10413,6 +11015,31 @@
         ],
         "title": "RunStatus"
       },
+      "RuntimeSettings": {
+        "properties": {
+          "email": {
+            "$ref": "#/components/schemas/EmailSettings"
+          },
+          "ai": {
+            "$ref": "#/components/schemas/AiSettings"
+          },
+          "operations": {
+            "$ref": "#/components/schemas/OperationsSettings"
+          },
+          "branding": {
+            "$ref": "#/components/schemas/BrandingSettings"
+          }
+        },
+        "additionalProperties": false,
+        "type": "object",
+        "required": [
+          "email",
+          "ai",
+          "operations",
+          "branding"
+        ],
+        "title": "RuntimeSettings"
+      },
       "SearchResultOut": {
         "properties": {
           "chunk_code": {
@@ -10508,6 +11135,129 @@
           "score"
         ],
         "title": "SearchResultOut"
+      },
+      "SettingsOut": {
+        "properties": {
+          "settings": {
+            "$ref": "#/components/schemas/RuntimeSettings"
+          },
+          "version": {
+            "type": "integer",
+            "title": "Version"
+          },
+          "updated_at": {
+            "anyOf": [
+              {
+                "type": "string",
+                "format": "date-time"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Updated At"
+          },
+          "updated_by": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Updated By"
+          },
+          "providers_available": {
+            "items": {
+              "type": "string"
+            },
+            "type": "array",
+            "title": "Providers Available"
+          },
+          "suggested_models": {
+            "additionalProperties": {
+              "items": {
+                "type": "string"
+              },
+              "type": "array"
+            },
+            "type": "object",
+            "title": "Suggested Models"
+          },
+          "policy_facts": {
+            "items": {
+              "$ref": "#/components/schemas/PolicyFactOut"
+            },
+            "type": "array",
+            "title": "Policy Facts"
+          },
+          "shop_logo_url": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Shop Logo Url"
+          },
+          "console_logo_url": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Console Logo Url"
+          }
+        },
+        "type": "object",
+        "required": [
+          "settings",
+          "version",
+          "updated_at",
+          "updated_by",
+          "providers_available",
+          "suggested_models",
+          "policy_facts",
+          "shop_logo_url",
+          "console_logo_url"
+        ],
+        "title": "SettingsOut"
+      },
+      "SettingsUpdate": {
+        "properties": {
+          "version": {
+            "type": "integer",
+            "title": "Version"
+          },
+          "email": {
+            "$ref": "#/components/schemas/EmailSettings"
+          },
+          "ai": {
+            "$ref": "#/components/schemas/AiSettings"
+          },
+          "operations": {
+            "$ref": "#/components/schemas/OperationsSettings"
+          },
+          "branding": {
+            "$ref": "#/components/schemas/BrandingText"
+          }
+        },
+        "additionalProperties": false,
+        "type": "object",
+        "required": [
+          "version",
+          "email",
+          "ai",
+          "operations",
+          "branding"
+        ],
+        "title": "SettingsUpdate"
       },
       "Shipping": {
         "properties": {

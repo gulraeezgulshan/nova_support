@@ -1,17 +1,20 @@
 """Run-time settings (admin) and public branding."""
 
-from fastapi import APIRouter, Depends, HTTPException, status
+from fastapi import APIRouter, Depends, File, HTTPException, Response, UploadFile, status
+from fastapi.concurrency import run_in_threadpool
 from sqlalchemy.ext.asyncio import AsyncSession
 
 import app_settings
-from app_settings import SUGGESTED_MODELS, RuntimeSettings, StaleSettingsError
+from app_settings import SUGGESTED_MODELS, RuntimeSettings, StaleSettingsError, logos
 from app_settings.facts import policy_facts
-from app_settings.model import BrandingSettings
+from app_settings.model import BrandingSettings, LogoTarget
 from database.models import Role, User
 from database.session import get_db
 from security.dependencies import require_roles
-from src.api.schemas import SettingsOut, SettingsUpdate
+from src.api.schemas import BrandingOut, SettingsOut, SettingsUpdate
 from src.core.config import get_settings
+from src.core.storage import Storage, get_storage
+from storefront.images import image_type
 
 router = APIRouter(tags=["settings"])
 admin_only = require_roles(Role.ADMIN)
@@ -75,3 +78,53 @@ async def update_settings(
             status.HTTP_409_CONFLICT, "Someone else changed the settings; reload and try again."
         ) from exc
     return await _out(db)
+
+
+@router.post("/settings/logo/{target}", response_model=SettingsOut)
+async def upload_logo(
+    target: LogoTarget,
+    file: UploadFile = File(...),
+    actor: User = Depends(admin_only),
+    db: AsyncSession = Depends(get_db),
+    storage: Storage = Depends(get_storage),
+) -> SettingsOut:
+    try:
+        await logos.set_logo(db, target, await file.read(), storage, actor)
+    except logos.LogoError as exc:
+        raise HTTPException(status.HTTP_422_UNPROCESSABLE_CONTENT, str(exc)) from exc
+    return await _out(db)
+
+
+@router.delete("/settings/logo/{target}", status_code=status.HTTP_204_NO_CONTENT)
+async def delete_logo(
+    target: LogoTarget, actor: User = Depends(admin_only), db: AsyncSession = Depends(get_db)
+) -> Response:
+    await logos.remove_logo(db, target, actor)
+    return Response(status_code=status.HTTP_204_NO_CONTENT)
+
+
+@router.get("/branding", response_model=BrandingOut)
+async def read_branding() -> BrandingOut:
+    b = app_settings.runtime().branding
+    return BrandingOut(
+        **b.model_dump(exclude={"shop_logo_key", "console_logo_key"}),
+        shop_logo_url=logo_url("shop", b.shop_logo_key),
+        console_logo_url=logo_url("console", b.console_logo_key),
+    )
+
+
+@router.get(
+    "/branding/logo/{target}",
+    response_class=Response,
+    responses={200: {"content": {"image/*": {}}}},
+)
+async def branding_logo(target: LogoTarget, storage: Storage = Depends(get_storage)) -> Response:
+    key = getattr(app_settings.runtime().branding, f"{target}_logo_key")
+    if key is None:
+        raise HTTPException(status.HTTP_404_NOT_FOUND, "No logo")
+    data = await run_in_threadpool(storage.get, key)
+    return Response(
+        content=data,
+        media_type=image_type(data) or "application/octet-stream",
+        headers={"Cache-Control": "public, max-age=300", "X-Content-Type-Options": "nosniff"},
+    )

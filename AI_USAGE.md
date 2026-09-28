@@ -319,3 +319,16 @@ architecture and is documented in the project report, not here.
 - **Changes made:** Docker build without BuildKit cache mounts (Railway); deployment guide rewritten for Railway's service settings and Vercel's pnpm install; four-page draw.io architecture diagram exported as PNG; the evaluation retries a complaint when the provider connection drops; the comparison report scores only labelled fields (a missing label had counted as wrong); tests no longer read a developer's real mailbox settings from `.env`; the full hold-out evaluation was run and its results written up, including the missed 20-second latency target; the blog moved to `/blog` on the website with the diagrams, a table of contents and Open Graph metadata.
 - **Tests performed:** 4 new backend tests; full suite 436 passed; ruff, mypy, ESLint, tsc and `next build` pass (`/blog` pages pre-rendered). The deployed API and web app were checked by the team in the browser.
 - **Verified by:** _to be completed by the team_
+
+## Entry 12: E-mail replies from Railway (Brevo sender)
+
+| Field | Details |
+|---|---|
+| **Date** | 2026-09-28 |
+| **Tool** | Claude Code (Anthropic), model Claude Opus 5.5 |
+| **Purpose** | Fix e-mail acknowledgements and approved replies never reaching customers on the deployed system |
+
+- **Files affected:** `email_channel/{transport,tasks,retry}.py`, `src/core/config.py`, `tests/unit/test_brevo_sender.py`, `tests/integration/test_mailbox_tasks.py`, `.env.example`, `documentation/deployment.md`; test counts in the README and documentation.
+- **Changes made:** the Mailbox *Sent* tab showed every outgoing e-mail failing with `Network is unreachable`; a socket test from the Railway worker confirmed IMAP (993) connects while SMTP (465) times out, i.e. Railway blocks outbound SMTP on the current plan. Added a Brevo sender (HTTPS API) selected with `MAIL_SEND_VIA=brevo`, with Reply-To set to the support mailbox so customer replies still reach the IMAP inbox; the outbox uses the configured sender; `python -m email_channel.retry` re-queues e-mails that gave up.
+- **Tests performed:** 7 new backend tests (Brevo request format, error handling without leaking the key, sender choice, configuration check, outbox default sender, retry of failed e-mails); full suite 443 passed; ruff and mypy pass.
+- **Verified by:** _to be completed by the team_

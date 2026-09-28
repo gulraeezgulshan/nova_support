@@ -1,13 +1,20 @@
-"""IMAP (read) and SMTP (send) for the support mailbox, behind small protocols."""
+"""IMAP (read) and SMTP or Brevo (send) for the support mailbox, behind small protocols."""
 
 import contextlib
 import imaplib
 import smtplib
 import ssl
 from email.message import EmailMessage
+from email.utils import getaddresses
 from typing import Protocol
 
+import httpx
+
 from src.core.config import Settings
+
+BREVO_URL = "https://api.brevo.com/v3/smtp/email"
+# Threading and loop-prevention headers carried over to Brevo; From/To/Subject go in the body.
+BREVO_HEADERS = ("Message-ID", "In-Reply-To", "References", "Auto-Submitted")
 
 
 class Mailbox(Protocol):
@@ -76,3 +83,48 @@ class SmtpSender:
                 smtp.starttls(context=context)
                 smtp.login(s.mail_username, s.mail_password)
                 smtp.send_message(message)
+
+
+class BrevoSender:
+    """Sends through Brevo's HTTPS API, for hosts that block outbound SMTP ports.
+
+    Brevo may send from its own domain when the sender is a free-mail address, so Reply-To
+    points at the support mailbox: customer replies still arrive where the IMAP check reads.
+    """
+
+    def __init__(self, settings: Settings, client: httpx.Client | None = None):
+        self._settings = settings
+        self._client = client or httpx.Client(timeout=30)
+
+    def send(self, message: EmailMessage) -> None:
+        s = self._settings
+        if not (s.brevo_api_key and s.mail_username):
+            raise ValueError("Brevo is not configured (BREVO_API_KEY, MAIL_USERNAME).")
+        mailbox = {"name": s.mail_from_name, "email": s.mail_username}
+        body = message.get_body(preferencelist=("plain",))
+        payload = {
+            "sender": mailbox,
+            "replyTo": mailbox,
+            "to": [
+                {"email": address, **({"name": name} if name else {})}
+                for name, address in getaddresses([str(message["To"])])
+            ],
+            "subject": str(message["Subject"]),
+            "textContent": body.get_content() if body else "",
+            "headers": {h: str(message[h]) for h in BREVO_HEADERS if message[h]},
+        }
+        response = self._client.post(
+            BREVO_URL,
+            json=payload,
+            headers={"api-key": s.brevo_api_key, "accept": "application/json"},
+        )
+        if response.status_code >= 300:
+            try:
+                reason = response.json().get("message", response.text)
+            except ValueError:
+                reason = response.text
+            raise RuntimeError(f"Brevo refused the e-mail ({response.status_code}): {reason}"[:500])
+
+
+def get_sender(settings: Settings) -> Sender:
+    return BrevoSender(settings) if settings.mail_send_via == "brevo" else SmtpSender(settings)

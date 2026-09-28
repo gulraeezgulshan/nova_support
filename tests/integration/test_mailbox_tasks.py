@@ -157,6 +157,38 @@ def test_flush_gives_up_after_three_attempts() -> None:
         )
 
 
+def test_flush_uses_the_configured_sender_by_default(monkeypatch: pytest.MonkeyPatch) -> None:
+    tasks.check(lambda s: FakeMailbox([build(text=BODY)]), configured())
+    chosen: list[Settings] = []
+
+    def factory(settings: Settings) -> FakeSender:
+        chosen.append(settings)
+        return FakeSender(settings)
+
+    monkeypatch.setattr(tasks, "get_sender", factory)
+    assert tasks.flush(settings=configured()) == {"sent": 1, "failed": 0}
+    assert len(chosen) == 1 and len(FakeSender.sent) == 1
+
+
+def test_failed_emails_can_be_queued_again_once_sending_works() -> None:
+    tasks.check(lambda s: FakeMailbox([build(text=BODY)]), configured())
+    FakeSender.fail = True
+    now = datetime.now(UTC)
+    for hours in (0, 1, 2):
+        tasks.flush(FakeSender, configured(), now + timedelta(hours=hours))
+    FakeSender.fail = False
+
+    assert tasks.retry_failed() == 1
+    assert tasks.flush(FakeSender, configured(), now + timedelta(hours=3)) == {
+        "sent": 1,
+        "failed": 0,
+    }
+    with sync_session() as db:
+        email = db.scalars(select(OutboundEmail)).one()
+        assert email.status == "sent" and email.error is None
+    assert tasks.retry_failed() == 0  # nothing left to retry
+
+
 def test_flush_without_settings_marks_not_configured() -> None:
     tasks.check(lambda s: FakeMailbox([build(text=BODY)]), configured())
     assert tasks.flush(FakeSender, get_settings()) == {"sent": 0, "failed": 0}

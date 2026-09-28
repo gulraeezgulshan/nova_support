@@ -9,7 +9,7 @@ Browser ──► Vercel (Next.js, web/) ──► Railway: api (FastAPI) ──
                                              │                     Railway: Redis
                                              │                         ▲
                                              │        Railway: worker (Celery) ── Anthropic / OpenAI API
-                                             │                                 ── support mailbox (IMAP/SMTP)
+                                             │                                 ── support mailbox (IMAP in; SMTP or Brevo out)
                                              │        Railway: beat (schedules: SLA scan every 5 min,
                                              │                       mailbox check every 1 min,
                                              │                       e-mail outbox every 30 s)
@@ -83,8 +83,13 @@ badge). A *production* instance needs your own domain.
    | `OPENAI_API_KEY`, `OPENAI_MODEL` | for OpenAI (e.g. `gpt-5-mini`) |
    | `MAIL_IMAP_HOST`, `MAIL_IMAP_PORT`, `MAIL_SMTP_HOST`, `MAIL_SMTP_PORT`, `MAIL_USERNAME`, `MAIL_PASSWORD`, `MAIL_FROM_NAME` | optional: the support mailbox for e-mail complaints (Gmail: `imap.gmail.com` 993, `smtp.gmail.com` 465, an App password). The *worker* reads and sends the mail (beat only schedules it) and the *api* shows its status, so set them on both — shared variables do that |
 
+   | `MAIL_SEND_VIA`, `BREVO_API_KEY` | **Railway blocks outbound SMTP below the Pro plan** (e-mails fail with `Network is unreachable` or time out; reading over IMAP still works). Set `MAIL_SEND_VIA=brevo` and a Brevo API key on *worker* and *api* to send over HTTPS instead: create a free account at brevo.com, **Senders → Add a sender** with the `MAIL_USERNAME` address and confirm the e-mail Brevo sends, then **SMTP & API → API keys → Generate**. Replies still come back to the Gmail inbox (Reply-To) |
+
    Use a mailbox that no other SupportNova (e.g. your local `make worker`) is reading: two
    workers on one inbox each take whichever new e-mails they see first.
+
+   E-mails that failed before sending was fixed can be sent again from the *worker* shell:
+   `python -m email_channel.retry`.
 
    The API refuses to start in production if the Clerk issuer, the CORS origin or R2 storage
    is missing, so misconfiguration shows up in the deploy log instead of at run time.

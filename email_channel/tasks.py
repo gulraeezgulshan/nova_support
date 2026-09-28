@@ -16,7 +16,7 @@ from database.models import InboundEmail, MailboxState, OutboundEmail
 from database.session import get_sync_engine, sync_session, task_session
 from email_channel.inbound import new_record, process_email
 from email_channel.parsing import ParsedEmail, parse_email
-from email_channel.transport import ImapMailbox, Mailbox, Sender, SmtpSender
+from email_channel.transport import ImapMailbox, Mailbox, Sender, get_sender
 from src.core.config import Settings, get_settings
 from src.core.logging import get_logger
 from src.core.storage import get_storage
@@ -147,12 +147,13 @@ def build_message(email: OutboundEmail, settings: Settings) -> EmailMessage:
 
 
 def flush(
-    sender_factory: Callable[[Settings], Sender] = SmtpSender,
+    sender_factory: Callable[[Settings], Sender] | None = None,
     settings: Settings | None = None,
     now: datetime | None = None,
 ) -> dict[str, int]:
     """Send queued e-mails that are due; failures are retried with growing delays."""
     settings = settings or get_settings()
+    sender_factory = sender_factory or get_sender  # SMTP or Brevo, from the settings
     now = now or datetime.now(UTC)
     sent = failed = 0
     with sync_session() as db:
@@ -189,6 +190,16 @@ def flush(
                 failed += 1
         db.commit()
     return {"sent": sent, "failed": failed}
+
+
+def retry_failed() -> int:
+    """Queue e-mails that gave up (e.g. while sending was blocked) for a fresh set of attempts."""
+    with sync_session() as db:
+        failed = db.scalars(select(OutboundEmail).where(OutboundEmail.status == "failed")).all()
+        for email in failed:
+            email.status, email.attempts, email.next_attempt_at = "queued", 0, None
+        db.commit()
+        return len(failed)
 
 
 @celery_app.task(name="email_channel.tasks.check_mailbox")  # type: ignore[untyped-decorator]

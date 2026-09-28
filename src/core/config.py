@@ -82,15 +82,15 @@ class Settings(BaseSettings):
     mail_username: str | None = None
     mail_password: str | None = None  # an app password; never logged or returned
     mail_from_name: str = "VoltHaven Customer Care"
+    # How replies are sent: SMTP, or Brevo's HTTPS API for hosts that block outbound SMTP
+    # (Railway below the Pro plan). Reading always uses IMAP.
+    mail_send_via: Literal["smtp", "brevo"] = "smtp"
+    brevo_api_key: str | None = None  # never logged or returned
 
     @property
     def mailbox_configured(self) -> bool:
-        return bool(
-            self.mail_imap_host
-            and self.mail_smtp_host
-            and self.mail_username
-            and self.mail_password
-        )
+        sending = self.brevo_api_key if self.mail_send_via == "brevo" else self.mail_smtp_host
+        return bool(self.mail_imap_host and sending and self.mail_username and self.mail_password)
 
     @property
     def genai_model(self) -> str:

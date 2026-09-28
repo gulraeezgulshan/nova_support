@@ -5,7 +5,13 @@ import remarkGfm from "remark-gfm";
 
 import { slugify } from "@/lib/blog";
 
-type HastNode = { type: string; value?: string; children?: HastNode[] };
+type HastNode = { type: string; tagName?: string; value?: string; children?: HastNode[] };
+
+/** A paragraph holding only an image: rendered as a bare <figure>, since <p> cannot contain one. */
+function isImageOnly(node: HastNode | undefined): boolean {
+  const kids = (node?.children ?? []).filter((c) => !(c.type === "text" && !c.value?.trim()));
+  return kids.length === 1 && kids[0].type === "element" && kids[0].tagName === "img";
+}
 
 function textOf(node: HastNode | undefined): string {
   if (!node) return "";
@@ -36,6 +42,9 @@ function heading(level: 2 | 3) {
 const components: Components = {
   h2: heading(2),
   h3: heading(3),
+  p({ node, children }) {
+    return isImageOnly(node as HastNode) ? <>{children}</> : <p>{children}</p>;
+  },
   a({ href = "", children }) {
     if (href.startsWith("/") || href.startsWith("#")) return <Link href={href}>{children}</Link>;
     return (

@@ -19,7 +19,7 @@ export const POSTS: PostMeta[] = [
       "How SupportNova classifies, routes and answers customer complaints with generative AI — " +
       "and why an independent Python rule engine, not the model, makes every decision.",
     date: "2026-09-28",
-    author: "The SupportNova team",
+    author: "Team SupportNova · TechWiz 7.0",
     tags: ["Generative AI", "RAG", "Python", "Validation"],
   },
 ];

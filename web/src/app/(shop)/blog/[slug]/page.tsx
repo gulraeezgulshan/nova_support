@@ -1,11 +1,13 @@
-import { ArrowLeft } from "lucide-react";
+import { ArrowLeft, ArrowRight } from "lucide-react";
 import type { Metadata } from "next";
 import Link from "next/link";
 import { notFound } from "next/navigation";
 
 import { Markdown } from "@/components/blog/markdown";
+import { TeamStrip } from "@/components/team/team-cards";
 import { Badge } from "@/components/ui/badge";
 import { findPost, formatPostDate, loadPost, POSTS } from "@/lib/blog";
+import { COMPETITION, TEAM } from "@/lib/team";
 
 export const dynamicParams = false; // only the posts that exist, built at deploy time
 
@@ -84,6 +86,23 @@ export default async function BlogPost({ params }: PageProps<"/blog/[slug]">) {
         </nav>
         <article className="max-w-3xl min-w-0">
           <Markdown source={post.body} />
+          <section aria-labelledby="team" className="mt-16 rounded-3xl border bg-card p-6 sm:p-8">
+            <h2 id="team" className="text-2xl font-semibold tracking-tight">
+              Meet the team
+            </h2>
+            <p className="mt-2 text-muted-foreground">
+              Built by five students and their mentor for {COMPETITION.name}.
+            </p>
+            <div className="mt-6">
+              <TeamStrip members={TEAM} />
+            </div>
+            <Link
+              href="/team"
+              className="mt-6 inline-flex items-center gap-1 text-sm font-medium text-brand hover:underline"
+            >
+              Meet the team <ArrowRight className="size-4" />
+            </Link>
+          </section>
         </article>
       </div>
     </div>

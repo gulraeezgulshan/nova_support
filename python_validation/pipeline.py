@@ -13,6 +13,7 @@ from typing import Any
 from sqlalchemy import select
 from sqlalchemy.orm import Session
 
+import app_settings
 from comparison_engine.labels import expected_labels
 from complaint_processing import sla
 from complaint_processing.facts import build_facts
@@ -190,6 +191,16 @@ def run_validation(
     return validation
 
 
+AUTO_REPLIES_OFF = "Automatic replies are off: approve the reply."
+
+
+def review_reasons(verdict: str, reasons: list[str], *, auto_replies: bool) -> list[str] | None:
+    """Why a person must look before the customer gets a reply; None if nobody must."""
+    if verdict == Verdict.NEEDS_REVIEW:
+        return reasons
+    return None if auto_replies else [AUTO_REPLIES_OFF]
+
+
 def _apply(
     db: Session,
     complaint: Complaint,
@@ -211,10 +222,13 @@ def _apply(
     complaint.verification = verdict
     sla.refresh(complaint, sla.policy_for(db, complaint.priority), datetime.now(UTC))
 
-    if verdict == Verdict.NEEDS_REVIEW:
+    review = review_reasons(
+        verdict, reasons, auto_replies=app_settings.runtime().email.auto_replies
+    )
+    if review is not None:
         complaint.needs_review = True
-        complaint.review_reason = "; ".join(reasons)[:2000]
-        open_review_task(db, complaint, validation.id, reasons)
+        complaint.review_reason = "; ".join(review)[:2000]
+        open_review_task(db, complaint, validation.id, review)
     else:
         complaint.needs_review = False
         complaint.review_reason = None
@@ -232,8 +246,9 @@ def _apply(
     from email_channel.notify import after_validation as email_after_validation
     from support_chat.notify import after_validation
 
-    after_validation(db, complaint, verdict, draft)
-    email_after_validation(db, complaint, verdict, draft)
+    held = review is not None and verdict != Verdict.NEEDS_REVIEW
+    after_validation(db, complaint, verdict, draft, auto_reply=not held)
+    email_after_validation(db, complaint, verdict, draft, auto_reply=not held)
 
 
 def open_review_task(

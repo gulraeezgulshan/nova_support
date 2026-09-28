@@ -12,6 +12,7 @@ from email.utils import formataddr
 
 from sqlalchemy import or_, select, text
 
+import app_settings
 from database.models import InboundEmail, MailboxState, OutboundEmail
 from database.session import get_sync_engine, sync_session, task_session
 from email_channel.inbound import new_record, process_email
@@ -133,7 +134,9 @@ def check(
 
 def build_message(email: OutboundEmail, settings: Settings) -> EmailMessage:
     message = EmailMessage()
-    message["From"] = formataddr((settings.mail_from_name, settings.mail_username or ""))
+    message["From"] = formataddr(
+        (app_settings.runtime().email.from_name, settings.mail_username or "")
+    )
     message["To"] = email.to_address
     message["Subject"] = email.subject
     message["Message-ID"] = email.message_id

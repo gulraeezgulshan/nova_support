@@ -24,7 +24,9 @@ def _holding_text(complaint: Complaint) -> str:
     )
 
 
-def after_validation(db: Session, complaint: Complaint, verdict: str, draft: str | None) -> None:
+def after_validation(
+    db: Session, complaint: Complaint, verdict: str, draft: str | None, *, auto_reply: bool = True
+) -> None:
     conversation = db.scalar(
         select(ChatConversation).where(ChatConversation.complaint_id == complaint.id)
     )
@@ -42,7 +44,7 @@ def after_validation(db: Session, complaint: Complaint, verdict: str, draft: str
     )
     if replies or complaint.approved_response:
         return  # the customer already has a reply; re-validation never adds another
-    if verdict in AUTO_REPLY_VERDICTS and draft:
+    if auto_reply and verdict in AUTO_REPLY_VERDICTS and draft:
         db.add(
             ChatMessage(
                 conversation_id=conversation.id,
@@ -52,7 +54,7 @@ def after_validation(db: Session, complaint: Complaint, verdict: str, draft: str
                 payload={"verdict": verdict},
             )
         )
-    elif verdict not in AUTO_REPLY_VERDICTS and "holding" not in posted:
+    elif (verdict not in AUTO_REPLY_VERDICTS or not auto_reply) and "holding" not in posted:
         db.add(
             ChatMessage(
                 conversation_id=conversation.id,

@@ -5,7 +5,7 @@ import imaplib
 import smtplib
 import ssl
 from email.message import EmailMessage
-from email.utils import getaddresses
+from email.utils import getaddresses, parseaddr
 from typing import Protocol
 
 import httpx
@@ -100,7 +100,8 @@ class BrevoSender:
         s = self._settings
         if not (s.brevo_api_key and s.mail_username):
             raise ValueError("Brevo is not configured (BREVO_API_KEY, MAIL_USERNAME).")
-        mailbox = {"name": s.mail_from_name, "email": s.mail_username}
+        name, _ = parseaddr(str(message["From"]))
+        mailbox = {"name": name or s.mail_from_name, "email": s.mail_username}
         body = message.get_body(preferencelist=("plain",))
         payload = {
             "sender": mailbox,

@@ -37,7 +37,9 @@ def _queue(
     )
 
 
-def after_validation(db: Session, complaint: Complaint, verdict: str, draft: str | None) -> None:
+def after_validation(
+    db: Session, complaint: Complaint, verdict: str, draft: str | None, *, auto_reply: bool = True
+) -> None:
     if complaint.channel != "email":
         return
     origin = db.scalar(_origin(complaint))
@@ -48,9 +50,9 @@ def after_validation(db: Session, complaint: Complaint, verdict: str, draft: str
     )
     if "reply" in kinds or complaint.approved_response:
         return  # the customer already has (or will get) the approved reply
-    if verdict in AUTO_REPLY_VERDICTS and draft:
+    if auto_reply and verdict in AUTO_REPLY_VERDICTS and draft:
         _queue(db, complaint, origin, "reply", draft + SIGNATURE)
-    elif verdict not in AUTO_REPLY_VERDICTS and "holding" not in kinds:
+    elif (verdict not in AUTO_REPLY_VERDICTS or not auto_reply) and "holding" not in kinds:
         body = compose("holding", name=origin.from_name, ref=complaint.complaint_ref)
         _queue(db, complaint, origin, "holding", body)
 

@@ -23,6 +23,7 @@ from typing import Any
 
 from sqlalchemy import func, select
 
+import app_settings
 from database.models import AnalysisRun, LlmCall, PromptVersion
 from database.session import sync_session
 from src.core.config import ROOT_DIR, get_settings
@@ -62,12 +63,13 @@ def export(out: Path = OUT) -> int:
             print("No GenAI calls logged yet. Analyse complaints first (make analyze).")
             return 1
         prompts = db.scalars(select(PromptVersion).order_by(PromptVersion.created_at)).all()
+        ai = app_settings.runtime().ai
         _write(
             "generation_config.json",
             {
-                "provider": settings.genai_provider,
-                "model": settings.genai_model,
-                "effort": settings.genai_effort,
+                "provider": ai.provider,
+                "model": ai.model,
+                "effort": ai.effort,
                 "max_attempts": settings.genai_max_attempts,
                 "timeout_seconds": settings.genai_timeout_seconds,
                 "structured_output": "JSON schema complaint_analysis.v1, generated from the live "

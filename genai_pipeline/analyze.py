@@ -15,6 +15,7 @@ import uuid
 
 from sqlalchemy import select
 
+import app_settings
 from database.models import AnalysisRun, Complaint
 from database.session import sync_session
 from genai_pipeline.pipeline import run_analysis
@@ -47,9 +48,9 @@ def main() -> int:
     parser.add_argument("--include-analysed", action="store_true")
     args = parser.parse_args()
     settings = get_settings()
-    if not settings.genai_api_key:
-        selected = settings.genai_provider
-        print(f"{settings.genai_api_key_name} is not set in .env (GENAI_PROVIDER={selected})")
+    ai = app_settings.runtime().ai
+    if not settings.api_key_for(ai.provider):
+        print(f"No API key for {ai.provider} (set it in .env or on the server)")
         return 1
     configure_logging("WARNING", json=False)
     provider, embedder = get_provider(), get_embedder()

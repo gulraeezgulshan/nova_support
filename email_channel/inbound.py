@@ -18,7 +18,7 @@ from complaint_processing.service import (
     ComplaintInput,
     ComplaintValidationError,
     DuplicateComplaintError,
-    safe_enqueue_analysis,
+    enqueue_automatic,
     submit_complaint,
 )
 from database import audit
@@ -207,5 +207,5 @@ async def process_email(
     )
     record.outcome, record.complaint_id = "filed", complaint.id
     await db.commit()
-    safe_enqueue_analysis(complaint.id, None)
+    enqueue_automatic(complaint.id, None)
     return record

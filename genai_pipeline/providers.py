@@ -15,6 +15,7 @@ import anthropic
 import openai
 from anthropic.types.beta import BetaMessageParam, BetaOutputConfigParam, BetaTextBlockParam
 
+import app_settings
 from src.core.config import get_settings
 
 Effort = Literal["none", "minimal", "low", "medium", "high", "xhigh", "max"]
@@ -236,22 +237,23 @@ class OpenAIProvider:
         )
 
 
-@lru_cache
 def get_provider() -> LLMProvider:
+    """The provider and model chosen on the Settings page; keys stay in the environment."""
+    ai = app_settings.runtime().ai
+    return _build_provider(ai.provider, ai.model, ai.effort)
+
+
+@lru_cache(maxsize=4)
+def _build_provider(provider: str, model: str, effort: Effort) -> LLMProvider:
     settings = get_settings()
-    if settings.genai_provider == "anthropic":
+    if provider == "anthropic":
         return AnthropicProvider(
-            model=settings.anthropic_model,
-            effort=settings.genai_effort,
-            timeout_seconds=settings.genai_timeout_seconds,
+            model=model, effort=effort, timeout_seconds=settings.genai_timeout_seconds,
             api_key=settings.anthropic_api_key,
-        )
-    if settings.genai_provider == "openai":
+        )  # fmt: skip
+    if provider == "openai":
         return OpenAIProvider(
-            model=settings.openai_model,
-            effort=settings.genai_effort,
-            timeout_seconds=settings.genai_timeout_seconds,
-            api_key=settings.openai_api_key,
-            reasoning=settings.openai_reasoning,
-        )
-    raise ProviderRequestError(f"Unsupported GenAI provider: {settings.genai_provider}")
+            model=model, effort=effort, timeout_seconds=settings.genai_timeout_seconds,
+            api_key=settings.openai_api_key, reasoning=settings.openai_reasoning,
+        )  # fmt: skip
+    raise ProviderRequestError(f"Unsupported GenAI provider: {provider}")

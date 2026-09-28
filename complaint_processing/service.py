@@ -10,6 +10,7 @@ from fastapi.concurrency import run_in_threadpool
 from sqlalchemy import func, select
 from sqlalchemy.ext.asyncio import AsyncSession
 
+import app_settings
 from complaint_processing.detectors import detect_signals
 from complaint_processing.duplicates import find_similar
 from complaint_processing.preprocessing import (
@@ -88,6 +89,15 @@ def safe_enqueue_analysis(complaint_id: uuid.UUID, triggered_by: uuid.UUID | Non
         enqueue_analysis(complaint_id, triggered_by)
     except Exception as exc:  # broker down: complaint stays "new"; staff can re-run analysis
         log.error("analysis.enqueue_failed", complaint_id=str(complaint_id), error=str(exc))
+
+
+def enqueue_automatic(complaint_id: uuid.UUID, triggered_by: uuid.UUID | None = None) -> bool:
+    """Analysis started by intake (web, chat, e-mail, bulk import), unless switched off."""
+    if not app_settings.runtime().ai.auto_analysis:
+        log.info("analysis.automatic_off", complaint_id=str(complaint_id))
+        return False
+    safe_enqueue_analysis(complaint_id, triggered_by)
+    return True
 
 
 async def next_ref(db: AsyncSession, prefix: str, sequence: object) -> str:
@@ -279,5 +289,5 @@ async def submit_complaint(
         return complaint
     await db.commit()
     if enqueue:
-        safe_enqueue_analysis(complaint.id, submitted_by.id if submitted_by else None)
+        enqueue_automatic(complaint.id, submitted_by.id if submitted_by else None)
     return complaint

@@ -20,6 +20,7 @@ from dataclasses import dataclass, field
 from datetime import date
 from typing import Any
 
+import app_settings
 from complaint_processing.attachments import describe
 from complaint_rules.engine import PRIORITY_ORDER, URGENCY_ORDER, Decision, Issue, RuleSpec, decide
 from genai_pipeline.validation import parse_and_validate
@@ -127,8 +128,18 @@ def _escalation_level(analysis: ComplaintAnalysis, vocab: Vocabulary) -> int:
     return codes.index(analysis.escalation.level) if analysis.escalation.level in codes else 0
 
 
+def verdict_config() -> dict[str, Any]:
+    """validation.yaml with the two review thresholds from the Settings page."""
+    ops = app_settings.runtime().operations
+    return {
+        **validation_config(),
+        "verified_min_score": ops.verified_min_score,
+        "always_review_escalation_level": ops.always_review_escalation_level,
+    }
+
+
 def validate(inp: ValidationInput) -> ValidationOutcome:
-    cfg = validation_config()
+    cfg = verdict_config()
     classification = classify(inp.text, inp.signals, inp.taxonomy)
     a = inp.analysis
     python_issues, source = _python_issues(classification, a)

@@ -19,8 +19,8 @@ from complaint_processing.service import (
     ComplaintInput,
     ComplaintValidationError,
     DuplicateComplaintError,
+    enqueue_automatic,
     get_or_create_customer,
-    safe_enqueue_analysis,
     submit_complaint,
 )
 from database.models import (
@@ -384,7 +384,7 @@ async def confirm(db: AsyncSession, conversation: ChatConversation, user: User) 
     )
     complaint_id, user_id = complaint.id, user.id
     await db.commit()
-    safe_enqueue_analysis(complaint_id, user_id)
+    enqueue_automatic(complaint_id, user_id)
 
 
 async def messages_after(

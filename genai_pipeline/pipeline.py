@@ -16,6 +16,7 @@ from datetime import UTC, datetime
 from sqlalchemy import select
 from sqlalchemy.orm import Session
 
+import app_settings
 from complaint_processing.attachments import describe
 from complaint_processing.facts import build_facts
 from database.models import (
@@ -84,7 +85,7 @@ def run_analysis(
         )
     )
     policies = search_chunks_sync(
-        db, retrieval_query(complaint), embedder, settings.retrieval_limit
+        db, retrieval_query(complaint), embedder, app_settings.runtime().ai.retrieval_limit
     )
     retrieved = {p.chunk_code: p.doc_code for p in policies}
 

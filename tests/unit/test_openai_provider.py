@@ -21,6 +21,7 @@ from genai_pipeline.providers import (
     openai_strict_schema,
 )
 from src.core.config import Settings
+from tests.fixtures.settings import use_settings
 
 SCHEMA = {
     "type": "object",
@@ -175,20 +176,12 @@ def test_strict_schema_keeps_refs_alone() -> None:
 
 
 def test_provider_is_chosen_by_one_setting(monkeypatch: pytest.MonkeyPatch) -> None:
-    settings = Settings(
-        genai_provider="openai",
-        openai_api_key="sk-test",
-        openai_model="gpt-x",
-        anthropic_model="claude-opus-5",
-    )
+    settings = Settings(genai_provider="openai", openai_api_key="sk-test", openai_model="gpt-x")
     assert (settings.genai_model, settings.genai_api_key_name) == ("gpt-x", "OPENAI_API_KEY")
     monkeypatch.setattr("genai_pipeline.providers.get_settings", lambda: settings)
-    get_provider.cache_clear()
-    try:
-        provider = get_provider()
-        assert (provider.name, provider.model) == ("openai", "gpt-x")
-    finally:
-        get_provider.cache_clear()
+    use_settings(ai={"provider": "openai", "model": "gpt-x"})
+    provider = get_provider()
+    assert (provider.name, provider.model) == ("openai", "gpt-x")
     claude = Settings(genai_provider="anthropic", anthropic_model="claude-opus-5")
     assert (claude.genai_model, claude.genai_api_key_name) == ("claude-opus-5", "ANTHROPIC_API_KEY")
 

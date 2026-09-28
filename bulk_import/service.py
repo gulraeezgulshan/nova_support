@@ -18,7 +18,7 @@ from complaint_processing.service import (
     ComplaintInput,
     ComplaintValidationError,
     DuplicateComplaintError,
-    safe_enqueue_analysis,
+    enqueue_automatic,
     submit_complaint,
     validate_input,
 )
@@ -200,7 +200,7 @@ async def run(db: AsyncSession, batch_id: uuid.UUID | str) -> ImportBatch:
                 )
                 complaint.import_batch_id = batch_uuid
                 await db.commit()
-                safe_enqueue_analysis(complaint.id, None)
+                enqueue_automatic(complaint.id, None)
                 row["result"], row["reference"] = "created", complaint.complaint_ref
                 counts["created"] += 1
             except (ComplaintValidationError, DuplicateComplaintError) as exc:

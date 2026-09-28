@@ -122,6 +122,9 @@ export function AboutContent() {
             <Link href="/blog/letting-the-model-talk">Read the engineering blog</Link>
           </Button>
           <Button asChild variant="outline" className="rounded-full">
+            <Link href="/how-it-works">Tour the app</Link>
+          </Button>
+          <Button asChild variant="outline" className="rounded-full">
             <Link href="/team">Meet the team</Link>
           </Button>
           <Button asChild variant="outline" className="rounded-full">

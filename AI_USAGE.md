@@ -329,6 +329,19 @@ architecture and is documented in the project report, not here.
 | **Purpose** | Fix e-mail acknowledgements and approved replies never reaching customers on the deployed system |
 
 - **Files affected:** `email_channel/{transport,tasks,retry}.py`, `src/core/config.py`, `tests/unit/test_brevo_sender.py`, `tests/integration/test_mailbox_tasks.py`, `.env.example`, `documentation/deployment.md`; test counts in the README and documentation.
-- **Changes made:** the Mailbox *Sent* tab showed every outgoing e-mail failing with `Network is unreachable`; a socket test from the Railway worker confirmed IMAP (993) connects while SMTP (465) times out, i.e. Railway blocks outbound SMTP on the current plan. Added a Brevo sender (HTTPS API) selected with `MAIL_SEND_VIA=brevo`, with Reply-To set to the support mailbox so customer replies still reach the IMAP inbox; the outbox uses the configured sender; `python -m email_channel.retry` re-queues e-mails that gave up.
-- **Tests performed:** 7 new backend tests (Brevo request format, error handling without leaking the key, sender choice, configuration check, outbox default sender, retry of failed e-mails); full suite 443 passed; ruff and mypy pass.
+- **Changes made:** the Mailbox *Sent* tab showed every outgoing e-mail failing with `Network is unreachable`; a socket test from the Railway worker confirmed IMAP (993) connects while SMTP (465) times out, i.e. Railway blocks outbound SMTP on the current plan. Added a Brevo sender (HTTPS API) selected with `MAIL_SEND_VIA=brevo`, with Reply-To set to the support mailbox so customer replies still reach the IMAP inbox; the outbox uses the configured sender; `python -m email_channel.retry` re-queues e-mails that gave up. Brevo's own account e-mails to the support inbox were then filed as complaints: their headers (read over IMAP) carried `List-Unsubscribe` but none of the markers checked, so any `List-*` header and no-reply senders now mark a message as automatic; the four resulting complaints were closed from the staff console.
+- **Tests performed:** 8 new backend tests (Brevo request format, error handling without leaking the key, sender choice, configuration check, outbox default sender, retry of failed e-mails, service/newsletter headers from a real Brevo e-mail); full suite 444 passed; ruff and mypy pass.
+- **Verified by:** _to be completed by the team_
+
+## Entry 13: How it works page (tech stack and product tour)
+
+| Field | Details |
+|---|---|
+| **Date** | 2026-09-28 |
+| **Tool** | Claude Code (Anthropic), model Claude Opus 5.5 |
+| **Purpose** | Show evaluators the technology behind SupportNova and every part of the app without signing in |
+
+- **Files affected:** `web/src/app/(shop)/how-it-works/page.tsx`, `web/src/components/stack/`, `web/src/lib/{stack,stack-icons,tour}.ts`, `web/public/tour/`, footer, About page, `proxy.ts`, the blog's first figure and links, `documentation/diagrams/5-tech-stack.png`.
+- **Changes made:** an architecture diagram drawn in SVG with real technology logos (Simple Icons, CC0), grouped by Vercel, Railway and external services, with labelled data flows and a stacked version for phones; a "Tech we used" list explaining each technology's role; a screenshot tour of the public pages, captured signed out at 1440×900 so no personal data appears. Staff-console screens are to follow once live complaints are analysed.
+- **Tests performed:** ESLint, tsc and `next build` pass; the page was checked at desktop and phone widths (no horizontal scrolling) and the diagram exported to PNG and reviewed.
 - **Verified by:** _to be completed by the team_

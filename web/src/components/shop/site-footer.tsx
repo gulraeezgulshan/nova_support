@@ -32,6 +32,7 @@ const COLUMNS: { title: string; links: { href: string; label: string }[] }[] = [
     links: [
       { href: "/about", label: "About VoltHaven" },
       { href: "/about-supportnova", label: "How our support works" },
+      { href: "/how-it-works", label: "How it works" },
       { href: "/blog", label: "Blog" },
       { href: "/team", label: "Our team" },
       { href: "/contact", label: "Business enquiries" },

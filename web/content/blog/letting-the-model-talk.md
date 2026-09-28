@@ -50,7 +50,10 @@ whether the text mentions a safety hazard), and checks the GenAI answer field by
 
 ## Python architecture
 
-![SupportNova architecture: users, intake channels, web app, API, worker and data stores](/blog/diagrams/1-architecture-overview.png)
+![The SupportNova stack: Next.js on Vercel, FastAPI, Celery, PostgreSQL and Redis on Railway, with Clerk, OpenAI, Cloudflare R2 and Gmail](/tour/diagram.png)
+
+The [How it works](/how-it-works) page explains what each of these technologies does here and
+tours every screen of the app.
 
 
 The backend is Python 3.13 with FastAPI, Pydantic and SQLAlchemy, PostgreSQL with the
@@ -255,7 +258,7 @@ change is written to an append-only audit table.
 
 ## Testing
 
-We wrote 436 automated backend tests that run against a real PostgreSQL database, plus
+We wrote 444 automated backend tests that run against a real PostgreSQL database, plus
 strict type checking, linting and a production build of the web app in CI. The model is
 replaced by a scripted test double, which lets us test retries, refusals, outages and
 malicious answers deterministically. A dedicated security suite covers prompt injection,
@@ -326,5 +329,6 @@ holiday calendars to SLA calculations.
 
 - Repository: <https://github.com/gulraeezgulshan/nova_support>
 - Live application: <https://supportnova-volthaven.vercel.app>
+- How it works, with a tour of the app: <https://supportnova-volthaven.vercel.app/how-it-works>
 - Architecture diagrams: <https://github.com/gulraeezgulshan/nova_support/tree/main/documentation/diagrams>
 - Demonstration video: _add the video URL_

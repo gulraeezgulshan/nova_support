@@ -6,6 +6,7 @@ const isPublicRoute = createRouteMatcher([
   "/about-supportnova",
   "/blog(.*)",
   "/team",
+  "/how-it-works",
   "/shop(.*)",
   "/cart",
   "/contact",

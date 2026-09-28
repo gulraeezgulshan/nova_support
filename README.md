@@ -37,6 +37,18 @@ analytics, reports, security hardening, evaluation tooling and deployment config
 
 ## Architecture
 
+Full diagrams (editable source: [documentation/architecture.drawio](documentation/architecture.drawio),
+open it at app.diagrams.net):
+
+| Page | Shows |
+|---|---|
+| [1 · Architecture overview](documentation/diagrams/1-architecture-overview.png) | Users, intake channels, web app, API, worker and scheduler, data stores and external services |
+| [2 · Complaint lifecycle](documentation/diagrams/2-complaint-lifecycle.png) | One complaint from intake through Pipeline 1 (GenAI) and Pipeline 2 (Python) to reply, review, SLA and reports |
+| [3 · Knowledge base & RAG](documentation/diagrams/3-knowledge-base-rag.png) | Document ingestion, versions, hybrid retrieval and citation checks |
+| [4 · Deployment, CI & security](documentation/diagrams/4-deployment-ci-security.png) | Vercel + Railway services, CI checks and security controls |
+
+![SupportNova architecture overview](documentation/diagrams/1-architecture-overview.png)
+
 ```
 Browser ─► Next.js 16 (web/) ──Bearer token (Clerk)──► FastAPI (src/) ──► PostgreSQL 18 + pgvector
                                                          │                 Redis 8 ◄─► Celery worker

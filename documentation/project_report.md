@@ -109,6 +109,16 @@ automatically, multiple languages.
 
 ## 9. Application architecture
 
+The complete architecture is drawn in four diagrams (source: `documentation/architecture.drawio`):
+[architecture overview](diagrams/1-architecture-overview.png),
+[complaint lifecycle](diagrams/2-complaint-lifecycle.png),
+[knowledge base and RAG](diagrams/3-knowledge-base-rag.png) and
+[deployment, CI and security](diagrams/4-deployment-ci-security.png).
+
+![Architecture overview](diagrams/1-architecture-overview.png)
+
+The summary below shows the same structure in text form.
+
 ```mermaid
 flowchart LR
   subgraph Browser

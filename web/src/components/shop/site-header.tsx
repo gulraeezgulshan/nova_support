@@ -1,6 +1,8 @@
 "use client";
 
 import { Show, SignInButton, UserButton, useAuth } from "@clerk/nextjs";
+
+import { BrandMark, useBranding } from "@/lib/branding";
 import { useQuery } from "@tanstack/react-query";
 import { ChevronDown, Menu, ShoppingBag } from "lucide-react";
 import { AnimatePresence, motion, useMotionValueEvent, useScroll } from "motion/react";
@@ -32,15 +34,14 @@ const SUPPORT_LINKS = [
 ];
 
 export function Logo({ className }: { className?: string }) {
+  const name = useBranding().data?.shop_name?.split(" ")[0] ?? "VoltHaven";
   return (
     <Link
       href="/"
       className={cn("flex items-center gap-2 font-semibold tracking-tight", className)}
     >
-      <span className="flex size-8 items-center justify-center rounded-lg bg-brand text-xs font-bold text-brand-foreground shadow-sm shadow-brand/30">
-        VH
-      </span>
-      <span className="text-lg">VoltHaven</span>
+      <BrandMark target="shop" />
+      <span className="text-lg">{name}</span>
     </Link>
   );
 }

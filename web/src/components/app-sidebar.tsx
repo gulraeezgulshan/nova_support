@@ -36,6 +36,7 @@ import {
   SidebarMenuItem,
 } from "@/components/ui/sidebar";
 import type { Role, UserOut } from "@/lib/api/generated/types.gen";
+import { BrandMark, useBranding } from "@/lib/branding";
 import { ROLE_LABELS } from "@/lib/roles";
 
 type NavItem = { title: string; href: string; icon: LucideIcon; roles: Role[]; soon?: boolean };
@@ -115,6 +116,7 @@ function isActive(pathname: string, href: string) {
 
 export function AppSidebar({ user }: { user: UserOut }) {
   const pathname = usePathname();
+  const consoleName = useBranding().data?.console_name ?? "SupportNova";
   const groups = NAV.map((group) => ({
     ...group,
     items: group.items.filter((item) => item.roles.includes(user.role)),
@@ -124,10 +126,8 @@ export function AppSidebar({ user }: { user: UserOut }) {
     <Sidebar collapsible="icon">
       <SidebarHeader>
         <Link href="/dashboard" className="flex items-center gap-2 px-2 py-1.5">
-          <span className="flex size-7 items-center justify-center rounded-md bg-primary text-xs font-bold text-primary-foreground">
-            SN
-          </span>
-          <span className="font-semibold group-data-[collapsible=icon]:hidden">SupportNova</span>
+          <BrandMark target="console" className="size-7 rounded-md" />
+          <span className="font-semibold group-data-[collapsible=icon]:hidden">{consoleName}</span>
         </Link>
       </SidebarHeader>
       <SidebarContent>

@@ -5,10 +5,11 @@ with a description made only of the customer's own messages.
 """
 
 import uuid
+from functools import partial
 from typing import Any
 
 from fastapi.concurrency import run_in_threadpool
-from sqlalchemy import select, update
+from sqlalchemy import and_, or_, select, update
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from complaint_processing.preprocessing import sanitize_text
@@ -34,7 +35,7 @@ from database.models import (
 )
 from genai_pipeline.providers import LLMProvider, get_provider
 from src.core.config import get_settings
-from support_chat.intake import next_turn
+from support_chat.intake import Role, next_turn
 
 MAX_MESSAGE_CHARS = 2000
 MAX_CUSTOMER_MESSAGES = 30
@@ -199,6 +200,22 @@ async def _customer_texts(db: AsyncSession, conversation: ChatConversation) -> l
     )
 
 
+async def _history(db: AsyncSession, conversation: ChatConversation) -> list[tuple[Role, str]]:
+    """The conversation so far (the customer's words and the assistant's questions), in order."""
+    rows = await db.execute(
+        select(ChatMessage.role, ChatMessage.content)
+        .where(
+            ChatMessage.conversation_id == conversation.id,
+            or_(
+                and_(ChatMessage.role == "customer", ChatMessage.kind == "text"),
+                ChatMessage.role == "assistant",
+            ),
+        )
+        .order_by(ChatMessage.id)
+    )
+    return [("customer" if role == "customer" else "assistant", text) for role, text in rows]
+
+
 async def post_customer_message(
     db: AsyncSession, conversation: ChatConversation, text: str, provider: LLMProvider | None
 ) -> None:
@@ -249,7 +266,13 @@ async def post_customer_message(
     texts = await _customer_texts(db, conversation)
     order = await db.get(Order, conversation.order_id) if conversation.order_id else None
     result = await run_in_threadpool(
-        next_turn, provider, order=_order_dict(order), customer_messages=texts
+        partial(
+            next_turn,
+            provider,
+            order=_order_dict(order),
+            customer_messages=texts,
+            history=await _history(db, conversation),
+        )
     )
     conversation.draft = {
         "title": result.title,

@@ -115,7 +115,7 @@ export const STACK: TechGroup[] = [
       {
         icon: "githubactions",
         name: "GitHub Actions",
-        role: "CI on every push: lint, types, 444 tests, web build, secret scan.",
+        role: "CI on every push: lint, types, backend tests, web build, secret scan.",
       },
       { icon: "docker", name: "Docker", role: "One image for the API, worker and beat." },
       { icon: "uv", name: "uv", role: "Python dependencies, locked." },

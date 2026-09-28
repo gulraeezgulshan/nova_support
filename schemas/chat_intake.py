@@ -15,8 +15,8 @@ class IntakeTurn(Strict):
     title: str = Field(description="Short complaint title in plain words (max 80 characters)")
     missing: list[str] = Field(description="Essential details still missing")
     ready_to_confirm: bool = Field(
-        description="True when what happened, the product or order, "
-        "and what the customer wants are known"
+        description="True when what happened (or the general question), the product or order "
+        "if there is one, and what the customer wants are known"
     )
     requested_resolution: str | None = Field(
         description="What the customer asks for, in their terms, or null if not stated"

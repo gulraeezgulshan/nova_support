@@ -8,6 +8,7 @@ and any failure falls back to fixed questions, so the chat always works.
 import json
 import re
 from dataclasses import dataclass, field
+from difflib import SequenceMatcher
 from typing import Any, Literal
 
 from pydantic import ValidationError
@@ -34,7 +35,12 @@ FALLBACK_QUESTIONS = [
     "What would you like us to do about it?",
 ]
 NEUTRAL_QUESTION = "Thanks. Is there anything else about the problem we should know?"
+SUMMARY_LEAD = "Thanks, here is what I'll send to our team:"
 ATTEMPTS = 2
+# A reply this similar to an earlier question counts as asking it again.
+REPEAT_SIMILARITY = 0.75
+
+Role = Literal["customer", "assistant"]
 
 
 def deadline_pattern() -> re.Pattern[str]:
@@ -74,7 +80,7 @@ def fallback_turn(
 ) -> IntakeResult:
     answered = len(customer_messages)  # the first message answers "what happened"
     ready = answered >= len(FALLBACK_QUESTIONS)
-    reply = "Thanks, here is what I'll send to our team:" if ready else FALLBACK_QUESTIONS[answered]
+    reply = SUMMARY_LEAD if ready else FALLBACK_QUESTIONS[answered]
     # The third message answers "What would you like us to do?"; later ones are corrections.
     wanted = customer_messages[len(FALLBACK_QUESTIONS) - 1] if ready else None
     return IntakeResult(
@@ -87,17 +93,35 @@ def fallback_turn(
     )
 
 
+def _normalised(text: str) -> str:
+    return " ".join(re.sub(r"[^a-z0-9 ]", " ", text.lower()).split())
+
+
+def _repeats(reply: str, earlier_questions: list[str]) -> bool:
+    new = _normalised(reply)
+    return any(
+        SequenceMatcher(None, new, _normalised(q)).ratio() >= REPEAT_SIMILARITY
+        for q in earlier_questions
+    )
+
+
 def next_turn(
-    provider: LLMProvider | None, *, order: dict[str, str] | None, customer_messages: list[str]
+    provider: LLMProvider | None,
+    *,
+    order: dict[str, str] | None,
+    customer_messages: list[str],
+    history: list[tuple[Role, str]] | None = None,
 ) -> IntakeResult:
+    """`history` is the whole conversation in order; without it only the customer's words."""
     if provider is None:
         return fallback_turn(customer_messages, "no GenAI provider configured", order)
     template = load_template("chat_intake")
     questions_asked = max(0, len(customer_messages) - 1)
     must_summarise = questions_asked >= MAX_QUESTIONS
+    history = history or [("customer", m) for m in customer_messages]
     system, user = template.render(
         order=order,
-        messages=customer_messages,
+        history=history,
         questions_asked=questions_asked,
         max_questions=MAX_QUESTIONS,
         must_summarise=must_summarise,
@@ -131,15 +155,23 @@ def next_turn(
             "output_tokens": response.output_tokens,
             "latency_ms": response.latency_ms,
             "promise_removed": False,
+            "repeat_prevented": False,
         }
         reply = parsed.reply.strip()
+        ready = parsed.ready_to_confirm or must_summarise
         if find_promises(reply) or deadline_pattern().search(reply):
             reply, details["promise_removed"] = NEUTRAL_QUESTION, True
+        elif not ready and _repeats(reply, [text for role, text in history if role == "assistant"]):
+            # Asking again what the customer has already been asked frustrates them: once they
+            # have answered something, summarise with what we have; otherwise ask neutrally.
+            details["repeat_prevented"] = True
+            ready = len(customer_messages) >= 2
+            reply = SUMMARY_LEAD if ready else NEUTRAL_QUESTION
         return IntakeResult(
             reply,
             _safe_title(parsed.title, customer_messages, order),
             parsed.requested_resolution,
-            parsed.ready_to_confirm or must_summarise,
+            ready,
             "genai",
             details,
         )

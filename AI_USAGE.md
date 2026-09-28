@@ -345,3 +345,16 @@ architecture and is documented in the project report, not here.
 - **Changes made:** an architecture diagram drawn in SVG with real technology logos (Simple Icons, CC0), grouped by Vercel, Railway and external services, with labelled data flows and a stacked version for phones; a "Tech we used" list explaining each technology's role; a screenshot tour of the public pages, captured signed out at 1440×900 so no personal data appears. Staff-console screens are to follow once live complaints are analysed.
 - **Tests performed:** ESLint, tsc and `next build` pass; the page was checked at desktop and phone widths (no horizontal scrolling) and the diagram exported to PNG and reviewed.
 - **Verified by:** _to be completed by the team_
+
+## Entry 14: Support chat no longer repeats its questions
+
+| Field | Details |
+|---|---|
+| **Date** | 2026-09-28 |
+| **Tool** | Claude Code (Anthropic), model Claude Opus 5.5 |
+| **Purpose** | Fix the chat assistant asking the same question again and again (seen in a live chat about a general refund question) |
+
+- **Files affected:** `support_chat/{intake,service}.py`, `prompt_templates/chat_intake.yaml` (1.1.0), `schemas/chat_intake.py`, `tests/unit/test_chat_intake.py`, `tests/integration/test_chat_api.py`.
+- **Changes made:** root cause: each turn sent the model only the customer's messages, never its own earlier questions, so it could not know what it had asked; and the prompt only allowed a summary once a product or order was known, so a general question could never finish. The whole conversation is now sent in order; the prompt forbids repeating a question and accepts general questions without a product; a deterministic guard stops a near-identical repeat and summarises (or asks the neutral question if nothing has been answered yet).
+- **Tests performed:** 5 new tests (conversation order in the prompt, repeat replaced by the summary, repeat before any answer, new question kept, service passes the history); full suite 449 passed; ruff and mypy pass. The real chat transcript was replayed against gpt-5-mini: it now summarises instead of asking for the product again.
+- **Verified by:** _to be completed by the team_

@@ -201,3 +201,22 @@ async def test_limits(
         await client.post(f"{base}/messages", json={"text": f"detail {i}"}, headers=shopper)
     capped = await client.post(f"{base}/messages", json={"text": "one more"}, headers=shopper)
     assert capped.status_code == 422
+
+
+async def test_each_turn_sees_the_assistants_earlier_questions(
+    client: httpx.AsyncClient, shopper: dict[str, str], scripted: Callable[..., ScriptedProvider]
+) -> None:
+    provider = scripted(ASKING, READY)
+    conv = (await client.post("/api/v1/chat/conversations", json={}, headers=shopper)).json()
+    base = f"/api/v1/chat/conversations/{conv['id']}"
+    await client.post(
+        f"{base}/messages", headers=shopper, json={"text": "How long do refunds take?"}
+    )
+    await client.post(f"{base}/messages", headers=shopper, json={"text": "It's a general question"})
+    second_turn = provider.requests[1].user
+    assert "Assistant: When did it arrive?" in second_turn  # the question it asked last turn
+    assert (
+        second_turn.index("How long do refunds take?")
+        < second_turn.index("Assistant: When did it arrive?")
+        < second_turn.index("It's a general question")
+    )

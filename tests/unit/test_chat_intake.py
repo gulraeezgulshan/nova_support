@@ -3,7 +3,14 @@
 import json
 
 from genai_pipeline.providers import ProviderUnavailableError
-from support_chat.intake import FALLBACK_QUESTIONS, MAX_QUESTIONS, NEUTRAL_QUESTION, next_turn
+from support_chat.intake import (
+    FALLBACK_QUESTIONS,
+    MAX_QUESTIONS,
+    NEUTRAL_QUESTION,
+    SUMMARY_LEAD,
+    Role,
+    next_turn,
+)
 from tests.fixtures.genai import ScriptedProvider
 
 ORDER = {
@@ -123,3 +130,57 @@ def test_short_ai_title_is_replaced() -> None:
     provider = ScriptedProvider(turn(title="Late", ready_to_confirm=True))
     result = next_turn(provider, order=ORDER, customer_messages=["My phone came late"])
     assert len(result.title) >= 5
+
+
+# --- the assistant must not repeat itself (a live chat asked for the product four times) ----
+
+GENERAL = "When an item is dead on arrival, how many days does the refund take?"
+ASKED = "Do you have a specific VoltHaven product or order number in mind?"
+
+
+def test_the_assistants_earlier_questions_are_in_the_prompt() -> None:
+    provider = ScriptedProvider(turn())
+    history: list[tuple[Role, str]] = [
+        ("customer", GENERAL),
+        ("assistant", ASKED),
+        ("customer", "general asking"),
+    ]
+    next_turn(provider, order=None, customer_messages=[GENERAL, "general asking"], history=history)
+    user = provider.requests[0].user
+    assert f"Assistant: {ASKED}" in user
+    assert user.index(GENERAL) < user.index(ASKED) < user.index("general asking")
+
+
+def test_a_repeated_question_is_not_asked_again_but_summarised() -> None:
+    again = "Do you have a specific VoltHaven product or order number in mind, please?"
+    provider = ScriptedProvider(turn(reply=again, requested_resolution="Know the refund time"))
+    history: list[tuple[Role, str]] = [
+        ("customer", GENERAL),
+        ("assistant", ASKED),
+        ("customer", "general asking"),
+    ]
+    result = next_turn(
+        provider, order=None, customer_messages=[GENERAL, "general asking"], history=history
+    )
+    assert result.ready and result.reply == SUMMARY_LEAD
+    assert result.details["repeat_prevented"]
+
+
+def test_a_repeat_before_any_answer_becomes_the_neutral_question() -> None:
+    provider = ScriptedProvider(turn(reply=ASKED))
+    history: list[tuple[Role, str]] = [("assistant", ASKED), ("customer", GENERAL)]
+    result = next_turn(provider, order=None, customer_messages=[GENERAL], history=history)
+    assert not result.ready and result.reply == NEUTRAL_QUESTION
+
+
+def test_a_new_question_is_kept() -> None:
+    provider = ScriptedProvider(turn(reply="When did the problem start?"))
+    history: list[tuple[Role, str]] = [
+        ("customer", GENERAL),
+        ("assistant", ASKED),
+        ("customer", "the Pulse 700"),
+    ]
+    result = next_turn(
+        provider, order=None, customer_messages=[GENERAL, "the Pulse 700"], history=history
+    )
+    assert result.reply == "When did the problem start?" and not result.ready

@@ -398,7 +398,7 @@ function Drawing() {
       <Chip
         x={30}
         icon="githubactions"
-        text="GitHub Actions: lint · types · 444 tests · build · gitleaks"
+        text="GitHub Actions: lint · types · tests · build · gitleaks"
       />
       <Chip x={520} icon="docker" text="Docker: one image for api, worker, beat" />
       <Chip x={850} icon="uv" text="uv: Python packages" />

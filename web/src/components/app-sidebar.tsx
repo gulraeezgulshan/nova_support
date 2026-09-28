@@ -17,6 +17,7 @@ import {
   AtSign,
   FileUp,
   Mail,
+  Settings2,
   Store,
 } from "lucide-react";
 import Link from "next/link";
@@ -102,6 +103,7 @@ const NAV: { label: string; items: NavItem[] }[] = [
       { title: "Rule matrix", href: "/settings/rules", icon: ListChecks, roles: STAFF },
       { title: "Products", href: "/settings/products", icon: Package, roles: ["admin"] },
       { title: "Users & roles", href: "/settings/users", icon: Users, roles: ["manager", "admin"] },
+      { title: "Settings", href: "/settings/general", icon: Settings2, roles: ["admin"] },
     ],
   },
 ];

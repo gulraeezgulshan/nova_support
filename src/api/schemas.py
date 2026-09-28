@@ -6,6 +6,13 @@ from typing import Any, Literal
 
 from pydantic import BaseModel, ConfigDict, Field, computed_field
 
+from app_settings.model import (
+    AiSettings,
+    BrandingText,
+    EmailSettings,
+    OperationsSettings,
+    RuntimeSettings,
+)
 from database.models import (
     ComplaintStatus,
     IngestStatus,
@@ -889,3 +896,34 @@ class ImportDetailOut(ImportBatchOut):
 class ImportPreviewOut(ImportDetailOut):
     previously_imported: bool
     unknown_columns: list[str]
+
+
+# --- run-time settings -------------------------------------------------------------------
+
+
+class PolicyFactOut(BaseModel):
+    fact: str
+    value: str
+    source: str  # document code
+    version: str | None  # active version, None if the document is not active
+
+
+class SettingsOut(BaseModel):
+    settings: RuntimeSettings
+    version: int
+    updated_at: datetime | None
+    updated_by: str | None
+    providers_available: list[str]
+    suggested_models: dict[str, list[str]]
+    policy_facts: list[PolicyFactOut]
+    shop_logo_url: str | None
+    console_logo_url: str | None
+
+
+class SettingsUpdate(BaseModel):
+    model_config = ConfigDict(extra="forbid")
+    version: int
+    email: EmailSettings
+    ai: AiSettings
+    operations: OperationsSettings
+    branding: BrandingText

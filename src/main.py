@@ -25,6 +25,7 @@ from src.api.routes import (
     users,
     webhooks,
 )
+from src.api.routes import settings as settings_routes
 from src.core.config import get_settings
 from src.core.logging import configure_logging
 
@@ -66,6 +67,7 @@ def create_app() -> FastAPI:
         contact.router,
         rules.router,
         webhooks.router,
+        settings_routes.router,
     ):
         app.include_router(router, prefix=settings.api_prefix)
 

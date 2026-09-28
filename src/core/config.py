@@ -96,6 +96,9 @@ class Settings(BaseSettings):
     def genai_model(self) -> str:
         return self.openai_model if self.genai_provider == "openai" else self.anthropic_model
 
+    def api_key_for(self, provider: str) -> str | None:
+        return self.openai_api_key if provider == "openai" else self.anthropic_api_key
+
     @property
     def genai_api_key(self) -> str | None:
         """The API key of the selected provider (None means the GenAI pipeline is off)."""

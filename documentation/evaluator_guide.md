@@ -93,7 +93,7 @@ need the API and worker restarted (`make api`, `make worker`).
 
 ## 6. Deliberate defects
 
-`make test` (449 tests) and `make lint` (ruff, mypy --strict, eslint, tsc) catch defects in:
+`make test` (451 tests) and `make lint` (ruff, mypy --strict, eslint, tsc) catch defects in:
 
 | Area | Tests that fail |
 |---|---|

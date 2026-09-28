@@ -146,3 +146,33 @@ async def test_customer_cannot_read_knowledge_base(
 ) -> None:
     response = await client.get("/api/v1/documents", headers=auth_headers(Role.CUSTOMER))
     assert response.status_code == 403
+
+
+async def test_staff_can_open_the_original_document(
+    client: httpx.AsyncClient, auth_headers: Callable[[Role], dict[str, str]]
+) -> None:
+    admin = auth_headers(Role.ADMIN)
+    data = make_docx(DELIVERY_HEADER, DELIVERY_SECTIONS)
+    version = (await upload(client, admin, data)).json()
+    url = f"/api/v1/document-versions/{version['id']}/file"
+
+    response = await client.get(url, headers=auth_headers(Role.AGENT))
+    assert response.status_code == 200 and response.content == data  # the exact upload
+    assert response.headers["content-type"].startswith(DOCX)
+    assert response.headers["content-disposition"] == 'attachment; filename="delivery-policy.docx"'
+    assert response.headers["x-content-type-options"] == "nosniff"
+
+    assert (await client.get(url, headers=auth_headers(Role.CUSTOMER))).status_code == 403
+    missing = f"/api/v1/document-versions/{uuid.uuid4()}/file"
+    assert (await client.get(missing, headers=admin)).status_code == 404
+
+
+def test_pdfs_and_text_open_in_the_browser_other_files_download() -> None:
+    from src.api.routes.documents import content_disposition
+
+    assert content_disposition("application/pdf", "Refund policy.pdf") == (
+        'inline; filename="Refund_policy.pdf"'
+    )
+    assert content_disposition("text/markdown", "faq.md").startswith("inline;")
+    assert content_disposition(DOCX, 'x"; evil.docx').startswith("attachment;")
+    assert '"' not in content_disposition(DOCX, 'x"; evil.docx')[22:-1]

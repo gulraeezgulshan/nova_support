@@ -358,3 +358,16 @@ architecture and is documented in the project report, not here.
 - **Changes made:** root cause: each turn sent the model only the customer's messages, never its own earlier questions, so it could not know what it had asked; and the prompt only allowed a summary once a product or order was known, so a general question could never finish. The whole conversation is now sent in order; the prompt forbids repeating a question and accepts general questions without a product; a deterministic guard stops a near-identical repeat and summarises (or asks the neutral question if nothing has been answered yet).
 - **Tests performed:** 5 new tests (conversation order in the prompt, repeat replaced by the summary, repeat before any answer, new question kept, service passes the history); full suite 449 passed; ruff and mypy pass. The real chat transcript was replayed against gpt-5-mini: it now summarises instead of asking for the product again.
 - **Verified by:** _to be completed by the team_
+
+## Entry 15: Back to shop, opening knowledge-base documents, Nova the chat assistant
+
+| Field | Details |
+|---|---|
+| **Date** | 2026-09-28 |
+| **Tool** | Claude Code (Anthropic), model Claude Opus 5.5 |
+| **Purpose** | Console navigation back to the shop, viewing the original policy documents, and a friendlier chat launcher |
+
+- **Files affected:** `src/api/routes/documents.py` (`GET /document-versions/{id}/file`), `tests/integration/test_documents_api.py`, `openapi.json` and the generated web client, `web/src/components/knowledge-base/{documents-table,chunks-dialog}.tsx`, `web/src/components/app-sidebar.tsx`, `web/src/app/(app)/layout.tsx`, `web/src/components/chat/{nova-avatar,chat-launcher,chat-panel}.tsx`, `web/src/app/globals.css`.
+- **Changes made:** staff can open the original uploaded file of any document version (PDF and text in a new tab, other files downloaded; staff only, `nosniff`, safe file names) from the document title or the version menu; "chunks" are called passages in the interface; a "Back to shop" link in the console sidebar and a "View shop" button in its top bar; the chat launcher is now Nova, a drawn robot mascot in the brand colour with a once-per-session greeting, also shown in the chat header and beside the assistant's messages (animations respect reduced motion).
+- **Tests performed:** 2 new backend tests (staff download of the exact file with headers, customer refused, unknown version 404; inline vs download and header-safe file names); full suite 451 passed; ruff, mypy, ESLint, tsc and `next build` pass; the launcher, greeting and chat header were checked in the browser.
+- **Verified by:** _to be completed by the team_

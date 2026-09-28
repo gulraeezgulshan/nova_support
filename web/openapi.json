@@ -773,6 +773,51 @@
         ]
       }
     },
+    "/api/v1/document-versions/{version_id}/file": {
+      "get": {
+        "tags": [
+          "knowledge-base"
+        ],
+        "summary": "Download Version File",
+        "description": "The original uploaded file of a document version (staff only).",
+        "operationId": "download_version_file",
+        "security": [
+          {
+            "HTTPBearer": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "version_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid",
+              "title": "Version Id"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/octet-stream": {}
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
     "/api/v1/document-versions/{version_id}/chunks": {
       "get": {
         "tags": [

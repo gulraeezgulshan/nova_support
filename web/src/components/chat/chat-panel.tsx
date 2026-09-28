@@ -6,6 +6,7 @@ import { CheckCircle2, Send } from "lucide-react";
 import { useEffect, useRef, useState } from "react";
 import { toast } from "sonner";
 
+import { NovaAvatar } from "@/components/chat/nova-avatar";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
@@ -223,14 +224,17 @@ function Conversation({ orderRef }: { orderRef?: string }) {
 
 function Typing() {
   return (
-    <div className="flex gap-1 px-2 py-1" aria-label="Assistant is typing">
-      {[0, 150, 300].map((delay) => (
-        <span
-          key={delay}
-          className="size-2 animate-bounce rounded-full bg-muted-foreground/60"
-          style={{ animationDelay: `${delay}ms` }}
-        />
-      ))}
+    <div className="flex items-end gap-2" aria-label="Nova is typing">
+      <NovaAvatar className="size-7" />
+      <div className="flex gap-1 rounded-2xl bg-muted px-3 py-2.5">
+        {[0, 150, 300].map((delay) => (
+          <span
+            key={delay}
+            className="size-2 animate-bounce rounded-full bg-muted-foreground/60"
+            style={{ animationDelay: `${delay}ms` }}
+          />
+        ))}
+      </div>
     </div>
   );
 }
@@ -253,7 +257,8 @@ function Message({
   const mine = m.role === "customer";
   const payload = m.payload as Record<string, unknown>;
   return (
-    <div className={cn("flex", mine ? "justify-end" : "justify-start")}>
+    <div className={cn("flex items-end gap-2", mine ? "justify-end" : "justify-start")}>
+      {!mine && m.kind !== "reply" ? <NovaAvatar className="mb-0.5 size-7" /> : null}
       <div
         className={cn(
           "max-w-[85%] space-y-2 rounded-2xl px-3 py-2 text-sm whitespace-pre-line",

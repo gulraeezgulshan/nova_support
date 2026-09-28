@@ -1,9 +1,11 @@
 import { UserButton } from "@clerk/nextjs";
-import { AlertTriangle } from "lucide-react";
+import { AlertTriangle, Store } from "lucide-react";
+import Link from "next/link";
 import { redirect } from "next/navigation";
 
 import { AppSidebar } from "@/components/app-sidebar";
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
+import { Button } from "@/components/ui/button";
 import { Separator } from "@/components/ui/separator";
 import { SidebarInset, SidebarProvider, SidebarTrigger } from "@/components/ui/sidebar";
 import { getCurrentUser } from "@/lib/api/server";
@@ -31,7 +33,12 @@ export default async function AppLayout({ children }: LayoutProps<"/">) {
           <SidebarTrigger className="-ml-1" />
           <Separator orientation="vertical" className="mr-2 data-[orientation=vertical]:h-4" />
           <span className="text-sm text-muted-foreground">VoltHaven Electronics</span>
-          <div className="ml-auto">
+          <div className="ml-auto flex items-center gap-3">
+            <Button asChild variant="outline" size="sm">
+              <Link href="/">
+                <Store /> View shop
+              </Link>
+            </Button>
             <UserButton />
           </div>
         </header>

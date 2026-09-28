@@ -30,7 +30,7 @@ export function ChunksDialog({
     <Dialog open={versionId !== null} onOpenChange={(open) => !open && onClose()}>
       <DialogContent className="max-h-[85vh] overflow-y-auto sm:max-w-3xl">
         <DialogHeader>
-          <DialogTitle>Chunks · {label}</DialogTitle>
+          <DialogTitle>Passages · {label}</DialogTitle>
           <DialogDescription>
             Each chunk keeps its document ID, version, section, heading and page for traceability.
           </DialogDescription>

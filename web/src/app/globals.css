@@ -149,6 +149,35 @@
   }
 }
 
+/* Nova, the chat assistant: blinks now and then; the antenna spark glows. */
+@keyframes nova-blink {
+  0%,
+  92%,
+  100% {
+    transform: scaleY(1);
+  }
+  95% {
+    transform: scaleY(0.1);
+  }
+}
+@keyframes nova-glow {
+  0%,
+  100% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0.55;
+  }
+}
+.nova-eyes {
+  transform-box: fill-box;
+  transform-origin: center;
+  animation: nova-blink 4.5s infinite;
+}
+.nova-spark {
+  animation: nova-glow 2.4s ease-in-out infinite;
+}
+
 /* Respect the OS "reduce motion" setting for CSS transitions and keyframes too
    (motion components already follow MotionConfig reducedMotion="user"). */
 @media (prefers-reduced-motion: reduce) {

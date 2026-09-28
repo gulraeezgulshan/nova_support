@@ -3,7 +3,18 @@
 import uuid
 from datetime import date
 
-from fastapi import APIRouter, Depends, File, Form, HTTPException, Query, UploadFile, status
+from fastapi import (
+    APIRouter,
+    Depends,
+    File,
+    Form,
+    HTTPException,
+    Query,
+    Response,
+    UploadFile,
+    status,
+)
+from fastapi.concurrency import run_in_threadpool
 from sqlalchemy import select
 from sqlalchemy.ext.asyncio import AsyncSession
 
@@ -23,7 +34,7 @@ from src.api.schemas import (
     SearchResultOut,
 )
 from src.core.config import Settings, get_settings
-from src.core.storage import Storage, get_storage
+from src.core.storage import Storage, get_storage, safe_filename
 
 router = APIRouter(tags=["knowledge-base"])
 staff = require_roles(*STAFF_ROLES)
@@ -98,6 +109,40 @@ async def upload_document(
         actor=actor,
         storage=storage,
         settings=settings,
+    )
+
+
+# Types a browser shows safely in a tab; everything else (e.g. Word) is downloaded.
+INLINE_TYPES = {"application/pdf", "text/plain", "text/markdown"}
+
+
+def content_disposition(media_type: str, file_name: str) -> str:
+    kind = "inline" if media_type.split(";")[0].strip() in INLINE_TYPES else "attachment"
+    return f'{kind}; filename="{safe_filename(file_name)}"'
+
+
+@router.get(
+    "/document-versions/{version_id}/file",
+    response_class=Response,
+    responses={200: {"content": {"application/octet-stream": {}}}},
+)
+async def download_version_file(
+    version_id: uuid.UUID,
+    _: User = Depends(staff),
+    db: AsyncSession = Depends(get_db),
+    storage: Storage = Depends(get_storage),
+) -> Response:
+    """The original uploaded file of a document version (staff only)."""
+    version = await _get_version(db, version_id)
+    data = await run_in_threadpool(storage.get, version.storage_key)
+    return Response(
+        content=data,
+        media_type=version.media_type,
+        headers={
+            "Content-Disposition": content_disposition(version.media_type, version.file_name),
+            "X-Content-Type-Options": "nosniff",
+            "Cache-Control": "private, no-store",
+        },
     )
 
 

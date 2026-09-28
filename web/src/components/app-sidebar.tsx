@@ -17,6 +17,7 @@ import {
   AtSign,
   FileUp,
   Mail,
+  Store,
 } from "lucide-react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
@@ -161,6 +162,16 @@ export function AppSidebar({ user }: { user: UserOut }) {
         ))}
       </SidebarContent>
       <SidebarFooter>
+        <SidebarMenu>
+          <SidebarMenuItem>
+            <SidebarMenuButton asChild tooltip="Back to shop">
+              <Link href="/">
+                <Store />
+                <span>Back to shop</span>
+              </Link>
+            </SidebarMenuButton>
+          </SidebarMenuItem>
+        </SidebarMenu>
         <div className="px-2 pb-1 text-xs text-muted-foreground group-data-[collapsible=icon]:hidden">
           Signed in as <span className="font-medium text-foreground">{ROLE_LABELS[user.role]}</span>
           {user.department ? ` · ${user.department.name}` : null}

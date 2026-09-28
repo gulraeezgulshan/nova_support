@@ -4097,6 +4097,36 @@ export type UploadDocumentResponses = {
 
 export type UploadDocumentResponse = UploadDocumentResponses[keyof UploadDocumentResponses];
 
+export type DownloadVersionFileData = {
+    body?: never;
+    path: {
+        /**
+         * Version Id
+         */
+        version_id: string;
+    };
+    query?: never;
+    url: '/api/v1/document-versions/{version_id}/file';
+};
+
+export type DownloadVersionFileErrors = {
+    /**
+     * Validation Error
+     */
+    422: HttpValidationError;
+};
+
+export type DownloadVersionFileError = DownloadVersionFileErrors[keyof DownloadVersionFileErrors];
+
+export type DownloadVersionFileResponses = {
+    /**
+     * Successful Response
+     */
+    200: Blob | File;
+};
+
+export type DownloadVersionFileResponse = DownloadVersionFileResponses[keyof DownloadVersionFileResponses];
+
 export type ListVersionChunksData = {
     body?: never;
     path: {

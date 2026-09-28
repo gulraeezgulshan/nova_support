@@ -1,4 +1,4 @@
-"""Scheduled mailbox check (every minute) and outbox flush (every 30 s), run by Celery Beat.
+"""Scheduled mailbox check and outbox flush, on the intervals set in Settings (app_settings.jobs).
 
 `check` and `flush` take their IMAP/SMTP factories as arguments so tests use fakes.
 """

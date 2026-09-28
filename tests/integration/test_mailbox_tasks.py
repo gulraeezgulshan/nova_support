@@ -198,13 +198,10 @@ def test_flush_without_settings_marks_not_configured() -> None:
         assert db.scalars(select(Complaint)).one().channel == "email"
 
 
-def test_beat_runs_the_mailbox_check_and_outbox_flush() -> None:
-    from src.worker import celery_app
+def test_mailbox_jobs_run_from_the_settings_tick() -> None:
+    from app_settings.jobs import JOBS
 
-    schedule = {v["task"]: v["schedule"] for v in celery_app.conf.beat_schedule.values()}
-    assert schedule["email_channel.tasks.check_mailbox"] == 60.0
-    assert schedule["email_channel.tasks.flush_outbox"] == 30.0
-    assert "email_channel.tasks" in celery_app.conf.include
+    assert {"mailbox-check", "email-outbox", "sla-risk-scan"} <= set(JOBS)
 
 
 # ---------------------------------------------------------------- final-review regressions

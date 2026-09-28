@@ -4,7 +4,6 @@ periodic SLA risk scan, mailbox check and e-mail outbox (Celery Beat)."""
 from celery import Celery
 
 from src.core.config import ROOT_DIR, get_settings
-from src.core.domain import analytics_config
 from src.core.logging import configure_logging
 
 settings = get_settings()
@@ -18,6 +17,7 @@ celery_app = Celery(
         "complaint_processing.tasks",
         "email_channel.tasks",
         "bulk_import.tasks",
+        "app_settings.tasks",
     ],
 )
 celery_app.conf.update(
@@ -31,17 +31,12 @@ celery_app.conf.update(
         "complaint_processing.tasks.*": {"queue": "analysis"},
         "email_channel.tasks.*": {"queue": "default"},
         "bulk_import.tasks.*": {"queue": "default"},
+        "app_settings.tasks.*": {"queue": "default"},
     },
     broker_connection_retry_on_startup=True,
     timezone="UTC",
-    beat_schedule={
-        "sla-risk-scan": {
-            "task": "complaint_processing.tasks.scan_sla",
-            "schedule": 60.0 * analytics_config()["sla"]["scan_interval_minutes"],
-        },
-        # E-mail complaints: read the support mailbox, then send queued e-mails.
-        "mailbox-check": {"task": "email_channel.tasks.check_mailbox", "schedule": 60.0},
-        "email-outbox": {"task": "email_channel.tasks.flush_outbox", "schedule": 30.0},
-    },
+    # One tick every 15 s; each job's own interval comes from the Settings page
+    # (app_settings.jobs): mailbox check, e-mail outbox, SLA risk scan.
+    beat_schedule={"settings-tick": {"task": "app_settings.tasks.tick", "schedule": 15.0}},
     beat_schedule_filename=str(ROOT_DIR / ".data" / "celerybeat-schedule"),
 )

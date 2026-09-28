@@ -10,6 +10,18 @@ export function useBranding() {
   return useQuery({ ...readBrandingOptions(), staleTime: 60_000 });
 }
 
+/**
+ * Two letters for the badge: the capitals of the first word ("VoltHaven" → VH,
+ * "SupportNova" → SN), else the first letters of the first two words, else two letters.
+ */
+export function initialsOf(name: string): string {
+  const words = name.trim().split(/\s+/).filter(Boolean);
+  const capitals = (words[0] ?? "").match(/[A-Z]/g) ?? [];
+  if (capitals.length >= 2) return capitals.slice(0, 2).join("");
+  if (words.length >= 2) return (words[0][0] + words[1][0]).toUpperCase();
+  return (words[0] ?? "?").slice(0, 2).toUpperCase();
+}
+
 /** The uploaded logo, or the initials badge when there is none. */
 export function BrandMark({
   target,
@@ -33,12 +45,7 @@ export function BrandMark({
       />
     );
   }
-  const initials = name
-    .split(/\s+/)
-    .map((w) => w[0])
-    .join("")
-    .slice(0, 2)
-    .toUpperCase();
+  const initials = initialsOf(name);
   return (
     <span
       className={cn(

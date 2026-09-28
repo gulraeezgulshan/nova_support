@@ -384,3 +384,16 @@ architecture and is documented in the project report, not here.
 - **Changes made:** a validated settings document stored as changes from today's defaults, cached for 15 seconds and audited on every save (stale saves refused); the AI provider/model/effort, retrieval size, review thresholds, sender name, automatic replies and automatic analysis read it; Celery Beat runs one tick every 15 seconds and a database gate runs each periodic job on its configured interval; content-checked PNG/JPEG/WebP logos (SVG refused) served publicly; the shop name, contact details, logos and browser-tab icon follow Settings; policy numbers are read-only with their source document.
 - **Tests performed:** 38 new backend tests (model limits and single-line text, provider/model match, storage merge and fallback, API roles/409/422/no secrets, provider and thresholds from settings, auto-analysis off, auto-replies off for e-mail and chat, sender name, job gate and tick, logo upload/serve/refuse, shop details); full suite 489 passed; ruff, mypy, ESLint, tsc and `next build` pass; shop header, tab title and icon checked in the browser with a test logo.
 - **Verified by:** _to be completed by the team_
+
+## Entry 17: Chat after filing, and answers from the Help-centre FAQ
+
+| Field | Details |
+|---|---|
+| **Date** | 2026-09-28 |
+| **Tool** | Claude Code (Anthropic), model Claude Opus 5.5 |
+| **Purpose** | Stop new questions being silently attached to an already-filed complaint, and let Nova answer common questions safely |
+
+- **Files affected:** `support_chat/{service,intake}.py`, `prompt_templates/chat_intake.yaml` (1.2.0), `schemas/chat_intake.py`, `src/api/{routes/chat,schemas}.py`, generated web client, `web/src/components/chat/chat-panel.tsx`, `tests/unit/test_chat_intake.py`, `tests/integration/test_chat_{api,review_fixes}.py`, user guide.
+- **Changes made:** root cause: opening the chat resumed the customer's latest conversation even after it had filed a complaint, and every later message was appended to that complaint with a fixed acknowledgement. Opening Nova without an order now starts a new chat after a filed one and links back to that complaint (Get help on the same order still reopens its chat); messages in a filed chat get a reply naming the complaint and pointing to **New question**. General questions are answered with the approved Help-centre FAQ text: the model only returns the FAQ entry's id, the customer sees the stored wording (no invented policy numbers), and approved answers bypass the promise filter and repeat guard.
+- **Tests performed:** 7 new or updated tests (new chat after filing with link back, order chat still reopens, message-after-filing text, FAQ answer verbatim, unknown FAQ id ignored, approved timelines kept, same FAQ answered twice); the old "resumes the submitted conversation" test updated to the approved behaviour; full suite 496 passed; ruff, mypy, ESLint, tsc and `next build` pass; four real questions replayed against gpt-5-mini (two matched the right FAQ, a greeting and a complaint were handled normally).
+- **Verified by:** _to be completed by the team_

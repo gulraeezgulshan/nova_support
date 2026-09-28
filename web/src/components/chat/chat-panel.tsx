@@ -3,6 +3,7 @@
 import { Show, SignInButton } from "@clerk/nextjs";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { CheckCircle2, Send } from "lucide-react";
+import Link from "next/link";
 import { useEffect, useRef, useState } from "react";
 import { toast } from "sonner";
 
@@ -141,6 +142,18 @@ function Conversation({ orderRef }: { orderRef?: string }) {
   return (
     <div className="flex min-h-0 flex-1 flex-col">
       <div className="min-h-0 flex-1 space-y-3 overflow-y-auto p-4" aria-live="polite">
+        {conversation.recent_complaint_ref ? (
+          <p className="rounded-xl border bg-muted/40 px-3 py-2 text-xs text-muted-foreground">
+            Your recent complaint{" "}
+            <Link
+              href={`/complaints/${conversation.recent_complaint_ref}`}
+              className="font-medium text-foreground underline underline-offset-2"
+            >
+              {conversation.recent_complaint_ref}
+            </Link>{" "}
+            — view its status and our reply.
+          </p>
+        ) : null}
         {conversation.messages.map((m) => (
           <Message
             key={m.id}
@@ -214,7 +227,7 @@ function Conversation({ orderRef }: { orderRef?: string }) {
             disabled={busy}
             onClick={() => restart.mutate()}
           >
-            {conversation.state === "submitted" ? "Report another problem" : "Start over"}
+            {conversation.state === "submitted" ? "New question" : "Start over"}
           </Button>
         </div>
       </div>

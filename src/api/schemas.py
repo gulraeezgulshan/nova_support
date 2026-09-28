@@ -758,6 +758,7 @@ class ChatConversationOut(BaseModel):
     state: str
     order_ref: str | None
     complaint_ref: str | None
+    recent_complaint_ref: str | None = None  # the complaint a previous chat filed
     messages: list[ChatMessageOut]
 
 

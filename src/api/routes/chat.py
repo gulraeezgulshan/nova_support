@@ -40,6 +40,7 @@ async def _out(db: AsyncSession, conversation: ChatConversation) -> ChatConversa
         state=conversation.state,
         order_ref=order_ref,
         complaint_ref=complaint_ref,
+        recent_complaint_ref=await service.recent_complaint(db, conversation),
         messages=[_for_customer(m) for m in messages],
     )
 

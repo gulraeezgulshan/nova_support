@@ -258,7 +258,7 @@ change is written to an append-only audit table.
 
 ## Testing
 
-We wrote 489 automated backend tests that run against a real PostgreSQL database, plus
+We wrote 496 automated backend tests that run against a real PostgreSQL database, plus
 strict type checking, linting and a production build of the web app in CI. The model is
 replaced by a scripted test double, which lets us test retries, refusals, outages and
 malicious answers deterministically. A dedicated security suite covers prompt injection,

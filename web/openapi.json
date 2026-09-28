@@ -6452,6 +6452,17 @@
             ],
             "title": "Complaint Ref"
           },
+          "recent_complaint_ref": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Recent Complaint Ref"
+          },
           "messages": {
             "items": {
               "$ref": "#/components/schemas/ChatMessageOut"

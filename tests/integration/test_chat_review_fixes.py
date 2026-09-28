@@ -105,13 +105,14 @@ async def test_a_reviewer_reply_is_not_followed_by_the_old_draft(
     assert not any(m["kind"] == "holding" for m in messages)
 
 
-async def test_reopening_the_chat_resumes_the_submitted_conversation(
+async def test_reopening_the_chat_after_filing_starts_fresh_and_links_back(
     client: httpx.AsyncClient, customer: dict[str, str], monkeypatch: pytest.MonkeyPatch
 ) -> None:
     base = await ready_conversation(client, customer, monkeypatch)
     submitted = (await client.post(f"{base}/confirm", headers=customer)).json()
     again = (await client.post("/api/v1/chat/conversations", json={}, headers=customer)).json()
-    assert again["id"] == submitted["id"] and again["complaint_ref"] == submitted["complaint_ref"]
+    assert again["id"] != submitted["id"] and again["complaint_ref"] is None
+    assert again["recent_complaint_ref"] == submitted["complaint_ref"]
     fresh = (
         await client.post("/api/v1/chat/conversations", json={"new": True}, headers=customer)
     ).json()

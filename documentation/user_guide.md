@@ -161,15 +161,21 @@ and *How our support works* (`/about-supportnova`).
    own order number (`ORD-8…`), grouped under one purchase reference (`CHK-…`).
 5. **My orders** (`/orders`): status (processing, delivered, late by N business days, lost)
    and a delivery timeline per item.
-6. **Get help** on an order (or the **Help** button on any shop page) opens the support chat:
-   - the assistant asks one question at a time (what happened, when, what you would like);
+6. **Get help** on an order (or **Nova**, the chat button on every shop page) opens the support chat:
+   - general questions (delivery times, returns, refunds, warranty…) are answered with the
+     Help-centre answer, word for word — the AI only picks which approved answer fits;
+   - for a problem, the assistant asks one question at a time (what happened, when, what you
+     would like), never the same question twice;
    - it then shows a summary with **Confirm** / **Change something**;
    - on Confirm the complaint is filed through the normal pipelines (channel *live chat*) and
      you get the reference immediately;
    - within about 20–40 seconds the reply appears in the chat if Python validation approved
      it; otherwise a specialist-review message appears, and the reply follows once a reviewer
      approves it in **Manual review**;
-   - anything you write afterwards is added to the complaint's timeline.
+   - anything you write afterwards in that chat is added to the complaint's timeline (the
+     reply says so); **New question** starts a fresh chat. Opening Nova again after a
+     complaint was filed starts a fresh chat with a link to that complaint; Get help on the
+     same order reopens that order's chat.
    The complaint text is always your own words; the assistant never promises refunds, dates
    or other outcomes.
 7. **Contact us** (`/contact`): choose a topic.

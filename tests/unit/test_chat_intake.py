@@ -8,6 +8,7 @@ from support_chat.intake import (
     MAX_QUESTIONS,
     NEUTRAL_QUESTION,
     SUMMARY_LEAD,
+    FaqEntry,
     Role,
     next_turn,
 )
@@ -29,6 +30,7 @@ def turn(**overrides: object) -> str:
         "missing": ["date"],
         "ready_to_confirm": False,
         "requested_resolution": None,
+        "faq_id": None,
         **overrides,
     }
     return json.dumps(data)
@@ -184,3 +186,64 @@ def test_a_new_question_is_kept() -> None:
         provider, order=None, customer_messages=[GENERAL, "the Pulse 700"], history=history
     )
     assert result.reply == "When did the problem start?" and not result.ready
+
+
+# --- general questions get the approved Help-centre answer, word for word ----------------
+
+FAQ = [
+    FaqEntry(
+        "faq-1", "How long does delivery take?", "Standard delivery arrives within 5 business days."
+    ),
+    FaqEntry(
+        "faq-3",
+        "Can I return something I don't want?",
+        "Unused items in original packaging can be returned within 30 days of delivery.",
+    ),
+    FaqEntry(
+        "faq-4",
+        "When will I get my refund?",
+        "Approved refunds reach your original payment method within 7 to 10 business days.",
+    ),
+]
+
+
+def test_a_general_question_gets_the_approved_faq_answer() -> None:
+    provider = ScriptedProvider(turn(reply="Returns are accepted for 60 days!", faq_id="faq-3"))
+    result = next_turn(
+        provider, order=None, customer_messages=["what is the return window size?"], faq=FAQ
+    )
+    assert result.reply.startswith(FAQ[1].answer)  # the approved wording, never the model's
+    assert "60 days" not in result.reply and "report a problem" in result.reply
+    assert not result.ready and result.details["faq_id"] == "faq-3"
+    user = provider.requests[0].user
+    assert "faq-3: Can I return something I don't want?" in user
+
+
+def test_an_unknown_faq_id_is_ignored() -> None:
+    provider = ScriptedProvider(turn(reply="Which product is it?", faq_id="faq-99"))
+    result = next_turn(provider, order=None, customer_messages=["hello"], faq=FAQ)
+    assert result.reply == "Which product is it?" and result.details["faq_id"] is None
+
+
+def test_approved_answers_keep_their_timelines() -> None:
+    provider = ScriptedProvider(turn(faq_id="faq-4"))
+    result = next_turn(provider, order=None, customer_messages=["when is my refund?"], faq=FAQ)
+    assert "7 to 10 business days" in result.reply and not result.details["promise_removed"]
+
+
+def test_the_same_faq_can_be_answered_twice() -> None:
+    first = FAQ[0].answer
+    provider = ScriptedProvider(turn(faq_id="faq-1"))
+    history: list[tuple[Role, str]] = [
+        ("customer", "delivery time?"),
+        ("assistant", first),
+        ("customer", "sorry, how long is delivery again?"),
+    ]
+    result = next_turn(
+        provider,
+        order=None,
+        customer_messages=["delivery time?", "sorry, how long is delivery again?"],
+        history=history,
+        faq=FAQ,
+    )
+    assert result.reply.startswith(first) and not result.details["repeat_prevented"]

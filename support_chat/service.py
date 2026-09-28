@@ -35,13 +35,13 @@ from database.models import (
 )
 from genai_pipeline.providers import LLMProvider, get_provider
 from src.core.config import get_settings
-from support_chat.intake import Role, next_turn
+from support_chat.intake import Role, faq_entries, next_turn
 
 MAX_MESSAGE_CHARS = 2000
 MAX_CUSTOMER_MESSAGES = 30
 GREETING = "Hi, I'm the VoltHaven support assistant. Which order is this about?"
 ASK_WHAT_HAPPENED = "Sorry to hear there's a problem with your {product}. What happened?"
-ACKNOWLEDGEMENT = "Thanks, I've added this to your complaint {ref}. Our team will see it."
+ACKNOWLEDGEMENT = "Added to your complaint {ref}. To ask something new, tap New question."
 
 
 class ChatError(Exception):
@@ -103,9 +103,10 @@ async def _own_order(db: AsyncSession, customer: Customer, order_ref: str) -> Or
 async def start_conversation(
     db: AsyncSession, user: User, order_ref: str | None, new: bool = False
 ) -> ChatConversation:
-    """Resume the latest conversation about this order (or about no order), including one
-    already submitted so its reply stays reachable; `new` closes an unfinished one and starts
-    over."""
+    """Resume the latest conversation about this order, including one already submitted so its
+    reply stays reachable. Without an order, a conversation that already filed a complaint is
+    not resumed: opening the chat starts a new one (it links back via `recent_complaint`).
+    `new` closes an unfinished conversation and starts over."""
     customer = await _customer(db, user)
     order = await _own_order(db, customer, order_ref) if order_ref else None
     stmt = select(ChatConversation).where(
@@ -118,7 +119,10 @@ async def start_conversation(
         else stmt.where(ChatConversation.order_id.is_(None))
     )
     existing = await db.scalar(stmt.order_by(ChatConversation.created_at.desc()).limit(1))
-    if existing is not None and not new:
+    resumable = existing is not None and (
+        order is not None or existing.state != ChatState.SUBMITTED
+    )
+    if existing is not None and resumable and not new:
         return existing
     if existing is not None and existing.state in (ChatState.GATHERING, ChatState.CONFIRMING):
         existing.state = ChatState.CLOSED
@@ -272,6 +276,7 @@ async def post_customer_message(
             order=_order_dict(order),
             customer_messages=texts,
             history=await _history(db, conversation),
+            faq=faq_entries(),
         )
     )
     conversation.draft = {
@@ -385,6 +390,23 @@ async def confirm(db: AsyncSession, conversation: ChatConversation, user: User) 
     complaint_id, user_id = complaint.id, user.id
     await db.commit()
     enqueue_automatic(complaint_id, user_id)
+
+
+async def recent_complaint(db: AsyncSession, conversation: ChatConversation) -> str | None:
+    """The complaint the customer's previous chat filed, for a new chat without an order."""
+    if conversation.complaint_id or conversation.order_id:
+        return None
+    return await db.scalar(
+        select(Complaint.complaint_ref)
+        .join(ChatConversation, ChatConversation.complaint_id == Complaint.id)
+        .where(
+            ChatConversation.customer_id == conversation.customer_id,
+            ChatConversation.id != conversation.id,
+            ChatConversation.state == ChatState.SUBMITTED,
+        )
+        .order_by(ChatConversation.created_at.desc())
+        .limit(1)
+    )
 
 
 async def messages_after(

@@ -719,6 +719,10 @@ export type ChatConversationOut = {
      */
     complaint_ref: string | null;
     /**
+     * Recent Complaint Ref
+     */
+    recent_complaint_ref?: string | null;
+    /**
      * Messages
      */
     messages: Array<ChatMessageOut>;

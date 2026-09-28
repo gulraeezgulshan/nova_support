@@ -220,3 +220,53 @@ async def test_each_turn_sees_the_assistants_earlier_questions(
         < second_turn.index("Assistant: When did it arrive?")
         < second_turn.index("It's a general question")
     )
+
+
+async def _file(
+    client: httpx.AsyncClient, headers: dict[str, str], body: dict[str, Any]
+) -> tuple[dict[str, Any], str]:
+    conv = (await client.post("/api/v1/chat/conversations", json=body, headers=headers)).json()
+    base = f"/api/v1/chat/conversations/{conv['id']}"
+    text = "My charger stopped working after two days, I would like a replacement."
+    await client.post(f"{base}/messages", headers=headers, json={"text": text})
+    confirmed = (await client.post(f"{base}/confirm", headers=headers)).json()
+    return conv, str(confirmed["complaint_ref"])
+
+
+async def test_opening_the_chat_after_a_filed_complaint_starts_a_new_one(
+    client: httpx.AsyncClient, shopper: dict[str, str], scripted: Callable[..., ScriptedProvider]
+) -> None:
+    scripted(READY)
+    first, ref = await _file(client, shopper, {})
+    again = (await client.post("/api/v1/chat/conversations", json={}, headers=shopper)).json()
+    assert again["id"] != first["id"] and again["state"] != "submitted"
+    assert again["complaint_ref"] is None
+    assert again["recent_complaint_ref"] == ref  # the new chat links back to the filed one
+
+
+async def test_the_chat_about_an_order_still_reopens_after_filing(
+    client: httpx.AsyncClient, shopper: dict[str, str], scripted: Callable[..., ScriptedProvider]
+) -> None:
+    order_ref = await place(client, shopper)
+    scripted(READY)
+    first, _ = await _file(client, shopper, {"order_ref": order_ref})
+    again = (
+        await client.post(
+            "/api/v1/chat/conversations", json={"order_ref": order_ref}, headers=shopper
+        )
+    ).json()
+    assert again["id"] == first["id"] and again["state"] == "submitted"
+
+
+async def test_a_message_after_filing_says_where_it_went(
+    client: httpx.AsyncClient, shopper: dict[str, str], scripted: Callable[..., ScriptedProvider]
+) -> None:
+    order_ref = await place(client, shopper)
+    scripted(READY)
+    first, ref = await _file(client, shopper, {"order_ref": order_ref})
+    base = f"/api/v1/chat/conversations/{first['id']}"
+    await client.post(f"{base}/messages", headers=shopper, json={"text": "The cable is fine."})
+    last = (await client.get(base, headers=shopper)).json()["messages"][-1]
+    assert (
+        last["content"] == f"Added to your complaint {ref}. To ask something new, tap New question."
+    )

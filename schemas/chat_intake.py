@@ -21,3 +21,8 @@ class IntakeTurn(Strict):
     requested_resolution: str | None = Field(
         description="What the customer asks for, in their terms, or null if not stated"
     )
+    faq_id: str | None = Field(
+        default=None,
+        description="Id of the <faq> entry that answers the customer's latest message when it "
+        "is a general question, or null",
+    )

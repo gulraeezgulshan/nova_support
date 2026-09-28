@@ -31,7 +31,7 @@ analytics, reports, security hardening, evaluation tooling and deployment config
 | [Evaluator guide](documentation/evaluator_guide.md) | Hidden data, policy update, new category, traps, live modifications, deliberate defects |
 | [Evaluation](documentation/evaluation.md) | Unseen hold-out set, GenAI vs Python comparison, Python accuracy, latency |
 | [Security testing report](documentation/security_testing_report.md) | Adversarial tests and results |
-| [Test cases](documentation/test_cases.md) | SRS test categories mapped to the 489 automated tests |
+| [Test cases](documentation/test_cases.md) | SRS test categories mapped to the 496 automated tests |
 | [Deployment](documentation/deployment.md) | Vercel, Railway, Cloudflare R2, Clerk, evaluator accounts |
 | [Demo script](documentation/demo_script.md), [team contributions](documentation/team_contributions.md), [AI usage](AI_USAGE.md) | Submission material |
 
@@ -405,7 +405,7 @@ product guide → response template → FAQ. `FAQ-GEN-01` intentionally contradi
 ## Testing and quality
 
 ```bash
-make test     # 489 backend tests (needs `make infra`; uses the supportnova_test database)
+make test     # 496 backend tests (needs `make infra`; uses the supportnova_test database)
 make lint     # ruff, mypy --strict, eslint, tsc
 ```
 

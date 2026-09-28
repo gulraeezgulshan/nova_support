@@ -1,6 +1,6 @@
 # Test Cases
 
-SRS deliverable 11. 489 automated backend tests (`make test`, pytest against a real
+SRS deliverable 11. 496 automated backend tests (`make test`, pytest against a real
 PostgreSQL + pgvector database) plus static checks (`make lint`: ruff, mypy `--strict`,
 ESLint, TypeScript) and the production web build. CI runs all of them on every push
 (`.github/workflows/`).

@@ -48,6 +48,26 @@ def deadline_pattern() -> re.Pattern[str]:
     return re.compile(validation_config()["promises"]["deadline"], re.IGNORECASE)
 
 
+@dataclass(frozen=True)
+class FaqEntry:
+    id: str
+    question: str
+    answer: str
+
+
+def faq_entries() -> list[FaqEntry]:
+    """The Help-centre FAQ (approved wording, numbers from the policy documents)."""
+    from storefront.config import storefront_config
+
+    return [
+        FaqEntry(f"faq-{i}", item.question, item.answer)
+        for i, item in enumerate(storefront_config().faq, 1)
+    ]
+
+
+FAQ_FOLLOW_UP = "Is there anything else I can help with, or would you like to report a problem?"
+
+
 @dataclass
 class IntakeResult:
     reply: str
@@ -111,6 +131,7 @@ def next_turn(
     order: dict[str, str] | None,
     customer_messages: list[str],
     history: list[tuple[Role, str]] | None = None,
+    faq: list[FaqEntry] | None = None,
 ) -> IntakeResult:
     """`history` is the whole conversation in order; without it only the customer's words."""
     if provider is None:
@@ -119,8 +140,10 @@ def next_turn(
     questions_asked = max(0, len(customer_messages) - 1)
     must_summarise = questions_asked >= MAX_QUESTIONS
     history = history or [("customer", m) for m in customer_messages]
+    faq = faq or []
     system, user = template.render(
         order=order,
+        faq=faq,
         history=history,
         questions_asked=questions_asked,
         max_questions=MAX_QUESTIONS,
@@ -156,7 +179,21 @@ def next_turn(
             "latency_ms": response.latency_ms,
             "promise_removed": False,
             "repeat_prevented": False,
+            "faq_id": None,
         }
+        answer = next((f for f in faq if f.id == parsed.faq_id), None)
+        if answer is not None and not must_summarise:
+            # A general question: reply with the approved Help-centre wording, never the
+            # model's own text, so no policy number can be invented.
+            details["faq_id"] = answer.id
+            return IntakeResult(
+                f"{answer.answer}\n\n{FAQ_FOLLOW_UP}",
+                _safe_title(parsed.title, customer_messages, order),
+                parsed.requested_resolution,
+                False,
+                "genai",
+                details,
+            )
         reply = parsed.reply.strip()
         ready = parsed.ready_to_confirm or must_summarise
         if find_promises(reply) or deadline_pattern().search(reply):

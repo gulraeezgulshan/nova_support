@@ -209,11 +209,11 @@ it.
 ![One complaint from intake through both pipelines to reply or review](/blog/diagrams/2-complaint-lifecycle.png)
 
 
-Pipeline 2 runs 18 checks with a severity and evidence each: schema, category, subcategory,
+Pipeline 2 runs 19 checks with a severity and evidence each: schema, category, subcategory,
 department, supporting departments, urgency, priority, escalation, required and prohibited
 actions, compensation, policy currency and precedence, promises, hallucinated facts,
-contradictions, missing information, injection handling and follow-up. An informational
-note records the supporting evidence the customer attached. A weighted score and
+contradictions, missing information, injection handling, follow-up, and an informational
+check on the supporting evidence the customer attached. A weighted score and
 three verdicts follow: *verified*, *verified with corrections* (Python fixed something safe,
 such as raising a priority), and *needs review*.
 

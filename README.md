@@ -100,7 +100,7 @@ The top-level folders follow the SRS deliverable structure.
 | `sample_complaints/` | Dataset generator, 536 labelled complaints, 504 customers, 404 orders, loader |
 | `tests/` | Unit and integration tests |
 | `web/` | Next.js frontend |
-| `python_validation/` | Pipeline 2: independent classifier, 18 checks, scoring, verdicts, review tasks |
+| `python_validation/` | Pipeline 2: independent classifier, 19 checks, scoring, verdicts, review tasks |
 | `hallucination_checks/` | Unsupported-promise and untraceable-fact detection in drafted responses |
 | `comparison_engine/` | GenAI vs Python comparison report and the Python-only baseline |
 | `src/analytics/` | Dashboards and analytics queries, trend detection, report builders and CSV/Excel/PDF exporters |

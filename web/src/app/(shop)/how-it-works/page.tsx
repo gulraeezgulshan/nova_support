@@ -58,7 +58,7 @@ export default function HowItWorksPage() {
             <h2 className="text-3xl font-semibold tracking-tight">Tour of the app</h2>
             <p className="text-muted-foreground">
               Screenshots from the live application. Staff screens need a sign-in; these show what
-              an administrator sees.
+              an administrator sees, with customers&apos; e-mail addresses masked.
             </p>
           </div>
           <ol className="space-y-20">

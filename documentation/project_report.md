@@ -89,7 +89,7 @@ automatically, multiple languages.
 | Knowledge base (11–20) | Upload with type/size/metadata validation; parsing to sections with page numbers; chunking; embeddings; hybrid retrieval; version lifecycle (draft, active, superseded, previous, retired); precedence; quarantine of instruction-like passages |
 | GenAI analysis (21–40) | Versioned prompt; JSON schema generated from the live taxonomy; Claude structured output; Python validation of the JSON; one repair retry; manual review on failure; full call logging |
 | Rule matrix (41–46) | 79 resolution rules and 32 escalation rules in CSV, seeded to the database, editable in the UI; safe condition language |
-| Ground-truth validation (47–52) | Independent classifier; 18 checks; score and verdict; enforced corrections; comparison table |
+| Ground-truth validation (47–52) | Independent classifier; 19 checks; score and verdict; enforced corrections; comparison table |
 | Review, status, repeats (53–60) | Review queue; 8 reviewer actions with before/after records; status transitions; repeat detection |
 | Dashboards and analytics (61–66) | Customer, agent and management dashboards; analytics; trend detection; search and filters |
 | Reports and export (67–68) | 9 reports; CSV, Excel, PDF |
@@ -161,7 +161,7 @@ flowchart LR
 | `complaint_rules/`, `escalation_rules/`, `routing_rules/` | Rule matrix CSVs, condition language, rule engine, routing configuration |
 | `genai_pipeline/` | Vocabulary, JSON schema, prompt registry, provider adapter, output validation, pipeline, CLI, evidence export |
 | `prompt_templates/`, `schemas/` | Versioned prompt template, output contract |
-| `python_validation/` | Independent classifier, 18 checks, scoring, verdicts, pipeline, triage |
+| `python_validation/` | Independent classifier, 19 checks, scoring, verdicts, pipeline, triage |
 | `hallucination_checks/` | Unsupported promises, untraceable facts |
 | `comparison_engine/` | GenAI vs Python comparison, baseline, evaluation of unseen packs |
 | `sample_documents/`, `sample_complaints/`, `hidden_test_ready/` | 20 policy documents, 536-complaint dataset, 109-complaint hold-out pack |
@@ -220,7 +220,7 @@ flowchart TB
   D2 -->|active passages| G
   D3 -->|taxonomy, actions| G
   G -->|analysis run| D4[(Analysis runs and calls)]
-  D4 --> V[4 Python validation:<br/>classify, apply rules, 18 checks]
+  D4 --> V[4 Python validation:<br/>classify, apply rules, 19 checks]
   D1 --> V
   D2 --> V
   D3 --> V
@@ -425,7 +425,7 @@ retrieved, action codes exist.
 
 ## 23. Ground-truth validation
 
-`python_validation/checks.py`, 18 checks, each with status (pass/warn/fail/skip),
+`python_validation/checks.py`, 19 checks, each with status (pass/warn/fail/skip),
 severity (critical 5, major 3, minor 1 points) and evidence:
 
 schema · category · subcategory · department · supporting departments · urgency ·

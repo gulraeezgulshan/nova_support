@@ -104,7 +104,7 @@ export function RulesTable({ canEdit }: { canEdit: boolean }) {
                   </Badge>
                   <div className="text-[11px] text-muted-foreground">v{r.version}</div>
                 </TableCell>
-                <TableCell className="max-w-56 align-top text-xs">
+                <TableCell className="max-w-56 align-top text-xs whitespace-normal">
                   {r.category
                     ? `${r.category}${r.subcategory ? ` / ${r.subcategory}` : ""}`
                     : "Any complaint"}
@@ -120,7 +120,7 @@ export function RulesTable({ canEdit }: { canEdit: boolean }) {
                   <div>{r.department ?? "keep department"}</div>
                   {r.escalation_level ? <div>Escalation L{r.escalation_level}</div> : null}
                 </TableCell>
-                <TableCell className="max-w-64 align-top text-[11px]">
+                <TableCell className="max-w-64 min-w-48 align-top text-[11px] whitespace-normal [overflow-wrap:anywhere]">
                   <div className="text-emerald-700 dark:text-emerald-400">
                     {r.required_actions.join(", ")}
                   </div>
@@ -128,7 +128,7 @@ export function RulesTable({ canEdit }: { canEdit: boolean }) {
                     {r.prohibited_actions.join(", ")}
                   </div>
                 </TableCell>
-                <TableCell className="align-top font-mono text-[11px]">
+                <TableCell className="max-w-40 align-top font-mono text-[11px] whitespace-normal">
                   {r.policy_refs.join(" ")}
                 </TableCell>
                 {canEdit ? (

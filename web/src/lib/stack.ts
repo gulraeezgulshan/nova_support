@@ -44,7 +44,7 @@ export const STACK: TechGroup[] = [
       {
         icon: "python",
         name: "Python",
-        role: "The rule matrix, the 18 validation checks, reports and the evaluation.",
+        role: "The rule matrix, the 19 validation checks, reports and the evaluation.",
       },
       {
         icon: "pydantic",

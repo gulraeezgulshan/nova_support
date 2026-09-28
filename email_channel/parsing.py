@@ -16,7 +16,14 @@ ORDER_REF = re.compile(r"\bORD-\d{6}\b", re.IGNORECASE)
 WROTE = re.compile(r"^On .{0,300}wrote:\s*$", re.IGNORECASE)
 ORIGINAL = re.compile(r"^-{2,}\s*(Original Message|Forwarded message)\s*-{2,}$", re.IGNORECASE)
 UNDERSCORES = re.compile(r"^_{20,}$")
-AUTOMATED_SENDERS = ("mailer-daemon", "postmaster")
+AUTOMATED_SENDERS = (
+    "mailer-daemon",
+    "postmaster",
+    "noreply",
+    "no-reply",
+    "donotreply",
+    "do-not-reply",
+)
 
 
 @dataclass
@@ -128,7 +135,7 @@ def order_ref_in(text: str) -> str | None:
 
 
 def _automated(msg: EmailMessage, address: str) -> bool:
-    """Auto-replies, bounces and list mail: never answered (mail-loop protection)."""
+    """Auto-replies, bounces, list and bulk mail: never answered (mail-loop protection)."""
     auto = str(msg.get("Auto-Submitted", "no")).strip().lower()
     precedence = str(msg.get("Precedence", "")).strip().lower()
     return (
@@ -136,7 +143,9 @@ def _automated(msg: EmailMessage, address: str) -> bool:
         or "X-Autoreply" in msg
         or "X-Autorespond" in msg
         or precedence in {"bulk", "list", "junk"}
-        or "List-Id" in msg
+        # Mailing lists and bulk senders (RFC 2369): newsletters and service notifications
+        # carry List-Unsubscribe even without List-Id or Precedence.
+        or any(header.lower().startswith("list-") for header in msg)
         or address.split("@")[0].lower() in AUTOMATED_SENDERS
     )
 

@@ -103,7 +103,7 @@ automatically, multiple languages.
 | Reliability | Background jobs with retries (Celery, acks-late); provider outages fall back to Python-only validation; invalid GenAI output never used |
 | Performance | Retrieval with indexes (pgvector, full-text); prompt caching of the system prompt; low-effort structured output; latency measured per complaint (`make evaluate`) |
 | Traceability | Every analysis stores prompt name/version/hash, model, schema fingerprint, retrieved passages (document, version, section, page), attempts, tokens, latency and raw responses; every change audited |
-| Maintainability | Typed Python (mypy strict), typed TypeScript client generated from OpenAPI, 443 automated tests, CI |
+| Maintainability | Typed Python (mypy strict), typed TypeScript client generated from OpenAPI, 444 automated tests, CI |
 | Configurability | Taxonomy, SLAs, rules and documents in the database; vocabularies, detectors, validation limits, analytics thresholds in YAML |
 | Usability | Accessible UI components (Radix/shadcn), light and dark themes, responsive layout |
 
@@ -494,7 +494,7 @@ anything by itself.
 
 ## 29. Testing
 
-443 automated backend tests (unit, integration against real PostgreSQL/pgvector, security),
+444 automated backend tests (unit, integration against real PostgreSQL/pgvector, security),
 static typing and linting for Python and TypeScript, and the production web build, all in
 CI. The GenAI is replaced by a scripted test double in automated tests; live behaviour is
 measured with `make evaluate` on 108 unseen hold-out complaints. See

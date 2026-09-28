@@ -68,6 +68,25 @@ def test_automated_messages_are_flagged() -> None:
     assert not parse_email(build(text=BODY, headers={"Auto-Submitted": "no"})).automated
 
 
+def test_newsletters_and_service_notifications_are_flagged() -> None:
+    # Headers of a real account e-mail from a mailing service (Brevo's "Welcome" message):
+    # no Auto-Submitted, Precedence or List-Id, but a one-click unsubscribe link.
+    service_mail = {
+        "List-Unsubscribe": "<https://r.mailer.example/un/abc>",
+        "List-Unsubscribe-Post": "List-Unsubscribe=One-Click",
+        "Feedback-ID": "77.32.148.2:14406_-1:14406:Sendinblue",
+    }
+    assert parse_email(
+        build(text=BODY, sender="Brevo <welcome@t.brevo.example>", headers=service_mail)
+    ).automated
+    for header in ("List-Help", "List-Post", "List-Owner"):
+        assert parse_email(build(text=BODY, headers={header: "<mailto:x@example.test>"})).automated
+    for sender in ("no-reply@shop.example", "noreply@shop.example", "donotreply@shop.example"):
+        assert parse_email(build(text=BODY, sender=sender)).automated
+    # A customer's ordinary e-mail is still a complaint.
+    assert not parse_email(build(text=BODY, sender="Sara <sara@example.test>")).automated
+
+
 def test_attachments_and_thread_headers() -> None:
     raw = build(
         text=BODY,

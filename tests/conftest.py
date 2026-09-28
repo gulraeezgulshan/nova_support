@@ -40,11 +40,16 @@ os.environ.update(
 
 import httpx  # noqa: E402
 from sqlalchemy import text  # noqa: E402
+from sqlalchemy.ext.asyncio import AsyncSession  # noqa: E402
 
 from database.base import Base  # noqa: E402
 from database.models import Role, User  # noqa: E402
 from database.seed import load_taxonomy, seed_rules, seed_taxonomy  # noqa: E402
-from database.session import get_sync_engine, sync_session  # noqa: E402
+from database.session import (  # noqa: E402
+    async_session_factory,
+    get_sync_engine,
+    sync_session,
+)
 from security.clerk import ClerkTokenVerifier  # noqa: E402
 from security.dependencies import get_token_verifier  # noqa: E402
 from storefront.catalogue import sync_catalogue  # noqa: E402
@@ -109,6 +114,19 @@ def database() -> Iterator[None]:
     Base.metadata.drop_all(engine)
 
 
+@pytest.fixture(autouse=True)
+def _runtime_settings(request: pytest.FixtureRequest) -> Iterator[None]:
+    """Tests without a database use the defaults; database tests read the (empty) table."""
+    import app_settings
+
+    app_settings.reset_cache()
+    if request.node.get_closest_marker("db") is None:
+        app_settings.override(app_settings.defaults())
+    yield
+    app_settings.override(None)
+    app_settings.reset_cache()
+
+
 @pytest.fixture
 def clean_db(database: None) -> Iterator[None]:
     """Seeded taxonomy for each test; everything truncated afterwards."""
@@ -120,6 +138,12 @@ def clean_db(database: None) -> Iterator[None]:
     tables = ", ".join(f'"{t.name}"' for t in reversed(Base.metadata.sorted_tables))
     with get_sync_engine().begin() as conn:
         conn.execute(text(f"TRUNCATE {tables} RESTART IDENTITY CASCADE"))
+
+
+@pytest.fixture
+async def async_db(clean_db: None) -> AsyncIterator[AsyncSession]:
+    async with async_session_factory()() as session:
+        yield session
 
 
 @pytest.fixture

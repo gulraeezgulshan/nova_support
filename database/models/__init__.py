@@ -25,6 +25,7 @@ from database.models.knowledge_base import (
     VersionStatus,
 )
 from database.models.rules import Rule, RuleType
+from database.models.settings import AppSettingsRow, JobRun
 from database.models.storefront import CHECKOUT_REF_SEQ, ORDER_REF_SEQ, Product, ProductImage
 from database.models.taxonomy import Category, Department, SlaPolicy, Subcategory
 from database.models.user import Role, User
@@ -43,6 +44,7 @@ __all__ = [
     "ENQUIRY_REF_SEQ",
     "ORDER_REF_SEQ",
     "AnalysisRun",
+    "AppSettingsRow",
     "AuditEvent",
     "Category",
     "ChatConversation",
@@ -63,6 +65,7 @@ __all__ = [
     "ImportBatch",
     "InboundEmail",
     "IngestStatus",
+    "JobRun",
     "LlmCall",
     "MailboxState",
     "NewsletterSubscriber",

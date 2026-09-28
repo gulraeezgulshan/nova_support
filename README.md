@@ -31,7 +31,7 @@ analytics, reports, security hardening, evaluation tooling and deployment config
 | [Evaluator guide](documentation/evaluator_guide.md) | Hidden data, policy update, new category, traps, live modifications, deliberate defects |
 | [Evaluation](documentation/evaluation.md) | Unseen hold-out set, GenAI vs Python comparison, Python accuracy, latency |
 | [Security testing report](documentation/security_testing_report.md) | Adversarial tests and results |
-| [Test cases](documentation/test_cases.md) | SRS test categories mapped to the 451 automated tests |
+| [Test cases](documentation/test_cases.md) | SRS test categories mapped to the 489 automated tests |
 | [Deployment](documentation/deployment.md) | Vercel, Railway, Cloudflare R2, Clerk, evaluator accounts |
 | [Demo script](documentation/demo_script.md), [team contributions](documentation/team_contributions.md), [AI usage](AI_USAGE.md) | Submission material |
 
@@ -60,7 +60,7 @@ Browser ─► Next.js 16 (web/) ──Bearer token (Clerk)──► FastAPI (sr
 | Frontend | Next.js 16 (App Router), React 19, TypeScript, Tailwind CSS 4, shadcn/ui, TanStack Query, typed client generated from OpenAPI (@hey-api/openapi-ts) |
 | Auth | Clerk (identity) + SupportNova roles in PostgreSQL (authorisation, enforced by FastAPI) |
 | Backend | Python 3.13, FastAPI, Pydantic 2, SQLAlchemy 2.1 (async), Alembic |
-| Jobs | Celery + Redis (document ingestion, complaint analysis and validation), Celery Beat (SLA risk scan every 5 minutes) |
+| Jobs | Celery + Redis (document ingestion, complaint analysis and validation), Celery Beat (one tick every 15 s runs the SLA scan, mailbox check and e-mail outbox on intervals set in Settings) |
 | Knowledge base | PyMuPDF (PDF), python-docx (DOCX), section-aware chunking, fastembed (`bge-small-en-v1.5`), hybrid pgvector + full-text retrieval |
 | GenAI | Anthropic Claude API (`claude-opus-5`, configurable), JSON-schema structured outputs, prompt caching, server-side refusal fallbacks |
 | Quality | pytest, Ruff, mypy (strict), ESLint, Prettier, GitHub Actions, gitleaks |
@@ -311,8 +311,8 @@ priority; they move if the priority changes.
 | Met / Missed | Resolved inside / after the resolution target |
 
 The first response is the first move to assigned, in progress, awaiting customer, escalated or
-resolved, or a reviewer approving the customer response. Celery Beat runs the SLA scan every
-5 minutes (`config/analytics.yaml`); a complaint that becomes at risk or breached gets a
+resolved, or a reviewer approving the customer response. The SLA scan runs every 5 minutes by
+default (administrators change it in **Settings**); a complaint that becomes at risk or breached gets a
 staff-only timeline entry and an audit event. `make sla-scan` runs one scan by hand.
 
 ## Dashboards, analytics and reports
@@ -405,7 +405,7 @@ product guide → response template → FAQ. `FAQ-GEN-01` intentionally contradi
 ## Testing and quality
 
 ```bash
-make test     # 451 backend tests (needs `make infra`; uses the supportnova_test database)
+make test     # 489 backend tests (needs `make infra`; uses the supportnova_test database)
 make lint     # ruff, mypy --strict, eslint, tsc
 ```
 

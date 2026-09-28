@@ -94,6 +94,7 @@ automatically, multiple languages.
 | Dashboards and analytics (61–66) | Customer, agent and management dashboards; analytics; trend detection; search and filters |
 | Reports and export (67–68) | 9 reports; CSV, Excel, PDF |
 | SLA (55–56) | Deadlines per priority, SLA status, periodic risk scan |
+| Administration | Settings page: e-mail timing, automatic replies, AI provider/model/effort, auto-analysis, review thresholds, SLA scan interval, shop and console branding with logos; changes apply within 15 s without a redeploy and are audited |
 
 ## 8. Non-functional requirements
 
@@ -103,7 +104,7 @@ automatically, multiple languages.
 | Reliability | Background jobs with retries (Celery, acks-late); provider outages fall back to Python-only validation; invalid GenAI output never used |
 | Performance | Retrieval with indexes (pgvector, full-text); prompt caching of the system prompt; low-effort structured output; latency measured per complaint (`make evaluate`) |
 | Traceability | Every analysis stores prompt name/version/hash, model, schema fingerprint, retrieved passages (document, version, section, page), attempts, tokens, latency and raw responses; every change audited |
-| Maintainability | Typed Python (mypy strict), typed TypeScript client generated from OpenAPI, 451 automated tests, CI |
+| Maintainability | Typed Python (mypy strict), typed TypeScript client generated from OpenAPI, 489 automated tests, CI |
 | Configurability | Taxonomy, SLAs, rules and documents in the database; vocabularies, detectors, validation limits, analytics thresholds in YAML |
 | Usability | Accessible UI components (Radix/shadcn), light and dark themes, responsive layout |
 
@@ -166,6 +167,7 @@ flowchart LR
 | `comparison_engine/` | GenAI vs Python comparison, baseline, evaluation of unseen packs |
 | `sample_documents/`, `sample_complaints/`, `hidden_test_ready/` | 20 policy documents, 536-complaint dataset, 109-complaint hold-out pack |
 | `storefront/` | Demo shop: product catalogue, checkout (one order per line, server prices), order tracking, admin demo delivery outcomes |
+| `app_settings/` | Run-time settings (validated, stored as changes from the defaults, cached 15 s), policy facts, logos, and the settings-driven scheduler tick |
 | `support_chat/` | Support chat: guided intake (GenAI or fixed questions, promise guard), conversation state, reply hooks from validation and review |
 | `web/` | Next.js frontend: VoltHaven shop and chat (public) and the staff console |
 | `tests/` | Unit, integration and security tests |
@@ -494,7 +496,7 @@ anything by itself.
 
 ## 29. Testing
 
-451 automated backend tests (unit, integration against real PostgreSQL/pgvector, security),
+489 automated backend tests (unit, integration against real PostgreSQL/pgvector, security),
 static typing and linting for Python and TypeScript, and the production web build, all in
 CI. The GenAI is replaced by a scripted test double in automated tests; live behaviour is
 measured with `make evaluate` on 108 unseen hold-out complaints. See

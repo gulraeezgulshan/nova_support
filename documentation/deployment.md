@@ -10,9 +10,9 @@ Browser ──► Vercel (Next.js, web/) ──► Railway: api (FastAPI) ──
                                              │                         ▲
                                              │        Railway: worker (Celery) ── Anthropic / OpenAI API
                                              │                                 ── support mailbox (IMAP in; SMTP or Brevo out)
-                                             │        Railway: beat (schedules: SLA scan every 5 min,
-                                             │                       mailbox check every 1 min,
-                                             │                       e-mail outbox every 30 s)
+                                             │        Railway: beat (one tick every 15 s; the SLA scan,
+                                             │                       mailbox check and e-mail outbox run
+                                             │                       on the intervals set in Settings)
                                              └──► Cloudflare R2 (uploaded documents and attachments)
 ```
 
@@ -147,7 +147,9 @@ Clerk → **Configure → Webhooks → Add endpoint**:
 3. Submit a complaint as the customer account; within about 20 seconds it shows an analysis
    and a validation verdict (the worker processes it).
 4. **Reports**: export the Complaint Intelligence Report as PDF.
-5. Railway *beat* logs show the SLA scan every 5 minutes and the mailbox check every minute.
+5. Railway *beat* logs show `app_settings.tasks.tick` every 15 seconds; the SLA scan, mailbox
+   check and outbox run on the intervals in **Settings** (defaults 5 min, 1 min, 30 s). The
+   pre-deploy migration creates the `app_settings` and `job_runs` tables.
 6. If the mailbox is configured: send a complaint e-mail to it. Within about a minute
    **Mailbox** shows it under *Received → New complaint* and the acknowledgement under *Sent*,
    and the sender receives it with the `[CMP-…]` reference.

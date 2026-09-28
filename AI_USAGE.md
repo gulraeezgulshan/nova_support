@@ -371,3 +371,16 @@ architecture and is documented in the project report, not here.
 - **Changes made:** staff can open the original uploaded file of any document version (PDF and text in a new tab, other files downloaded; staff only, `nosniff`, safe file names) from the document title or the version menu; "chunks" are called passages in the interface; a "Back to shop" link in the console sidebar and a "View shop" button in its top bar; the chat launcher is now Nova, a drawn robot mascot in the brand colour with a once-per-session greeting, also shown in the chat header and beside the assistant's messages (animations respect reduced motion).
 - **Tests performed:** 2 new backend tests (staff download of the exact file with headers, customer refused, unknown version 404; inline vs download and header-safe file names); full suite 451 passed; ruff, mypy, ESLint, tsc and `next build` pass; the launcher, greeting and chat header were checked in the browser.
 - **Verified by:** _to be completed by the team_
+
+## Entry 16: Admin Settings page and branding
+
+| Field | Details |
+|---|---|
+| **Date** | 2026-09-28 |
+| **Tool** | Claude Code (Anthropic), model Claude Opus 5.5 |
+| **Purpose** | Let administrators change e-mail timing, AI behaviour, review thresholds, SLA timing and the shop/console branding without redeploying |
+
+- **Files affected:** new `app_settings/` package (model, defaults, store, facts, logos, jobs, tasks), `database/models/settings.py` and migration `edd96d9ded2e`, `src/api/routes/settings.py`, `src/api/schemas.py`, `src/worker.py`, `genai_pipeline/{providers,pipeline,evidence,analyze}.py`, `python_validation/{checks,pipeline}.py`, `complaint_processing/service.py`, `email_channel/{tasks,transport,notify,inbound}.py`, `support_chat/{notify,service}.py`, `bulk_import/service.py`, `src/api/routes/storefront.py`; web: Settings page, logo upload, `lib/branding.tsx`, shop header, console sidebar, shop metadata; spec and plan in `docs/superpowers/`; user guide, deployment guide, README, project report.
+- **Changes made:** a validated settings document stored as changes from today's defaults, cached for 15 seconds and audited on every save (stale saves refused); the AI provider/model/effort, retrieval size, review thresholds, sender name, automatic replies and automatic analysis read it; Celery Beat runs one tick every 15 seconds and a database gate runs each periodic job on its configured interval; content-checked PNG/JPEG/WebP logos (SVG refused) served publicly; the shop name, contact details, logos and browser-tab icon follow Settings; policy numbers are read-only with their source document.
+- **Tests performed:** 38 new backend tests (model limits and single-line text, provider/model match, storage merge and fallback, API roles/409/422/no secrets, provider and thresholds from settings, auto-analysis off, auto-replies off for e-mail and chat, sender name, job gate and tick, logo upload/serve/refuse, shop details); full suite 489 passed; ruff, mypy, ESLint, tsc and `next build` pass; shop header, tab title and icon checked in the browser with a test logo.
+- **Verified by:** _to be completed by the team_

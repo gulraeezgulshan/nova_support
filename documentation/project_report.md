@@ -103,7 +103,7 @@ automatically, multiple languages.
 | Reliability | Background jobs with retries (Celery, acks-late); provider outages fall back to Python-only validation; invalid GenAI output never used |
 | Performance | Retrieval with indexes (pgvector, full-text); prompt caching of the system prompt; low-effort structured output; latency measured per complaint (`make evaluate`) |
 | Traceability | Every analysis stores prompt name/version/hash, model, schema fingerprint, retrieved passages (document, version, section, page), attempts, tokens, latency and raw responses; every change audited |
-| Maintainability | Typed Python (mypy strict), typed TypeScript client generated from OpenAPI, 432 automated tests, CI |
+| Maintainability | Typed Python (mypy strict), typed TypeScript client generated from OpenAPI, 436 automated tests, CI |
 | Configurability | Taxonomy, SLAs, rules and documents in the database; vocabularies, detectors, validation limits, analytics thresholds in YAML |
 | Usability | Accessible UI components (Radix/shadcn), light and dark themes, responsive layout |
 
@@ -494,18 +494,27 @@ anything by itself.
 
 ## 29. Testing
 
-432 automated backend tests (unit, integration against real PostgreSQL/pgvector, security),
+436 automated backend tests (unit, integration against real PostgreSQL/pgvector, security),
 static typing and linting for Python and TypeScript, and the production web build, all in
 CI. The GenAI is replaced by a scripted test double in automated tests; live behaviour is
 measured with `make evaluate` on 108 unseen hold-out complaints. See
 `documentation/test_cases.md` and `documentation/evaluation.md`.
 
-Key results (Python-only; GenAI results after the live run):
+Key results, Python only:
 
 | Measure | Development dataset (531) | Unseen hold-out (108) |
 |---|---|---|
 | Category accuracy | 94.9% | 66.7% (100% when confident; abstains on 29%) |
 | Escalation agreement | 100% | 94.4% (0 missed, 6 extra) |
+
+Key results, full pipeline on the 108 unseen complaints (OpenAI `gpt-5-mini`, low effort):
+
+| Measure | GenAI alone | After Python validation |
+|---|---|---|
+| Category accuracy | 95.4% | 98.1% |
+| Escalation agreement | 81.5% | 94.4% (0 missed) |
+| Verdicts | 25 verified, 29 verified with corrections, 54 needs review | |
+| Latency | median 28–33 s, p95 71–82 s; 2–4% within 20 s (**target not met**) | |
 
 ## 30. Security
 
@@ -523,8 +532,11 @@ trail.
 - Rules encode policies by hand; a policy update does not change rule thresholds
   automatically.
 - Business days ignore public holidays; DOCX has no page numbers; scanned PDFs are not read.
-- One language (English); simulated orders; no outbound messaging.
-- Latency and cost depend on the GenAI provider and model.
+- One language (English); simulated orders; outbound messages only by e-mail, and only for
+  complaints that arrived by e-mail (acknowledgement and the approved reply).
+- Latency: with `gpt-5-mini` at low effort the median analysis takes about 30 seconds, above
+  the 20-second target. Analysis runs in the background, so intake is not blocked; a faster
+  model or `GENAI_EFFORT=minimal` are the next things to measure.
 
 ## 32. Future enhancements
 

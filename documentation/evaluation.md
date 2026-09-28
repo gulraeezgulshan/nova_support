@@ -97,26 +97,69 @@ or a third repair. These follow documented rules and err on the side of human re
 
 ## 4. GenAI vs Python and latency
 
-`make evaluate` runs the full pipeline (retrieval, prompt, Claude structured output,
-validation, Python checks) for each hold-out complaint and records the wall-clock time of each
-one against the SRS target of 20 seconds. The summary reports:
+`make evaluate` runs the full pipeline (retrieval, prompt, structured output, validation,
+Python checks) for each hold-out complaint and records the wall-clock time of each one
+against the SRS target of 20 seconds.
 
-- GenAI and Python category accuracy against the labels;
-- GenAI/Python agreement per field (category, department, urgency, priority, escalation);
-- verification outcomes (verified, verified with corrections, needs review);
-- latency: median, 95th percentile, maximum and share within 20 seconds.
+Run: 28 September 2026, OpenAI `gpt-5-mini`, `GENAI_EFFORT=low`, all 108 accepted hold-out
+complaints, 0 provider failures in the final run. Outputs:
+`reports/evaluation_holdout.csv` and `reports/evaluation_holdout_summary.json`.
 
-**Status:** to be run once `ANTHROPIC_API_KEY` is configured. Paste the summary
-(`reports/evaluation_holdout_summary.json`) here:
+### 4.1 Accuracy and agreement
 
 | Measure | Result |
 |---|---|
-| GenAI category accuracy | _pending_ |
-| GenAI escalation agreement | _pending_ |
-| GenAI/Python agreement (category / department / urgency / priority / escalation) | _pending_ |
-| Verified / corrected / needs review | _pending_ |
-| Latency median / p95 / max | _pending_ |
-| Within 20 s | _pending_ |
+| GenAI category accuracy (acceptable categories) | **95.4%** |
+| Final category accuracy after Python validation | **98.1%** |
+| GenAI escalation agreement with labels | 81.5% |
+| Final escalation agreement after Python validation | **94.4%** (0 missed escalations) |
+| GenAI/Python agreement: category / department / urgency / priority / escalation | 95.4% / 84.3% / 51.9% / 52.8% / 75.0% |
+| Verified / verified with corrections / needs review | 25 / 29 / 54 |
+
+"Final" is the category and escalation that the complaint ends up with: Python's own answer
+when its classifier is confident, otherwise the GenAI category accepted provisionally (see
+`python_validation/checks.py`). Together the two pipelines are more accurate than either
+alone: the GenAI category is right on most complaints the keyword classifier cannot place,
+and Python's rules catch the escalations the model under-rates.
+
+The low urgency and priority agreement is expected. The model grades urgency from the tone
+and wording; Python derives it from the rule matrix (category, risk signals, repeat contact,
+customer tier). They mostly differ by one step, and Python's value is the one applied. The
+disagreement is why half the complaints go to review: a reviewer sees both values and the
+reason for each.
+
+### 4.2 Latency
+
+| Segment | Timed | Median | p95 | Max | Within 20 s |
+|---|---|---|---|---|---|
+| First run (interrupted by a network error) | 54 | 28.5 s | 81.6 s | 118.6 s | 3.7% |
+| Final run (resumed, completed all 108) | 48 | 33.3 s | 71.2 s | 127.7 s | 2.1% |
+
+**The 20-second target is not met** with this model and setting. The run was interrupted
+twice by network errors from the provider; `comparison_engine/evaluate.py` now retries a
+complaint up to three times (waiting 30 s, then 60 s), and complaints already analysed are
+not re-timed when a run resumes, so the two segments together time 102 of the 108 (the
+rest were analysed in the short second run, whose timings were not kept).
+
+Almost all of the time is the model call (reasoning plus structured output); retrieval and
+the Python checks take well under a second. Ways to meet the target, not yet measured:
+`GENAI_EFFORT=minimal`, a faster model (`OPENAI_MODEL` / `ANTHROPIC_MODEL` is one setting),
+or a shorter prompt with fewer policy passages. Analysis runs on the worker, so the customer
+gets their complaint reference immediately and the analysis appears when it is ready.
+
+### 4.3 Comparison report on all analysed complaints
+
+`reports/genai_python_comparison.csv` (Reports → GenAI vs Python) covers every complaint in
+the database that has an analysis: 118 (the 108 hold-out complaints plus 10 from the
+development dataset); 26 verified, 32 corrected, 60 need review. Agreement: category 94.9%,
+department 83.9%, urgency 53.4%, priority 55.1%, escalation 76.3%.
+
+Accuracy in that report is only scored on fields that have a label. The hold-out labels have
+the category (118 labelled) but not department, urgency or priority, so those fields are
+scored only on the 10 development complaints that carry them. Treat the department, urgency,
+priority and escalation accuracies there (GenAI 100% / 70% / 80% / 90%, Python 80% / 100% /
+100% / 100%) as a small sample; the category figures (GenAI 90.7%, Python 94.1%) are the
+meaningful ones.
 
 ## 5. Threats to validity
 
@@ -124,3 +167,4 @@ one against the SRS target of 20 seconds. The summary reports:
 - Routing, urgency and priority are scored through the category, not labelled separately.
 - The second Python run is informed by the first (see 3.2).
 - Latency depends on the model, effort setting and provider load at the time of the run.
+- Department, urgency and priority accuracy in the comparison report rests on 10 labelled complaints.

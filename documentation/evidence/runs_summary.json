@@ -1,0 +1,17 @@
+{
+  "runs": 202,
+  "calls": 219,
+  "run_status": {
+    "completed": 193,
+    "running": 6,
+    "needs_review": 1,
+    "failed": 2
+  },
+  "runs_needing_retry": 23,
+  "input_tokens": 1145814,
+  "output_tokens": 558023,
+  "model_latency_seconds": {
+    "median": 27.32,
+    "max": 127.61
+  }
+}

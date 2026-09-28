@@ -1,0 +1,30 @@
+{
+  "mode": "genai+python",
+  "complaints": 108,
+  "labelled": 108,
+  "python_category_accuracy_pct": 98.1,
+  "python_escalation_agreement_pct": 94.4,
+  "verdicts": {
+    "corrected": 29,
+    "needs_review": 54,
+    "verified": 25
+  },
+  "genai_category_accuracy_pct": 95.4,
+  "genai_escalation_agreement_pct": 81.5,
+  "genai_python_agreement_pct": {
+    "category": 95.4,
+    "department": 84.3,
+    "urgency": 51.9,
+    "priority": 52.8,
+    "escalation_level": 75.0
+  },
+  "mismatched_complaints": 76,
+  "provider_failures": 0,
+  "latency_seconds": {
+    "timed": 48,
+    "median": 33.27,
+    "p95": 71.2,
+    "max": 127.68,
+    "within_20s_pct": 2.1
+  }
+}

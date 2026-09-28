@@ -41,11 +41,33 @@ def _write(path: Path, rows: list[dict[str, Any]]) -> None:
         writer.writerows(rows)
 
 
+def field_accuracy(
+    complaints: list[tuple[dict[str, Any], dict[str, Any]]], fields: tuple[str, ...] = FIELDS
+) -> tuple[dict[str, float], dict[str, float], dict[str, int]]:
+    """GenAI and Python accuracy per field, counted only over labels that contain the field
+    (hold-out labels give the category but not, say, the department)."""
+    labelled: Counter[str] = Counter()
+    genai: Counter[str] = Counter()
+    python: Counter[str] = Counter()
+    for by_field, expected in complaints:
+        for f in fields:
+            if f not in expected or f not in by_field:
+                continue
+            labelled[f] += 1
+            genai[f] += by_field[f]["genai"] == expected[f]
+            python[f] += by_field[f]["python"] == expected[f]
+    counts = {f: labelled[f] for f in fields}
+    return (
+        {f: round(genai[f] / labelled[f], 3) for f in fields if labelled[f]},
+        {f: round(python[f] / labelled[f], 3) for f in fields if labelled[f]},
+        counts,
+    )
+
+
 def comparison_report(limit: int | None = None) -> tuple[Path, dict[str, Any]]:
     rows: list[dict[str, Any]] = []
     agreement: Counter[str] = Counter()
-    genai_correct: Counter[str] = Counter()
-    python_correct: Counter[str] = Counter()
+    scored: list[tuple[dict[str, Any], dict[str, Any]]] = []
     labelled = 0
     with sync_session() as db:
         latest = (
@@ -61,11 +83,9 @@ def comparison_report(limit: int | None = None) -> tuple[Path, dict[str, Any]]:
             expected = expected_labels(complaint.external_ref) or {}
             if expected:
                 labelled += 1
+                scored.append((by_field, expected))
             for f in FIELDS:
                 agreement[f] += bool(by_field[f]["match"])
-                if expected:
-                    genai_correct[f] += by_field[f]["genai"] == expected.get(f)
-                    python_correct[f] += by_field[f]["python"] == expected.get(f)
             mismatches = [r for r in run.comparison if not r["match"]]
             rows.append({
                 "complaint_id": complaint.complaint_ref,
@@ -95,6 +115,7 @@ def comparison_report(limit: int | None = None) -> tuple[Path, dict[str, Any]]:
     path = REPORTS / "genai_python_comparison.csv"
     _write(path, rows)
     n = len(rows)
+    genai_accuracy, python_accuracy, labelled_per_field = field_accuracy(scored)
     summary = {
         "complaints": n,
         "labelled": labelled,
@@ -102,12 +123,9 @@ def comparison_report(limit: int | None = None) -> tuple[Path, dict[str, Any]]:
         "corrected": sum(r["verification_status"] == "corrected" for r in rows),
         "needs_review": sum(r["verification_status"] == "needs_review" for r in rows),
         "agreement": {f: round(agreement[f] / n, 3) for f in FIELDS},
-        "genai_accuracy": {f: round(genai_correct[f] / labelled, 3) for f in FIELDS}
-        if labelled
-        else {},
-        "python_accuracy": {f: round(python_correct[f] / labelled, 3) for f in FIELDS}
-        if labelled
-        else {},
+        "genai_accuracy": genai_accuracy,
+        "python_accuracy": python_accuracy,
+        "labelled_per_field": labelled_per_field,
     }
     return path, summary
 

@@ -7,9 +7,9 @@ Rule Matrix and approved, versioned company policy before anything reaches a cus
 
 | | |
 |---|---|
-| **Live application** | _add the deployment URL_ (evaluator credentials are in the submission form) |
+| **Live application** | [supportnova-volthaven.vercel.app](https://supportnova-volthaven.vercel.app) — shop at `/`, staff console at `/dashboard` (evaluator credentials are in the submission form) |
 | **Demonstration video** | _add the .mp4 link_ |
-| **Technical blog** | _add the blog link_ (draft: [documentation/technical_blog.md](documentation/technical_blog.md)) |
+| **Technical blog** | [supportnova-volthaven.vercel.app/blog/letting-the-model-talk](https://supportnova-volthaven.vercel.app/blog/letting-the-model-talk) (source: [web/content/blog/](web/content/blog/letting-the-model-talk.md)) |
 
 A demo VoltHaven shop (search, filters, cart, checkout without payment, order tracking, help
 and policy pages, Contact us) and a guided support chat that file complaints through both
@@ -31,7 +31,7 @@ analytics, reports, security hardening, evaluation tooling and deployment config
 | [Evaluator guide](documentation/evaluator_guide.md) | Hidden data, policy update, new category, traps, live modifications, deliberate defects |
 | [Evaluation](documentation/evaluation.md) | Unseen hold-out set, GenAI vs Python comparison, Python accuracy, latency |
 | [Security testing report](documentation/security_testing_report.md) | Adversarial tests and results |
-| [Test cases](documentation/test_cases.md) | SRS test categories mapped to the 432 automated tests |
+| [Test cases](documentation/test_cases.md) | SRS test categories mapped to the 436 automated tests |
 | [Deployment](documentation/deployment.md) | Vercel, Railway, Cloudflare R2, Clerk, evaluator accounts |
 | [Demo script](documentation/demo_script.md), [team contributions](documentation/team_contributions.md), [AI usage](AI_USAGE.md) | Submission material |
 
@@ -405,7 +405,7 @@ product guide → response template → FAQ. `FAQ-GEN-01` intentionally contradi
 ## Testing and quality
 
 ```bash
-make test     # 432 backend tests (needs `make infra`; uses the supportnova_test database)
+make test     # 436 backend tests (needs `make infra`; uses the supportnova_test database)
 make lint     # ruff, mypy --strict, eslint, tsc
 ```
 

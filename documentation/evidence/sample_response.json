@@ -1,0 +1,200 @@
+{
+  "analysis_run_id": "1655507d-42ea-47db-8172-477156c2dcdc",
+  "attempt": 2,
+  "provider": "openai",
+  "model": "gpt-5-mini-2025-08-07",
+  "request_id": "req_931eb1e6f3a14142be286d3feaef5820",
+  "outcome": "valid",
+  "errors": [],
+  "stop_reason": "end_turn",
+  "input_tokens": 4945,
+  "output_tokens": 3169,
+  "cache_read_tokens": 4736,
+  "latency_ms": 23423,
+  "created_at": "2026-09-26T16:07:39.569699+00:00",
+  "response": {
+    "complaint_summary": "Customer reports an approved replacement for TabOne 11 (order ORD-500185) was approved on 2026-08-16 but has not been dispatched; requests dispatch date today.",
+    "primary_issue": {
+      "category": "RETURNS_REPLACEMENT",
+      "subcategory": "REPLACEMENT_DELAY",
+      "description": "Replacement approved 2026-08-16 reportedly not dispatched within the expected timeframe."
+    },
+    "secondary_issues": [
+      {
+        "category": "SERVICE_QUALITY",
+        "subcategory": "POOR_COMMUNICATION",
+        "description": "Customer frustrated by lack of dispatch update and slow response."
+      },
+      {
+        "category": "DELIVERY",
+        "subcategory": "DELAYED_DELIVERY",
+        "description": "Original order was delivered 2 business days late (committed 2026-08-10, delivered 2026-08-12) — customer referenced delivery/replacement timeliness."
+      }
+    ],
+    "sentiment": "Strongly Negative",
+    "emotions": [
+      "Anger",
+      "Frustration",
+      "Urgency"
+    ],
+    "urgency": "Medium",
+    "urgency_rationale": "Replacement was approved 16 Aug and remains undelivered at time of complaint (submitted 2026-09-01). This is a service-delivery failure requiring prompt verification and a timely status update but does not report safety, injury, or financial dispute.",
+    "priority": "P2",
+    "entities": {
+      "products": [
+        "TabOne 11 tablet"
+      ],
+      "order_refs": [
+        "ORD-500185"
+      ],
+      "transaction_refs": [],
+      "complaint_refs": [
+        "CMP-000001"
+      ],
+      "dates": [
+        "2026-08-08",
+        "2026-08-10",
+        "2026-08-12",
+        "2026-08-16",
+        "2026-09-01"
+      ],
+      "amounts": [
+        {
+          "value": 549,
+          "currency": "USD"
+        }
+      ],
+      "locations": []
+    },
+    "department": "RETURNS",
+    "supporting_departments": [
+      "LOGISTICS",
+      "CUSTOMER_RELATIONS",
+      "WARRANTY"
+    ],
+    "policy_references": [
+      {
+        "chunk_code": "RET-SOP-01@1.4#006",
+        "doc_code": "RET-SOP-01",
+        "section": "5",
+        "applicability": "applicable",
+        "reason": "This SOP states approved replacements are dispatched within 2 business days of approval; customer reports approval on 2026-08-16 with no dispatch, directly relevant to the complaint."
+      },
+      {
+        "chunk_code": "DEL-POL-04@2.0#005",
+        "doc_code": "DEL-POL-04",
+        "section": "4.1",
+        "applicability": "applicable",
+        "reason": "Requires verification of shipment status and confirmation with courier before promising dates; applicable when providing dispatch/expected-date information to the customer."
+      },
+      {
+        "chunk_code": "WAR-POL-02@1.4#006",
+        "doc_code": "WAR-POL-02",
+        "section": "3.3",
+        "applicability": "conditionally_applicable",
+        "reason": "If this is a second replacement for the same product, that policy would prevent a second free replacement and require referral to Warranty & Repairs. Customer statement does not confirm whether a prior replacement occurred; agent must verify history."
+      },
+      {
+        "chunk_code": "ESC-PRC-01@2.3#010",
+        "doc_code": "ESC-PRC-01",
+        "section": "3.7",
+        "applicability": "not_applicable",
+        "reason": "This escalation rule applies when an order is more than 15 business days late or a replacement is being chased again after an earlier complaint. There is no evidence the original order/replacement meets the 'more than 15 business days late' threshold and there is no earlier complaint, so Supervisor Review is not required by this passage."
+      },
+      {
+        "chunk_code": "DEL-POL-04@2.0#008",
+        "doc_code": "DEL-POL-04",
+        "section": "5.2",
+        "applicability": "not_applicable",
+        "reason": "This compensation rule applies to late arrival of standard or express orders. The customer's issue concerns a replacement not being dispatched; the passage does not authorize compensation for a missing dispatch of an approved replacement."
+      },
+      {
+        "chunk_code": "FAQ-GEN-01@1.0#004",
+        "doc_code": "FAQ-GEN-01",
+        "section": "3",
+        "applicability": "not_applicable",
+        "reason": "A goodwill voucher mention in FAQs is low-precedence (FAQ) and does not provide policy-level authorization to offer compensation; do not offer vouchers unless higher-precedence policy or an approved exception allows it."
+      }
+    ],
+    "resolution_steps": [
+      {
+        "action_code": "VERIFY_ORDER",
+        "description": "Confirm ORD-500185 and locate the internal replacement approval record dated 2026-08-16 (verify the approval timestamp, approval agent, and current fulfillment status).",
+        "policy_chunk": null
+      },
+      {
+        "action_code": "VERIFY_COMPLAINT_HISTORY",
+        "description": "Check the customer's complaint history and internal case records to confirm there were no prior replacement complaints or earlier escalations that would change escalation requirements.",
+        "policy_chunk": "ESC-PRC-01@2.3#010"
+      },
+      {
+        "action_code": "VERIFY_SHIPMENT_STATUS",
+        "description": "If a replacement has been dispatched, obtain tracking number and courier status. If not dispatched, identify the reason in the returns/fulfilment queue (stock awaiting, hold, or system error).",
+        "policy_chunk": "DEL-POL-04@2.0#005"
+      },
+      {
+        "action_code": "CHECK_REPLACEMENT_ELIGIBILITY",
+        "description": "Confirm replacement eligibility and whether this would be a second replacement (apply WAR-POL-02@1.4#006 if prior replacement exists).",
+        "policy_chunk": "WAR-POL-02@1.4#006"
+      },
+      {
+        "action_code": "ARRANGE_REPLACEMENT",
+        "description": "If approval is valid and no policy blocks exist, instruct returns/fulfilment to dispatch the replacement immediately and obtain tracking; if replacement cannot be dispatched, identify and record the blocking reason and next steps.",
+        "policy_chunk": "RET-SOP-01@1.4#006"
+      },
+      {
+        "action_code": "SEND_STATUS_UPDATE",
+        "description": "Send the customer a status update with either the new tracking number and expected arrival or an explanation and next steps. Do not promise a dispatch date unless the courier confirms it.",
+        "policy_chunk": "DEL-POL-04@2.0#005"
+      },
+      {
+        "action_code": "APOLOGISE",
+        "description": "Apologise to the customer for the delay and the poor experience in communications.",
+        "policy_chunk": null
+      }
+    ],
+    "compensation": {
+      "offered": false,
+      "type": "none",
+      "amount": null,
+      "policy_chunk": null
+    },
+    "escalation": {
+      "required": false,
+      "level": "NONE",
+      "reason": null,
+      "notes": null
+    },
+    "customer_response": {
+      "tone": "Empathetic",
+      "response_type": "Apology and Resolution Update",
+      "subject": "Update on replacement for ORD-500185 (CMP-000001)",
+      "body": "We're sorry — and thank you for letting us know. We understand your replacement TabOne 11 (order ORD-500185, replacement approval reported 2026-08-16) has not been dispatched and that this is frustrating. We will verify the replacement approval record and fulfilment status and check with the fulfilment team and courier. We will update you with either a tracking number or a clear next step within 24 hours of this message. Reference: CMP-000001\n\nVoltHaven Electronics Customer Care"
+    },
+    "follow_up": {
+      "required": true,
+      "type": "RESOLUTION_CONFIRMATION",
+      "within_hours": 24,
+      "message": "Confirm whether replacement has been dispatched and provide tracking number and expected arrival, or explain the blocking reason and next steps. Use CMP-000001 in the subject."
+    },
+    "agent_guidance": [
+      "Do not promise a dispatch date to the customer before verifying dispatch/tracking with fulfilment and the courier (DEL-POL-04@2.0#005).",
+      "Locate and attach the internal replacement approval record dated 2026-08-16 before contacting fulfilment (VERIFY_ORDER).",
+      "Check for any earlier replacement or repair for this serial/product (WAR-POL-02@1.4#006). If this is a second replacement, escalate to WARRANTY for specialist handling.",
+      "If replacement is not dispatched due to stock or fulfilment hold, record the reason and expected dispatch window; escalate internally if fulfilment cannot dispatch within 2 business days of approval (RET-SOP-01@1.4#006).",
+      "If tracking is available, provide tracking and expected arrival in the status update; do not invent courier ETAs.",
+      "Do not offer vouchers or compensation unless a higher-precedence policy authorizes it or a manager approves an exception; FAQ guidance alone is insufficient (FAQ-GEN-01@1.0#004).",
+      "If you discover a systemic fulfilment error (multiple orders affected), notify management and consider opening an internal incident."
+    ],
+    "missing_information": [
+      "Internal confirmation of the replacement approval record for ORD-500185 (agent must verify approval entry dated 2026-08-16).",
+      "Whether this product has previously been replaced under warranty (warranty/replacement history or serial number).",
+      "Current fulfilment/stock hold reason if replacement has not been dispatched (fulfilment status details)."
+    ],
+    "clarification_questions": [
+      "Please confirm if you received any email or message with a replacement case number or tracking number after the approval on 2026-08-16 (attach if available).",
+      "Please confirm whether the replacement is for the original TabOne 11 unit delivered on 2026-08-12 or for a different purchase (if different, provide details)."
+    ],
+    "suspicious_instructions": []
+  }
+}

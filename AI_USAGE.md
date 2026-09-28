@@ -306,3 +306,16 @@ architecture and is documented in the project report, not here.
 - **Tests performed:** 82 new backend tests (parsing incl. encoded headers, unknown charsets and Gmail/Outlook quoted replies, processing and threading, loops, duplicates, reply hooks end to end, scheduled check and outbox with fake IMAP/SMTP, advisory lock, attachments access and limits, bulk upload preview/run/result/roles, and failure handling: IMAP, storage and worker outages); full suite 432 passed; ruff, mypy, ESLint, tsc and `next build` pass.
 - **Verified by:** _to be completed by the team_
 
+
+## Entry 11: Deployment, architecture diagrams, evaluation run and blog
+
+| Field | Details |
+|---|---|
+| **Date** | 2026-09-28 |
+| **Tool** | Claude Code (Anthropic), model Claude Opus 5.5 |
+| **Purpose** | Deploy to Railway and Vercel, document the architecture, run the live GenAI evaluation and publish the technical blog on the website |
+
+- **Files affected:** `Dockerfile`, `documentation/deployment.md`, `documentation/architecture.drawio` and `documentation/diagrams/`, `comparison_engine/{evaluate,report}.py`, `tests/unit/test_{evaluate_retry,comparison_scoring}.py`, `tests/conftest.py`, `documentation/{evaluation,project_report,evaluator_guide,technical_blog}.md`, `web/content/blog/`, `web/src/lib/blog.ts`, `web/src/components/blog/`, `web/src/app/(shop)/blog/`, `web/public/blog/`, footer, About page, `proxy.ts`, README; generated `reports/` and `documentation/evidence/`; `screenshots/`.
+- **Changes made:** Docker build without BuildKit cache mounts (Railway); deployment guide rewritten for Railway's service settings and Vercel's pnpm install; four-page draw.io architecture diagram exported as PNG; the evaluation retries a complaint when the provider connection drops; the comparison report scores only labelled fields (a missing label had counted as wrong); tests no longer read a developer's real mailbox settings from `.env`; the full hold-out evaluation was run and its results written up, including the missed 20-second latency target; the blog moved to `/blog` on the website with the diagrams, a table of contents and Open Graph metadata.
+- **Tests performed:** 4 new backend tests; full suite 436 passed; ruff, mypy, ESLint, tsc and `next build` pass (`/blog` pages pre-rendered). The deployed API and web app were checked by the team in the browser.
+- **Verified by:** _to be completed by the team_

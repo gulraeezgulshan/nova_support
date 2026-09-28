@@ -119,6 +119,9 @@ export function AboutContent() {
             <Link href="/about-supportnova">How our support works</Link>
           </Button>
           <Button asChild variant="outline" className="rounded-full">
+            <Link href="/blog/letting-the-model-talk">Read the engineering blog</Link>
+          </Button>
+          <Button asChild variant="outline" className="rounded-full">
             <Link href="/contact">Contact us</Link>
           </Button>
         </div>

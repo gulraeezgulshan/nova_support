@@ -1,8 +1,9 @@
 # Evaluator Guide
 
 How to test SupportNova against the SRS evaluation challenges (section 1.8) without changing
-the application's architecture. Credentials and the deployed address are in the submission
-form.
+the application's architecture. The deployed application is at
+<https://supportnova-volthaven.vercel.app> (staff console: `/dashboard`); evaluator credentials are in the submission form.
+Architecture diagrams: [documentation/diagrams/](diagrams/).
 
 ## 1. Hidden complaint dataset
 
@@ -92,7 +93,7 @@ need the API and worker restarted (`make api`, `make worker`).
 
 ## 6. Deliberate defects
 
-`make test` (432 tests) and `make lint` (ruff, mypy --strict, eslint, tsc) catch defects in:
+`make test` (436 tests) and `make lint` (ruff, mypy --strict, eslint, tsc) catch defects in:
 
 | Area | Tests that fail |
 |---|---|

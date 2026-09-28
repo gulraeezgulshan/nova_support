@@ -25,6 +25,7 @@ import statistics
 import sys
 import time
 from collections import Counter
+from collections.abc import Callable
 from pathlib import Path
 from typing import Any
 
@@ -97,6 +98,28 @@ def _row(
     return row
 
 
+PROVIDER_ATTEMPTS = 3  # a long run survives brief connection drops
+
+
+def analyse_with_retries(
+    db: Any,
+    complaint_id: Any,
+    provider: Any,
+    embedder: Any,
+    settings: Any,
+    wait: Callable[[float], None] = time.sleep,
+) -> None:
+    """Run Pipeline 1, retrying a provider outage twice (30 s, then 60 s) before giving up."""
+    for attempt in range(1, PROVIDER_ATTEMPTS + 1):
+        try:
+            run_analysis(db, complaint_id, provider=provider, embedder=embedder, settings=settings)
+            return
+        except ProviderUnavailableError:
+            if attempt == PROVIDER_ATTEMPTS:
+                raise
+            wait(30 * attempt)
+
+
 def run_genai(
     pairs: list[tuple[str, Any]], rerun: bool, labels: dict[str, dict[str, Any]]
 ) -> tuple[list[dict[str, Any]], int]:
@@ -114,9 +137,7 @@ def run_genai(
             if rerun or done is None:
                 started = time.monotonic()
                 try:
-                    run_analysis(
-                        db, complaint_id, provider=provider, embedder=embedder, settings=settings
-                    )
+                    analyse_with_retries(db, complaint_id, provider, embedder, settings)
                 except ProviderUnavailableError as exc:
                     print(f"  {dataset_id}: provider unavailable ({exc}); stopping.")
                     failures += 1

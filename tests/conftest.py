@@ -31,6 +31,11 @@ os.environ.update(
     CLERK_AUTHORIZED_PARTIES=TEST_ORIGIN,
     BOOTSTRAP_ADMIN_EMAILS="founder@volthaven.test",
     CLERK_WEBHOOK_SIGNING_SECRET="",
+    # A developer's .env may hold a real support mailbox; tests must never reach it.
+    MAIL_IMAP_HOST="",
+    MAIL_SMTP_HOST="",
+    MAIL_USERNAME="",
+    MAIL_PASSWORD="",
 )
 
 import httpx  # noqa: E402

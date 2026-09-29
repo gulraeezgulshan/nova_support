@@ -56,9 +56,11 @@ def queue(
     body: str,
     in_reply_to: str | None,
     references: list[str],
+    order_id: uuid.UUID | None = None,
 ) -> OutboundEmail:
     email = OutboundEmail(
         complaint_id=complaint_id,
+        order_id=order_id,
         to_address=to[:320],
         kind=kind,
         subject=subject[:500],

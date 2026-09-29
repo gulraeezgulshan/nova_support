@@ -10,6 +10,7 @@ from database.models import Order
 from database.session import sync_session
 from src.core.logging import get_logger
 from storefront.lifecycle import FORWARD, MOVING, delay, move
+from storefront.order_emails import queue_order_email
 from storefront.orders import add_business_days
 
 log = get_logger(__name__)
@@ -47,6 +48,7 @@ def advance_due_orders(now: datetime | None = None, rng: random.Random | None = 
                             order.committed_delivery_date, rng.randint(2, 5)
                         )
                         delay(db, order, expected, "system", now=now)
+                        queue_order_email(db, order, order.customer, "delayed")
                         wait = step * DELAY_WAIT_STEPS
                     target = FORWARD[order.stage]
                     if (
@@ -55,6 +57,7 @@ def advance_due_orders(now: datetime | None = None, rng: random.Random | None = 
                     ):
                         target = "lost"
                     move(db, order, target, "system", now=now)
+                    queue_order_email(db, order, order.customer, order.stage)
                     if order.stage in MOVING:
                         order.next_step_at = now + wait
                 moved.append(order.order_ref)

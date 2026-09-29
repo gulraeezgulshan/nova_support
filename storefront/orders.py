@@ -13,6 +13,7 @@ from complaint_processing.service import next_ref
 from database.models import CHECKOUT_REF_SEQ, ORDER_REF_SEQ, Customer, Order, OrderEvent, Product
 from storefront.config import storefront_config
 from storefront.currency import to_local
+from storefront.order_emails import queue_order_email
 
 SHIPPING_DAYS = {  # DEL-POL-04, via config/storefront.yaml
     "standard": storefront_config().shipping.standard_days,
@@ -122,6 +123,7 @@ async def checkout(
     await db.flush()
     for order in orders:
         db.add(OrderEvent(order_id=order.id, stage="placed", actor="customer", created_at=now))
+        queue_order_email(db, order, customer, "placed")
     await db.flush()
     return orders
 

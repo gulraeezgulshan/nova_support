@@ -1,0 +1,22 @@
+# Order e-mails. Placeholders: {name} {order_ref} {product} {amount} {date} {shop}
+placed:
+  subject: "Your {shop} order {order_ref}"
+  body: "Hello {name},\n\nThank you for your order {order_ref}: {product}, {amount}. We will e-mail you when it ships.\n\n{shop}"
+shipped:
+  subject: "Your order {order_ref} has shipped"
+  body: "Hello {name},\n\n{product} is on its way. It is due by {date}.\n\n{shop}"
+delayed:
+  subject: "Your order {order_ref} is delayed"
+  body: "Hello {name},\n\nSorry, {product} is delayed and is now expected by {date}. If it arrives late you may be entitled to compensation under our delivery policy.\n\n{shop}"
+delivered:
+  subject: "Your order {order_ref} was delivered"
+  body: "Hello {name},\n\n{product} was delivered on {date}. If anything is wrong, reply to this e-mail or use Get help on the order.\n\n{shop}"
+cancelled:
+  subject: "Your order {order_ref} is cancelled"
+  body: "Hello {name},\n\nYour order {order_ref} ({product}, {amount}) is cancelled. Any payment is refunded to the original method.\n\n{shop}"
+returned:
+  subject: "Your return for {order_ref} is approved"
+  body: "Hello {name},\n\nWe have approved the return of {product}. The refund of {amount} follows our refund policy.\n\n{shop}"
+return_refused:
+  subject: "About your return for {order_ref}"
+  body: "Hello {name},\n\nWe could not approve the return of {product}. Reply to this e-mail if you have questions.\n\n{shop}"

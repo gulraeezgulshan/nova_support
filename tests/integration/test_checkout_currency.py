@@ -23,7 +23,7 @@ async def test_checkout_in_pkr_records_the_rate_and_rounded_amount(
         db.add(FxRate(currency="PKR", rate=Decimal("281.4"), fetched_at=datetime.now(UTC)))
     order = await place_order(client, shopper(create_user, make_token), currency="PKR")
     assert (order["currency"], order["stage"], order["status"]) == ("PKR", "placed", "processing")
-    assert Decimal(str(order["amount_local"])) == Decimal("78511")  # 279 × 281.4, whole rupees
+    assert Decimal(str(order["amount_local"])) == Decimal("78511")  # 279 x 281.4, whole rupees
     assert order["amount"] == 279.0 and order["next_step_at"] is not None
     with sync_session() as db:
         saved = db.scalars(select(Order).where(Order.order_ref == order["order_ref"])).one()

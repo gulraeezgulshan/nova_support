@@ -11,7 +11,7 @@ import { PRODUCT_LINES } from "@/components/shop/lines";
 import { ProductImage } from "@/components/shop/product-image";
 import { Button } from "@/components/ui/button";
 import type { ProductOut } from "@/lib/api/generated/types.gen";
-import { formatMoney } from "@/lib/format";
+import { Price } from "@/lib/currency";
 import { cn } from "@/lib/utils";
 
 const LABELS = Object.fromEntries(PRODUCT_LINES.map((l) => [l.code, l.label]));
@@ -48,7 +48,9 @@ export function ProductCard({ product, className }: { product: ProductOut; class
         </Link>
         <p className="line-clamp-1 text-xs text-muted-foreground">{product.specs[0]}</p>
         <div className="mt-auto flex items-center justify-between pt-3">
-          <span className="text-lg font-semibold tabular-nums">{formatMoney(product.price)}</span>
+          <span className="text-lg font-semibold tabular-nums">
+            <Price usd={product.price} />
+          </span>
           <Button
             size="sm"
             className="rounded-full bg-brand text-brand-foreground hover:bg-brand/90"

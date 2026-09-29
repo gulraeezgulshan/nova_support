@@ -11,7 +11,8 @@ import { Skeleton } from "@/components/ui/skeleton";
 import { myShopOrdersOptions } from "@/lib/api/generated/@tanstack/react-query.gen";
 import type { ShopOrderOut } from "@/lib/api/generated/types.gen";
 import { apiErrorMessage } from "@/lib/api/errors";
-import { formatDate, formatMoney } from "@/lib/format";
+import { formatLocal } from "@/lib/currency";
+import { formatDate } from "@/lib/format";
 import { cn } from "@/lib/utils";
 
 function businessDaysLate(due: string, delivered: string): number {
@@ -123,7 +124,7 @@ export function OrderList({ onHelp }: { onHelp: (orderRef: string) => void }) {
                       {o.product_name} {o.quantity > 1 ? `× ${o.quantity}` : null}
                     </p>
                     <p className="text-xs text-muted-foreground">
-                      {o.order_ref} · {formatMoney(o.amount)}
+                      {o.order_ref} · {formatLocal(o)}
                     </p>
                     <Badge
                       variant="outline"

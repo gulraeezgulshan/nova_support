@@ -7,7 +7,8 @@ import { usePathname, useRouter, useSearchParams } from "next/navigation";
 import { Suspense } from "react";
 
 import { Reveal } from "@/components/motion/reveal";
-import { FilterPanel, type Filters, PRICE_PRESETS } from "@/components/shop/filter-panel";
+import { FilterPanel, type Filters, priceLabel } from "@/components/shop/filter-panel";
+import { useCurrency } from "@/lib/currency";
 import { PRODUCT_LINES } from "@/components/shop/lines";
 import { ProductCard } from "@/components/shop/product-card";
 import { useCategories } from "@/components/shop/use-categories";
@@ -75,9 +76,8 @@ function Catalogue() {
     }),
   );
   const lineLabel = PRODUCT_LINES.find((l) => l.code === line)?.label;
-  const priceLabel =
-    PRICE_PRESETS.find((p) => p.min === min && p.max === max)?.label ??
-    (min || max ? `$${min ?? 0} – ${max ? `$${max}` : "any"}` : undefined);
+  const { format } = useCurrency();
+  const priceChip = min || max ? priceLabel({ min, max }, format) : undefined;
   const total = categories.reduce((n, c) => n + c.count, 0);
   const panel = (
     <FilterPanel
@@ -121,8 +121,8 @@ function Catalogue() {
             {[
               q && { label: `“${q}”`, clear: () => update({ q: undefined }) },
               lineLabel && { label: lineLabel, clear: () => update({ line: undefined }) },
-              priceLabel && {
-                label: priceLabel,
+              priceChip && {
+                label: priceChip,
                 clear: () => update({ min: undefined, max: undefined }),
               },
             ]

@@ -5,16 +5,29 @@ import { Check } from "lucide-react";
 import type { Category } from "@/components/shop/use-categories";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
+import { useCurrency } from "@/lib/currency";
 import { cn } from "@/lib/utils";
 
 export type Filters = { line?: string; min?: string; max?: string };
 
-export const PRICE_PRESETS: { label: string; min?: string; max?: string }[] = [
-  { label: "Under $50", max: "50" },
-  { label: "$50 – $200", min: "50", max: "200" },
-  { label: "$200 – $500", min: "200", max: "500" },
-  { label: "$500 and up", min: "500" },
+// Bounds are USD (prices are stored in USD); labels show the visitor's currency.
+export const PRICE_PRESETS: { key: string; min?: string; max?: string }[] = [
+  { key: "under-50", max: "50" },
+  { key: "50-200", min: "50", max: "200" },
+  { key: "200-500", min: "200", max: "500" },
+  { key: "500-up", min: "500" },
 ];
+
+/** "Under Rs 14,000", "Rs 14,000 – Rs 56,000", "$500 and up"… in the chosen currency. */
+export function priceLabel(
+  range: { min?: string; max?: string },
+  format: (usd: number) => string,
+): string {
+  const { min, max } = range;
+  if (min && max) return `${format(Number(min))} – ${format(Number(max))}`;
+  if (max) return `Under ${format(Number(max))}`;
+  return `${format(Number(min ?? 0))} and up`;
+}
 
 /** Category and price filters (sidebar on desktop, inside a sheet on phones). */
 export function FilterPanel({
@@ -29,6 +42,7 @@ export function FilterPanel({
   onChange: (next: Filters) => void;
 }) {
   const active = Boolean(filters.line || filters.min || filters.max);
+  const { format } = useCurrency();
   return (
     <div className="space-y-8">
       <div className="space-y-2">
@@ -56,8 +70,8 @@ export function FilterPanel({
         <ul className="space-y-0.5">
           {PRICE_PRESETS.map((preset) => (
             <FilterOption
-              key={preset.label}
-              label={preset.label}
+              key={preset.key}
+              label={priceLabel(preset, format)}
               selected={filters.min === preset.min && filters.max === preset.max}
               onClick={() => onChange({ ...filters, min: preset.min, max: preset.max })}
             />
@@ -78,7 +92,7 @@ export function FilterPanel({
             type="number"
             min={0}
             inputMode="numeric"
-            placeholder="Min"
+            placeholder="Min (USD)"
             aria-label="Minimum price"
             defaultValue={filters.min}
             className="h-8"
@@ -89,7 +103,7 @@ export function FilterPanel({
             type="number"
             min={0}
             inputMode="numeric"
-            placeholder="Max"
+            placeholder="Max (USD)"
             aria-label="Maximum price"
             defaultValue={filters.max}
             className="h-8"

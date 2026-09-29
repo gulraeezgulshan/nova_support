@@ -12,7 +12,7 @@ import { ProductImage } from "@/components/shop/product-image";
 import { useCartItems } from "@/components/shop/use-cart-items";
 import { Button } from "@/components/ui/button";
 import { Skeleton } from "@/components/ui/skeleton";
-import { formatMoney } from "@/lib/format";
+import { Price } from "@/lib/currency";
 
 export default function CartPage() {
   const { cart, items, subtotal, loading } = useCartItems();
@@ -74,7 +74,7 @@ export default function CartPage() {
                       {product.name}
                     </Link>
                     <p className="text-sm text-muted-foreground">
-                      {formatMoney(product.price)} each
+                      <Price usd={product.price} /> each
                     </p>
                   </div>
                   <div className="flex items-center gap-4">
@@ -102,7 +102,7 @@ export default function CartPage() {
                       </Button>
                     </div>
                     <span className="w-24 text-right font-semibold tabular-nums">
-                      {formatMoney(product.price * quantity)}
+                      <Price usd={product.price * quantity} />
                     </span>
                     <Button
                       variant="ghost"

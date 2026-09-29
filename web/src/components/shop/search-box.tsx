@@ -10,7 +10,7 @@ import { useRef, useState } from "react";
 import { ProductImage } from "@/components/shop/product-image";
 import { Input } from "@/components/ui/input";
 import { listProductsOptions } from "@/lib/api/generated/@tanstack/react-query.gen";
-import { formatMoney } from "@/lib/format";
+import { Price } from "@/lib/currency";
 import { cn } from "@/lib/utils";
 
 /** Catalogue search with instant suggestions; Enter shows all results on /shop. */
@@ -85,7 +85,9 @@ export function SearchBox({ className, onDone }: { className?: string; onDone?: 
                     className="size-10 shrink-0 rounded-md"
                   />
                   <span className="line-clamp-1 flex-1">{p.name}</span>
-                  <span className="tabular-nums text-muted-foreground">{formatMoney(p.price)}</span>
+                  <span className="tabular-nums text-muted-foreground">
+                    <Price usd={p.price} />
+                  </span>
                 </Link>
               ))
             ) : (

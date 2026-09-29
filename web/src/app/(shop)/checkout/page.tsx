@@ -18,6 +18,7 @@ import {
 } from "@/lib/api/generated/@tanstack/react-query.gen";
 import type { ShopOrderOut } from "@/lib/api/generated/types.gen";
 import { apiErrorMessage } from "@/lib/api/errors";
+import { useCurrency } from "@/lib/currency";
 import { formatDate } from "@/lib/format";
 import {
   deliveryBy,
@@ -38,6 +39,7 @@ export default function CheckoutPage() {
   const config = useStorefront().data;
   const { cart, items, subtotal } = useCartItems();
   const [shipping, setShipping] = useState<ShippingMethod>("standard");
+  const currency = useCurrency();
   const [placed, setPlaced] = useState<ShopOrderOut[] | null>(null);
   const place = useMutation({
     ...placeOrderMutation(),
@@ -144,6 +146,7 @@ export default function CheckoutPage() {
                 body: {
                   lines: items.map((i) => ({ sku: i.product.sku, quantity: i.quantity })),
                   shipping_method: shipping,
+                  currency: currency.code as "USD" | "PKR" | "EUR" | "GBP" | "AED",
                 },
               })
             }

@@ -10,7 +10,7 @@ import { EASE_OUT, Reveal } from "@/components/motion/reveal";
 import { ProductImage } from "@/components/shop/product-image";
 import { Button } from "@/components/ui/button";
 import { getProductOptions } from "@/lib/api/generated/@tanstack/react-query.gen";
-import { formatMoney } from "@/lib/format";
+import { Price } from "@/lib/currency";
 
 const NUMBER = /^(\d+(?:[.,]\d+)?)(.*)$/;
 
@@ -61,7 +61,9 @@ export function FeatureSpotlight({ sku }: { sku: string }) {
                   Explore <ArrowRight />
                 </Link>
               </Button>
-              <span className="text-lg font-semibold tabular-nums">{formatMoney(p.price)}</span>
+              <span className="text-lg font-semibold tabular-nums">
+                <Price usd={p.price} />
+              </span>
             </Reveal>
           </div>
           <motion.div

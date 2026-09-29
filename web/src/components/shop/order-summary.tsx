@@ -1,7 +1,7 @@
 "use client";
 
 import type { CartItem } from "@/components/shop/use-cart-items";
-import { formatMoney } from "@/lib/format";
+import { Price } from "@/lib/currency";
 
 /** Line totals and the order total (prices are confirmed by the server at checkout). */
 export function OrderSummary({
@@ -25,7 +25,9 @@ export function OrderSummary({
               <span className="text-muted-foreground">
                 {product.name} × {quantity}
               </span>
-              <span className="tabular-nums">{formatMoney(product.price * quantity)}</span>
+              <span className="tabular-nums">
+                <Price usd={product.price * quantity} />
+              </span>
             </li>
           ))}
         </ul>
@@ -33,7 +35,9 @@ export function OrderSummary({
       <dl className="space-y-2 border-t pt-4 text-sm">
         <div className="flex justify-between">
           <dt className="text-muted-foreground">Subtotal</dt>
-          <dd className="tabular-nums">{formatMoney(subtotal)}</dd>
+          <dd className="tabular-nums">
+            <Price usd={subtotal} />
+          </dd>
         </div>
         <div className="flex justify-between">
           <dt className="text-muted-foreground">Shipping</dt>
@@ -41,7 +45,9 @@ export function OrderSummary({
         </div>
         <div className="flex justify-between border-t pt-3 text-base font-semibold">
           <dt>Total</dt>
-          <dd className="tabular-nums">{formatMoney(subtotal)}</dd>
+          <dd className="tabular-nums">
+            <Price usd={subtotal} />
+          </dd>
         </div>
       </dl>
       {children}

@@ -25,6 +25,7 @@ import {
 import { Sheet, SheetContent, SheetHeader, SheetTitle } from "@/components/ui/sheet";
 import { readMeOptions } from "@/lib/api/generated/@tanstack/react-query.gen";
 import { openCart, openChat } from "@/lib/storefront";
+import { CurrencySwitcher } from "@/components/shop/currency-switcher";
 import { cn } from "@/lib/utils";
 
 const SUPPORT_LINKS = [
@@ -111,6 +112,7 @@ export function SiteHeader() {
               <Link href="/orders">My orders</Link>
             </Button>
           </Show>
+          <CurrencySwitcher />
           <Button
             id="cart-button"
             variant="ghost"

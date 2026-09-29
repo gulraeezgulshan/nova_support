@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 
 import { ChatLauncher } from "@/components/chat/chat-launcher";
+import { CurrencyProvider } from "@/lib/currency";
 import { SiteFooter } from "@/components/shop/site-footer";
 import { SiteHeader } from "@/components/shop/site-header";
 
@@ -22,11 +23,13 @@ export async function generateMetadata(): Promise<Metadata> {
 
 export default function ShopLayout({ children }: LayoutProps<"/">) {
   return (
-    <div className="flex min-h-dvh flex-col bg-background">
-      <SiteHeader />
-      <main className="flex-1">{children}</main>
-      <SiteFooter />
-      <ChatLauncher />
-    </div>
+    <CurrencyProvider>
+      <div className="flex min-h-dvh flex-col bg-background">
+        <SiteHeader />
+        <main className="flex-1">{children}</main>
+        <SiteFooter />
+        <ChatLauncher />
+      </div>
+    </CurrencyProvider>
   );
 }

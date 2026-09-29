@@ -16,7 +16,7 @@ import {
   SheetHeader,
   SheetTitle,
 } from "@/components/ui/sheet";
-import { formatMoney } from "@/lib/format";
+import { Price } from "@/lib/currency";
 
 /** Slide-in cart. Opened by the header button or `openCart()` from anywhere. */
 export function MiniCart() {
@@ -100,7 +100,7 @@ export function MiniCart() {
                           </Button>
                         </div>
                         <span className="text-sm font-medium tabular-nums">
-                          {formatMoney(product.price * quantity)}
+                          <Price usd={product.price * quantity} />
                         </span>
                       </div>
                     </div>
@@ -122,7 +122,9 @@ export function MiniCart() {
           <SheetFooter className="border-t">
             <div className="flex items-center justify-between text-sm">
               <span className="text-muted-foreground">Subtotal</span>
-              <span className="text-base font-semibold tabular-nums">{formatMoney(subtotal)}</span>
+              <span className="text-base font-semibold tabular-nums">
+                <Price usd={subtotal} />
+              </span>
             </div>
             <Button asChild size="lg" className="bg-brand text-brand-foreground hover:bg-brand/90">
               <Link href="/checkout" onClick={() => setOpen(false)}>

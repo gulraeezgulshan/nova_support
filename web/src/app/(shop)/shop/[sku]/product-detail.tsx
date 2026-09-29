@@ -21,7 +21,7 @@ import {
   listProductsOptions,
 } from "@/lib/api/generated/@tanstack/react-query.gen";
 import type { ProductOut } from "@/lib/api/generated/types.gen";
-import { formatMoney } from "@/lib/format";
+import { Price } from "@/lib/currency";
 import { deliveryBy, formatDay, openCart, useStorefront } from "@/lib/storefront";
 import { cn } from "@/lib/utils";
 
@@ -82,7 +82,9 @@ function Detail({ product: p }: { product: ProductOut }) {
                 {line?.label}
               </p>
               <h1 className="text-4xl font-semibold tracking-tight">{p.name}</h1>
-              <p className="text-3xl font-semibold tabular-nums">{formatMoney(p.price)}</p>
+              <p className="text-3xl font-semibold tabular-nums">
+                <Price usd={p.price} />
+              </p>
             </div>
             <p className="text-lg text-muted-foreground">{p.description}</p>
             <ul className="grid gap-2 sm:grid-cols-2">

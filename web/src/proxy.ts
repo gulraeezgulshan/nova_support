@@ -1,4 +1,5 @@
 import { clerkMiddleware, createRouteMatcher } from "@clerk/nextjs/server";
+import { NextResponse } from "next/server";
 
 const isPublicRoute = createRouteMatcher([
   "/",
@@ -25,6 +26,17 @@ const isPublicRoute = createRouteMatcher([
 export default clerkMiddleware(async (auth, request) => {
   if (!isPublicRoute(request)) {
     await auth.protect();
+  }
+  if (!request.cookies.get("currency")) {
+    // Vercel adds the visitor's country; the API never sees it, so the default is set here.
+    const country = request.headers.get("x-vercel-ip-country");
+    const response = NextResponse.next();
+    response.cookies.set("currency", country === "PK" ? "PKR" : "USD", {
+      path: "/",
+      maxAge: 60 * 60 * 24 * 365,
+      sameSite: "lax",
+    });
+    return response;
   }
 });
 

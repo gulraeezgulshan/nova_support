@@ -10,7 +10,7 @@ import { EASE_OUT } from "@/components/motion/reveal";
 import { ProductImage } from "@/components/shop/product-image";
 import { Button } from "@/components/ui/button";
 import { getProductOptions } from "@/lib/api/generated/@tanstack/react-query.gen";
-import { formatMoney } from "@/lib/format";
+import { Price } from "@/lib/currency";
 import { useStorefront } from "@/lib/storefront";
 
 const HERO_SKU = "VH-LAP-AB14";
@@ -133,7 +133,7 @@ export function Hero() {
             >
               <p className="text-xs text-muted-foreground">{product.data.name}</p>
               <p className="text-lg font-semibold tabular-nums">
-                {formatMoney(product.data.price)}
+                <Price usd={product.data.price} />
               </p>
             </motion.div>
           ) : null}

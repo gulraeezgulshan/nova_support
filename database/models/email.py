@@ -32,6 +32,7 @@ class OutboundEmail(UUIDPrimaryKeyMixin, TimestampMixin, Base):
     __tablename__ = "outbound_emails"
 
     complaint_id: Mapped[uuid.UUID | None] = mapped_column(ForeignKey("complaints.id"), index=True)
+    order_id: Mapped[uuid.UUID | None] = mapped_column(ForeignKey("orders.id"), index=True)
     to_address: Mapped[str] = mapped_column(String(320))
     # acknowledgement | holding | reply | rejected | duplicate
     kind: Mapped[str] = mapped_column(String(20))

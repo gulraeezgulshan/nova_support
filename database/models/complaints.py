@@ -1,7 +1,7 @@
 """Simulated customers and orders, complaints, and the complaint status timeline."""
 
 import uuid
-from datetime import date, datetime
+from datetime import UTC, date, datetime
 from decimal import Decimal
 from enum import StrEnum
 from typing import TYPE_CHECKING, Any
@@ -90,7 +90,41 @@ class Order(UUIDPrimaryKeyMixin, TimestampMixin, Base):
     quantity: Mapped[int] = mapped_column(default=1)
     checkout_ref: Mapped[str | None] = mapped_column(String(20), index=True)
 
+    # Lifecycle (shop orders; dataset orders keep the stage that mirrors their status).
+    stage: Mapped[str] = mapped_column(String(24), default="placed", server_default="placed")
+    next_step_at: Mapped[datetime | None] = mapped_column(DateTime(timezone=True), index=True)
+    manual_hold: Mapped[bool] = mapped_column(default=False, server_default="false")
+    expected_delivery_date: Mapped[date | None] = mapped_column(Date)
+    emails_sent: Mapped[list[str]] = mapped_column(JSONB, default=list, server_default="[]")
+    # What the customer saw at checkout; `amount` stays USD for policies and analytics.
+    currency: Mapped[str] = mapped_column(String(3), default="USD", server_default="USD")
+    fx_rate: Mapped[Decimal] = mapped_column(
+        Numeric(14, 6), default=Decimal("1"), server_default="1"
+    )
+    amount_local: Mapped[Decimal | None] = mapped_column(Numeric(14, 2))
+
+    events: Mapped[list["OrderEvent"]] = relationship(
+        order_by="OrderEvent.created_at", cascade="all, delete-orphan"
+    )
+
     customer: Mapped[Customer] = relationship(back_populates="orders")
+
+
+class OrderEvent(UUIDPrimaryKeyMixin, Base):
+    """One step in an order's history (a stage change or a delay)."""
+
+    __tablename__ = "order_events"
+
+    order_id: Mapped[uuid.UUID] = mapped_column(
+        ForeignKey("orders.id", ondelete="CASCADE"), index=True
+    )
+    stage: Mapped[str] = mapped_column(String(24))  # a stage, or "delayed"
+    note: Mapped[str | None] = mapped_column(Text)
+    actor: Mapped[str] = mapped_column(String(10))  # system | staff | customer
+    actor_user_id: Mapped[uuid.UUID | None] = mapped_column(ForeignKey("users.id"))
+    created_at: Mapped[datetime] = mapped_column(
+        DateTime(timezone=True), server_default=func.now(), default=lambda: datetime.now(UTC)
+    )
 
 
 class Complaint(UUIDPrimaryKeyMixin, TimestampMixin, Base):

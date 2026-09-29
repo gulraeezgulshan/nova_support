@@ -13,6 +13,7 @@ from database.models.complaints import (
     Customer,
     CustomerType,
     Order,
+    OrderEvent,
 )
 from database.models.contact import ENQUIRY_REF_SEQ, Enquiry, EnquiryStatus, NewsletterSubscriber
 from database.models.email import InboundEmail, MailboxState, OutboundEmail
@@ -26,7 +27,13 @@ from database.models.knowledge_base import (
 )
 from database.models.rules import Rule, RuleType
 from database.models.settings import AppSettingsRow, JobRun
-from database.models.storefront import CHECKOUT_REF_SEQ, ORDER_REF_SEQ, Product, ProductImage
+from database.models.storefront import (
+    CHECKOUT_REF_SEQ,
+    ORDER_REF_SEQ,
+    FxRate,
+    Product,
+    ProductImage,
+)
 from database.models.taxonomy import Category, Department, SlaPolicy, Subcategory
 from database.models.user import Role, User
 from database.models.validation import (
@@ -62,6 +69,7 @@ __all__ = [
     "DocumentVersion",
     "Enquiry",
     "EnquiryStatus",
+    "FxRate",
     "ImportBatch",
     "InboundEmail",
     "IngestStatus",
@@ -70,6 +78,7 @@ __all__ = [
     "MailboxState",
     "NewsletterSubscriber",
     "Order",
+    "OrderEvent",
     "OutboundEmail",
     "Product",
     "ProductImage",

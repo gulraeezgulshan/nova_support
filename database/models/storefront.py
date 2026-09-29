@@ -54,3 +54,13 @@ class ProductImage(UUIDPrimaryKeyMixin, Base):
     size_bytes: Mapped[int] = mapped_column(Integer)
     position: Mapped[int] = mapped_column(Integer, default=0)
     created_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), server_default=func.now())
+
+
+class FxRate(Base):
+    """USD → currency rate from the daily exchange-rate refresh."""
+
+    __tablename__ = "fx_rates"
+
+    currency: Mapped[str] = mapped_column(String(3), primary_key=True)
+    rate: Mapped[Decimal] = mapped_column(Numeric(14, 6))
+    fetched_at: Mapped[datetime] = mapped_column(DateTime(timezone=True))

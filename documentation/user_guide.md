@@ -158,9 +158,15 @@ and *How our support works* (`/about-supportnova`).
 4. **Checkout** (sign-in required): choose standard (within 5 business days) or express
    (within 2 business days); each option shows its arrival date. **Place order** shows a
    confirmation with the purchase reference. No payment is taken. Each product becomes its
-   own order number (`ORD-8…`), grouped under one purchase reference (`CHK-…`).
-5. **My orders** (`/orders`): status (processing, delivered, late by N business days, lost)
-   and a delivery timeline per item.
+   own order number (`ORD-8…`), grouped under one purchase reference (`CHK-…`). Prices are
+   shown in your currency (PKR automatically in Pakistan; switch with the currency menu in
+   the header); the order keeps the amount and rate you saw, and you get an order e-mail.
+5. **My orders** (`/orders`): a progress tracker (placed → packed → shipped → out for
+   delivery → delivered, or lost / cancelled / returned), the promised date (and the new
+   expected date if delayed), the order's history, and **Cancel order** (before it ships),
+   **Request a return** (within 30 days of delivery, with a reason) and **Receipt** (PDF in
+   the currency you paid in). Orders move on their own like a courier (a few minutes per
+   step in the demo) and e-mail you when they ship, are delayed, delivered or cancelled.
 6. **Get help** on an order (or **Nova**, the chat button on every shop page) opens the support chat:
    - general questions (delivery times, returns, refunds, warranty…) are answered with the
      Help-centre answer, word for word — the AI only picks which approved answer fits;
@@ -276,9 +282,30 @@ values before and after. API keys and passwords are not here: they stay on the s
 |---|---|
 | E-mail & timing | How often the mailbox is checked (60–3600 s) and queued e-mails are sent (15–600 s), the sender name, and whether automatic replies are sent. With automatic replies off, even verified replies go to **Manual review** and are sent when a reviewer approves them; the customer gets a holding message meanwhile. |
 | AI | Provider (only those with an API key on the server), model, reasoning effort, policy passages read per complaint (3–20), and whether new complaints are analysed automatically. When off, start an analysis with **Re-run analysis**. |
+| Orders | Advance orders automatically, minutes per step (1–1440), chance of a delay (0–100%) and of a loss (0–20%), order e-mails on/off, and the fallback PKR rate used until the first exchange-rate refresh. |
 | Operations | How often the SLA risk scan runs (1–60 min), the minimum score for *verified* (50–100) and the escalation level that always needs a human review (1–5). |
 | Branding | Shop and console logos (PNG, JPEG or WebP, up to 1 MB; square works best; the shop logo is also the browser-tab icon), shop name and tagline, console name, support e-mail, phone, address and opening hours shown on the shop. |
 | Policy facts | Read-only: warranty, returns and delivery numbers with the policy document they come from. To change one, upload a new version of that document in the **Knowledge base**, so the shop, the AI and the rules always agree. |
 
 If two administrators edit at once, the second save is refused with *Someone else changed the
 settings; reload*.
+
+## 20. Orders (staff)
+
+**Orders** (Complaints group in the sidebar) lists shop orders with their stage, promised date
+and the amount paid (in the customer's currency; the USD reference is on the order). Filter
+by stage, search by order, customer or product, or show only orders that **need action**
+(return requests, and delayed orders on their way).
+
+Click an order for its timeline (who did what, when), the customer, related complaints and
+the actions that fit its stage: *Mark packed / shipped / out for delivery / delivered*,
+*Delay* (a new expected date; the promise does not change, so a late delivery still counts as
+late), *Mark lost*, *Cancel*, *Approve* or *Refuse return*, and *Receipt*. For demonstrations,
+*Mark delivered* accepts "business days late": the order is recorded as delivered that many
+business days after its promise, and the history says so.
+
+Moving an order by hand pauses its automatic progress; **Resume automatic progress** hands it
+back to the simulation. Every action is audited and sends the customer the matching order
+e-mail. The chat, the AI and the Python rules see the order's status (processing, shipped,
+delivered, lost, returned or cancelled) exactly as before.
+

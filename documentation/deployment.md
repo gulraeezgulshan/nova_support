@@ -149,7 +149,10 @@ Clerk → **Configure → Webhooks → Add endpoint**:
 4. **Reports**: export the Complaint Intelligence Report as PDF.
 5. Railway *beat* logs show `app_settings.tasks.tick` every 15 seconds; the SLA scan, mailbox
    check and outbox run on the intervals in **Settings** (defaults 5 min, 1 min, 30 s). The
-   pre-deploy migration creates the `app_settings` and `job_runs` tables.
+   pre-deploy migration creates the `app_settings` and `job_runs` tables (and, with the orders
+   release, `order_events` and `fx_rates`; existing orders get a stage matching their status).
+   The worker needs outbound HTTPS to `open.er-api.com` for the twice-daily exchange rates;
+   without it, PKR uses the fallback rate in **Settings → Orders**.
 6. If the mailbox is configured: send a complaint e-mail to it. Within about a minute
    **Mailbox** shows it under *Received → New complaint* and the acknowledgement under *Sent*,
    and the sender receives it with the `[CMP-…]` reference.

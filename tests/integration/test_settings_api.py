@@ -13,7 +13,9 @@ URL = "/api/v1/settings"
 
 def body(current: dict, **group_changes: dict) -> dict:  # type: ignore[type-arg]
     s = current["settings"]
-    update = {g: {**s[g], **group_changes.get(g, {})} for g in ("email", "ai", "operations")}
+    update = {
+        g: {**s[g], **group_changes.get(g, {})} for g in ("email", "ai", "operations", "orders")
+    }
     branding = {k: v for k, v in s["branding"].items() if not k.endswith("_logo_key")}
     return {
         "version": current["version"],

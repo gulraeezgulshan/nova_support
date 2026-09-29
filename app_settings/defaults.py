@@ -31,6 +31,14 @@ def defaults() -> RuntimeSettings:
                 "verified_min_score": validation["verified_min_score"],
                 "always_review_escalation_level": validation["always_review_escalation_level"],
             },
+            "orders": {
+                "auto_advance": True,
+                "step_minutes": 2,
+                "delay_chance_pct": 10,
+                "lost_chance_pct": 0,
+                "emails": True,
+                "fallback_pkr_rate": 280.0,
+            },
             "branding": {
                 "shop_name": company.name,
                 "shop_tagline": company.tagline,

@@ -56,3 +56,28 @@ def test_model_must_belong_to_the_provider() -> None:
 def test_unknown_fields_are_rejected() -> None:
     with pytest.raises(ValidationError):
         RuntimeSettings.model_validate(with_group("email", password="x"))
+
+
+def test_order_defaults() -> None:
+    o = defaults().orders
+    assert (o.auto_advance, o.step_minutes, o.delay_chance_pct, o.lost_chance_pct) == (
+        True,
+        2,
+        10,
+        0,
+    )
+    assert o.emails and o.fallback_pkr_rate == 280
+
+
+@pytest.mark.parametrize(
+    ("field", "value"),
+    [
+        ("step_minutes", 0),
+        ("delay_chance_pct", 101),
+        ("lost_chance_pct", 21),
+        ("fallback_pkr_rate", 0),
+    ],
+)
+def test_order_limits(field: str, value: object) -> None:
+    with pytest.raises(ValidationError):
+        RuntimeSettings.model_validate(with_group("orders", **{field: value}))

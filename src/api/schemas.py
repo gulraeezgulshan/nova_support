@@ -11,6 +11,7 @@ from app_settings.model import (
     BrandingText,
     EmailSettings,
     OperationsSettings,
+    OrderSettings,
     RuntimeSettings,
 )
 from database.models import (
@@ -927,6 +928,7 @@ class SettingsUpdate(BaseModel):
     email: EmailSettings
     ai: AiSettings
     operations: OperationsSettings
+    orders: OrderSettings
     branding: BrandingText
 
 

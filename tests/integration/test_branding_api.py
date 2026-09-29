@@ -71,6 +71,7 @@ async def test_shop_details_follow_the_settings(
         "email": s["email"],
         "ai": s["ai"],
         "operations": s["operations"],
+        "orders": s["orders"],
         "branding": {**branding, "shop_name": "Nova Electronics", "phone": "+92 300 0000000"},
     }
     assert (await client.put("/api/v1/settings", headers=admin, json=payload)).status_code == 200

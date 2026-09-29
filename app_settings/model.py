@@ -80,8 +80,18 @@ class BrandingSettings(BrandingText):
     console_logo_key: str | None = None
 
 
+class OrderSettings(_Group):
+    auto_advance: bool
+    step_minutes: int = Field(ge=1, le=1440)
+    delay_chance_pct: int = Field(ge=0, le=100)
+    lost_chance_pct: int = Field(ge=0, le=20)
+    emails: bool
+    fallback_pkr_rate: float = Field(ge=1, le=10000)
+
+
 class RuntimeSettings(_Group):
     email: EmailSettings
     ai: AiSettings
     operations: OperationsSettings
     branding: BrandingSettings
+    orders: OrderSettings

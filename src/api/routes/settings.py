@@ -65,6 +65,7 @@ async def update_settings(
         email=payload.email,
         ai=payload.ai,
         operations=payload.operations,
+        orders=payload.orders,
         branding=BrandingSettings(
             **payload.branding.model_dump(),
             shop_logo_key=logos.shop_logo_key,

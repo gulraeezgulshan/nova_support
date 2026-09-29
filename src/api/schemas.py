@@ -964,3 +964,17 @@ class CurrencyOut(BaseModel):
     rates: dict[str, float]
     fetched_at: datetime | None
     currencies: list[CurrencyInfo]
+
+
+# --- order history and returns ---------------------------------------------------------
+
+
+class OrderEventOut(ORMModel):
+    stage: str
+    note: str | None
+    actor: str
+    created_at: datetime
+
+
+class ReturnIn(BaseModel):
+    reason: str = Field(min_length=10, max_length=500)

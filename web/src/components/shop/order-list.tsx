@@ -4,6 +4,7 @@ import { useQuery } from "@tanstack/react-query";
 import { LifeBuoy } from "lucide-react";
 import Link from "next/link";
 
+import { OrderTracker } from "@/components/shop/order-tracker";
 import { ProductImage } from "@/components/shop/product-image";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
@@ -13,7 +14,6 @@ import type { ShopOrderOut } from "@/lib/api/generated/types.gen";
 import { apiErrorMessage } from "@/lib/api/errors";
 import { formatLocal } from "@/lib/currency";
 import { formatDate } from "@/lib/format";
-import { cn } from "@/lib/utils";
 
 function businessDaysLate(due: string, delivered: string): number {
   let days = 0;
@@ -28,6 +28,10 @@ function businessDaysLate(due: string, delivered: string): number {
 
 function statusLine(o: ShopOrderOut): { text: string; tone: "default" | "late" | "bad" } {
   if (o.status === "lost") return { text: "Lost in transit", tone: "bad" };
+  if (o.stage === "cancelled") return { text: "Cancelled", tone: "default" };
+  if (o.stage === "returned") return { text: "Returned", tone: "default" };
+  if (o.stage === "return_requested") return { text: "Return requested", tone: "default" };
+  if (o.stage === "return_refused") return { text: "Return refused", tone: "bad" };
   if (o.delivered_date) {
     const late = businessDaysLate(o.committed_delivery_date, o.delivered_date);
     return late
@@ -37,43 +41,13 @@ function statusLine(o: ShopOrderOut): { text: string; tone: "default" | "late" |
         }
       : { text: `Delivered ${formatDate(o.delivered_date)}`, tone: "default" };
   }
-  return { text: `Processing, due ${formatDate(o.committed_delivery_date)}`, tone: "default" };
-}
-
-/** Ordered → Due → Delivered / Lost, as three dots on a line. */
-function Timeline({ order: o }: { order: ShopOrderOut }) {
-  const finished = o.status === "lost" || Boolean(o.delivered_date);
-  const steps = [
-    { label: "Ordered", date: o.order_date, done: true, tone: "ok" },
-    { label: "Due", date: o.committed_delivery_date, done: finished, tone: "ok" },
-    o.status === "lost"
-      ? { label: "Lost", date: null, done: true, tone: "bad" }
-      : { label: "Delivered", date: o.delivered_date, done: Boolean(o.delivered_date), tone: "ok" },
-  ];
-  return (
-    <ol
-      className="mt-3 flex items-center text-[11px] text-muted-foreground"
-      aria-label="Delivery progress"
-    >
-      {steps.map((step, i) => (
-        <li key={step.label} className="flex items-center">
-          {i ? (
-            <span className={cn("mx-1 h-px w-6 sm:w-10", step.done ? "bg-brand" : "bg-border")} />
-          ) : null}
-          <span className="flex items-center gap-1.5">
-            <span
-              className={cn(
-                "size-2 rounded-full",
-                step.tone === "bad" ? "bg-red-500" : step.done ? "bg-brand" : "bg-border",
-              )}
-            />
-            {step.label}
-            {step.date ? ` ${formatDate(step.date)}` : ""}
-          </span>
-        </li>
-      ))}
-    </ol>
-  );
+  if (o.expected_delivery_date)
+    return { text: `Delayed, now expected ${formatDate(o.expected_delivery_date)}`, tone: "late" };
+  const onItsWay = o.stage === "shipped" || o.stage === "out_for_delivery";
+  return {
+    text: `${onItsWay ? "On its way" : "Processing"}, due ${formatDate(o.committed_delivery_date)}`,
+    tone: "default",
+  };
 }
 
 export function OrderList({ onHelp }: { onHelp: (orderRef: string) => void }) {
@@ -138,7 +112,7 @@ export function OrderList({ onHelp }: { onHelp: (orderRef: string) => void }) {
                     >
                       {status.text}
                     </Badge>
-                    <Timeline order={o} />
+                    <OrderTracker order={o} />
                   </div>
                   <div className="flex gap-2">
                     <Button

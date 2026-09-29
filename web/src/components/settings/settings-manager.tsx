@@ -144,6 +144,7 @@ export function SettingsManager() {
         <TabsTrigger value="email">E-mail & timing</TabsTrigger>
         <TabsTrigger value="ai">AI</TabsTrigger>
         <TabsTrigger value="operations">Operations</TabsTrigger>
+        <TabsTrigger value="orders">Orders</TabsTrigger>
         <TabsTrigger value="branding">Branding</TabsTrigger>
         <TabsTrigger value="policy">Policy facts</TabsTrigger>
       </TabsList>
@@ -296,6 +297,69 @@ export function SettingsManager() {
             min={1}
             max={5}
             onChange={(v) => set("operations", { always_review_escalation_level: v })}
+          />
+        </Field>
+        {footer}
+      </TabsContent>
+
+      <TabsContent value="orders" className="space-y-6 rounded-xl border p-6">
+        <Field
+          label="Advance orders automatically"
+          help="Off: orders move only when staff move them."
+        >
+          <Switch
+            checked={form.orders.auto_advance}
+            onCheckedChange={(v) => set("orders", { auto_advance: v })}
+          />
+        </Field>
+        <Field
+          label="Minutes per step"
+          help="1 to 1440. With 2, a demo order is delivered in about 10 minutes."
+        >
+          <NumberInput
+            value={form.orders.step_minutes}
+            min={1}
+            max={1440}
+            onChange={(v) => set("orders", { step_minutes: v })}
+          />
+        </Field>
+        <Field
+          label="Chance of a delay (%)"
+          help="0 to 100. A delayed order is expected 2–5 business days after the promise."
+        >
+          <NumberInput
+            value={form.orders.delay_chance_pct}
+            min={0}
+            max={100}
+            onChange={(v) => set("orders", { delay_chance_pct: v })}
+          />
+        </Field>
+        <Field label="Chance of loss (%)" help="0 to 20.">
+          <NumberInput
+            value={form.orders.lost_chance_pct}
+            min={0}
+            max={20}
+            onChange={(v) => set("orders", { lost_chance_pct: v })}
+          />
+        </Field>
+        <Field
+          label="Send order e-mails"
+          help="Placed, shipped, delayed, delivered, cancelled and return decisions."
+        >
+          <Switch
+            checked={form.orders.emails}
+            onCheckedChange={(v) => set("orders", { emails: v })}
+          />
+        </Field>
+        <Field
+          label="Fallback PKR rate"
+          help="Used only until the first exchange-rate refresh succeeds."
+        >
+          <NumberInput
+            value={form.orders.fallback_pkr_rate}
+            min={1}
+            max={10000}
+            onChange={(v) => set("orders", { fallback_pkr_rate: v })}
           />
         </Field>
         {footer}

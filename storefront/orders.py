@@ -2,14 +2,17 @@
 
 import uuid
 from dataclasses import dataclass
-from datetime import date, timedelta
+from datetime import UTC, date, datetime, timedelta
+from decimal import Decimal
 
 from sqlalchemy import select
 from sqlalchemy.ext.asyncio import AsyncSession
 
+import app_settings
 from complaint_processing.service import next_ref
-from database.models import CHECKOUT_REF_SEQ, ORDER_REF_SEQ, Customer, Order, Product
+from database.models import CHECKOUT_REF_SEQ, ORDER_REF_SEQ, Customer, Order, OrderEvent, Product
 from storefront.config import storefront_config
+from storefront.currency import to_local
 
 SHIPPING_DAYS = {  # DEL-POL-04, via config/storefront.yaml
     "standard": storefront_config().shipping.standard_days,
@@ -59,6 +62,10 @@ async def checkout(
     lines: list[CheckoutLine],
     shipping_method: str,
     today: date,
+    *,
+    currency: str = "USD",
+    rates: dict[str, Decimal] | None = None,
+    now: datetime | None = None,
 ) -> list[Order]:
     issues: list[str] = []
     if not 1 <= len(lines) <= MAX_LINES:
@@ -78,6 +85,12 @@ async def checkout(
     if issues:
         raise CheckoutError(issues)
 
+    rates = rates or {"USD": Decimal("1")}
+    if currency not in rates:
+        currency = "USD"  # no rate yet: charge and show in USD
+    rate = rates[currency]
+    now = now or datetime.now(UTC)
+    step = timedelta(minutes=app_settings.runtime().orders.step_minutes)
     checkout_ref = await next_ref(db, "CHK", CHECKOUT_REF_SEQ)
     due = delivery_due(today, shipping_method)
     orders = []
@@ -98,9 +111,17 @@ async def checkout(
             delivered_date=None,
             status="processing",
             checkout_ref=checkout_ref,
+            stage="placed",
+            currency=currency,
+            fx_rate=rate,
+            amount_local=to_local(product.price * line.quantity, rate, currency),
+            next_step_at=now + step,
         )
         db.add(order)
         orders.append(order)
+    await db.flush()
+    for order in orders:
+        db.add(OrderEvent(order_id=order.id, stage="placed", actor="customer", created_at=now))
     await db.flush()
     return orders
 

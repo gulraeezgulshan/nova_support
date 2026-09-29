@@ -720,6 +720,7 @@ class CheckoutLineIn(BaseModel):
 class CheckoutIn(BaseModel):
     lines: list[CheckoutLineIn] = Field(min_length=1, max_length=10)
     shipping_method: Literal["standard", "express"] = "standard"
+    currency: Literal["USD", "PKR", "EUR", "GBP", "AED"] = "USD"
 
 
 class ShopOrderOut(ORMModel):
@@ -734,6 +735,12 @@ class ShopOrderOut(ORMModel):
     committed_delivery_date: date
     delivered_date: date | None
     status: str
+    stage: str
+    currency: str
+    fx_rate: float
+    amount_local: float | None
+    expected_delivery_date: date | None
+    next_step_at: datetime | None
     image_url: str | None = None  # the product's main image, if it has one
 
 

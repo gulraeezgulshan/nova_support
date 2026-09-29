@@ -128,6 +128,8 @@ async def place_order(
             [CheckoutLine(line.sku, line.quantity) for line in payload.lines],
             payload.shipping_method,
             date.today(),
+            currency=payload.currency,
+            rates=await current_rates_async(db),
         )
     except CheckoutError as exc:
         raise HTTPException(status.HTTP_422_UNPROCESSABLE_CONTENT, "; ".join(exc.issues)) from exc

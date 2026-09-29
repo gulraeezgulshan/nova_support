@@ -8,17 +8,35 @@ from database.models import Order, OrderEvent
 from storefront.orders import SHIPPING_DAYS, subtract_business_days
 
 STAGES = (
-    "placed", "packed", "shipped", "out_for_delivery", "delivered",
-    "lost", "cancelled", "return_requested", "return_refused", "returned",
-)  # fmt: skip
+    "placed",
+    "packed",
+    "shipped",
+    "out_for_delivery",
+    "delivered",
+    "lost",
+    "cancelled",
+    "return_requested",
+    "return_refused",
+    "returned",
+)
 STATUS_OF = {
-    "placed": "processing", "packed": "processing", "shipped": "shipped",
-    "out_for_delivery": "shipped", "delivered": "delivered", "lost": "lost",
-    "cancelled": "cancelled", "return_requested": "delivered",
-    "return_refused": "delivered", "returned": "returned",
-}  # fmt: skip
-FORWARD = {"placed": "packed", "packed": "shipped", "shipped": "out_for_delivery",
-           "out_for_delivery": "delivered"}  # fmt: skip
+    "placed": "processing",
+    "packed": "processing",
+    "shipped": "shipped",
+    "out_for_delivery": "shipped",
+    "delivered": "delivered",
+    "lost": "lost",
+    "cancelled": "cancelled",
+    "return_requested": "delivered",
+    "return_refused": "delivered",
+    "returned": "returned",
+}
+FORWARD = {
+    "placed": "packed",
+    "packed": "shipped",
+    "shipped": "out_for_delivery",
+    "out_for_delivery": "delivered",
+}
 ALLOWED: dict[str, set[str]] = {
     "placed": {"packed", "cancelled"},
     "packed": {"shipped", "cancelled"},
@@ -42,18 +60,37 @@ class LifecycleError(ValueError):
         self.stage = stage
 
 
-def _event(db: Adder, order: Order, stage: str, actor: Actor, user_id: uuid.UUID | None,
-           note: str | None, now: datetime) -> OrderEvent:  # fmt: skip
-    event = OrderEvent(order_id=order.id, stage=stage, note=note, actor=actor,
-                       actor_user_id=user_id, created_at=now)  # fmt: skip
+def _event(
+    db: Adder,
+    order: Order,
+    stage: str,
+    actor: Actor,
+    user_id: uuid.UUID | None,
+    note: str | None,
+    now: datetime,
+) -> OrderEvent:
+    event = OrderEvent(
+        order_id=order.id,
+        stage=stage,
+        note=note,
+        actor=actor,
+        actor_user_id=user_id,
+        created_at=now,
+    )
     db.add(event)
     return event
 
 
 def move(
-    db: Adder, order: Order, to: str, actor: Actor, *,
-    user_id: uuid.UUID | None = None, note: str | None = None, now: datetime | None = None,
-) -> OrderEvent:  # fmt: skip
+    db: Adder,
+    order: Order,
+    to: str,
+    actor: Actor,
+    *,
+    user_id: uuid.UUID | None = None,
+    note: str | None = None,
+    now: datetime | None = None,
+) -> OrderEvent:
     if order.checkout_ref is None:
         raise LifecycleError("Only orders placed in the shop move.", order.stage)
     if to not in ALLOWED.get(order.stage, set()):
@@ -71,9 +108,15 @@ def move(
 
 
 def delay(
-    db: Adder, order: Order, expected: date, actor: Actor, *,
-    user_id: uuid.UUID | None = None, note: str | None = None, now: datetime | None = None,
-) -> OrderEvent:  # fmt: skip
+    db: Adder,
+    order: Order,
+    expected: date,
+    actor: Actor,
+    *,
+    user_id: uuid.UUID | None = None,
+    note: str | None = None,
+    now: datetime | None = None,
+) -> OrderEvent:
     if order.stage not in ("shipped", "out_for_delivery"):
         raise LifecycleError("Only orders on their way can be delayed.", order.stage)
     if expected <= order.committed_delivery_date:
@@ -84,9 +127,13 @@ def delay(
 
 
 def deliver_late(
-    db: Adder, order: Order, days_late: int, *, user_id: uuid.UUID | None,
+    db: Adder,
+    order: Order,
+    days_late: int,
+    *,
+    user_id: uuid.UUID | None,
     now: datetime | None = None,
-) -> OrderEvent:  # fmt: skip
+) -> OrderEvent:
     """Demo timeline: promised `days_late` business days before today, delivered today."""
     now = now or datetime.now(UTC)
     promised = subtract_business_days(now.date(), days_late)

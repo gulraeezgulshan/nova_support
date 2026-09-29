@@ -6,7 +6,6 @@ import Link from "next/link";
 import { toast } from "sonner";
 
 import { PageHeader } from "@/components/page-header";
-import { DeliveryControls } from "@/components/shop/delivery-controls";
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
@@ -59,12 +58,10 @@ export function ComplaintView({
   complaintRef,
   staff,
   canReview,
-  isAdmin = false,
 }: {
   complaintRef: string;
   staff: boolean;
   canReview: boolean;
-  isAdmin?: boolean;
 }) {
   const queryClient = useQueryClient();
   const complaint = useQuery(getComplaintOptions({ path: { ref: complaintRef } }));
@@ -248,7 +245,6 @@ export function ComplaintView({
             <Card>
               <CardHeader className="flex flex-row items-center justify-between gap-2">
                 <CardTitle>Order {c.order.order_ref}</CardTitle>
-                {isAdmin ? <DeliveryControls orderRef={c.order.order_ref} /> : null}
               </CardHeader>
               <CardContent>
                 <dl className="space-y-2 text-sm">

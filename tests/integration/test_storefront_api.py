@@ -1,4 +1,4 @@
-"""Browse, checkout, orders and admin-only delivery outcomes."""
+"""Browse, checkout and orders."""
 
 from collections.abc import Callable
 from typing import Any
@@ -63,23 +63,3 @@ async def test_invalid_checkouts_are_rejected(
 async def test_checkout_needs_sign_in(client: httpx.AsyncClient) -> None:
     body = {"lines": [{"sku": "VH-PHN-NX5", "quantity": 1}]}
     assert (await client.post("/api/v1/checkout", json=body)).status_code == 401
-
-
-async def test_delivery_outcomes_are_admin_only(
-    client: httpx.AsyncClient, auth_headers: Callable[[Role], dict[str, str]]
-) -> None:
-    admin = auth_headers(Role.ADMIN)
-    [order] = (
-        await client.post(
-            "/api/v1/checkout",
-            headers=admin,
-            json={"lines": [{"sku": "VH-LAP-AB14", "quantity": 1}]},
-        )
-    ).json()
-    path = f"/api/v1/orders/{order['order_ref']}/simulate"
-    customer = auth_headers(Role.CUSTOMER)
-    assert (await client.post(path, json={"outcome": "late"}, headers=customer)).status_code == 403
-    late = (await client.post(path, json={"outcome": "late", "days": 5}, headers=admin)).json()
-    assert (
-        late["status"] == "delivered" and late["delivered_date"] > late["committed_delivery_date"]
-    )

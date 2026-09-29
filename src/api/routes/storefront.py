@@ -24,14 +24,13 @@ from src.api.schemas import (
     ProductOut,
     ProductUpdate,
     ShopOrderOut,
-    SimulateIn,
 )
 from src.core.storage import Storage, get_storage
 from storefront.catalogue import PRODUCT_LINES
 from storefront.config import StorefrontConfig, storefront_config
 from storefront.currency import CURRENCIES, current_rates_async
 from storefront.images import ImageError, add_image, remove, reorder
-from storefront.orders import CheckoutError, CheckoutLine, checkout, simulate
+from storefront.orders import CheckoutError, CheckoutLine, checkout
 from storefront.queries import Sort, product_query
 
 router = APIRouter(tags=["storefront"])
@@ -160,29 +159,6 @@ async def my_shop_orders(
         )
     ).all()
     return await _with_images(db, list(orders))
-
-
-@router.post("/orders/{order_ref}/simulate", response_model=ShopOrderOut)
-async def simulate_delivery(
-    order_ref: str,
-    payload: SimulateIn,
-    actor: User = Depends(require_roles(Role.ADMIN)),
-    db: AsyncSession = Depends(get_db),
-) -> Order:
-    order = await db.scalar(select(Order).where(Order.order_ref == order_ref.upper()))
-    if order is None:
-        raise HTTPException(status.HTTP_404_NOT_FOUND, "Order not found")
-    simulate(order, payload.outcome, payload.days, date.today())
-    await audit.record(
-        db,
-        "shop.delivery_simulated",
-        "order",
-        order.order_ref,
-        actor_user_id=actor.id,
-        after=payload.model_dump(),
-    )
-    await db.commit()
-    return order
 
 
 # --- product images (public) and product administration ---------------------------------

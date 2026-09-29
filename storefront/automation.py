@@ -42,8 +42,11 @@ def advance_due_orders(now: datetime | None = None, rng: random.Random | None = 
             try:
                 with db.begin_nested():
                     wait = step
-                    if (order.stage == "shipped" and order.expected_delivery_date is None
-                            and rng.random() * 100 < cfg.delay_chance_pct):  # fmt: skip
+                    if (
+                        order.stage == "shipped"
+                        and order.expected_delivery_date is None
+                        and rng.random() * 100 < cfg.delay_chance_pct
+                    ):
                         expected = add_business_days(
                             order.committed_delivery_date, rng.randint(2, 5)
                         )

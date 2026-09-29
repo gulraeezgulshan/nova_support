@@ -2,7 +2,7 @@
 
 import { type Client, type ClientMeta, formDataBodySerializer, type Options as Options2, type RequestResult, type TDataShape } from './client';
 import { client } from './client.gen';
-import type { ActivateVersionData, ActivateVersionErrors, ActivateVersionResponses, AdminDashboardData, AdminDashboardErrors, AdminDashboardResponses, AdminListProductsData, AdminListProductsResponses, AgentDashboardData, AgentDashboardErrors, AgentDashboardResponses, AnalyticsData, AnalyticsErrors, AnalyticsResponses, BrandingLogoData, BrandingLogoErrors, BrandingLogoResponses, ChooseChatOrderData, ChooseChatOrderErrors, ChooseChatOrderResponses, ComplaintChatData, ComplaintChatErrors, ComplaintChatResponses, ConfirmChatData, ConfirmChatErrors, ConfirmChatResponses, ContactData, ContactErrors, ContactResponses, ConvertEnquiryData, ConvertEnquiryErrors, ConvertEnquiryResponses, CreateCategoryData, CreateCategoryErrors, CreateCategoryResponses, CreateComplaintData, CreateComplaintErrors, CreateComplaintResponses, CreateDepartmentData, CreateDepartmentErrors, CreateDepartmentResponses, CreateProductData, CreateProductErrors, CreateProductResponses, CreateRuleData, CreateRuleErrors, CreateRuleResponses, CreateSubcategoryData, CreateSubcategoryErrors, CreateSubcategoryResponses, DeleteComplaintAttachmentData, DeleteComplaintAttachmentErrors, DeleteComplaintAttachmentResponses, DeleteLogoData, DeleteLogoErrors, DeleteLogoResponses, DeleteProductImageData, DeleteProductImageErrors, DeleteProductImageResponses, DownloadComplaintAttachmentData, DownloadComplaintAttachmentErrors, DownloadComplaintAttachmentResponses, DownloadVersionFileData, DownloadVersionFileErrors, DownloadVersionFileResponses, ExportReportData, ExportReportErrors, ExportReportResponses, ExportRulesData, ExportRulesResponses, GetChatData, GetChatErrors, GetChatResponses, GetComplaintAnalysisData, GetComplaintAnalysisErrors, GetComplaintAnalysisResponses, GetComplaintData, GetComplaintErrors, GetComplaintResponses, GetDocumentData, GetDocumentErrors, GetDocumentResponses, GetImportData, GetImportErrors, GetImportResponses, GetProductData, GetProductErrors, GetProductResponses, GetStorefrontConfigData, GetStorefrontConfigResponses, GetValidationData, GetValidationErrors, GetValidationResponses, GetVocabularyData, GetVocabularyResponses, ImportResultData, ImportResultErrors, ImportResultResponses, ImportTemplateCsvData, ImportTemplateCsvResponses, ImportTemplateXlsxData, ImportTemplateXlsxResponses, ListCategoriesData, ListCategoriesResponses, ListComplaintAttachmentsData, ListComplaintAttachmentsErrors, ListComplaintAttachmentsResponses, ListComplaintsData, ListComplaintsErrors, ListComplaintsResponses, ListDecisionsData, ListDecisionsErrors, ListDecisionsResponses, ListDepartmentsData, ListDepartmentsResponses, ListDocumentsData, ListDocumentsResponses, ListDocumentTypesData, ListDocumentTypesResponses, ListEnquiriesData, ListEnquiriesErrors, ListEnquiriesResponses, ListFactsData, ListFactsResponses, ListImportsData, ListImportsResponses, ListInboundEmailsData, ListInboundEmailsErrors, ListInboundEmailsResponses, ListOutboundEmailsData, ListOutboundEmailsErrors, ListOutboundEmailsResponses, ListProductsData, ListProductsErrors, ListProductsResponses, ListReportsData, ListReportsResponses, ListRulesData, ListRulesResponses, ListSlaPoliciesData, ListSlaPoliciesResponses, ListUsersData, ListUsersResponses, ListVersionChunksData, ListVersionChunksErrors, ListVersionChunksResponses, LivenessData, LivenessResponses, MailboxStatusData, MailboxStatusResponses, MyOrdersData, MyOrdersResponses, MyShopOrdersData, MyShopOrdersResponses, NewsletterData, NewsletterErrors, NewsletterResponses, PlaceOrderData, PlaceOrderErrors, PlaceOrderResponses, PollChatData, PollChatErrors, PollChatResponses, PreviewImportData, PreviewImportErrors, PreviewImportResponses, PreviewReportData, PreviewReportErrors, PreviewReportResponses, ProcessManualEmailData, ProcessManualEmailErrors, ProcessManualEmailResponses, ProductImageData, ProductImageErrors, ProductImageResponses, ReadBrandingData, ReadBrandingResponses, ReadinessData, ReadinessResponses, ReadMeData, ReadMeResponses, ReadSettingsData, ReadSettingsResponses, ReanalyzeComplaintData, ReanalyzeComplaintErrors, ReanalyzeComplaintResponses, ReorderProductImagesData, ReorderProductImagesErrors, ReorderProductImagesResponses, ReplaceRuleData, ReplaceRuleErrors, ReplaceRuleResponses, ReprocessVersionData, ReprocessVersionErrors, ReprocessVersionResponses, RetireVersionData, RetireVersionErrors, RetireVersionResponses, RevalidateData, RevalidateErrors, RevalidateResponses, ReviewComplaintData, ReviewComplaintErrors, ReviewComplaintResponses, ReviewQueueData, ReviewQueueErrors, ReviewQueueResponses, RunImportData, RunImportErrors, RunImportResponses, SearchKnowledgeBaseData, SearchKnowledgeBaseErrors, SearchKnowledgeBaseResponses, SendChatMessageData, SendChatMessageErrors, SendChatMessageResponses, SimulateDeliveryData, SimulateDeliveryErrors, SimulateDeliveryResponses, StartChatData, StartChatErrors, StartChatResponses, UpdateCategoryData, UpdateCategoryErrors, UpdateCategoryResponses, UpdateDepartmentData, UpdateDepartmentErrors, UpdateDepartmentResponses, UpdateEnquiryData, UpdateEnquiryErrors, UpdateEnquiryResponses, UpdateProductData, UpdateProductErrors, UpdateProductResponses, UpdateSettingsData, UpdateSettingsErrors, UpdateSettingsResponses, UpdateSlaPolicyData, UpdateSlaPolicyErrors, UpdateSlaPolicyResponses, UpdateStatusData, UpdateStatusErrors, UpdateStatusResponses, UpdateUserData, UpdateUserErrors, UpdateUserResponses, UploadComplaintAttachmentData, UploadComplaintAttachmentErrors, UploadComplaintAttachmentResponses, UploadDocumentData, UploadDocumentErrors, UploadDocumentResponses, UploadLogoData, UploadLogoErrors, UploadLogoResponses, UploadProductImageData, UploadProductImageErrors, UploadProductImageResponses } from './types.gen';
+import type { ActivateVersionData, ActivateVersionErrors, ActivateVersionResponses, AdminDashboardData, AdminDashboardErrors, AdminDashboardResponses, AdminListProductsData, AdminListProductsResponses, AgentDashboardData, AgentDashboardErrors, AgentDashboardResponses, AnalyticsData, AnalyticsErrors, AnalyticsResponses, BrandingLogoData, BrandingLogoErrors, BrandingLogoResponses, CancelOrderData, CancelOrderErrors, CancelOrderResponses, ChooseChatOrderData, ChooseChatOrderErrors, ChooseChatOrderResponses, ComplaintChatData, ComplaintChatErrors, ComplaintChatResponses, ConfirmChatData, ConfirmChatErrors, ConfirmChatResponses, ContactData, ContactErrors, ContactResponses, ConvertEnquiryData, ConvertEnquiryErrors, ConvertEnquiryResponses, CreateCategoryData, CreateCategoryErrors, CreateCategoryResponses, CreateComplaintData, CreateComplaintErrors, CreateComplaintResponses, CreateDepartmentData, CreateDepartmentErrors, CreateDepartmentResponses, CreateProductData, CreateProductErrors, CreateProductResponses, CreateRuleData, CreateRuleErrors, CreateRuleResponses, CreateSubcategoryData, CreateSubcategoryErrors, CreateSubcategoryResponses, CurrencyRatesData, CurrencyRatesResponses, DeleteComplaintAttachmentData, DeleteComplaintAttachmentErrors, DeleteComplaintAttachmentResponses, DeleteLogoData, DeleteLogoErrors, DeleteLogoResponses, DeleteProductImageData, DeleteProductImageErrors, DeleteProductImageResponses, DownloadComplaintAttachmentData, DownloadComplaintAttachmentErrors, DownloadComplaintAttachmentResponses, DownloadVersionFileData, DownloadVersionFileErrors, DownloadVersionFileResponses, ExportReportData, ExportReportErrors, ExportReportResponses, ExportRulesData, ExportRulesResponses, GetChatData, GetChatErrors, GetChatResponses, GetComplaintAnalysisData, GetComplaintAnalysisErrors, GetComplaintAnalysisResponses, GetComplaintData, GetComplaintErrors, GetComplaintResponses, GetDocumentData, GetDocumentErrors, GetDocumentResponses, GetImportData, GetImportErrors, GetImportResponses, GetProductData, GetProductErrors, GetProductResponses, GetStorefrontConfigData, GetStorefrontConfigResponses, GetValidationData, GetValidationErrors, GetValidationResponses, GetVocabularyData, GetVocabularyResponses, ImportResultData, ImportResultErrors, ImportResultResponses, ImportTemplateCsvData, ImportTemplateCsvResponses, ImportTemplateXlsxData, ImportTemplateXlsxResponses, ListCategoriesData, ListCategoriesResponses, ListComplaintAttachmentsData, ListComplaintAttachmentsErrors, ListComplaintAttachmentsResponses, ListComplaintsData, ListComplaintsErrors, ListComplaintsResponses, ListDecisionsData, ListDecisionsErrors, ListDecisionsResponses, ListDepartmentsData, ListDepartmentsResponses, ListDocumentsData, ListDocumentsResponses, ListDocumentTypesData, ListDocumentTypesResponses, ListEnquiriesData, ListEnquiriesErrors, ListEnquiriesResponses, ListFactsData, ListFactsResponses, ListImportsData, ListImportsResponses, ListInboundEmailsData, ListInboundEmailsErrors, ListInboundEmailsResponses, ListOutboundEmailsData, ListOutboundEmailsErrors, ListOutboundEmailsResponses, ListProductsData, ListProductsErrors, ListProductsResponses, ListReportsData, ListReportsResponses, ListRulesData, ListRulesResponses, ListSlaPoliciesData, ListSlaPoliciesResponses, ListUsersData, ListUsersResponses, ListVersionChunksData, ListVersionChunksErrors, ListVersionChunksResponses, LivenessData, LivenessResponses, MailboxStatusData, MailboxStatusResponses, MyOrdersData, MyOrdersResponses, MyShopOrdersData, MyShopOrdersResponses, NewsletterData, NewsletterErrors, NewsletterResponses, OrderEventsData, OrderEventsErrors, OrderEventsResponses, OrderReceiptData, OrderReceiptErrors, OrderReceiptResponses, PlaceOrderData, PlaceOrderErrors, PlaceOrderResponses, PollChatData, PollChatErrors, PollChatResponses, PreviewImportData, PreviewImportErrors, PreviewImportResponses, PreviewReportData, PreviewReportErrors, PreviewReportResponses, ProcessManualEmailData, ProcessManualEmailErrors, ProcessManualEmailResponses, ProductImageData, ProductImageErrors, ProductImageResponses, ReadBrandingData, ReadBrandingResponses, ReadinessData, ReadinessResponses, ReadMeData, ReadMeResponses, ReadSettingsData, ReadSettingsResponses, ReanalyzeComplaintData, ReanalyzeComplaintErrors, ReanalyzeComplaintResponses, ReorderProductImagesData, ReorderProductImagesErrors, ReorderProductImagesResponses, ReplaceRuleData, ReplaceRuleErrors, ReplaceRuleResponses, ReprocessVersionData, ReprocessVersionErrors, ReprocessVersionResponses, RequestReturnData, RequestReturnErrors, RequestReturnResponses, RetireVersionData, RetireVersionErrors, RetireVersionResponses, RevalidateData, RevalidateErrors, RevalidateResponses, ReviewComplaintData, ReviewComplaintErrors, ReviewComplaintResponses, ReviewQueueData, ReviewQueueErrors, ReviewQueueResponses, RunImportData, RunImportErrors, RunImportResponses, SearchKnowledgeBaseData, SearchKnowledgeBaseErrors, SearchKnowledgeBaseResponses, SendChatMessageData, SendChatMessageErrors, SendChatMessageResponses, StaffOrderActionData, StaffOrderActionErrors, StaffOrderActionResponses, StaffOrderData, StaffOrderErrors, StaffOrderResponses, StaffOrdersData, StaffOrdersErrors, StaffOrdersResponses, StartChatData, StartChatErrors, StartChatResponses, UpdateCategoryData, UpdateCategoryErrors, UpdateCategoryResponses, UpdateDepartmentData, UpdateDepartmentErrors, UpdateDepartmentResponses, UpdateEnquiryData, UpdateEnquiryErrors, UpdateEnquiryResponses, UpdateProductData, UpdateProductErrors, UpdateProductResponses, UpdateSettingsData, UpdateSettingsErrors, UpdateSettingsResponses, UpdateSlaPolicyData, UpdateSlaPolicyErrors, UpdateSlaPolicyResponses, UpdateStatusData, UpdateStatusErrors, UpdateStatusResponses, UpdateUserData, UpdateUserErrors, UpdateUserResponses, UploadComplaintAttachmentData, UploadComplaintAttachmentErrors, UploadComplaintAttachmentResponses, UploadDocumentData, UploadDocumentErrors, UploadDocumentResponses, UploadLogoData, UploadLogoErrors, UploadLogoResponses, UploadProductImageData, UploadProductImageErrors, UploadProductImageResponses } from './types.gen';
 
 export type Options<TData extends TDataShape = TDataShape, ThrowOnError extends boolean = boolean, TResponse = unknown> = Options2<TData, ThrowOnError, TResponse> & {
     /**
@@ -623,6 +623,11 @@ export const downloadComplaintAttachment = <ThrowOnError extends boolean = false
 export const getStorefrontConfig = <ThrowOnError extends boolean = false>(options?: Options<GetStorefrontConfigData, ThrowOnError>): RequestResult<GetStorefrontConfigResponses, unknown, ThrowOnError> => (options?.client ?? client).get<GetStorefrontConfigResponses, unknown, ThrowOnError>({ url: '/api/v1/storefront/config', ...options });
 
 /**
+ * Currency Rates
+ */
+export const currencyRates = <ThrowOnError extends boolean = false>(options?: Options<CurrencyRatesData, ThrowOnError>): RequestResult<CurrencyRatesResponses, unknown, ThrowOnError> => (options?.client ?? client).get<CurrencyRatesResponses, unknown, ThrowOnError>({ url: '/api/v1/currency', ...options });
+
+/**
  * List Products
  */
 export const listProducts = <ThrowOnError extends boolean = false>(options?: Options<ListProductsData, ThrowOnError>): RequestResult<ListProductsResponses, ListProductsErrors, ThrowOnError> => (options?.client ?? client).get<ListProductsResponses, ListProductsErrors, ThrowOnError>({ url: '/api/v1/products', ...options });
@@ -652,19 +657,6 @@ export const myShopOrders = <ThrowOnError extends boolean = false>(options?: Opt
     security: [{ scheme: 'bearer', type: 'http' }],
     url: '/api/v1/orders',
     ...options
-});
-
-/**
- * Simulate Delivery
- */
-export const simulateDelivery = <ThrowOnError extends boolean = false>(options: Options<SimulateDeliveryData, ThrowOnError>): RequestResult<SimulateDeliveryResponses, SimulateDeliveryErrors, ThrowOnError> => (options.client ?? client).post<SimulateDeliveryResponses, SimulateDeliveryErrors, ThrowOnError>({
-    security: [{ scheme: 'bearer', type: 'http' }],
-    url: '/api/v1/orders/{order_ref}/simulate',
-    ...options,
-    headers: {
-        'Content-Type': 'application/json',
-        ...options.headers
-    }
 });
 
 /**
@@ -987,3 +979,74 @@ export const readBranding = <ThrowOnError extends boolean = false>(options?: Opt
  * Branding Logo
  */
 export const brandingLogo = <ThrowOnError extends boolean = false>(options: Options<BrandingLogoData, ThrowOnError>): RequestResult<BrandingLogoResponses, BrandingLogoErrors, ThrowOnError> => (options.client ?? client).get<BrandingLogoResponses, BrandingLogoErrors, ThrowOnError>({ url: '/api/v1/branding/logo/{target}', ...options });
+
+/**
+ * Cancel Order
+ */
+export const cancelOrder = <ThrowOnError extends boolean = false>(options: Options<CancelOrderData, ThrowOnError>): RequestResult<CancelOrderResponses, CancelOrderErrors, ThrowOnError> => (options.client ?? client).post<CancelOrderResponses, CancelOrderErrors, ThrowOnError>({
+    security: [{ scheme: 'bearer', type: 'http' }],
+    url: '/api/v1/orders/{ref}/cancel',
+    ...options
+});
+
+/**
+ * Request Return
+ */
+export const requestReturn = <ThrowOnError extends boolean = false>(options: Options<RequestReturnData, ThrowOnError>): RequestResult<RequestReturnResponses, RequestReturnErrors, ThrowOnError> => (options.client ?? client).post<RequestReturnResponses, RequestReturnErrors, ThrowOnError>({
+    security: [{ scheme: 'bearer', type: 'http' }],
+    url: '/api/v1/orders/{ref}/return',
+    ...options,
+    headers: {
+        'Content-Type': 'application/json',
+        ...options.headers
+    }
+});
+
+/**
+ * Order Events
+ */
+export const orderEvents = <ThrowOnError extends boolean = false>(options: Options<OrderEventsData, ThrowOnError>): RequestResult<OrderEventsResponses, OrderEventsErrors, ThrowOnError> => (options.client ?? client).get<OrderEventsResponses, OrderEventsErrors, ThrowOnError>({
+    security: [{ scheme: 'bearer', type: 'http' }],
+    url: '/api/v1/orders/{ref}/events',
+    ...options
+});
+
+/**
+ * Order Receipt
+ */
+export const orderReceipt = <ThrowOnError extends boolean = false>(options: Options<OrderReceiptData, ThrowOnError>): RequestResult<OrderReceiptResponses, OrderReceiptErrors, ThrowOnError> => (options.client ?? client).get<OrderReceiptResponses, OrderReceiptErrors, ThrowOnError>({
+    security: [{ scheme: 'bearer', type: 'http' }],
+    url: '/api/v1/orders/{ref}/receipt.pdf',
+    ...options
+});
+
+/**
+ * Staff Orders
+ */
+export const staffOrders = <ThrowOnError extends boolean = false>(options?: Options<StaffOrdersData, ThrowOnError>): RequestResult<StaffOrdersResponses, StaffOrdersErrors, ThrowOnError> => (options?.client ?? client).get<StaffOrdersResponses, StaffOrdersErrors, ThrowOnError>({
+    security: [{ scheme: 'bearer', type: 'http' }],
+    url: '/api/v1/admin/orders',
+    ...options
+});
+
+/**
+ * Staff Order
+ */
+export const staffOrder = <ThrowOnError extends boolean = false>(options: Options<StaffOrderData, ThrowOnError>): RequestResult<StaffOrderResponses, StaffOrderErrors, ThrowOnError> => (options.client ?? client).get<StaffOrderResponses, StaffOrderErrors, ThrowOnError>({
+    security: [{ scheme: 'bearer', type: 'http' }],
+    url: '/api/v1/admin/orders/{ref}',
+    ...options
+});
+
+/**
+ * Staff Order Action
+ */
+export const staffOrderAction = <ThrowOnError extends boolean = false>(options: Options<StaffOrderActionData, ThrowOnError>): RequestResult<StaffOrderActionResponses, StaffOrderActionErrors, ThrowOnError> => (options.client ?? client).post<StaffOrderActionResponses, StaffOrderActionErrors, ThrowOnError>({
+    security: [{ scheme: 'bearer', type: 'http' }],
+    url: '/api/v1/admin/orders/{ref}/actions',
+    ...options,
+    headers: {
+        'Content-Type': 'application/json',
+        ...options.headers
+    }
+});

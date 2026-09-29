@@ -4,12 +4,11 @@ import { useQuery } from "@tanstack/react-query";
 import { LifeBuoy } from "lucide-react";
 import Link from "next/link";
 
-import { DeliveryControls } from "@/components/shop/delivery-controls";
 import { ProductImage } from "@/components/shop/product-image";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Skeleton } from "@/components/ui/skeleton";
-import { myShopOrdersOptions, readMeOptions } from "@/lib/api/generated/@tanstack/react-query.gen";
+import { myShopOrdersOptions } from "@/lib/api/generated/@tanstack/react-query.gen";
 import type { ShopOrderOut } from "@/lib/api/generated/types.gen";
 import { apiErrorMessage } from "@/lib/api/errors";
 import { formatDate, formatMoney } from "@/lib/format";
@@ -78,8 +77,6 @@ function Timeline({ order: o }: { order: ShopOrderOut }) {
 
 export function OrderList({ onHelp }: { onHelp: (orderRef: string) => void }) {
   const orders = useQuery(myShopOrdersOptions());
-  const me = useQuery(readMeOptions());
-  const isAdmin = me.data?.role === "admin";
 
   if (orders.isPending) return <Skeleton className="h-64 w-full" />;
   if (orders.isError)
@@ -143,7 +140,6 @@ export function OrderList({ onHelp }: { onHelp: (orderRef: string) => void }) {
                     <Timeline order={o} />
                   </div>
                   <div className="flex gap-2">
-                    {isAdmin ? <DeliveryControls orderRef={o.order_ref} /> : null}
                     <Button
                       variant="outline"
                       size="sm"

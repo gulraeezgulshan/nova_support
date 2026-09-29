@@ -850,6 +850,10 @@ export type CheckoutIn = {
      * Shipping Method
      */
     shipping_method?: 'standard' | 'express';
+    /**
+     * Currency
+     */
+    currency?: 'USD' | 'PKR' | 'EUR' | 'GBP' | 'AED';
 };
 
 /**
@@ -1557,6 +1561,44 @@ export type ContactOut = {
      * Reference
      */
     reference: string | null;
+};
+
+/**
+ * CurrencyInfo
+ */
+export type CurrencyInfo = {
+    /**
+     * Code
+     */
+    code: string;
+    /**
+     * Symbol
+     */
+    symbol: string;
+    /**
+     * Decimals
+     */
+    decimals: number;
+};
+
+/**
+ * CurrencyOut
+ */
+export type CurrencyOut = {
+    /**
+     * Rates
+     */
+    rates: {
+        [key: string]: number;
+    };
+    /**
+     * Fetched At
+     */
+    fetched_at: string | null;
+    /**
+     * Currencies
+     */
+    currencies: Array<CurrencyInfo>;
 };
 
 /**
@@ -2444,6 +2486,50 @@ export type OperationsSettings = {
 };
 
 /**
+ * OrderActionIn
+ */
+export type OrderActionIn = {
+    /**
+     * Action
+     */
+    action: 'advance' | 'delay' | 'lose' | 'cancel' | 'approve_return' | 'refuse_return' | 'resume_auto';
+    /**
+     * Note
+     */
+    note?: string | null;
+    /**
+     * New Date
+     */
+    new_date?: string | null;
+    /**
+     * Days Late
+     */
+    days_late?: number;
+};
+
+/**
+ * OrderEventOut
+ */
+export type OrderEventOut = {
+    /**
+     * Stage
+     */
+    stage: string;
+    /**
+     * Note
+     */
+    note: string | null;
+    /**
+     * Actor
+     */
+    actor: string;
+    /**
+     * Created At
+     */
+    created_at: string;
+};
+
+/**
  * OrderOut
  */
 export type OrderOut = {
@@ -2483,6 +2569,36 @@ export type OrderOut = {
      * Status
      */
     status: string;
+};
+
+/**
+ * OrderSettings
+ */
+export type OrderSettings = {
+    /**
+     * Auto Advance
+     */
+    auto_advance: boolean;
+    /**
+     * Step Minutes
+     */
+    step_minutes: number;
+    /**
+     * Delay Chance Pct
+     */
+    delay_chance_pct: number;
+    /**
+     * Lost Chance Pct
+     */
+    lost_chance_pct: number;
+    /**
+     * Emails
+     */
+    emails: boolean;
+    /**
+     * Fallback Pkr Rate
+     */
+    fallback_pkr_rate: number;
 };
 
 /**
@@ -2962,6 +3078,16 @@ export type ResolutionTimeRow = {
 };
 
 /**
+ * ReturnIn
+ */
+export type ReturnIn = {
+    /**
+     * Reason
+     */
+    reason: string;
+};
+
+/**
  * Returns
  */
 export type Returns = {
@@ -3301,6 +3427,7 @@ export type RuntimeSettings = {
     ai: AiSettings;
     operations: OperationsSettings;
     branding: BrandingSettings;
+    orders: OrderSettings;
 };
 
 /**
@@ -3409,6 +3536,7 @@ export type SettingsUpdate = {
     email: EmailSettings;
     ai: AiSettings;
     operations: OperationsSettings;
+    orders: OrderSettings;
     branding: BrandingText;
 };
 
@@ -3499,23 +3627,33 @@ export type ShopOrderOut = {
      */
     status: string;
     /**
+     * Stage
+     */
+    stage: string;
+    /**
+     * Currency
+     */
+    currency: string;
+    /**
+     * Fx Rate
+     */
+    fx_rate: number;
+    /**
+     * Amount Local
+     */
+    amount_local: number | null;
+    /**
+     * Expected Delivery Date
+     */
+    expected_delivery_date: string | null;
+    /**
+     * Next Step At
+     */
+    next_step_at: string | null;
+    /**
      * Image Url
      */
     image_url?: string | null;
-};
-
-/**
- * SimulateIn
- */
-export type SimulateIn = {
-    /**
-     * Outcome
-     */
-    outcome: 'on_time' | 'late' | 'lost' | 'damaged';
-    /**
-     * Days
-     */
-    days?: number;
 };
 
 /**
@@ -3578,6 +3716,194 @@ export type Social = {
      * Url
      */
     url: string;
+};
+
+/**
+ * StaffOrderDetailOut
+ */
+export type StaffOrderDetailOut = {
+    /**
+     * Order Ref
+     */
+    order_ref: string;
+    /**
+     * Checkout Ref
+     */
+    checkout_ref: string | null;
+    /**
+     * Product Name
+     */
+    product_name: string;
+    /**
+     * Product Category
+     */
+    product_category: string;
+    /**
+     * Quantity
+     */
+    quantity: number;
+    /**
+     * Amount
+     */
+    amount: number;
+    /**
+     * Shipping Method
+     */
+    shipping_method: string;
+    /**
+     * Order Date
+     */
+    order_date: string;
+    /**
+     * Committed Delivery Date
+     */
+    committed_delivery_date: string;
+    /**
+     * Delivered Date
+     */
+    delivered_date: string | null;
+    /**
+     * Status
+     */
+    status: string;
+    /**
+     * Stage
+     */
+    stage: string;
+    /**
+     * Currency
+     */
+    currency: string;
+    /**
+     * Fx Rate
+     */
+    fx_rate: number;
+    /**
+     * Amount Local
+     */
+    amount_local: number | null;
+    /**
+     * Expected Delivery Date
+     */
+    expected_delivery_date: string | null;
+    /**
+     * Next Step At
+     */
+    next_step_at: string | null;
+    /**
+     * Image Url
+     */
+    image_url?: string | null;
+    /**
+     * Customer Name
+     */
+    customer_name: string;
+    /**
+     * Customer Email
+     */
+    customer_email: string | null;
+    /**
+     * Manual Hold
+     */
+    manual_hold: boolean;
+    /**
+     * Events
+     */
+    events: Array<OrderEventOut>;
+    /**
+     * Complaint Refs
+     */
+    complaint_refs: Array<string>;
+};
+
+/**
+ * StaffOrderOut
+ */
+export type StaffOrderOut = {
+    /**
+     * Order Ref
+     */
+    order_ref: string;
+    /**
+     * Checkout Ref
+     */
+    checkout_ref: string | null;
+    /**
+     * Product Name
+     */
+    product_name: string;
+    /**
+     * Product Category
+     */
+    product_category: string;
+    /**
+     * Quantity
+     */
+    quantity: number;
+    /**
+     * Amount
+     */
+    amount: number;
+    /**
+     * Shipping Method
+     */
+    shipping_method: string;
+    /**
+     * Order Date
+     */
+    order_date: string;
+    /**
+     * Committed Delivery Date
+     */
+    committed_delivery_date: string;
+    /**
+     * Delivered Date
+     */
+    delivered_date: string | null;
+    /**
+     * Status
+     */
+    status: string;
+    /**
+     * Stage
+     */
+    stage: string;
+    /**
+     * Currency
+     */
+    currency: string;
+    /**
+     * Fx Rate
+     */
+    fx_rate: number;
+    /**
+     * Amount Local
+     */
+    amount_local: number | null;
+    /**
+     * Expected Delivery Date
+     */
+    expected_delivery_date: string | null;
+    /**
+     * Next Step At
+     */
+    next_step_at: string | null;
+    /**
+     * Image Url
+     */
+    image_url?: string | null;
+    /**
+     * Customer Name
+     */
+    customer_name: string;
+    /**
+     * Customer Email
+     */
+    customer_email: string | null;
+    /**
+     * Manual Hold
+     */
+    manual_hold: boolean;
 };
 
 /**
@@ -5720,6 +6046,22 @@ export type GetStorefrontConfigResponses = {
 
 export type GetStorefrontConfigResponse = GetStorefrontConfigResponses[keyof GetStorefrontConfigResponses];
 
+export type CurrencyRatesData = {
+    body?: never;
+    path?: never;
+    query?: never;
+    url: '/api/v1/currency';
+};
+
+export type CurrencyRatesResponses = {
+    /**
+     * Successful Response
+     */
+    200: CurrencyOut;
+};
+
+export type CurrencyRatesResponse = CurrencyRatesResponses[keyof CurrencyRatesResponses];
+
 export type ListProductsData = {
     body?: never;
     path?: never;
@@ -5844,36 +6186,6 @@ export type MyShopOrdersResponses = {
 };
 
 export type MyShopOrdersResponse = MyShopOrdersResponses[keyof MyShopOrdersResponses];
-
-export type SimulateDeliveryData = {
-    body: SimulateIn;
-    path: {
-        /**
-         * Order Ref
-         */
-        order_ref: string;
-    };
-    query?: never;
-    url: '/api/v1/orders/{order_ref}/simulate';
-};
-
-export type SimulateDeliveryErrors = {
-    /**
-     * Validation Error
-     */
-    422: HttpValidationError;
-};
-
-export type SimulateDeliveryError = SimulateDeliveryErrors[keyof SimulateDeliveryErrors];
-
-export type SimulateDeliveryResponses = {
-    /**
-     * Successful Response
-     */
-    200: ShopOrderOut;
-};
-
-export type SimulateDeliveryResponse = SimulateDeliveryResponses[keyof SimulateDeliveryResponses];
 
 export type ProductImageData = {
     body?: never;
@@ -6683,3 +6995,233 @@ export type BrandingLogoResponses = {
      */
     200: unknown;
 };
+
+export type CancelOrderData = {
+    body?: never;
+    path: {
+        /**
+         * Ref
+         */
+        ref: string;
+    };
+    query?: never;
+    url: '/api/v1/orders/{ref}/cancel';
+};
+
+export type CancelOrderErrors = {
+    /**
+     * Validation Error
+     */
+    422: HttpValidationError;
+};
+
+export type CancelOrderError = CancelOrderErrors[keyof CancelOrderErrors];
+
+export type CancelOrderResponses = {
+    /**
+     * Successful Response
+     */
+    200: ShopOrderOut;
+};
+
+export type CancelOrderResponse = CancelOrderResponses[keyof CancelOrderResponses];
+
+export type RequestReturnData = {
+    body: ReturnIn;
+    path: {
+        /**
+         * Ref
+         */
+        ref: string;
+    };
+    query?: never;
+    url: '/api/v1/orders/{ref}/return';
+};
+
+export type RequestReturnErrors = {
+    /**
+     * Validation Error
+     */
+    422: HttpValidationError;
+};
+
+export type RequestReturnError = RequestReturnErrors[keyof RequestReturnErrors];
+
+export type RequestReturnResponses = {
+    /**
+     * Successful Response
+     */
+    200: ShopOrderOut;
+};
+
+export type RequestReturnResponse = RequestReturnResponses[keyof RequestReturnResponses];
+
+export type OrderEventsData = {
+    body?: never;
+    path: {
+        /**
+         * Ref
+         */
+        ref: string;
+    };
+    query?: never;
+    url: '/api/v1/orders/{ref}/events';
+};
+
+export type OrderEventsErrors = {
+    /**
+     * Validation Error
+     */
+    422: HttpValidationError;
+};
+
+export type OrderEventsError = OrderEventsErrors[keyof OrderEventsErrors];
+
+export type OrderEventsResponses = {
+    /**
+     * Response Order Events
+     *
+     * Successful Response
+     */
+    200: Array<OrderEventOut>;
+};
+
+export type OrderEventsResponse = OrderEventsResponses[keyof OrderEventsResponses];
+
+export type OrderReceiptData = {
+    body?: never;
+    path: {
+        /**
+         * Ref
+         */
+        ref: string;
+    };
+    query?: never;
+    url: '/api/v1/orders/{ref}/receipt.pdf';
+};
+
+export type OrderReceiptErrors = {
+    /**
+     * Validation Error
+     */
+    422: HttpValidationError;
+};
+
+export type OrderReceiptError = OrderReceiptErrors[keyof OrderReceiptErrors];
+
+export type OrderReceiptResponses = {
+    /**
+     * Successful Response
+     */
+    200: Blob | File;
+};
+
+export type OrderReceiptResponse = OrderReceiptResponses[keyof OrderReceiptResponses];
+
+export type StaffOrdersData = {
+    body?: never;
+    path?: never;
+    query?: {
+        /**
+         * Stage
+         */
+        stage?: string | null;
+        /**
+         * Q
+         */
+        q?: string | null;
+        /**
+         * Needs Action
+         */
+        needs_action?: boolean;
+        /**
+         * Limit
+         */
+        limit?: number;
+        /**
+         * Offset
+         */
+        offset?: number;
+    };
+    url: '/api/v1/admin/orders';
+};
+
+export type StaffOrdersErrors = {
+    /**
+     * Validation Error
+     */
+    422: HttpValidationError;
+};
+
+export type StaffOrdersError = StaffOrdersErrors[keyof StaffOrdersErrors];
+
+export type StaffOrdersResponses = {
+    /**
+     * Response Staff Orders
+     *
+     * Successful Response
+     */
+    200: Array<StaffOrderOut>;
+};
+
+export type StaffOrdersResponse = StaffOrdersResponses[keyof StaffOrdersResponses];
+
+export type StaffOrderData = {
+    body?: never;
+    path: {
+        /**
+         * Ref
+         */
+        ref: string;
+    };
+    query?: never;
+    url: '/api/v1/admin/orders/{ref}';
+};
+
+export type StaffOrderErrors = {
+    /**
+     * Validation Error
+     */
+    422: HttpValidationError;
+};
+
+export type StaffOrderError = StaffOrderErrors[keyof StaffOrderErrors];
+
+export type StaffOrderResponses = {
+    /**
+     * Successful Response
+     */
+    200: StaffOrderDetailOut;
+};
+
+export type StaffOrderResponse = StaffOrderResponses[keyof StaffOrderResponses];
+
+export type StaffOrderActionData = {
+    body: OrderActionIn;
+    path: {
+        /**
+         * Ref
+         */
+        ref: string;
+    };
+    query?: never;
+    url: '/api/v1/admin/orders/{ref}/actions';
+};
+
+export type StaffOrderActionErrors = {
+    /**
+     * Validation Error
+     */
+    422: HttpValidationError;
+};
+
+export type StaffOrderActionError = StaffOrderActionErrors[keyof StaffOrderActionErrors];
+
+export type StaffOrderActionResponses = {
+    /**
+     * Successful Response
+     */
+    200: StaffOrderOut;
+};
+
+export type StaffOrderActionResponse = StaffOrderActionResponses[keyof StaffOrderActionResponses];

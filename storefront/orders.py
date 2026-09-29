@@ -19,7 +19,6 @@ SHIPPING_DAYS = {  # DEL-POL-04, via config/storefront.yaml
     "standard": storefront_config().shipping.standard_days,
     "express": storefront_config().shipping.express_days,
 }
-OUTCOMES = {"on_time", "late", "lost", "damaged"}
 MAX_LINES, MAX_QUANTITY = 10, 5
 
 
@@ -126,21 +125,3 @@ async def checkout(
         queue_order_email(db, order, customer, "placed")
     await db.flush()
     return orders
-
-
-def simulate(order: Order, outcome: str, days: int, today: date) -> None:
-    """Rewrite the order's timeline so the outcome has just happened (demo only)."""
-    if outcome not in OUTCOMES:
-        raise ValueError(f"Unknown outcome '{outcome}'.")
-    transit = SHIPPING_DAYS.get(order.shipping_method, 3)
-    if outcome == "lost":
-        committed = subtract_business_days(today, 4)
-        delivered, status = None, "lost"
-    else:
-        delivered = subtract_business_days(today, 1)
-        committed = subtract_business_days(delivered, days if outcome == "late" else 0)
-        status = "delivered"
-    order.committed_delivery_date = committed
-    order.order_date = subtract_business_days(committed, transit)
-    order.delivered_date = delivered
-    order.status = status

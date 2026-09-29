@@ -3388,6 +3388,27 @@
         }
       }
     },
+    "/api/v1/currency": {
+      "get": {
+        "tags": [
+          "storefront"
+        ],
+        "summary": "Currency Rates",
+        "operationId": "currency_rates",
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/CurrencyOut"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
     "/api/v1/products": {
       "get": {
         "tags": [
@@ -3631,63 +3652,6 @@
             "HTTPBearer": []
           }
         ]
-      }
-    },
-    "/api/v1/orders/{order_ref}/simulate": {
-      "post": {
-        "tags": [
-          "storefront"
-        ],
-        "summary": "Simulate Delivery",
-        "operationId": "simulate_delivery",
-        "security": [
-          {
-            "HTTPBearer": []
-          }
-        ],
-        "parameters": [
-          {
-            "name": "order_ref",
-            "in": "path",
-            "required": true,
-            "schema": {
-              "type": "string",
-              "title": "Order Ref"
-            }
-          }
-        ],
-        "requestBody": {
-          "required": true,
-          "content": {
-            "application/json": {
-              "schema": {
-                "$ref": "#/components/schemas/SimulateIn"
-              }
-            }
-          }
-        },
-        "responses": {
-          "200": {
-            "description": "Successful Response",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/ShopOrderOut"
-                }
-              }
-            }
-          },
-          "422": {
-            "description": "Validation Error",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/HTTPValidationError"
-                }
-              }
-            }
-          }
-        }
       }
     },
     "/api/v1/product-images/{image_id}": {
@@ -5080,6 +5044,412 @@
             "description": "Successful Response",
             "content": {
               "image/*": {}
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/orders/{ref}/cancel": {
+      "post": {
+        "tags": [
+          "orders"
+        ],
+        "summary": "Cancel Order",
+        "operationId": "cancel_order",
+        "security": [
+          {
+            "HTTPBearer": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "ref",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "title": "Ref"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ShopOrderOut"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/orders/{ref}/return": {
+      "post": {
+        "tags": [
+          "orders"
+        ],
+        "summary": "Request Return",
+        "operationId": "request_return",
+        "security": [
+          {
+            "HTTPBearer": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "ref",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "title": "Ref"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ReturnIn"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ShopOrderOut"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/orders/{ref}/events": {
+      "get": {
+        "tags": [
+          "orders"
+        ],
+        "summary": "Order Events",
+        "operationId": "order_events",
+        "security": [
+          {
+            "HTTPBearer": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "ref",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "title": "Ref"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/OrderEventOut"
+                  },
+                  "title": "Response Order Events"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/orders/{ref}/receipt.pdf": {
+      "get": {
+        "tags": [
+          "orders"
+        ],
+        "summary": "Order Receipt",
+        "operationId": "order_receipt",
+        "security": [
+          {
+            "HTTPBearer": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "ref",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "title": "Ref"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/pdf": {}
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/admin/orders": {
+      "get": {
+        "tags": [
+          "orders"
+        ],
+        "summary": "Staff Orders",
+        "operationId": "staff_orders",
+        "security": [
+          {
+            "HTTPBearer": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "stage",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Stage"
+            }
+          },
+          {
+            "name": "q",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Q"
+            }
+          },
+          {
+            "name": "needs_action",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "boolean",
+              "default": false,
+              "title": "Needs Action"
+            }
+          },
+          {
+            "name": "limit",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "default": 50,
+              "title": "Limit"
+            }
+          },
+          {
+            "name": "offset",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "default": 0,
+              "title": "Offset"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/StaffOrderOut"
+                  },
+                  "title": "Response Staff Orders"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/admin/orders/{ref}": {
+      "get": {
+        "tags": [
+          "orders"
+        ],
+        "summary": "Staff Order",
+        "operationId": "staff_order",
+        "security": [
+          {
+            "HTTPBearer": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "ref",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "title": "Ref"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/StaffOrderDetailOut"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/admin/orders/{ref}/actions": {
+      "post": {
+        "tags": [
+          "orders"
+        ],
+        "summary": "Staff Order Action",
+        "operationId": "staff_order_action",
+        "security": [
+          {
+            "HTTPBearer": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "ref",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "title": "Ref"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/OrderActionIn"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/StaffOrderOut"
+                }
+              }
             }
           },
           "422": {
@@ -6647,6 +7017,18 @@
             ],
             "title": "Shipping Method",
             "default": "standard"
+          },
+          "currency": {
+            "type": "string",
+            "enum": [
+              "USD",
+              "PKR",
+              "EUR",
+              "GBP",
+              "AED"
+            ],
+            "title": "Currency",
+            "default": "USD"
           }
         },
         "type": "object",
@@ -8118,6 +8500,66 @@
         ],
         "title": "ContactOut"
       },
+      "CurrencyInfo": {
+        "properties": {
+          "code": {
+            "type": "string",
+            "title": "Code"
+          },
+          "symbol": {
+            "type": "string",
+            "title": "Symbol"
+          },
+          "decimals": {
+            "type": "integer",
+            "title": "Decimals"
+          }
+        },
+        "type": "object",
+        "required": [
+          "code",
+          "symbol",
+          "decimals"
+        ],
+        "title": "CurrencyInfo"
+      },
+      "CurrencyOut": {
+        "properties": {
+          "rates": {
+            "additionalProperties": {
+              "type": "number"
+            },
+            "type": "object",
+            "title": "Rates"
+          },
+          "fetched_at": {
+            "anyOf": [
+              {
+                "type": "string",
+                "format": "date-time"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Fetched At"
+          },
+          "currencies": {
+            "items": {
+              "$ref": "#/components/schemas/CurrencyInfo"
+            },
+            "type": "array",
+            "title": "Currencies"
+          }
+        },
+        "type": "object",
+        "required": [
+          "rates",
+          "fetched_at",
+          "currencies"
+        ],
+        "title": "CurrencyOut"
+      },
       "CustomerResponse": {
         "properties": {
           "tone": {
@@ -9570,6 +10012,95 @@
         ],
         "title": "OperationsSettings"
       },
+      "OrderActionIn": {
+        "properties": {
+          "action": {
+            "type": "string",
+            "enum": [
+              "advance",
+              "delay",
+              "lose",
+              "cancel",
+              "approve_return",
+              "refuse_return",
+              "resume_auto"
+            ],
+            "title": "Action"
+          },
+          "note": {
+            "anyOf": [
+              {
+                "type": "string",
+                "maxLength": 500
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Note"
+          },
+          "new_date": {
+            "anyOf": [
+              {
+                "type": "string",
+                "format": "date"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "New Date"
+          },
+          "days_late": {
+            "type": "integer",
+            "maximum": 30.0,
+            "minimum": 0.0,
+            "title": "Days Late",
+            "default": 0
+          }
+        },
+        "type": "object",
+        "required": [
+          "action"
+        ],
+        "title": "OrderActionIn"
+      },
+      "OrderEventOut": {
+        "properties": {
+          "stage": {
+            "type": "string",
+            "title": "Stage"
+          },
+          "note": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Note"
+          },
+          "actor": {
+            "type": "string",
+            "title": "Actor"
+          },
+          "created_at": {
+            "type": "string",
+            "format": "date-time",
+            "title": "Created At"
+          }
+        },
+        "type": "object",
+        "required": [
+          "stage",
+          "note",
+          "actor",
+          "created_at"
+        ],
+        "title": "OrderEventOut"
+      },
       "OrderOut": {
         "properties": {
           "order_ref": {
@@ -9632,6 +10163,53 @@
           "status"
         ],
         "title": "OrderOut"
+      },
+      "OrderSettings": {
+        "properties": {
+          "auto_advance": {
+            "type": "boolean",
+            "title": "Auto Advance"
+          },
+          "step_minutes": {
+            "type": "integer",
+            "maximum": 1440.0,
+            "minimum": 1.0,
+            "title": "Step Minutes"
+          },
+          "delay_chance_pct": {
+            "type": "integer",
+            "maximum": 100.0,
+            "minimum": 0.0,
+            "title": "Delay Chance Pct"
+          },
+          "lost_chance_pct": {
+            "type": "integer",
+            "maximum": 20.0,
+            "minimum": 0.0,
+            "title": "Lost Chance Pct"
+          },
+          "emails": {
+            "type": "boolean",
+            "title": "Emails"
+          },
+          "fallback_pkr_rate": {
+            "type": "number",
+            "maximum": 10000.0,
+            "minimum": 1.0,
+            "title": "Fallback Pkr Rate"
+          }
+        },
+        "additionalProperties": false,
+        "type": "object",
+        "required": [
+          "auto_advance",
+          "step_minutes",
+          "delay_chance_pct",
+          "lost_chance_pct",
+          "emails",
+          "fallback_pkr_rate"
+        ],
+        "title": "OrderSettings"
       },
       "OutboundEmailOut": {
         "properties": {
@@ -10384,6 +10962,21 @@
         ],
         "title": "ResolutionTimeRow"
       },
+      "ReturnIn": {
+        "properties": {
+          "reason": {
+            "type": "string",
+            "maxLength": 500,
+            "minLength": 10,
+            "title": "Reason"
+          }
+        },
+        "type": "object",
+        "required": [
+          "reason"
+        ],
+        "title": "ReturnIn"
+      },
       "Returns": {
         "properties": {
           "window_days": {
@@ -11039,6 +11632,9 @@
           },
           "branding": {
             "$ref": "#/components/schemas/BrandingSettings"
+          },
+          "orders": {
+            "$ref": "#/components/schemas/OrderSettings"
           }
         },
         "additionalProperties": false,
@@ -11047,7 +11643,8 @@
           "email",
           "ai",
           "operations",
-          "branding"
+          "branding",
+          "orders"
         ],
         "title": "RuntimeSettings"
       },
@@ -11255,6 +11852,9 @@
           "operations": {
             "$ref": "#/components/schemas/OperationsSettings"
           },
+          "orders": {
+            "$ref": "#/components/schemas/OrderSettings"
+          },
           "branding": {
             "$ref": "#/components/schemas/BrandingText"
           }
@@ -11266,6 +11866,7 @@
           "email",
           "ai",
           "operations",
+          "orders",
           "branding"
         ],
         "title": "SettingsUpdate"
@@ -11381,6 +11982,53 @@
             "type": "string",
             "title": "Status"
           },
+          "stage": {
+            "type": "string",
+            "title": "Stage"
+          },
+          "currency": {
+            "type": "string",
+            "title": "Currency"
+          },
+          "fx_rate": {
+            "type": "number",
+            "title": "Fx Rate"
+          },
+          "amount_local": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Amount Local"
+          },
+          "expected_delivery_date": {
+            "anyOf": [
+              {
+                "type": "string",
+                "format": "date"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Expected Delivery Date"
+          },
+          "next_step_at": {
+            "anyOf": [
+              {
+                "type": "string",
+                "format": "date-time"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Next Step At"
+          },
           "image_url": {
             "anyOf": [
               {
@@ -11405,35 +12053,15 @@
           "order_date",
           "committed_delivery_date",
           "delivered_date",
-          "status"
+          "status",
+          "stage",
+          "currency",
+          "fx_rate",
+          "amount_local",
+          "expected_delivery_date",
+          "next_step_at"
         ],
         "title": "ShopOrderOut"
-      },
-      "SimulateIn": {
-        "properties": {
-          "outcome": {
-            "type": "string",
-            "enum": [
-              "on_time",
-              "late",
-              "lost",
-              "damaged"
-            ],
-            "title": "Outcome"
-          },
-          "days": {
-            "type": "integer",
-            "maximum": 30.0,
-            "minimum": 0.0,
-            "title": "Days",
-            "default": 3
-          }
-        },
-        "type": "object",
-        "required": [
-          "outcome"
-        ],
-        "title": "SimulateIn"
       },
       "SlaPolicyOut": {
         "properties": {
@@ -11534,6 +12162,354 @@
           "url"
         ],
         "title": "Social"
+      },
+      "StaffOrderDetailOut": {
+        "properties": {
+          "order_ref": {
+            "type": "string",
+            "title": "Order Ref"
+          },
+          "checkout_ref": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Checkout Ref"
+          },
+          "product_name": {
+            "type": "string",
+            "title": "Product Name"
+          },
+          "product_category": {
+            "type": "string",
+            "title": "Product Category"
+          },
+          "quantity": {
+            "type": "integer",
+            "title": "Quantity"
+          },
+          "amount": {
+            "type": "number",
+            "title": "Amount"
+          },
+          "shipping_method": {
+            "type": "string",
+            "title": "Shipping Method"
+          },
+          "order_date": {
+            "type": "string",
+            "format": "date",
+            "title": "Order Date"
+          },
+          "committed_delivery_date": {
+            "type": "string",
+            "format": "date",
+            "title": "Committed Delivery Date"
+          },
+          "delivered_date": {
+            "anyOf": [
+              {
+                "type": "string",
+                "format": "date"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Delivered Date"
+          },
+          "status": {
+            "type": "string",
+            "title": "Status"
+          },
+          "stage": {
+            "type": "string",
+            "title": "Stage"
+          },
+          "currency": {
+            "type": "string",
+            "title": "Currency"
+          },
+          "fx_rate": {
+            "type": "number",
+            "title": "Fx Rate"
+          },
+          "amount_local": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Amount Local"
+          },
+          "expected_delivery_date": {
+            "anyOf": [
+              {
+                "type": "string",
+                "format": "date"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Expected Delivery Date"
+          },
+          "next_step_at": {
+            "anyOf": [
+              {
+                "type": "string",
+                "format": "date-time"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Next Step At"
+          },
+          "image_url": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Image Url"
+          },
+          "customer_name": {
+            "type": "string",
+            "title": "Customer Name"
+          },
+          "customer_email": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Customer Email"
+          },
+          "manual_hold": {
+            "type": "boolean",
+            "title": "Manual Hold"
+          },
+          "events": {
+            "items": {
+              "$ref": "#/components/schemas/OrderEventOut"
+            },
+            "type": "array",
+            "title": "Events"
+          },
+          "complaint_refs": {
+            "items": {
+              "type": "string"
+            },
+            "type": "array",
+            "title": "Complaint Refs"
+          }
+        },
+        "type": "object",
+        "required": [
+          "order_ref",
+          "checkout_ref",
+          "product_name",
+          "product_category",
+          "quantity",
+          "amount",
+          "shipping_method",
+          "order_date",
+          "committed_delivery_date",
+          "delivered_date",
+          "status",
+          "stage",
+          "currency",
+          "fx_rate",
+          "amount_local",
+          "expected_delivery_date",
+          "next_step_at",
+          "customer_name",
+          "customer_email",
+          "manual_hold",
+          "events",
+          "complaint_refs"
+        ],
+        "title": "StaffOrderDetailOut"
+      },
+      "StaffOrderOut": {
+        "properties": {
+          "order_ref": {
+            "type": "string",
+            "title": "Order Ref"
+          },
+          "checkout_ref": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Checkout Ref"
+          },
+          "product_name": {
+            "type": "string",
+            "title": "Product Name"
+          },
+          "product_category": {
+            "type": "string",
+            "title": "Product Category"
+          },
+          "quantity": {
+            "type": "integer",
+            "title": "Quantity"
+          },
+          "amount": {
+            "type": "number",
+            "title": "Amount"
+          },
+          "shipping_method": {
+            "type": "string",
+            "title": "Shipping Method"
+          },
+          "order_date": {
+            "type": "string",
+            "format": "date",
+            "title": "Order Date"
+          },
+          "committed_delivery_date": {
+            "type": "string",
+            "format": "date",
+            "title": "Committed Delivery Date"
+          },
+          "delivered_date": {
+            "anyOf": [
+              {
+                "type": "string",
+                "format": "date"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Delivered Date"
+          },
+          "status": {
+            "type": "string",
+            "title": "Status"
+          },
+          "stage": {
+            "type": "string",
+            "title": "Stage"
+          },
+          "currency": {
+            "type": "string",
+            "title": "Currency"
+          },
+          "fx_rate": {
+            "type": "number",
+            "title": "Fx Rate"
+          },
+          "amount_local": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Amount Local"
+          },
+          "expected_delivery_date": {
+            "anyOf": [
+              {
+                "type": "string",
+                "format": "date"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Expected Delivery Date"
+          },
+          "next_step_at": {
+            "anyOf": [
+              {
+                "type": "string",
+                "format": "date-time"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Next Step At"
+          },
+          "image_url": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Image Url"
+          },
+          "customer_name": {
+            "type": "string",
+            "title": "Customer Name"
+          },
+          "customer_email": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Customer Email"
+          },
+          "manual_hold": {
+            "type": "boolean",
+            "title": "Manual Hold"
+          }
+        },
+        "type": "object",
+        "required": [
+          "order_ref",
+          "checkout_ref",
+          "product_name",
+          "product_category",
+          "quantity",
+          "amount",
+          "shipping_method",
+          "order_date",
+          "committed_delivery_date",
+          "delivered_date",
+          "status",
+          "stage",
+          "currency",
+          "fx_rate",
+          "amount_local",
+          "expected_delivery_date",
+          "next_step_at",
+          "customer_name",
+          "customer_email",
+          "manual_hold"
+        ],
+        "title": "StaffOrderOut"
       },
       "StatusChangeIn": {
         "properties": {

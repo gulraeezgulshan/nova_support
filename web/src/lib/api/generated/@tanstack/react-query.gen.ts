@@ -3,8 +3,8 @@
 import { type DefaultError, type InfiniteData, infiniteQueryOptions, queryOptions, type UseMutationOptions } from '@tanstack/react-query';
 
 import { client } from '../client.gen';
-import { activateVersion, adminDashboard, adminListProducts, agentDashboard, analytics, brandingLogo, chooseChatOrder, complaintChat, confirmChat, contact, convertEnquiry, createCategory, createComplaint, createDepartment, createProduct, createRule, createSubcategory, deleteComplaintAttachment, deleteLogo, deleteProductImage, downloadComplaintAttachment, downloadVersionFile, exportReport, exportRules, getChat, getComplaint, getComplaintAnalysis, getDocument, getImport, getProduct, getStorefrontConfig, getValidation, getVocabulary, importResult, importTemplateCsv, importTemplateXlsx, listCategories, listComplaintAttachments, listComplaints, listDecisions, listDepartments, listDocuments, listDocumentTypes, listEnquiries, listFacts, listImports, listInboundEmails, listOutboundEmails, listProducts, listReports, listRules, listSlaPolicies, listUsers, listVersionChunks, liveness, mailboxStatus, myOrders, myShopOrders, newsletter, type Options, placeOrder, pollChat, previewImport, previewReport, processManualEmail, productImage, readBranding, readiness, readMe, readSettings, reanalyzeComplaint, reorderProductImages, replaceRule, reprocessVersion, retireVersion, revalidate, reviewComplaint, reviewQueue, runImport, searchKnowledgeBase, sendChatMessage, simulateDelivery, startChat, updateCategory, updateDepartment, updateEnquiry, updateProduct, updateSettings, updateSlaPolicy, updateStatus, updateUser, uploadComplaintAttachment, uploadDocument, uploadLogo, uploadProductImage } from '../sdk.gen';
-import type { ActivateVersionData, ActivateVersionError, ActivateVersionResponse, AdminDashboardData, AdminDashboardError, AdminDashboardResponse, AdminListProductsData, AdminListProductsResponse, AgentDashboardData, AgentDashboardError, AgentDashboardResponse, AnalyticsData, AnalyticsError, AnalyticsResponse, BrandingLogoData, BrandingLogoError, ChooseChatOrderData, ChooseChatOrderError, ChooseChatOrderResponse, ComplaintChatData, ComplaintChatError, ComplaintChatResponse, ConfirmChatData, ConfirmChatError, ConfirmChatResponse, ContactData, ContactError, ContactResponse, ConvertEnquiryData, ConvertEnquiryError, ConvertEnquiryResponse, CreateCategoryData, CreateCategoryError, CreateCategoryResponse, CreateComplaintData, CreateComplaintError, CreateComplaintResponse, CreateDepartmentData, CreateDepartmentError, CreateDepartmentResponse, CreateProductData, CreateProductError, CreateProductResponse, CreateRuleData, CreateRuleError, CreateRuleResponse, CreateSubcategoryData, CreateSubcategoryError, CreateSubcategoryResponse, DeleteComplaintAttachmentData, DeleteComplaintAttachmentError, DeleteComplaintAttachmentResponse, DeleteLogoData, DeleteLogoError, DeleteLogoResponse, DeleteProductImageData, DeleteProductImageError, DeleteProductImageResponse, DownloadComplaintAttachmentData, DownloadComplaintAttachmentError, DownloadComplaintAttachmentResponse, DownloadVersionFileData, DownloadVersionFileError, DownloadVersionFileResponse, ExportReportData, ExportReportError, ExportRulesData, GetChatData, GetChatError, GetChatResponse, GetComplaintAnalysisData, GetComplaintAnalysisError, GetComplaintAnalysisResponse, GetComplaintData, GetComplaintError, GetComplaintResponse, GetDocumentData, GetDocumentError, GetDocumentResponse, GetImportData, GetImportError, GetImportResponse, GetProductData, GetProductError, GetProductResponse, GetStorefrontConfigData, GetStorefrontConfigResponse, GetValidationData, GetValidationError, GetValidationResponse, GetVocabularyData, GetVocabularyResponse, ImportResultData, ImportResultError, ImportTemplateCsvData, ImportTemplateXlsxData, ListCategoriesData, ListCategoriesResponse, ListComplaintAttachmentsData, ListComplaintAttachmentsError, ListComplaintAttachmentsResponse, ListComplaintsData, ListComplaintsError, ListComplaintsResponse, ListDecisionsData, ListDecisionsError, ListDecisionsResponse, ListDepartmentsData, ListDepartmentsResponse, ListDocumentsData, ListDocumentsResponse, ListDocumentTypesData, ListDocumentTypesResponse, ListEnquiriesData, ListEnquiriesError, ListEnquiriesResponse, ListFactsData, ListFactsResponse, ListImportsData, ListImportsResponse, ListInboundEmailsData, ListInboundEmailsError, ListInboundEmailsResponse, ListOutboundEmailsData, ListOutboundEmailsError, ListOutboundEmailsResponse, ListProductsData, ListProductsError, ListProductsResponse, ListReportsData, ListReportsResponse, ListRulesData, ListRulesResponse, ListSlaPoliciesData, ListSlaPoliciesResponse, ListUsersData, ListUsersResponse, ListVersionChunksData, ListVersionChunksError, ListVersionChunksResponse, LivenessData, LivenessResponse, MailboxStatusData, MailboxStatusResponse, MyOrdersData, MyOrdersResponse, MyShopOrdersData, MyShopOrdersResponse, NewsletterData, NewsletterError, NewsletterResponse, PlaceOrderData, PlaceOrderError, PlaceOrderResponse, PollChatData, PollChatError, PollChatResponse, PreviewImportData, PreviewImportError, PreviewImportResponse, PreviewReportData, PreviewReportError, PreviewReportResponse, ProcessManualEmailData, ProcessManualEmailError, ProcessManualEmailResponse, ProductImageData, ProductImageError, ReadBrandingData, ReadBrandingResponse, ReadinessData, ReadinessResponse, ReadMeData, ReadMeResponse, ReadSettingsData, ReadSettingsResponse, ReanalyzeComplaintData, ReanalyzeComplaintError, ReanalyzeComplaintResponse, ReorderProductImagesData, ReorderProductImagesError, ReorderProductImagesResponse, ReplaceRuleData, ReplaceRuleError, ReplaceRuleResponse, ReprocessVersionData, ReprocessVersionError, ReprocessVersionResponse, RetireVersionData, RetireVersionError, RetireVersionResponse, RevalidateData, RevalidateError, RevalidateResponse, ReviewComplaintData, ReviewComplaintError, ReviewComplaintResponse, ReviewQueueData, ReviewQueueError, ReviewQueueResponse, RunImportData, RunImportError, RunImportResponse, SearchKnowledgeBaseData, SearchKnowledgeBaseError, SearchKnowledgeBaseResponse, SendChatMessageData, SendChatMessageError, SendChatMessageResponse, SimulateDeliveryData, SimulateDeliveryError, SimulateDeliveryResponse, StartChatData, StartChatError, StartChatResponse, UpdateCategoryData, UpdateCategoryError, UpdateCategoryResponse, UpdateDepartmentData, UpdateDepartmentError, UpdateDepartmentResponse, UpdateEnquiryData, UpdateEnquiryError, UpdateEnquiryResponse, UpdateProductData, UpdateProductError, UpdateProductResponse, UpdateSettingsData, UpdateSettingsError, UpdateSettingsResponse, UpdateSlaPolicyData, UpdateSlaPolicyError, UpdateSlaPolicyResponse, UpdateStatusData, UpdateStatusError, UpdateStatusResponse, UpdateUserData, UpdateUserError, UpdateUserResponse, UploadComplaintAttachmentData, UploadComplaintAttachmentError, UploadComplaintAttachmentResponse, UploadDocumentData, UploadDocumentError, UploadDocumentResponse, UploadLogoData, UploadLogoError, UploadLogoResponse, UploadProductImageData, UploadProductImageError, UploadProductImageResponse } from '../types.gen';
+import { activateVersion, adminDashboard, adminListProducts, agentDashboard, analytics, brandingLogo, cancelOrder, chooseChatOrder, complaintChat, confirmChat, contact, convertEnquiry, createCategory, createComplaint, createDepartment, createProduct, createRule, createSubcategory, currencyRates, deleteComplaintAttachment, deleteLogo, deleteProductImage, downloadComplaintAttachment, downloadVersionFile, exportReport, exportRules, getChat, getComplaint, getComplaintAnalysis, getDocument, getImport, getProduct, getStorefrontConfig, getValidation, getVocabulary, importResult, importTemplateCsv, importTemplateXlsx, listCategories, listComplaintAttachments, listComplaints, listDecisions, listDepartments, listDocuments, listDocumentTypes, listEnquiries, listFacts, listImports, listInboundEmails, listOutboundEmails, listProducts, listReports, listRules, listSlaPolicies, listUsers, listVersionChunks, liveness, mailboxStatus, myOrders, myShopOrders, newsletter, type Options, orderEvents, orderReceipt, placeOrder, pollChat, previewImport, previewReport, processManualEmail, productImage, readBranding, readiness, readMe, readSettings, reanalyzeComplaint, reorderProductImages, replaceRule, reprocessVersion, requestReturn, retireVersion, revalidate, reviewComplaint, reviewQueue, runImport, searchKnowledgeBase, sendChatMessage, staffOrder, staffOrderAction, staffOrders, startChat, updateCategory, updateDepartment, updateEnquiry, updateProduct, updateSettings, updateSlaPolicy, updateStatus, updateUser, uploadComplaintAttachment, uploadDocument, uploadLogo, uploadProductImage } from '../sdk.gen';
+import type { ActivateVersionData, ActivateVersionError, ActivateVersionResponse, AdminDashboardData, AdminDashboardError, AdminDashboardResponse, AdminListProductsData, AdminListProductsResponse, AgentDashboardData, AgentDashboardError, AgentDashboardResponse, AnalyticsData, AnalyticsError, AnalyticsResponse, BrandingLogoData, BrandingLogoError, CancelOrderData, CancelOrderError, CancelOrderResponse, ChooseChatOrderData, ChooseChatOrderError, ChooseChatOrderResponse, ComplaintChatData, ComplaintChatError, ComplaintChatResponse, ConfirmChatData, ConfirmChatError, ConfirmChatResponse, ContactData, ContactError, ContactResponse, ConvertEnquiryData, ConvertEnquiryError, ConvertEnquiryResponse, CreateCategoryData, CreateCategoryError, CreateCategoryResponse, CreateComplaintData, CreateComplaintError, CreateComplaintResponse, CreateDepartmentData, CreateDepartmentError, CreateDepartmentResponse, CreateProductData, CreateProductError, CreateProductResponse, CreateRuleData, CreateRuleError, CreateRuleResponse, CreateSubcategoryData, CreateSubcategoryError, CreateSubcategoryResponse, CurrencyRatesData, CurrencyRatesResponse, DeleteComplaintAttachmentData, DeleteComplaintAttachmentError, DeleteComplaintAttachmentResponse, DeleteLogoData, DeleteLogoError, DeleteLogoResponse, DeleteProductImageData, DeleteProductImageError, DeleteProductImageResponse, DownloadComplaintAttachmentData, DownloadComplaintAttachmentError, DownloadComplaintAttachmentResponse, DownloadVersionFileData, DownloadVersionFileError, DownloadVersionFileResponse, ExportReportData, ExportReportError, ExportRulesData, GetChatData, GetChatError, GetChatResponse, GetComplaintAnalysisData, GetComplaintAnalysisError, GetComplaintAnalysisResponse, GetComplaintData, GetComplaintError, GetComplaintResponse, GetDocumentData, GetDocumentError, GetDocumentResponse, GetImportData, GetImportError, GetImportResponse, GetProductData, GetProductError, GetProductResponse, GetStorefrontConfigData, GetStorefrontConfigResponse, GetValidationData, GetValidationError, GetValidationResponse, GetVocabularyData, GetVocabularyResponse, ImportResultData, ImportResultError, ImportTemplateCsvData, ImportTemplateXlsxData, ListCategoriesData, ListCategoriesResponse, ListComplaintAttachmentsData, ListComplaintAttachmentsError, ListComplaintAttachmentsResponse, ListComplaintsData, ListComplaintsError, ListComplaintsResponse, ListDecisionsData, ListDecisionsError, ListDecisionsResponse, ListDepartmentsData, ListDepartmentsResponse, ListDocumentsData, ListDocumentsResponse, ListDocumentTypesData, ListDocumentTypesResponse, ListEnquiriesData, ListEnquiriesError, ListEnquiriesResponse, ListFactsData, ListFactsResponse, ListImportsData, ListImportsResponse, ListInboundEmailsData, ListInboundEmailsError, ListInboundEmailsResponse, ListOutboundEmailsData, ListOutboundEmailsError, ListOutboundEmailsResponse, ListProductsData, ListProductsError, ListProductsResponse, ListReportsData, ListReportsResponse, ListRulesData, ListRulesResponse, ListSlaPoliciesData, ListSlaPoliciesResponse, ListUsersData, ListUsersResponse, ListVersionChunksData, ListVersionChunksError, ListVersionChunksResponse, LivenessData, LivenessResponse, MailboxStatusData, MailboxStatusResponse, MyOrdersData, MyOrdersResponse, MyShopOrdersData, MyShopOrdersResponse, NewsletterData, NewsletterError, NewsletterResponse, OrderEventsData, OrderEventsError, OrderEventsResponse, OrderReceiptData, OrderReceiptError, OrderReceiptResponse, PlaceOrderData, PlaceOrderError, PlaceOrderResponse, PollChatData, PollChatError, PollChatResponse, PreviewImportData, PreviewImportError, PreviewImportResponse, PreviewReportData, PreviewReportError, PreviewReportResponse, ProcessManualEmailData, ProcessManualEmailError, ProcessManualEmailResponse, ProductImageData, ProductImageError, ReadBrandingData, ReadBrandingResponse, ReadinessData, ReadinessResponse, ReadMeData, ReadMeResponse, ReadSettingsData, ReadSettingsResponse, ReanalyzeComplaintData, ReanalyzeComplaintError, ReanalyzeComplaintResponse, ReorderProductImagesData, ReorderProductImagesError, ReorderProductImagesResponse, ReplaceRuleData, ReplaceRuleError, ReplaceRuleResponse, ReprocessVersionData, ReprocessVersionError, ReprocessVersionResponse, RequestReturnData, RequestReturnError, RequestReturnResponse, RetireVersionData, RetireVersionError, RetireVersionResponse, RevalidateData, RevalidateError, RevalidateResponse, ReviewComplaintData, ReviewComplaintError, ReviewComplaintResponse, ReviewQueueData, ReviewQueueError, ReviewQueueResponse, RunImportData, RunImportError, RunImportResponse, SearchKnowledgeBaseData, SearchKnowledgeBaseError, SearchKnowledgeBaseResponse, SendChatMessageData, SendChatMessageError, SendChatMessageResponse, StaffOrderActionData, StaffOrderActionError, StaffOrderActionResponse, StaffOrderData, StaffOrderError, StaffOrderResponse, StaffOrdersData, StaffOrdersError, StaffOrdersResponse, StartChatData, StartChatError, StartChatResponse, UpdateCategoryData, UpdateCategoryError, UpdateCategoryResponse, UpdateDepartmentData, UpdateDepartmentError, UpdateDepartmentResponse, UpdateEnquiryData, UpdateEnquiryError, UpdateEnquiryResponse, UpdateProductData, UpdateProductError, UpdateProductResponse, UpdateSettingsData, UpdateSettingsError, UpdateSettingsResponse, UpdateSlaPolicyData, UpdateSlaPolicyError, UpdateSlaPolicyResponse, UpdateStatusData, UpdateStatusError, UpdateStatusResponse, UpdateUserData, UpdateUserError, UpdateUserResponse, UploadComplaintAttachmentData, UploadComplaintAttachmentError, UploadComplaintAttachmentResponse, UploadDocumentData, UploadDocumentError, UploadDocumentResponse, UploadLogoData, UploadLogoError, UploadLogoResponse, UploadProductImageData, UploadProductImageError, UploadProductImageResponse } from '../types.gen';
 
 export type QueryKey<TOptions extends Options> = [
     Pick<TOptions, 'baseUrl' | 'body' | 'headers' | 'path' | 'query'> & {
@@ -1164,6 +1164,24 @@ export const getStorefrontConfigOptions = (options?: Options<GetStorefrontConfig
     queryKey: getStorefrontConfigQueryKey(options)
 });
 
+export const currencyRatesQueryKey = (options?: Options<CurrencyRatesData>) => createQueryKey('currencyRates', options);
+
+/**
+ * Currency Rates
+ */
+export const currencyRatesOptions = (options?: Options<CurrencyRatesData>) => queryOptions<CurrencyRatesResponse, DefaultError, CurrencyRatesResponse, ReturnType<typeof currencyRatesQueryKey>>({
+    queryFn: async ({ queryKey, signal }) => {
+        const { data } = await currencyRates({
+            ...options,
+            ...queryKey[0],
+            signal,
+            throwOnError: true
+        });
+        return data;
+    },
+    queryKey: currencyRatesQueryKey(options)
+});
+
 export const listProductsQueryKey = (options?: Options<ListProductsData>) => createQueryKey('listProducts', options);
 
 /**
@@ -1234,23 +1252,6 @@ export const myShopOrdersOptions = (options?: Options<MyShopOrdersData>) => quer
     },
     queryKey: myShopOrdersQueryKey(options)
 });
-
-/**
- * Simulate Delivery
- */
-export const simulateDeliveryMutation = (options?: Partial<Options<SimulateDeliveryData>>): UseMutationOptions<SimulateDeliveryResponse, SimulateDeliveryError, Options<SimulateDeliveryData>> => {
-    const mutationOptions: UseMutationOptions<SimulateDeliveryResponse, SimulateDeliveryError, Options<SimulateDeliveryData>> = {
-        mutationFn: async (fnOptions) => {
-            const { data } = await simulateDelivery({
-                ...options,
-                ...fnOptions,
-                throwOnError: true
-            });
-            return data;
-        }
-    };
-    return mutationOptions;
-};
 
 export const productImageQueryKey = (options: Options<ProductImageData>) => createQueryKey('productImage', options);
 
@@ -1809,3 +1810,156 @@ export const brandingLogoOptions = (options: Options<BrandingLogoData>) => query
     },
     queryKey: brandingLogoQueryKey(options)
 });
+
+/**
+ * Cancel Order
+ */
+export const cancelOrderMutation = (options?: Partial<Options<CancelOrderData>>): UseMutationOptions<CancelOrderResponse, CancelOrderError, Options<CancelOrderData>> => {
+    const mutationOptions: UseMutationOptions<CancelOrderResponse, CancelOrderError, Options<CancelOrderData>> = {
+        mutationFn: async (fnOptions) => {
+            const { data } = await cancelOrder({
+                ...options,
+                ...fnOptions,
+                throwOnError: true
+            });
+            return data;
+        }
+    };
+    return mutationOptions;
+};
+
+/**
+ * Request Return
+ */
+export const requestReturnMutation = (options?: Partial<Options<RequestReturnData>>): UseMutationOptions<RequestReturnResponse, RequestReturnError, Options<RequestReturnData>> => {
+    const mutationOptions: UseMutationOptions<RequestReturnResponse, RequestReturnError, Options<RequestReturnData>> = {
+        mutationFn: async (fnOptions) => {
+            const { data } = await requestReturn({
+                ...options,
+                ...fnOptions,
+                throwOnError: true
+            });
+            return data;
+        }
+    };
+    return mutationOptions;
+};
+
+export const orderEventsQueryKey = (options: Options<OrderEventsData>) => createQueryKey('orderEvents', options);
+
+/**
+ * Order Events
+ */
+export const orderEventsOptions = (options: Options<OrderEventsData>) => queryOptions<OrderEventsResponse, OrderEventsError, OrderEventsResponse, ReturnType<typeof orderEventsQueryKey>>({
+    queryFn: async ({ queryKey, signal }) => {
+        const { data } = await orderEvents({
+            ...options,
+            ...queryKey[0],
+            signal,
+            throwOnError: true
+        });
+        return data;
+    },
+    queryKey: orderEventsQueryKey(options)
+});
+
+export const orderReceiptQueryKey = (options: Options<OrderReceiptData>) => createQueryKey('orderReceipt', options);
+
+/**
+ * Order Receipt
+ */
+export const orderReceiptOptions = (options: Options<OrderReceiptData>) => queryOptions<OrderReceiptResponse, OrderReceiptError, OrderReceiptResponse, ReturnType<typeof orderReceiptQueryKey>>({
+    queryFn: async ({ queryKey, signal }) => {
+        const { data } = await orderReceipt({
+            ...options,
+            ...queryKey[0],
+            signal,
+            throwOnError: true
+        });
+        return data;
+    },
+    queryKey: orderReceiptQueryKey(options)
+});
+
+export const staffOrdersQueryKey = (options?: Options<StaffOrdersData>) => createQueryKey('staffOrders', options);
+
+/**
+ * Staff Orders
+ */
+export const staffOrdersOptions = (options?: Options<StaffOrdersData>) => queryOptions<StaffOrdersResponse, StaffOrdersError, StaffOrdersResponse, ReturnType<typeof staffOrdersQueryKey>>({
+    queryFn: async ({ queryKey, signal }) => {
+        const { data } = await staffOrders({
+            ...options,
+            ...queryKey[0],
+            signal,
+            throwOnError: true
+        });
+        return data;
+    },
+    queryKey: staffOrdersQueryKey(options)
+});
+
+export const staffOrdersInfiniteQueryKey = (options?: Options<StaffOrdersData>): QueryKey<Options<StaffOrdersData>> => createQueryKey('staffOrders', options, true);
+
+/**
+ * Staff Orders
+ */
+export const staffOrdersInfiniteOptions = (options?: Options<StaffOrdersData>) => {
+    const opts = infiniteQueryOptions<StaffOrdersResponse, StaffOrdersError, InfiniteData<StaffOrdersResponse>, QueryKey<Options<StaffOrdersData>>, number | Pick<QueryKey<Options<StaffOrdersData>>[0], 'body' | 'headers' | 'path' | 'query'>>(
+    // @ts-ignore
+    {
+        queryFn: async ({ pageParam, queryKey, signal }) => {
+            // @ts-ignore
+            const page: Pick<QueryKey<Options<StaffOrdersData>>[0], 'body' | 'headers' | 'path' | 'query'> = typeof pageParam === 'object' ? pageParam : {
+                query: {
+                    offset: pageParam
+                }
+            };
+            const params = createInfiniteParams(queryKey, page);
+            const { data } = await staffOrders({
+                ...options,
+                ...params,
+                signal,
+                throwOnError: true
+            });
+            return data;
+        },
+        queryKey: staffOrdersInfiniteQueryKey(options)
+    });
+    return opts as Omit<typeof opts, 'initialData'>;
+};
+
+export const staffOrderQueryKey = (options: Options<StaffOrderData>) => createQueryKey('staffOrder', options);
+
+/**
+ * Staff Order
+ */
+export const staffOrderOptions = (options: Options<StaffOrderData>) => queryOptions<StaffOrderResponse, StaffOrderError, StaffOrderResponse, ReturnType<typeof staffOrderQueryKey>>({
+    queryFn: async ({ queryKey, signal }) => {
+        const { data } = await staffOrder({
+            ...options,
+            ...queryKey[0],
+            signal,
+            throwOnError: true
+        });
+        return data;
+    },
+    queryKey: staffOrderQueryKey(options)
+});
+
+/**
+ * Staff Order Action
+ */
+export const staffOrderActionMutation = (options?: Partial<Options<StaffOrderActionData>>): UseMutationOptions<StaffOrderActionResponse, StaffOrderActionError, Options<StaffOrderActionData>> => {
+    const mutationOptions: UseMutationOptions<StaffOrderActionResponse, StaffOrderActionError, Options<StaffOrderActionData>> = {
+        mutationFn: async (fnOptions) => {
+            const { data } = await staffOrderAction({
+                ...options,
+                ...fnOptions,
+                throwOnError: true
+            });
+            return data;
+        }
+    };
+    return mutationOptions;
+};

@@ -46,18 +46,29 @@ def queue_order_email(
         return None
     if kind in (order.emails_sent or []):
         return None
-    when = order.delivered_date if kind == "delivered" else (
-        order.expected_delivery_date or order.committed_delivery_date)  # fmt: skip
+    when = (
+        order.delivered_date
+        if kind == "delivered"
+        else (order.expected_delivery_date or order.committed_delivery_date)
+    )
     values = {
         "name": customer.full_name.split(" ")[0] if customer.full_name else "there",
-        "order_ref": order.order_ref, "product": order.product_name,
-        "amount": format_amount(order), "date": f"{when:%d %b %Y}" if when else "",
+        "order_ref": order.order_ref,
+        "product": order.product_name,
+        "amount": format_amount(order),
+        "date": f"{when:%d %b %Y}" if when else "",
         "shop": settings.branding.shop_name,
-    }  # fmt: skip
+    }
     text = _texts()[kind]
     order.emails_sent = [*(order.emails_sent or []), kind]
     return queue(
-        db, complaint_id=None, order_id=order.id, to=customer.email, kind=f"order_{kind}",
-        subject=text["subject"].format(**values), body=text["body"].format(**values),
-        in_reply_to=None, references=[],
-    )  # fmt: skip
+        db,
+        complaint_id=None,
+        order_id=order.id,
+        to=customer.email,
+        kind=f"order_{kind}",
+        subject=text["subject"].format(**values),
+        body=text["body"].format(**values),
+        in_reply_to=None,
+        references=[],
+    )

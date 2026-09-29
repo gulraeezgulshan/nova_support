@@ -744,11 +744,6 @@ class ShopOrderOut(ORMModel):
     image_url: str | None = None  # the product's main image, if it has one
 
 
-class SimulateIn(BaseModel):
-    outcome: Literal["on_time", "late", "lost", "damaged"]
-    days: int = Field(default=3, ge=0, le=30)
-
-
 # --- support chat -----------------------------------------------------------------------
 
 
@@ -978,3 +973,23 @@ class OrderEventOut(ORMModel):
 
 class ReturnIn(BaseModel):
     reason: str = Field(min_length=10, max_length=500)
+
+
+class StaffOrderOut(ShopOrderOut):
+    customer_name: str
+    customer_email: str | None
+    manual_hold: bool
+
+
+class StaffOrderDetailOut(StaffOrderOut):
+    events: list[OrderEventOut]
+    complaint_refs: list[str]
+
+
+class OrderActionIn(BaseModel):
+    action: Literal[
+        "advance", "delay", "lose", "cancel", "approve_return", "refuse_return", "resume_auto"
+    ]
+    note: str | None = Field(default=None, max_length=500)
+    new_date: date | None = None
+    days_late: int = Field(default=0, ge=0, le=30)

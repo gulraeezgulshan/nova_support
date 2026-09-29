@@ -19,6 +19,7 @@ import {
   Mail,
   Settings2,
   Store,
+  Truck,
 } from "lucide-react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
@@ -67,6 +68,7 @@ const NAV: { label: string; items: NavItem[] }[] = [
       { title: "Complaint queue", href: "/complaints", icon: Inbox, roles: STAFF },
       { title: "Enquiries", href: "/enquiries", icon: Mail, roles: STAFF },
       { title: "Mailbox", href: "/mailbox", icon: AtSign, roles: STAFF },
+      { title: "Orders", href: "/fulfilment", icon: Truck, roles: STAFF },
       {
         title: "Import complaints",
         href: "/imports",

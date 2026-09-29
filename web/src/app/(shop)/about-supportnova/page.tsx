@@ -1,8 +1,9 @@
 import { Show, SignInButton, SignUpButton } from "@clerk/nextjs";
-import { BookOpenCheck, Scale, ShieldCheck, Sparkles } from "lucide-react";
+import { BookOpenCheck, PlayCircle, Scale, ShieldCheck, Sparkles } from "lucide-react";
 import Link from "next/link";
 
 import { Button } from "@/components/ui/button";
+import { DEMO_VIDEO } from "@/lib/demo-video";
 
 const PILLARS = [
   {
@@ -57,6 +58,11 @@ export default function AboutSupportNovaPage() {
               <Link href="/dashboard">Open dashboard</Link>
             </Button>
           </Show>
+          <Button size="lg" variant="ghost" asChild>
+            <Link href={DEMO_VIDEO.href}>
+              <PlayCircle /> Watch the demo
+            </Link>
+          </Button>
         </div>
       </div>
       <div className="grid gap-4 sm:grid-cols-2">

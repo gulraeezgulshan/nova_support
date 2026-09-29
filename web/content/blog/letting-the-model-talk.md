@@ -1,5 +1,6 @@
 # Letting the Model Talk, Letting Python Decide: Building a Complaint-Intelligence System with Generative AI
 
+Prefer to see it first? [Watch the demo video](/how-it-works#demo).
 
 ## The business problem
 

@@ -1,7 +1,7 @@
 "use client";
 
 import { useQuery } from "@tanstack/react-query";
-import { ArrowRight, RotateCcw, ShieldCheck, Truck } from "lucide-react";
+import { ArrowRight, PlayCircle, RotateCcw, ShieldCheck, Truck } from "lucide-react";
 import { motion, useReducedMotion, useScroll, useTransform } from "motion/react";
 import Link from "next/link";
 import { useRef } from "react";
@@ -11,6 +11,7 @@ import { ProductImage } from "@/components/shop/product-image";
 import { Button } from "@/components/ui/button";
 import { getProductOptions } from "@/lib/api/generated/@tanstack/react-query.gen";
 import { Price } from "@/lib/currency";
+import { DEMO_VIDEO } from "@/lib/demo-video";
 import { useStorefront } from "@/lib/storefront";
 
 const HERO_SKU = "VH-LAP-AB14";
@@ -89,6 +90,11 @@ export function Hero() {
             </Button>
             <Button asChild size="lg" variant="outline" className="h-12 rounded-full px-7">
               <Link href={`/shop/${HERO_SKU}`}>Meet the AeroBook</Link>
+            </Button>
+            <Button asChild size="lg" variant="ghost" className="h-12 rounded-full px-5">
+              <Link href={DEMO_VIDEO.href}>
+                <PlayCircle className="text-brand" /> Watch the demo
+              </Link>
             </Button>
           </motion.div>
           <motion.ul

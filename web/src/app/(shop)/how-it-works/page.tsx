@@ -2,10 +2,12 @@ import type { Metadata } from "next";
 import Image from "next/image";
 import Link from "next/link";
 
+import { DemoVideo } from "@/components/demo-video";
 import { StackDiagram } from "@/components/stack/stack-diagram";
 import { StackGrid } from "@/components/stack/stack-grid";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
+import { DEMO_VIDEO } from "@/lib/demo-video";
 import { TOUR } from "@/lib/tour";
 
 export const metadata: Metadata = {
@@ -28,6 +30,10 @@ export default function HowItWorksPage() {
           app: what customers see, and what support staff work with.
         </p>
         <nav aria-label="On this page" className="flex flex-wrap gap-2 pt-2">
+          <a href="#demo" className="text-sm font-medium text-brand hover:underline">
+            Demo video
+          </a>
+          <span className="text-muted-foreground">·</span>
           <a href="#stack" className="text-sm font-medium text-brand hover:underline">
             The stack
           </a>
@@ -41,6 +47,30 @@ export default function HowItWorksPage() {
           </a>
         </nav>
       </header>
+
+      <section id="demo" className="scroll-mt-24 space-y-6">
+        <div className="max-w-3xl space-y-3">
+          <h2 className="text-3xl font-semibold tracking-tight">Demo video</h2>
+          <p className="text-muted-foreground">
+            A walk through SupportNova: filing complaints through the shop, the chat and e-mail, the
+            AI analysis and the Python checks, manual review, dashboards and reports.
+          </p>
+        </div>
+        <div className="mx-auto max-w-5xl space-y-3">
+          <DemoVideo />
+          <p className="text-center text-sm text-muted-foreground">
+            Video not playing?{" "}
+            <a
+              href={DEMO_VIDEO.watchUrl}
+              target="_blank"
+              rel="noreferrer"
+              className="font-medium text-brand hover:underline"
+            >
+              Watch it on YouTube
+            </a>
+          </p>
+        </div>
+      </section>
 
       <section id="stack" className="scroll-mt-24 space-y-6">
         <h2 className="text-3xl font-semibold tracking-tight">The stack at a glance</h2>

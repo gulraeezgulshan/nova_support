@@ -942,3 +942,18 @@ class BrandingOut(BaseModel):
     hours: str
     shop_logo_url: str | None
     console_logo_url: str | None
+
+
+# --- currency ------------------------------------------------------------------------
+
+
+class CurrencyInfo(BaseModel):
+    code: str
+    symbol: str
+    decimals: int
+
+
+class CurrencyOut(BaseModel):
+    rates: dict[str, float]
+    fetched_at: datetime | None
+    currencies: list[CurrencyInfo]

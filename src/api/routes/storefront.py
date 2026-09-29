@@ -5,17 +5,19 @@ from datetime import date
 from decimal import Decimal
 
 from fastapi import APIRouter, Depends, File, HTTPException, Query, Response, UploadFile, status
-from sqlalchemy import select
+from sqlalchemy import func, select
 from sqlalchemy.ext.asyncio import AsyncSession
 
 import app_settings
 from complaint_processing.service import get_or_create_customer
 from database import audit
-from database.models import Customer, Order, Product, ProductImage, Role, User
+from database.models import Customer, FxRate, Order, Product, ProductImage, Role, User
 from database.session import get_db
 from security.dependencies import get_current_user, require_roles
 from src.api.schemas import (
     CheckoutIn,
+    CurrencyInfo,
+    CurrencyOut,
     ImageOrderIn,
     ProductCreate,
     ProductImageOut,
@@ -27,6 +29,7 @@ from src.api.schemas import (
 from src.core.storage import Storage, get_storage
 from storefront.catalogue import PRODUCT_LINES
 from storefront.config import StorefrontConfig, storefront_config
+from storefront.currency import CURRENCIES, current_rates_async
 from storefront.images import ImageError, add_image, remove, reorder
 from storefront.orders import CheckoutError, CheckoutLine, checkout, simulate
 from storefront.queries import Sort, product_query
@@ -67,6 +70,20 @@ async def get_storefront_config() -> StorefrontConfig:
                 "phone": b.phone, "support_email": b.support_email, "hours": b.hours}
     )  # fmt: skip
     return config.model_copy(update={"company": company})
+
+
+@router.get("/currency", response_model=CurrencyOut)
+async def currency_rates(db: AsyncSession = Depends(get_db)) -> CurrencyOut:
+    rates = await current_rates_async(db)
+    fetched = await db.scalar(select(func.max(FxRate.fetched_at)))
+    return CurrencyOut(
+        rates={c: float(r) for c, r in rates.items()},
+        fetched_at=fetched,
+        currencies=[
+            CurrencyInfo(code=c.code, symbol=c.symbol, decimals=c.decimals)
+            for c in CURRENCIES.values()
+        ],
+    )
 
 
 @router.get("/products", response_model=list[ProductOut])

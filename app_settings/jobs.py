@@ -41,10 +41,17 @@ def _sla() -> object:
     return scan_sla()
 
 
+def _fx() -> object:
+    from storefront.currency import refresh_rates
+
+    return refresh_rates()
+
+
 JOBS: dict[str, Job] = {
     "mailbox-check": Job(lambda s: s.email.mailbox_check_seconds, _mailbox),
     "email-outbox": Job(lambda s: s.email.outbox_flush_seconds, _outbox),
     "sla-risk-scan": Job(lambda s: s.operations.sla_scan_minutes * 60, _sla),
+    "fx-refresh": Job(lambda s: 12 * 3600, _fx),
 }
 
 

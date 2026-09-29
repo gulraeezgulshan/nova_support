@@ -26,7 +26,7 @@ FACTS: dict[str, FactSpec] = {
     "unresolved_repeat_count": FactSpec("int", "Earlier complaints in 60 days not yet resolved"),
     # order
     "has_order": FactSpec("bool", "A valid order is linked to the complaint"),
-    "order_status": FactSpec("str", "processing, shipped, delivered, lost or returned"),
+    "order_status": FactSpec("str", "processing, shipped, delivered, lost, returned or cancelled"),
     "order_amount": FactSpec("float", "Order value in USD"),
     "shipping_method": FactSpec("str", "standard or express"),
     "days_since_order": FactSpec("int", "Calendar days from order date to complaint"),

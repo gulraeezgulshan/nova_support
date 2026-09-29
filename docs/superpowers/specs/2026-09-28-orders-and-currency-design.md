@@ -40,8 +40,14 @@ delivered, lost or returned"), the chat and the AI read `status`.
   placed/packed → cancelled; shipped/out_for_delivery → lost;
   delivered → return_requested (customer, ≤ `returns.window_days` = 30 days after delivery);
   return_requested → returned | return_refused.
-- **Delayed** is not a stage: while shipped/out_for_delivery, staff or the automation can set a
-  new `committed_delivery_date` (the promise moves; an event "Delayed: new date …" is recorded).
+- **Delayed** is not a stage: while shipped/out_for_delivery, staff or the automation set an
+  `expected_delivery_date` later than the promise (event "Delayed: now expected …"). The
+  promise (`committed_delivery_date`) never moves, because late-delivery compensation compares
+  the delivery with the promise.
+- **Late delivery (demo):** the staff "advance" to delivered accepts `days_late` (0–30). With
+  `days_late > 0` the order's dates are shifted so that it was promised `days_late` business
+  days before today and delivered today, and the event says "Delivered N business days late
+  (demo timeline)". This replaces what the Demo button did, with a visible history.
 - The coarse vocabulary gains `cancelled` (added to `complaint_rules/facts.py`).
 - New table `order_events`: `id`, `order_id` (FK, index), `stage`, `note`, `actor`
   (`system` | `staff` | `customer`), `actor_user_id` (nullable), `created_at`. Every move and
@@ -68,13 +74,14 @@ and `delay(db, order, new_date, actor, *, user=None, note=None, now)`; both vali
 | `emails` | bool | true |
 | `fallback_pkr_rate` | 1–10000 | 280 |
 
-- Each shop order has `next_step_at` (set at checkout to `now + step_minutes`) and
-  `manual_hold` (bool). The job takes up to 50 orders with `next_step_at <= now`, stage in
+- Each shop order has `next_step_at` (set at checkout to `now + step_minutes`),
+  `manual_hold` (bool), `emails_sent` (JSON list of kinds already e-mailed) and
+  `expected_delivery_date` (nullable). The job takes up to 50 orders with `next_step_at <= now`, stage in
   placed/packed/shipped/out_for_delivery, `manual_hold = false`, and moves each one step; the
   next `next_step_at` is `now + step_minutes`; delivered/lost/cancelled clear it.
 - On leaving `shipped`, a seeded random draw decides: lost (`lost_chance_pct`, only from
-  out_for_delivery), delayed (`delay_chance_pct`: new promised date 2–5 business days later,
-  once per order), else normal. The random source is injectable for tests.
+  out_for_delivery), delayed (`delay_chance_pct`: expected date 2–5 business days after the
+  promise, once per order; the order then waits three steps), else normal. The random source is injectable for tests.
 - Any staff action sets `manual_hold = true`; the staff "Resume automatic progress" action
   clears it. Customer actions (cancel, return request) do not change automation.
 
@@ -85,9 +92,9 @@ and `delay(db, order, new_date, actor, *, user=None, note=None, now)`; both vali
   delivered), paging (limit 50, offset).
 - `GET /api/v1/admin/orders/{ref}` (staff): order, customer, amounts, events, related
   complaint refs.
-- `POST /api/v1/admin/orders/{ref}/actions` (staff) body `{action, note?, new_date?}` with
-  `action` ∈ `advance`, `delay`, `lose`, `cancel`, `approve_return`, `refuse_return`,
-  `resume_auto`. Validation errors 422, illegal moves 409.
+- `POST /api/v1/admin/orders/{ref}/actions` (staff) body `{action, note?, new_date?,
+  days_late?}` with `action` ∈ `advance` (optional `days_late` when it delivers), `delay`
+  (`new_date`), `lose`, `cancel`, `approve_return`, `refuse_return`, `resume_auto`. Validation errors 422, illegal moves 409.
 - Web: table with stage badges and filters; a side panel with the timeline, amounts (USD and
   paid currency), customer, complaints, and the action buttons that are legal for the stage;
   receipt download.
@@ -101,7 +108,7 @@ and `delay(db, order, new_date, actor, *, user=None, note=None, now)`; both vali
   column, `kind` = `order_<stage>` or `order_delayed`), only if `orders.emails` is on and the
   customer has an e-mail. Texts live in `config/order_emails.yaml` with the order ref, product,
   local amount and dates; signed with the branding shop name.
-- At most one e-mail per order and kind (a unique check before queueing).
+- At most one e-mail per order and kind (`orders.emails_sent` is checked and updated).
 - Sent by the existing flush with the configured sender (Brevo on Railway).
 
 ## 5. Customer side
@@ -122,11 +129,13 @@ and `delay(db, order, new_date, actor, *, user=None, note=None, now)`; both vali
   on the tick) fetches `https://open.er-api.com/v6/latest/USD` (httpx, 10 s timeout) and
   stores the five rates. On failure the last stored rates stay; with none stored, PKR uses
   `orders.fallback_pkr_rate` and the others are unavailable (shown in USD).
-- `GET /api/v1/currency` (public): `{rates: {code: rate}, fetched_at, default}` where
-  `default` comes from the request header `x-vercel-ip-country` (`PK` → PKR, else USD).
-- Web: a `CurrencyProvider` reads `/currency` once; the visitor's choice is kept in the
-  `currency` cookie (switcher in the shop header). All shop prices go through
-  `formatPrice(usd, currency)`; PKR shows "Rs 12,500", others with 2 decimals.
+- `GET /api/v1/currency` (public): `{rates: {code: rate}, fetched_at, currencies}`.
+- Country detection happens in the web app's edge proxy (Vercel adds `x-vercel-ip-country`
+  there; the browser calls the API directly, so the API never sees it): with no `currency`
+  cookie yet, the proxy sets it to PKR for `PK` and USD otherwise.
+- Web: a `CurrencyProvider` reads `/currency` once and the `currency` cookie; the switcher in
+  the shop header updates the cookie. All shop prices go through a `Price` component; PKR
+  shows "Rs 12,500", others with 2 decimals.
 - Checkout body gains `currency`; the server stores on each order `currency`, `fx_rate`
   (from `fx_rates`/fallback at that moment) and `amount_local` (rounded to the currency's
   decimals). `amount` stays USD. Staff screens show both; customer screens, e-mails and

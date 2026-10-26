@@ -87,3 +87,23 @@ def test_bad_kb_group_resets_only_that_group() -> None:
 def test_valid_kb_change_is_kept() -> None:
     s = load({"knowledge_base": {"chunk_max_tokens": 300, "chunk_overlap_tokens": 40}})
     assert (s.knowledge_base.chunk_max_tokens, s.knowledge_base.chunk_overlap_tokens) == (300, 40)
+
+
+def test_out_of_range_environment_values_are_clamped(monkeypatch: pytest.MonkeyPatch) -> None:
+    """A deployment with an old, wider environment value must not break every settings read."""
+    from src.core import config
+
+    env = config.get_settings().model_copy(
+        update={
+            "max_upload_mb": 100,
+            "chunk_max_tokens": 600,
+            "chunk_overlap_tokens": 590,
+            "genai_timeout_seconds": 5.0,
+        }
+    )
+    monkeypatch.setattr(config, "get_settings", lambda: env)
+    d = app_settings.defaults()
+    assert d.knowledge_base.max_upload_mb == 50
+    assert d.knowledge_base.chunk_max_tokens == 480
+    assert d.knowledge_base.chunk_overlap_tokens == 430
+    assert d.ai.timeout_seconds == 10

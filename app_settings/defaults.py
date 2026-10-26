@@ -16,6 +16,10 @@ def _document_types_file() -> list[dict[str, object]]:
     return types
 
 
+def _clamp(value: float, low: float, high: float) -> float:
+    return max(low, min(high, value))
+
+
 def defaults() -> RuntimeSettings:
     # Local imports: these modules import app_settings for their own settings.
     from python_validation.types import validation_config
@@ -24,6 +28,7 @@ def defaults() -> RuntimeSettings:
     from storefront.config import storefront_config
 
     env, validation, company = get_settings(), validation_config(), storefront_config().company
+    chunk = int(_clamp(env.chunk_max_tokens, 100, 480))
     return RuntimeSettings.model_validate(
         {
             "email": {
@@ -38,14 +43,16 @@ def defaults() -> RuntimeSettings:
                 "effort": env.genai_effort,
                 "retrieval_limit": env.retrieval_limit,
                 "auto_analysis": True,
-                "timeout_seconds": env.genai_timeout_seconds,
-                "max_attempts": env.genai_max_attempts,
+                # Environment values may be wider than the Settings limits; keep them in range
+                # so an old deployment value can never make every settings read fail.
+                "timeout_seconds": _clamp(env.genai_timeout_seconds, 10, 300),
+                "max_attempts": int(_clamp(env.genai_max_attempts, 1, 3)),
                 "openai_reasoning": env.openai_reasoning,
             },
             "knowledge_base": {
-                "chunk_max_tokens": env.chunk_max_tokens,
-                "chunk_overlap_tokens": env.chunk_overlap_tokens,
-                "max_upload_mb": env.max_upload_mb,
+                "chunk_max_tokens": chunk,
+                "chunk_overlap_tokens": int(_clamp(env.chunk_overlap_tokens, 0, chunk - 50)),
+                "max_upload_mb": int(_clamp(env.max_upload_mb, 1, 50)),
                 "retrieval_candidates": 30,
                 "rrf_k": 60,
                 "document_types": _document_types_file(),

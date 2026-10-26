@@ -377,7 +377,9 @@ def use_settings(**groups: dict[str, object]) -> RuntimeSettings:
     """E.g. use_settings(email={"auto_replies": False}); reset after each test by conftest."""
     base = app_settings.defaults()
     updated = base.model_copy(
-        update={name: getattr(base, name).model_copy(update=values) for name, values in groups.items()}
+        update={
+            name: getattr(base, name).model_copy(update=values) for name, values in groups.items()
+        }
     )
     app_settings.override(updated)
     return updated
@@ -675,46 +677,72 @@ def body(current: dict, **group_changes: dict) -> dict:  # type: ignore[type-arg
     s = current["settings"]
     update = {g: {**s[g], **group_changes.get(g, {})} for g in ("email", "ai", "operations")}
     branding = {k: v for k, v in s["branding"].items() if not k.endswith("_logo_key")}
-    return {"version": current["version"], **update, "branding": {**branding, **group_changes.get("branding", {})}}
+    return {
+        "version": current["version"],
+        **update,
+        "branding": {**branding, **group_changes.get("branding", {})},
+    }
 
 
-async def test_admin_reads_and_saves(client: httpx.AsyncClient, auth_headers: Callable[[Role], dict[str, str]]) -> None:
+async def test_admin_reads_and_saves(
+    client: httpx.AsyncClient, auth_headers: Callable[[Role], dict[str, str]]
+) -> None:
     admin = auth_headers(Role.ADMIN)
     current = (await client.get(URL, headers=admin)).json()
     assert current["version"] == 0 and current["settings"]["email"]["mailbox_check_seconds"] == 60
     assert "openai" in current["suggested_models"]
-    assert {f["source"] for f in current["policy_facts"]} >= {"WAR-POL-02", "REF-POL-01", "DEL-POL-04"}
-    saved = await client.put(URL, headers=admin, json=body(current, email={"mailbox_check_seconds": 300}))
+    assert {f["source"] for f in current["policy_facts"]} >= {
+        "WAR-POL-02",
+        "REF-POL-01",
+        "DEL-POL-04",
+    }
+    saved = await client.put(
+        URL, headers=admin, json=body(current, email={"mailbox_check_seconds": 300})
+    )
     assert saved.status_code == 200, saved.text
     assert saved.json()["version"] == 1
     assert saved.json()["settings"]["email"]["mailbox_check_seconds"] == 300
 
 
-async def test_stale_version_conflicts(client: httpx.AsyncClient, auth_headers: Callable[[Role], dict[str, str]]) -> None:
+async def test_stale_version_conflicts(
+    client: httpx.AsyncClient, auth_headers: Callable[[Role], dict[str, str]]
+) -> None:
     admin = auth_headers(Role.ADMIN)
     current = (await client.get(URL, headers=admin)).json()
     assert (await client.put(URL, headers=admin, json=body(current))).status_code == 200
     assert (await client.put(URL, headers=admin, json=body(current))).status_code == 409
 
 
-async def test_provider_without_key_is_refused(client: httpx.AsyncClient, auth_headers: Callable[[Role], dict[str, str]], monkeypatch: pytest.MonkeyPatch) -> None:
+async def test_provider_without_key_is_refused(
+    client: httpx.AsyncClient,
+    auth_headers: Callable[[Role], dict[str, str]],
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
     monkeypatch.setenv("ANTHROPIC_API_KEY", "")
     from src.core.config import get_settings
 
     get_settings.cache_clear()
     admin = auth_headers(Role.ADMIN)
     current = (await client.get(URL, headers=admin)).json()
-    response = await client.put(URL, headers=admin, json=body(current, ai={"provider": "anthropic", "model": "claude-opus-5"}))
+    response = await client.put(
+        URL,
+        headers=admin,
+        json=body(current, ai={"provider": "anthropic", "model": "claude-opus-5"}),
+    )
     assert response.status_code == 422 and "ANTHROPIC_API_KEY" in response.text
     get_settings.cache_clear()
 
 
-async def test_staff_who_are_not_admins_cannot_see_settings(client: httpx.AsyncClient, auth_headers: Callable[[Role], dict[str, str]]) -> None:
+async def test_staff_who_are_not_admins_cannot_see_settings(
+    client: httpx.AsyncClient, auth_headers: Callable[[Role], dict[str, str]]
+) -> None:
     for role in (Role.AGENT, Role.MANAGER, Role.CUSTOMER):
         assert (await client.get(URL, headers=auth_headers(role))).status_code == 403
 
 
-async def test_no_secret_is_ever_returned(client: httpx.AsyncClient, auth_headers: Callable[[Role], dict[str, str]]) -> None:
+async def test_no_secret_is_ever_returned(
+    client: httpx.AsyncClient, auth_headers: Callable[[Role], dict[str, str]]
+) -> None:
     text = (await client.get(URL, headers=auth_headers(Role.ADMIN))).text.lower()
     for word in ("api_key", "password", "database_url", "redis_url", "secret"):
         assert word not in text
@@ -781,12 +809,24 @@ from storefront.config import storefront_config
 async def policy_facts(db: AsyncSession) -> list[PolicyFactOut]:
     c = storefront_config()
     rows = [
-        ("Warranty", f"{c.warranty.months} months (VoltCare+ {c.warranty.extended_months})", "WAR-POL-02"),
+        (
+            "Warranty",
+            f"{c.warranty.months} months (VoltCare+ {c.warranty.extended_months})",
+            "WAR-POL-02",
+        ),
         ("Return window", f"{c.returns.window_days} days from delivery", "REF-POL-01"),
-        ("Refund time", f"{c.returns.refund_min_days}–{c.returns.refund_max_days} business days", "REF-POL-01"),
+        (
+            "Refund time",
+            f"{c.returns.refund_min_days}–{c.returns.refund_max_days} business days",
+            "REF-POL-01",
+        ),
         ("Standard delivery", f"{c.shipping.standard_days} business days", "DEL-POL-04"),
         ("Express delivery", f"{c.shipping.express_days} business days", "DEL-POL-04"),
-        ("Late-delivery credit", f"{c.shipping.late_credit_pct}% up to USD {c.shipping.late_credit_cap_usd}", "DEL-POL-04"),
+        (
+            "Late-delivery credit",
+            f"{c.shipping.late_credit_pct}% up to USD {c.shipping.late_credit_cap_usd}",
+            "DEL-POL-04",
+        ),
     ]
     active = dict(
         (
@@ -795,7 +835,9 @@ async def policy_facts(db: AsyncSession) -> list[PolicyFactOut]:
                 .join(DocumentVersion, DocumentVersion.document_id == Document.id)
                 .where(DocumentVersion.status == VersionStatus.ACTIVE)
             )
-        ).tuples().all()
+        )
+        .tuples()
+        .all()
     )
     return [PolicyFactOut(fact=f, value=v, source=s, version=active.get(s)) for f, v, s in rows]
 ```
@@ -845,7 +887,9 @@ async def _out(db: AsyncSession) -> SettingsOut:
 
 
 @router.get("/settings", response_model=SettingsOut)
-async def read_settings(_: User = Depends(admin_only), db: AsyncSession = Depends(get_db)) -> SettingsOut:
+async def read_settings(
+    _: User = Depends(admin_only), db: AsyncSession = Depends(get_db)
+) -> SettingsOut:
     return await _out(db)
 
 
@@ -1177,7 +1221,9 @@ async def test_email_hook_holds_the_reply(client: httpx.AsyncClient) -> None:
         assert complaint is not None
         after_validation(db, complaint, "verified", "Dear Sara, a replacement.", auto_reply=False)
         db.commit()
-        kinds = [o.kind for o in db.scalars(select(OutboundEmail).order_by(OutboundEmail.created_at))]
+        kinds = [
+            o.kind for o in db.scalars(select(OutboundEmail).order_by(OutboundEmail.created_at))
+        ]
     assert kinds == ["acknowledgement", "holding"]
 
 
@@ -1200,7 +1246,9 @@ async def test_chat_hook_holds_the_reply(
     with sync_session() as db:
         complaint = db.scalar(select(Complaint).where(Complaint.complaint_ref == ref))
         assert complaint is not None
-        notify.after_validation(db, complaint, "verified", "We checked your order.", auto_reply=False)
+        notify.after_validation(
+            db, complaint, "verified", "We checked your order.", auto_reply=False
+        )
         db.commit()
         kinds = list(db.scalars(select(ChatMessage.kind)))
     assert "reply" not in kinds and kinds.count("holding") == 1
@@ -1215,9 +1263,7 @@ Expected: FAIL — `ImportError: cannot import name 'AUTO_REPLIES_OFF'`, unexpec
 
 `email_channel/tasks.py:136`:
 ```python
-    message["From"] = formataddr(
-        (app_settings.runtime().email.from_name, settings.mail_username or "")
-    )
+message["From"] = formataddr((app_settings.runtime().email.from_name, settings.mail_username or ""))
 ```
 `email_channel/transport.py` `BrevoSender.send` — take the display name from the message:
 ```python
@@ -1245,19 +1291,17 @@ In `_apply`, replace `if verdict == Verdict.NEEDS_REVIEW:` … (the review branc
 hook calls with:
 
 ```python
-    review = review_reasons(
-        verdict, reasons, auto_replies=app_settings.runtime().email.auto_replies
-    )
-    if review is not None:
-        complaint.needs_review = True
-        complaint.review_reason = "; ".join(review)[:2000]
-        open_review_task(db, complaint, validation.id, review)
-    else:
-        ...  # the existing else-branch, unchanged
-    ...
-    held = review is not None and verdict != Verdict.NEEDS_REVIEW
-    after_validation(db, complaint, verdict, draft, auto_reply=not held)
-    email_after_validation(db, complaint, verdict, draft, auto_reply=not held)
+review = review_reasons(verdict, reasons, auto_replies=app_settings.runtime().email.auto_replies)
+if review is not None:
+    complaint.needs_review = True
+    complaint.review_reason = "; ".join(review)[:2000]
+    open_review_task(db, complaint, validation.id, review)
+else:
+    ...  # the existing else-branch, unchanged
+...
+held = review is not None and verdict != Verdict.NEEDS_REVIEW
+after_validation(db, complaint, verdict, draft, auto_reply=not held)
+email_after_validation(db, complaint, verdict, draft, auto_reply=not held)
 ```
 
 (`import app_settings` at the top.)
@@ -1472,9 +1516,9 @@ Add `"app_settings.tasks"` to `include`, add route `"app_settings.tasks.*": {"qu
 remove the `analytics_config` import, and replace `beat_schedule` with:
 
 ```python
-    # One tick every 15 s; each job's own interval comes from the Settings page
-    # (app_settings.jobs): mailbox check, e-mail outbox, SLA risk scan.
-    beat_schedule={"settings-tick": {"task": "app_settings.tasks.tick", "schedule": 15.0}},
+# One tick every 15 s; each job's own interval comes from the Settings page
+# (app_settings.jobs): mailbox check, e-mail outbox, SLA risk scan.
+beat_schedule = ({"settings-tick": {"task": "app_settings.tasks.tick", "schedule": 15.0}},)
 ```
 
 Update the module docstring of `email_channel/tasks.py` ("every minute … every 30 s") to
@@ -1526,7 +1570,9 @@ async def test_admin_uploads_a_logo_that_everyone_can_load(
     client: httpx.AsyncClient, auth_headers: Callable[[Role], dict[str, str]]
 ) -> None:
     admin = auth_headers(Role.ADMIN)
-    up = await client.post("/api/v1/settings/logo/shop", headers=admin, files={"file": ("logo.png", PNG, "image/png")})
+    up = await client.post(
+        "/api/v1/settings/logo/shop", headers=admin, files={"file": ("logo.png", PNG, "image/png")}
+    )
     assert up.status_code == 200, up.text
     branding = (await client.get("/api/v1/branding")).json()  # no sign-in
     assert branding["shop_logo_url"].startswith("/api/v1/branding/logo/shop?v=")
@@ -1543,14 +1589,27 @@ async def test_admin_uploads_a_logo_that_everyone_can_load(
     ids=["svg", "svg-renamed-png", "over-1mb"],
 )
 async def test_unsafe_or_large_logos_are_refused(
-    client: httpx.AsyncClient, auth_headers: Callable[[Role], dict[str, str]], name: str, data: bytes
+    client: httpx.AsyncClient,
+    auth_headers: Callable[[Role], dict[str, str]],
+    name: str,
+    data: bytes,
 ) -> None:
-    response = await client.post("/api/v1/settings/logo/console", headers=auth_headers(Role.ADMIN), files={"file": (name, data, "image/png")})
+    response = await client.post(
+        "/api/v1/settings/logo/console",
+        headers=auth_headers(Role.ADMIN),
+        files={"file": (name, data, "image/png")},
+    )
     assert response.status_code == 422
 
 
-async def test_only_admins_upload(client: httpx.AsyncClient, auth_headers: Callable[[Role], dict[str, str]]) -> None:
-    response = await client.post("/api/v1/settings/logo/shop", headers=auth_headers(Role.AGENT), files={"file": ("l.png", PNG, "image/png")})
+async def test_only_admins_upload(
+    client: httpx.AsyncClient, auth_headers: Callable[[Role], dict[str, str]]
+) -> None:
+    response = await client.post(
+        "/api/v1/settings/logo/shop",
+        headers=auth_headers(Role.AGENT),
+        files={"file": ("l.png", PNG, "image/png")},
+    )
     assert response.status_code == 403
 
 
@@ -1561,8 +1620,13 @@ async def test_shop_details_follow_the_settings(
     current = (await client.get("/api/v1/settings", headers=admin)).json()
     s = current["settings"]
     branding = {k: v for k, v in s["branding"].items() if not k.endswith("_logo_key")}
-    payload = {"version": current["version"], "email": s["email"], "ai": s["ai"], "operations": s["operations"],
-               "branding": {**branding, "shop_name": "Nova Electronics", "phone": "+92 300 0000000"}}
+    payload = {
+        "version": current["version"],
+        "email": s["email"],
+        "ai": s["ai"],
+        "operations": s["operations"],
+        "branding": {**branding, "shop_name": "Nova Electronics", "phone": "+92 300 0000000"},
+    }
     assert (await client.put("/api/v1/settings", headers=admin, json=payload)).status_code == 200
     company = (await client.get("/api/v1/storefront/config")).json()["company"]
     assert (company["name"], company["phone"]) == ("Nova Electronics", "+92 300 0000000")
@@ -1676,7 +1740,11 @@ async def read_branding() -> BrandingOut:
     )
 
 
-@router.get("/branding/logo/{target}", response_class=Response, responses={200: {"content": {"image/*": {}}}})
+@router.get(
+    "/branding/logo/{target}",
+    response_class=Response,
+    responses={200: {"content": {"image/*": {}}}},
+)
 async def branding_logo(target: LogoTarget, storage: Storage = Depends(get_storage)) -> Response:
     key = getattr(app_settings.runtime().branding, f"{target}_logo_key")
     if key is None:

@@ -82,7 +82,12 @@ def test_order_defaults() -> None:
 
 @pytest.mark.parametrize(
     ("field", "value"),
-    [("step_minutes", 0), ("delay_chance_pct", 101), ("lost_chance_pct", 21), ("fallback_pkr_rate", 0)],
+    [
+        ("step_minutes", 0),
+        ("delay_chance_pct", 101),
+        ("lost_chance_pct", 21),
+        ("fallback_pkr_rate", 0),
+    ],
 )
 def test_order_limits(field: str, value: object) -> None:
     with pytest.raises(ValidationError):
@@ -160,7 +165,9 @@ pytestmark = pytest.mark.db
 
 def test_order_defaults_and_events(clean_db: None) -> None:
     with sync_session() as db:
-        customer = Customer(customer_ref="CUST-990001", full_name="Ada", customer_type=CustomerType.STANDARD)
+        customer = Customer(
+            customer_ref="CUST-990001", full_name="Ada", customer_type=CustomerType.STANDARD
+        )
         db.add(customer)
         db.flush()
         order = Order(
@@ -213,7 +220,9 @@ class OrderEvent(UUIDPrimaryKeyMixin, Base):
 
     __tablename__ = "order_events"
 
-    order_id: Mapped[uuid.UUID] = mapped_column(ForeignKey("orders.id", ondelete="CASCADE"), index=True)
+    order_id: Mapped[uuid.UUID] = mapped_column(
+        ForeignKey("orders.id", ondelete="CASCADE"), index=True
+    )
     stage: Mapped[str] = mapped_column(String(24))  # a stage, or "delayed"
     note: Mapped[str | None] = mapped_column(Text)
     actor: Mapped[str] = mapped_column(String(10))  # system | staff | customer
@@ -489,7 +498,11 @@ def client(status: int, body: object) -> httpx.Client:
 
 def test_fetch_keeps_only_supported_currencies() -> None:
     body = {"result": "success", "rates": {"USD": 1, "PKR": 281.4, "EUR": 0.92, "JPY": 150}}
-    assert fetch_rates(client(200, body)) == {"USD": Decimal("1"), "PKR": Decimal("281.4"), "EUR": Decimal("0.92")}
+    assert fetch_rates(client(200, body)) == {
+        "USD": Decimal("1"),
+        "PKR": Decimal("281.4"),
+        "EUR": Decimal("0.92"),
+    }
 
 
 @pytest.mark.parametrize(("status", "body"), [(500, {}), (200, {"result": "error"})])
@@ -660,7 +673,10 @@ async def currency_rates(db: AsyncSession = Depends(get_db)) -> CurrencyOut:
     return CurrencyOut(
         rates={c: float(r) for c, r in rates.items()},
         fetched_at=fetched,
-        currencies=[CurrencyInfo(code=c.code, symbol=c.symbol, decimals=c.decimals) for c in CURRENCIES.values()],
+        currencies=[
+            CurrencyInfo(code=c.code, symbol=c.symbol, decimals=c.decimals)
+            for c in CURRENCIES.values()
+        ],
     )
 ```
 
@@ -928,11 +944,16 @@ def advance_due_orders(now: datetime | None = None, rng: random.Random | None = 
                     wait = step
                     if (order.stage == "shipped" and order.expected_delivery_date is None
                             and rng.random() * 100 < cfg.delay_chance_pct):  # fmt: skip
-                        expected = add_business_days(order.committed_delivery_date, rng.randint(2, 5))
+                        expected = add_business_days(
+                            order.committed_delivery_date, rng.randint(2, 5)
+                        )
                         delay(db, order, expected, "system", now=now)
                         wait = step * DELAY_WAIT_STEPS
                     target = FORWARD[order.stage]
-                    if order.stage == "out_for_delivery" and rng.random() * 100 < cfg.lost_chance_pct:
+                    if (
+                        order.stage == "out_for_delivery"
+                        and rng.random() * 100 < cfg.lost_chance_pct
+                    ):
                         target = "lost"
                     move(db, order, target, "system", now=now)
                     if order.stage in MOVING:
@@ -1023,7 +1044,9 @@ pytestmark = pytest.mark.db
 
 def kinds() -> list[str]:
     with sync_session() as db:
-        return [e.kind for e in db.scalars(select(OutboundEmail).order_by(OutboundEmail.created_at))]
+        return [
+            e.kind for e in db.scalars(select(OutboundEmail).order_by(OutboundEmail.created_at))
+        ]
 
 
 async def test_placed_and_shipped_emails_once(
@@ -1070,7 +1093,15 @@ from email_channel.outbound import queue
 from src.core.config import ROOT_DIR
 from storefront.currency import CURRENCIES
 
-EMAIL_KINDS = ("placed", "shipped", "delayed", "delivered", "cancelled", "returned", "return_refused")
+EMAIL_KINDS = (
+    "placed",
+    "shipped",
+    "delayed",
+    "delivered",
+    "cancelled",
+    "returned",
+    "return_refused",
+)
 
 
 @lru_cache
@@ -1175,14 +1206,21 @@ async def test_return_within_the_window_with_a_reason(
 ) -> None:
     me = shopper(create_user, make_token)
     ref = (await place_order(client, me))["order_ref"]
-    set_order(ref, stage="delivered", status="delivered", delivered_date=date.today() - timedelta(days=5))
+    set_order(
+        ref, stage="delivered", status="delivered", delivered_date=date.today() - timedelta(days=5)
+    )
     short = await client.post(f"/api/v1/orders/{ref}/return", headers=me, json={"reason": "no"})
     assert short.status_code == 422
     ok = await client.post(f"/api/v1/orders/{ref}/return", headers=me,
                            json={"reason": "The left earcup rattles."})  # fmt: skip
     assert ok.status_code == 200 and ok.json()["stage"] == "return_requested"
     late = (await place_order(client, me))["order_ref"]
-    set_order(late, stage="delivered", status="delivered", delivered_date=date.today() - timedelta(days=31))
+    set_order(
+        late,
+        stage="delivered",
+        status="delivered",
+        delivered_date=date.today() - timedelta(days=31),
+    )
     refused = await client.post(f"/api/v1/orders/{late}/return", headers=me,
                                 json={"reason": "Changed my mind after a month."})  # fmt: skip
     assert refused.status_code == 409
@@ -1317,7 +1355,11 @@ def build_receipt(order: Order, customer: Customer) -> bytes:
         pdf.drawString(70 * mm, y, value)
         y -= 8 * mm
     pdf.setFont("Helvetica-Oblique", 8)
-    pdf.drawString(20 * mm, 15 * mm, "VoltHaven Electronics is a fictional company created for a student project.")
+    pdf.drawString(
+        20 * mm,
+        15 * mm,
+        "VoltHaven Electronics is a fictional company created for a student project.",
+    )
     pdf.showPage()
     pdf.save()
     return buffer.getvalue()
@@ -1345,7 +1387,9 @@ router = APIRouter(tags=["orders"])
 
 
 def _conflict(exc: LifecycleError) -> HTTPException:
-    return HTTPException(status.HTTP_409_CONFLICT, f"{exc} (the order is {exc.stage.replace('_', ' ')}).")
+    return HTTPException(
+        status.HTTP_409_CONFLICT, f"{exc} (the order is {exc.stage.replace('_', ' ')})."
+    )
 
 
 async def _visible(db: AsyncSession, user: User, ref: str) -> Order:
@@ -1452,7 +1496,9 @@ from tests.fixtures.shop import place_order, shopper
 pytestmark = pytest.mark.db
 
 
-async def act(client: httpx.AsyncClient, headers: dict[str, str], ref: str, **body: object) -> httpx.Response:
+async def act(
+    client: httpx.AsyncClient, headers: dict[str, str], ref: str, **body: object
+) -> httpx.Response:
     return await client.post(f"/api/v1/admin/orders/{ref}/actions", headers=headers, json=body)
 
 
@@ -1464,7 +1510,9 @@ async def test_staff_walk_an_order_to_a_late_delivery(
     ref = (await place_order(client, shopper(create_user, make_token)))["order_ref"]
     for _ in range(3):
         assert (await act(client, staff, ref, action="advance")).status_code == 200
-    delayed = await act(client, staff, ref, action="delay", new_date=str(date.today() + timedelta(days=20)))
+    delayed = await act(
+        client, staff, ref, action="delay", new_date=str(date.today() + timedelta(days=20))
+    )
     assert delayed.status_code == 200
     done = (await act(client, staff, ref, action="advance", days_late=3)).json()
     assert done["stage"] == "delivered" and done["manual_hold"] is True
@@ -1482,7 +1530,9 @@ async def test_returns_and_illegal_actions(
     assert (await act(client, staff, ref, action="approve_return")).status_code == 409
     for _ in range(4):
         await act(client, staff, ref, action="advance")
-    await client.post(f"/api/v1/orders/{ref}/return", headers=me, json={"reason": "The earcup rattles loudly."})
+    await client.post(
+        f"/api/v1/orders/{ref}/return", headers=me, json={"reason": "The earcup rattles loudly."}
+    )
     listed = (await client.get("/api/v1/admin/orders?needs_action=true", headers=staff)).json()
     assert [o["order_ref"] for o in listed] == [ref]
     assert (await act(client, staff, ref, action="approve_return")).json()["stage"] == "returned"
@@ -1575,7 +1625,9 @@ class StaffOrderDetailOut(StaffOrderOut):
 
 
 class OrderActionIn(BaseModel):
-    action: Literal["advance", "delay", "lose", "cancel", "approve_return", "refuse_return", "resume_auto"]
+    action: Literal[
+        "advance", "delay", "lose", "cancel", "approve_return", "refuse_return", "resume_auto"
+    ]
     note: str | None = Field(default=None, max_length=500)
     new_date: date | None = None
     days_late: int = Field(default=0, ge=0, le=30)
@@ -1600,16 +1652,22 @@ def _staff_out(order: Order) -> StaffOrderOut:
 async def staff_orders(stage: str | None = None, q: str | None = None, needs_action: bool = False,
                        limit: int = 50, offset: int = 0, _: User = Depends(staff),
                        db: AsyncSession = Depends(get_db)) -> list[StaffOrderOut]:  # fmt: skip
-    orders = await list_orders(db, stage=stage, q=q, needs_action=needs_action, limit=limit, offset=offset)
+    orders = await list_orders(
+        db, stage=stage, q=q, needs_action=needs_action, limit=limit, offset=offset
+    )
     return [_staff_out(o) for o in orders]
 
 
 @router.get("/admin/orders/{ref}", response_model=StaffOrderDetailOut)
-async def staff_order(ref: str, _: User = Depends(staff), db: AsyncSession = Depends(get_db)) -> StaffOrderDetailOut:
+async def staff_order(
+    ref: str, _: User = Depends(staff), db: AsyncSession = Depends(get_db)
+) -> StaffOrderDetailOut:
     order = await load_order(db, ref)
     if order is None:
         raise HTTPException(status.HTTP_404_NOT_FOUND, "Order not found")
-    refs = list(await db.scalars(select(Complaint.complaint_ref).where(Complaint.order_id == order.id)))
+    refs = list(
+        await db.scalars(select(Complaint.complaint_ref).where(Complaint.order_id == order.id))
+    )
     base = _staff_out(order).model_dump()
     return StaffOrderDetailOut(**base, events=[OrderEventOut.model_validate(e) for e in order.events],
                                complaint_refs=refs)  # fmt: skip

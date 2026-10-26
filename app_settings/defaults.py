@@ -1,7 +1,19 @@
 """Today's behaviour, from environment variables and config files: the settings defaults."""
 
+import yaml
+
 from app_settings.access import default_access
 from app_settings.model import RuntimeSettings
+from src.core.config import ROOT_DIR
+
+KB_TYPES_FILE = ROOT_DIR / "config" / "knowledge_base.yaml"
+
+
+def _document_types_file() -> list[dict[str, object]]:
+    """The document types shipped in config/knowledge_base.yaml (the defaults)."""
+    with KB_TYPES_FILE.open(encoding="utf-8") as handle:
+        types: list[dict[str, object]] = yaml.safe_load(handle)["document_types"]
+    return types
 
 
 def defaults() -> RuntimeSettings:
@@ -26,6 +38,17 @@ def defaults() -> RuntimeSettings:
                 "effort": env.genai_effort,
                 "retrieval_limit": env.retrieval_limit,
                 "auto_analysis": True,
+                "timeout_seconds": env.genai_timeout_seconds,
+                "max_attempts": env.genai_max_attempts,
+                "openai_reasoning": env.openai_reasoning,
+            },
+            "knowledge_base": {
+                "chunk_max_tokens": env.chunk_max_tokens,
+                "chunk_overlap_tokens": env.chunk_overlap_tokens,
+                "max_upload_mb": env.max_upload_mb,
+                "retrieval_candidates": 30,
+                "rrf_k": 60,
+                "document_types": _document_types_file(),
             },
             "operations": {
                 "sla_scan_minutes": analytics_config()["sla"]["scan_interval_minutes"],

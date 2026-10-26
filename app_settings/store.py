@@ -26,21 +26,26 @@ class StaleSettingsError(Exception):
 
 
 def load(data: dict[str, Any] | None) -> RuntimeSettings:
-    """Defaults with the stored changes on top; unknown keys ignored; invalid → defaults."""
+    """Defaults with the stored changes on top; unknown keys ignored.
+
+    Each group is checked on its own: a group with an invalid stored value falls back to
+    that group's defaults, and the other groups keep their stored values.
+    """
     base = defaults().model_dump()
     stored = data or {}
-    merged = {
-        group: {
+    merged: dict[str, Any] = {}
+    for group, fields in base.items():
+        candidate = {
             **fields,
             **{k: v for k, v in (stored.get(group) or {}).items() if k in fields},
         }
-        for group, fields in base.items()
-    }
-    try:
-        return RuntimeSettings.model_validate(merged)
-    except ValidationError as exc:
-        log.warning("settings.invalid_stored", error=str(exc)[:500])
-        return RuntimeSettings.model_validate(base)
+        model = RuntimeSettings.model_fields[group].annotation
+        try:
+            merged[group] = model.model_validate(candidate).model_dump()  # type: ignore[union-attr]
+        except ValidationError as exc:
+            log.warning("settings.invalid_group", group=group, error=str(exc)[:500])
+            merged[group] = fields
+    return RuntimeSettings.model_validate(merged)
 
 
 def override(settings: RuntimeSettings | None) -> None:
@@ -54,13 +59,17 @@ def reset_cache() -> None:
     _cache = None
 
 
-def runtime() -> RuntimeSettings:
-    """Current settings, re-read from the database at most every 15 seconds."""
+def runtime(fresh: bool = False) -> RuntimeSettings:
+    """Current settings, re-read from the database at most every 15 seconds.
+
+    `fresh=True` re-reads now (e.g. before chunking a document, so a value saved a moment
+    ago is used) and refreshes the cache.
+    """
     global _cache
     if _override is not None:
         return _override
     now = time.monotonic()
-    if _cache is not None and now - _cache[0] < CACHE_SECONDS:
+    if not fresh and _cache is not None and now - _cache[0] < CACHE_SECONDS:
         return _cache[1]
     try:
         with sync_session() as db:

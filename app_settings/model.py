@@ -51,6 +51,9 @@ class AiSettings(_Group):
     effort: Effort
     retrieval_limit: int = Field(ge=3, le=20)
     auto_analysis: bool
+    timeout_seconds: float = Field(ge=10, le=300)
+    max_attempts: int = Field(ge=1, le=3)  # first call + repair retries
+    openai_reasoning: bool
 
     @model_validator(mode="after")
     def _model_matches_provider(self) -> "AiSettings":
@@ -58,6 +61,35 @@ class AiSettings(_Group):
         if self.model in SUGGESTED_MODELS[other]:
             label = "an Anthropic" if other == "anthropic" else "an OpenAI"
             raise ValueError(f"{self.model} is {label} model; choose one for {self.provider}")
+        return self
+
+
+class DocumentTypeSetting(_Group):
+    """A knowledge-base document category; lower precedence wins when sources disagree."""
+
+    code: Annotated[str, Field(pattern=r"^[a-z][a-z0-9_]{1,39}$")]
+    name: Annotated[Line, Field(min_length=3, max_length=60)]
+    precedence: int = Field(ge=1, le=9)
+
+
+class KnowledgeBaseSettings(_Group):
+    chunk_max_tokens: int = Field(ge=100, le=480)  # the embedding model reads at most 512
+    chunk_overlap_tokens: int = Field(ge=0)
+    max_upload_mb: int = Field(ge=1, le=50)
+    retrieval_candidates: int = Field(ge=5, le=100)  # per ranker, before fusion
+    rrf_k: int = Field(ge=1, le=200)  # Reciprocal Rank Fusion constant
+    document_types: list[DocumentTypeSetting] = Field(min_length=1, max_length=30)
+
+    @model_validator(mode="after")
+    def _consistent(self) -> "KnowledgeBaseSettings":
+        if self.chunk_overlap_tokens > self.chunk_max_tokens - 50:
+            raise ValueError(
+                f"overlap must be at most {self.chunk_max_tokens - 50} tokens (chunk size minus 50)"
+            )
+        codes = [t.code for t in self.document_types]
+        duplicates = sorted({c for c in codes if codes.count(c) > 1})
+        if duplicates:
+            raise ValueError(f"document type codes must be unique: {', '.join(duplicates)}")
         return self
 
 
@@ -97,4 +129,5 @@ class RuntimeSettings(_Group):
     operations: OperationsSettings
     branding: BrandingSettings
     orders: OrderSettings
+    knowledge_base: KnowledgeBaseSettings
     access: AccessSettings = Field(default_factory=default_access)

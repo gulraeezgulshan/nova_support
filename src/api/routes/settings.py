@@ -64,6 +64,7 @@ async def update_settings(
     logos = stored.branding  # logos are set by upload only
     new = RuntimeSettings(
         access=stored.access,  # changed only on the Page access screen
+        knowledge_base=stored.knowledge_base,
         email=payload.email,
         ai=payload.ai,
         operations=payload.operations,

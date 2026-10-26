@@ -8,7 +8,7 @@ from sqlalchemy.ext.asyncio import AsyncSession
 
 from database.models import ChatConversation, ChatMessage, Complaint, Order, User
 from database.session import get_db
-from security.dependencies import STAFF_ROLES, get_current_user, require_roles
+from security.dependencies import get_current_user, require_access
 from src.api.schemas import (
     ChatConversationOut,
     ChatMessageIn,
@@ -142,7 +142,9 @@ async def confirm_chat(
 
 @router.get("/complaints/{ref}/chat", response_model=list[ChatMessageOut])
 async def complaint_chat(
-    ref: str, _: User = Depends(require_roles(*STAFF_ROLES)), db: AsyncSession = Depends(get_db)
+    ref: str,
+    _: User = Depends(require_access("complaints", "view")),
+    db: AsyncSession = Depends(get_db),
 ) -> list[ChatMessageOut]:
     conversation = await db.scalar(
         select(ChatConversation)

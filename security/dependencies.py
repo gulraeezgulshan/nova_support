@@ -87,6 +87,13 @@ def require_roles(*roles: Role) -> Callable[..., Awaitable[User]]:
     return dependency
 
 
+async def require_staff(user: User = Depends(get_current_user)) -> User:
+    """Any staff role: shared lookups several staff pages need (vocabulary, for example)."""
+    if user.role not in STAFF_ROLES:
+        raise HTTPException(status.HTTP_403_FORBIDDEN, "Insufficient role for this action")
+    return user
+
+
 def ensure_access(user: User, page: PageKey, level: Needed) -> None:
     """403 unless the page access matrix lets this user's role view/edit the page."""
     if not allowed(user.role, page, level):

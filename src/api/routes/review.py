@@ -10,13 +10,12 @@ from database.models import (
     ReviewerDecision,
     ReviewStatus,
     ReviewTask,
-    Role,
     User,
     ValidationRun,
 )
 from database.session import get_db
 from python_validation.pipeline import run_validation
-from security.dependencies import STAFF_ROLES, require_roles
+from security.dependencies import require_access
 from src.api.routes.complaints import _detail, _load_for, _summary
 from src.api.schemas import (
     ComplaintDetail,
@@ -30,13 +29,15 @@ from src.api.schemas import (
 )
 
 router = APIRouter(tags=["review"])
-staff = require_roles(*STAFF_ROLES)
-reviewers = require_roles(Role.REVIEWER, Role.MANAGER, Role.ADMIN)
+complaints_view = require_access("complaints", "view")
+complaints_edit = require_access("complaints", "edit")
+review_view = require_access("review", "view")
+review_edit = require_access("review", "edit")
 
 
 @router.get("/complaints/{ref}/validation", response_model=ValidationRunOut | None)
 async def get_validation(
-    ref: str, user: User = Depends(staff), db: AsyncSession = Depends(get_db)
+    ref: str, user: User = Depends(complaints_view), db: AsyncSession = Depends(get_db)
 ) -> ValidationRun | None:
     complaint = await _load_for(db, ref, user)
     return await db.scalar(
@@ -49,7 +50,7 @@ async def get_validation(
 
 @router.post("/complaints/{ref}/validate", response_model=ValidationRunOut)
 async def revalidate(
-    ref: str, user: User = Depends(staff), db: AsyncSession = Depends(get_db)
+    ref: str, user: User = Depends(complaints_edit), db: AsyncSession = Depends(get_db)
 ) -> ValidationRun:
     """Re-run Pipeline 2 now, e.g. after a rule or policy change."""
     complaint = await _load_for(db, ref, user)
@@ -66,7 +67,7 @@ async def revalidate(
 async def review_queue(
     status_filter: ReviewStatus = Query(ReviewStatus.OPEN, alias="status"),
     limit: int = Query(100, ge=1, le=500),
-    user: User = Depends(reviewers),
+    user: User = Depends(review_view),
     db: AsyncSession = Depends(get_db),
 ) -> list[ReviewTaskOut]:
     rows = (
@@ -100,7 +101,7 @@ async def review_queue(
 async def review_complaint(
     ref: str,
     payload: ReviewActionIn,
-    user: User = Depends(reviewers),
+    user: User = Depends(review_edit),
     db: AsyncSession = Depends(get_db),
 ) -> ReviewerDecision:
     complaint = await _load_for(db, ref, user)
@@ -113,7 +114,7 @@ async def review_complaint(
 
 @router.get("/complaints/{ref}/decisions", response_model=list[ReviewerDecisionOut])
 async def list_decisions(
-    ref: str, user: User = Depends(staff), db: AsyncSession = Depends(get_db)
+    ref: str, user: User = Depends(complaints_view), db: AsyncSession = Depends(get_db)
 ) -> list[ReviewerDecision]:
     complaint = await _load_for(db, ref, user)
     return list(
@@ -135,7 +136,7 @@ async def list_decisions(
 async def update_status(
     ref: str,
     payload: StatusChangeIn,
-    user: User = Depends(staff),
+    user: User = Depends(complaints_edit),
     db: AsyncSession = Depends(get_db),
 ) -> ComplaintDetail:
     complaint = await _load_for(db, ref, user)

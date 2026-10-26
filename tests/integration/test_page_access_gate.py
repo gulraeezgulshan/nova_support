@@ -1,11 +1,16 @@
 """Page access gate: the default matrix gives exactly today's access, and the matrix is enforced."""
 
 from collections.abc import Callable
+from typing import Any
 
 import httpx
 import pytest
+from fastapi.routing import APIRoute
 
+import app_settings
+from app_settings.access import PAGE_KEYS
 from database.models import Role
+from security.dependencies import NO_ACCESS
 
 pytestmark = pytest.mark.db
 
@@ -107,3 +112,106 @@ async def test_default_access_matches_today(
         if (status != 403) != (role in allowed):
             wrong.append((method, path, status))
     assert wrong == []
+
+
+# ------------------------------------------------------------------ the matrix is enforced
+
+
+def matrix(**pages: dict[str, str]) -> "app_settings.RuntimeSettings":
+    """Default settings with these pages changed, e.g. matrix(analytics={"agent": "view"})."""
+    return app_settings.load({"access": pages})
+
+
+async def test_matrix_grants_and_removes(
+    client: httpx.AsyncClient, auth_headers: Callable[[Role], dict[str, str]]
+) -> None:
+    agent = auth_headers(Role.AGENT)
+    app_settings.override(matrix(analytics={"agent": "view"}, rules={"agent": "none"}))
+    assert (await client.get("/api/v1/analytics", headers=agent)).status_code == 200
+    r = await client.get("/api/v1/rules", headers=agent)
+    assert r.status_code == 403 and r.json()["detail"] == NO_ACCESS
+
+
+async def test_view_is_not_edit(
+    client: httpx.AsyncClient, auth_headers: Callable[[Role], dict[str, str]]
+) -> None:
+    app_settings.override(matrix(orders={"agent": "view"}))
+    agent = auth_headers(Role.AGENT)
+    assert (await client.get("/api/v1/admin/orders", headers=agent)).status_code == 200
+    actions = "/api/v1/admin/orders/ORD-1/actions"
+    assert (await client.post(actions, headers=agent, json={})).status_code == 403
+
+
+async def test_admin_cannot_be_locked_out_and_customer_cannot_be_let_in(
+    client: httpx.AsyncClient, auth_headers: Callable[[Role], dict[str, str]]
+) -> None:
+    nobody = {"agent": "none", "reviewer": "none", "manager": "none"}
+    app_settings.override(matrix(**dict.fromkeys(PAGE_KEYS, nobody)))
+    assert (await client.get("/api/v1/rules", headers=auth_headers(Role.ADMIN))).status_code == 200
+    customer = auth_headers(Role.CUSTOMER)
+    assert (await client.get("/api/v1/rules", headers=customer)).status_code == 403
+
+
+async def test_mixed_endpoints_gate_only_staff(
+    client: httpx.AsyncClient, auth_headers: Callable[[Role], dict[str, str]]
+) -> None:
+    app_settings.override(matrix(complaints={"agent": "none"}))
+    agent, customer = auth_headers(Role.AGENT), auth_headers(Role.CUSTOMER)
+    assert (await client.get("/api/v1/complaints", headers=agent)).status_code == 403
+    assert (await client.get("/api/v1/complaints", headers=customer)).status_code == 200
+    assert (await client.get("/api/v1/complaints/CMP-999999", headers=agent)).status_code == 403
+    attachments = "/api/v1/complaints/CMP-999999/attachments"
+    assert (await client.get(attachments, headers=agent)).status_code == 403
+
+
+async def test_mixed_order_endpoints_gate_only_staff(
+    client: httpx.AsyncClient, auth_headers: Callable[[Role], dict[str, str]]
+) -> None:
+    app_settings.override(matrix(orders={"agent": "none"}))
+    agent = auth_headers(Role.AGENT)
+    for path in ("/orders/ORD-999999/events", "/orders/ORD-999999/receipt.pdf"):
+        assert (await client.get("/api/v1" + path, headers=agent)).status_code == 403
+
+
+async def test_shared_lookups_stay_open(
+    client: httpx.AsyncClient, auth_headers: Callable[[Role], dict[str, str]]
+) -> None:
+    app_settings.override(matrix(taxonomy={"agent": "none"}))
+    agent = auth_headers(Role.AGENT)
+    for p in ("/taxonomy/departments", "/taxonomy/categories", "/taxonomy/vocabulary"):
+        assert (await client.get("/api/v1" + p, headers=agent)).status_code == 200
+
+
+def _routes(routes: list[Any], prefix: str = "") -> list[tuple[str, APIRoute]]:
+    found: list[tuple[str, APIRoute]] = []
+    for r in routes:
+        if isinstance(r, APIRoute):
+            found.append((prefix + r.path, r))
+            continue
+        sub = getattr(r, "router", None) or getattr(r, "original_router", None)
+        if sub is not None:
+            found += _routes(sub.routes, prefix + (getattr(r, "prefix", "") or ""))
+    return found
+
+
+def _role_sets(dependant: Any) -> list[frozenset[Role]]:
+    sets: list[frozenset[Role]] = []
+    for d in dependant.dependencies:
+        for cell in getattr(d.call, "__closure__", None) or ():
+            if isinstance(cell.cell_contents, frozenset):
+                sets.append(cell.cell_contents)
+        sets += _role_sets(d)
+    return sets
+
+
+def test_every_staff_route_is_gated() -> None:
+    """A route may use require_roles only for Administrator-only or customer-only endpoints."""
+    from src.main import create_app
+
+    loose = [
+        f"{','.join(sorted(r.methods or ()))} {path}"
+        for path, r in _routes(create_app().routes)
+        for roles in _role_sets(r.dependant)
+        if roles not in ({Role.ADMIN}, {Role.CUSTOMER})
+    ]
+    assert loose == []

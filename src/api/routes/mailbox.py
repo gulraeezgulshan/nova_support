@@ -13,13 +13,14 @@ from database.models import Complaint, InboundEmail, MailboxState, OutboundEmail
 from database.session import get_db
 from email_channel.inbound import process_email
 from email_channel.parsing import parse_email
-from security.dependencies import STAFF_ROLES, require_roles
+from security.dependencies import require_access
 from src.api.schemas import EMAIL_PATTERN, InboundEmailOut, MailboxStatusOut, OutboundEmailOut
 from src.core.config import get_settings
 from src.core.storage import Storage, get_storage
 
 router = APIRouter(tags=["mailbox"])
-staff = require_roles(*STAFF_ROLES)
+mailbox_view = require_access("mailbox", "view")
+mailbox_edit = require_access("mailbox", "edit")
 MAX_EML_BYTES = 10 * 1024 * 1024
 
 
@@ -48,7 +49,7 @@ async def _inbound_out(db: AsyncSession, record: InboundEmail) -> InboundEmailOu
 
 @router.get("/mailbox", response_model=MailboxStatusOut)
 async def mailbox_status(
-    _: User = Depends(staff), db: AsyncSession = Depends(get_db)
+    _: User = Depends(mailbox_view), db: AsyncSession = Depends(get_db)
 ) -> MailboxStatusOut:
     settings = get_settings()
     state = await db.get(MailboxState, 1)
@@ -63,7 +64,7 @@ async def mailbox_status(
 @router.get("/mailbox/inbound", response_model=list[InboundEmailOut])
 async def list_inbound_emails(
     limit: int = Query(100, ge=1, le=500),
-    _: User = Depends(staff),
+    _: User = Depends(mailbox_view),
     db: AsyncSession = Depends(get_db),
 ) -> list[InboundEmailOut]:
     rows = await db.execute(
@@ -91,7 +92,7 @@ async def list_inbound_emails(
 @router.get("/mailbox/outbound", response_model=list[OutboundEmailOut])
 async def list_outbound_emails(
     limit: int = Query(100, ge=1, le=500),
-    _: User = Depends(staff),
+    _: User = Depends(mailbox_view),
     db: AsyncSession = Depends(get_db),
 ) -> list[OutboundEmailOut]:
     rows = await db.execute(
@@ -126,7 +127,7 @@ async def process_manual_email(
     subject: str = Form("", max_length=500),
     body: str | None = Form(None, max_length=20_000),
     files: list[UploadFile] = File(default_factory=list),
-    _: User = Depends(staff),
+    _: User = Depends(mailbox_edit),
     db: AsyncSession = Depends(get_db),
     storage: Storage = Depends(get_storage),
 ) -> InboundEmailOut:

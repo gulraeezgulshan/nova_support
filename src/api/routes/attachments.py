@@ -5,6 +5,7 @@ import uuid
 from fastapi import APIRouter, Depends, File, HTTPException, Response, UploadFile, status
 from sqlalchemy.ext.asyncio import AsyncSession
 
+from app_settings.access import Needed
 from complaint_processing.attachments import (
     MAX_ATTACHMENT_BYTES,
     AttachmentError,
@@ -22,9 +23,9 @@ router = APIRouter(tags=["attachments"])
 
 
 async def _attachment(
-    db: AsyncSession, ref: str, attachment_id: uuid.UUID, user: User
+    db: AsyncSession, ref: str, attachment_id: uuid.UUID, user: User, level: Needed
 ) -> ComplaintAttachment:
-    complaint = await _load_for(db, ref, user)
+    complaint = await _load_for(db, ref, user, level)
     attachment = await db.get(ComplaintAttachment, attachment_id)
     if attachment is None or attachment.complaint_id != complaint.id:
         raise HTTPException(status.HTTP_404_NOT_FOUND, "Attachment not found")
@@ -35,7 +36,7 @@ async def _attachment(
 async def list_complaint_attachments(
     ref: str, user: User = Depends(get_current_user), db: AsyncSession = Depends(get_db)
 ) -> list[ComplaintAttachment]:
-    return list((await _load_for(db, ref, user)).attachments)
+    return list((await _load_for(db, ref, user, "view")).attachments)
 
 
 @router.post(
@@ -51,7 +52,7 @@ async def upload_complaint_attachment(
     storage: Storage = Depends(get_storage),
 ) -> ComplaintAttachment:
     """Add a photo or PDF (the complaint's customer, or staff)."""
-    complaint = await _load_for(db, ref, user)
+    complaint = await _load_for(db, ref, user, "edit")
     data = await file.read(MAX_ATTACHMENT_BYTES + 1)
     try:
         attachment = await add_attachment(
@@ -81,7 +82,7 @@ async def download_complaint_attachment(
     db: AsyncSession = Depends(get_db),
     storage: Storage = Depends(get_storage),
 ) -> Response:
-    attachment = await _attachment(db, ref, attachment_id, user)
+    attachment = await _attachment(db, ref, attachment_id, user, "view")
     return Response(
         content=storage.get(attachment.storage_key),
         media_type=attachment.media_type,
@@ -104,7 +105,7 @@ async def delete_complaint_attachment(
     storage: Storage = Depends(get_storage),
 ) -> Response:
     """Staff only: remove a supporting document."""
-    attachment = await _attachment(db, ref, attachment_id, user)
+    attachment = await _attachment(db, ref, attachment_id, user, "edit")
     if not _is_staff(user):
         raise HTTPException(status.HTTP_403_FORBIDDEN, "Only staff can remove documents")
     await remove_attachment(db, attachment, user, storage)

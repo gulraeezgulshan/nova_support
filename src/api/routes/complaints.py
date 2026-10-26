@@ -11,6 +11,7 @@ from sqlalchemy.dialects.postgresql import distinct_on
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy.orm import selectinload
 
+from app_settings.access import Needed
 from complaint_processing.service import (
     ComplaintInput,
     get_or_create_customer,
@@ -29,7 +30,13 @@ from database.models import (
     User,
 )
 from database.session import get_db
-from security.dependencies import STAFF_ROLES, get_current_user, require_roles
+from security.dependencies import (
+    STAFF_ROLES,
+    ensure_access,
+    get_current_user,
+    require_access,
+    require_roles,
+)
 from src.api.schemas import (
     AnalysisRunOut,
     AnalysisRunSummary,
@@ -44,7 +51,8 @@ from src.api.schemas import (
 )
 
 router = APIRouter(tags=["complaints"])
-staff = require_roles(*STAFF_ROLES)
+complaints_view = require_access("complaints", "view")
+complaints_edit = require_access("complaints", "edit")
 
 
 def _is_staff(user: User) -> bool:
@@ -97,7 +105,12 @@ async def _latest_updates(
     return {e.complaint_id: e for e in events}
 
 
-async def _load_for(db: AsyncSession, ref: str, user: User) -> Complaint:
+async def _load_for(
+    db: AsyncSession, ref: str, user: User, level: Needed | None = None
+) -> Complaint:
+    """With `level`, staff must have that access to the Complaint queue (checked first)."""
+    if level is not None and _is_staff(user):
+        ensure_access(user, "complaints", level)
     complaint = await db.scalar(select(Complaint).where(Complaint.complaint_ref == ref.upper()))
     # A customer asking for someone else's complaint gets the same 404 as a missing one.
     if complaint is None or (not _is_staff(user) and complaint.customer.user_id != user.id):
@@ -117,6 +130,7 @@ async def create_complaint(
     db: AsyncSession = Depends(get_db),
 ) -> ComplaintDetail:
     if _is_staff(user):
+        ensure_access(user, "complaints", "edit")
         if not payload.customer_ref:
             raise HTTPException(
                 status.HTTP_422_UNPROCESSABLE_CONTENT, "customer_ref is required for staff"
@@ -153,6 +167,8 @@ async def list_complaints(
     user: User = Depends(get_current_user),
     db: AsyncSession = Depends(get_db),
 ) -> ComplaintPage:
+    if _is_staff(user):
+        ensure_access(user, "complaints", "view")
     stmt = select(Complaint).join(Customer, Complaint.customer_id == Customer.id)
     if not _is_staff(user):
         stmt = stmt.where(Customer.user_id == user.id)
@@ -263,12 +279,12 @@ async def _detail(db: AsyncSession, complaint: Complaint, staff_view: bool) -> C
 async def get_complaint(
     ref: str, user: User = Depends(get_current_user), db: AsyncSession = Depends(get_db)
 ) -> ComplaintDetail:
-    return await _detail(db, await _load_for(db, ref, user), _is_staff(user))
+    return await _detail(db, await _load_for(db, ref, user, "view"), _is_staff(user))
 
 
 @router.get("/complaints/{ref}/analysis", response_model=ComplaintAnalysisOut)
 async def get_complaint_analysis(
-    ref: str, user: User = Depends(staff), db: AsyncSession = Depends(get_db)
+    ref: str, user: User = Depends(complaints_view), db: AsyncSession = Depends(get_db)
 ) -> ComplaintAnalysisOut:
     complaint = await _load_for(db, ref, user)
     runs = (
@@ -286,7 +302,7 @@ async def get_complaint_analysis(
 
 @router.post("/complaints/{ref}/analyze", status_code=status.HTTP_202_ACCEPTED)
 async def reanalyze_complaint(
-    ref: str, user: User = Depends(staff), db: AsyncSession = Depends(get_db)
+    ref: str, user: User = Depends(complaints_edit), db: AsyncSession = Depends(get_db)
 ) -> dict[str, str]:
     complaint = await _load_for(db, ref, user)
     await audit.record(

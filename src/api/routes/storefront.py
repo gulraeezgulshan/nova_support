@@ -11,9 +11,9 @@ from sqlalchemy.ext.asyncio import AsyncSession
 import app_settings
 from complaint_processing.service import get_or_create_customer
 from database import audit
-from database.models import Customer, FxRate, Order, Product, ProductImage, Role, User
+from database.models import Customer, FxRate, Order, Product, ProductImage, User
 from database.session import get_db
-from security.dependencies import get_current_user, require_roles
+from security.dependencies import get_current_user, require_access
 from src.api.schemas import (
     CheckoutIn,
     CurrencyInfo,
@@ -163,7 +163,8 @@ async def my_shop_orders(
 
 # --- product images (public) and product administration ---------------------------------
 
-admin_only = require_roles(Role.ADMIN)
+products_view = require_access("products", "view")
+products_edit = require_access("products", "edit")
 
 
 @router.get(
@@ -208,7 +209,7 @@ def _specs(specs: list[str]) -> list[str]:
 
 @router.get("/admin/products", response_model=list[ProductOut])
 async def admin_list_products(
-    _: User = Depends(admin_only), db: AsyncSession = Depends(get_db)
+    _: User = Depends(products_view), db: AsyncSession = Depends(get_db)
 ) -> list[Product]:
     return list(
         (await db.scalars(select(Product).order_by(Product.product_line, Product.name))).all()
@@ -218,7 +219,7 @@ async def admin_list_products(
 @router.post("/admin/products", response_model=ProductOut, status_code=status.HTTP_201_CREATED)
 async def create_product(
     payload: ProductCreate,
-    actor: User = Depends(admin_only),
+    actor: User = Depends(products_edit),
     db: AsyncSession = Depends(get_db),
 ) -> Product:
     _check_line(payload.product_line)
@@ -252,7 +253,7 @@ async def create_product(
 async def update_product(
     sku: str,
     payload: ProductUpdate,
-    actor: User = Depends(admin_only),
+    actor: User = Depends(products_edit),
     db: AsyncSession = Depends(get_db),
 ) -> Product:
     product = await _product(db, sku)
@@ -289,7 +290,7 @@ async def update_product(
 async def upload_product_image(
     sku: str,
     file: UploadFile = File(...),
-    actor: User = Depends(admin_only),
+    actor: User = Depends(products_edit),
     db: AsyncSession = Depends(get_db),
     storage: Storage = Depends(get_storage),
 ) -> ProductImage:
@@ -315,7 +316,7 @@ async def upload_product_image(
 async def reorder_product_images(
     sku: str,
     payload: ImageOrderIn,
-    actor: User = Depends(admin_only),
+    actor: User = Depends(products_edit),
     db: AsyncSession = Depends(get_db),
 ) -> Product:
     product = await _product(db, sku)
@@ -339,7 +340,7 @@ async def reorder_product_images(
 async def delete_product_image(
     sku: str,
     image_id: uuid.UUID,
-    actor: User = Depends(admin_only),
+    actor: User = Depends(products_edit),
     db: AsyncSession = Depends(get_db),
     storage: Storage = Depends(get_storage),
 ) -> Product:

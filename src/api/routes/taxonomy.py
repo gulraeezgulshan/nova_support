@@ -9,9 +9,13 @@ from sqlalchemy.exc import IntegrityError
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from database import audit
-from database.models import Category, Department, Role, SlaPolicy, Subcategory, User
+from database.models import Category, Department, SlaPolicy, Subcategory, User
 from database.session import get_db
-from security.dependencies import STAFF_ROLES, get_current_user, require_roles
+from security.dependencies import (
+    get_current_user,
+    require_access,
+    require_staff,
+)
 from src.api.schemas import (
     CategoryCreate,
     CategoryOut,
@@ -28,7 +32,8 @@ from src.api.schemas import (
 from src.core.domain import actions, analysis_config
 
 router = APIRouter(prefix="/taxonomy", tags=["taxonomy"])
-admin_only = require_roles(Role.ADMIN)
+taxonomy_view = require_access("taxonomy", "view")
+taxonomy_edit = require_access("taxonomy", "edit")
 
 
 async def _flush_or_conflict(db: AsyncSession, what: str) -> None:
@@ -71,7 +76,7 @@ async def list_departments(
 @router.post("/departments", response_model=DepartmentOut, status_code=status.HTTP_201_CREATED)
 async def create_department(
     payload: DepartmentCreate,
-    actor: User = Depends(admin_only),
+    actor: User = Depends(taxonomy_edit),
     db: AsyncSession = Depends(get_db),
 ) -> Department:
     department = Department(**payload.model_dump())
@@ -93,7 +98,7 @@ async def create_department(
 async def update_department(
     department_id: uuid.UUID,
     payload: DepartmentUpdate,
-    actor: User = Depends(admin_only),
+    actor: User = Depends(taxonomy_edit),
     db: AsyncSession = Depends(get_db),
 ) -> Department:
     department = await db.get(Department, department_id)
@@ -116,7 +121,7 @@ async def list_categories(
 @router.post("/categories", response_model=CategoryOut, status_code=status.HTTP_201_CREATED)
 async def create_category(
     payload: CategoryCreate,
-    actor: User = Depends(admin_only),
+    actor: User = Depends(taxonomy_edit),
     db: AsyncSession = Depends(get_db),
 ) -> Category:
     category = Category(**payload.model_dump(), subcategories=[])
@@ -138,7 +143,7 @@ async def create_category(
 async def update_category(
     category_id: uuid.UUID,
     payload: CategoryUpdate,
-    actor: User = Depends(admin_only),
+    actor: User = Depends(taxonomy_edit),
     db: AsyncSession = Depends(get_db),
 ) -> Category:
     category = await db.get(Category, category_id)
@@ -156,7 +161,7 @@ async def update_category(
 async def create_subcategory(
     category_id: uuid.UUID,
     payload: SubcategoryCreate,
-    actor: User = Depends(admin_only),
+    actor: User = Depends(taxonomy_edit),
     db: AsyncSession = Depends(get_db),
 ) -> Subcategory:
     if await db.get(Category, category_id) is None:
@@ -181,7 +186,7 @@ async def create_subcategory(
 
 @router.get("/sla-policies", response_model=list[SlaPolicyOut])
 async def list_sla_policies(
-    _: User = Depends(require_roles(*STAFF_ROLES)), db: AsyncSession = Depends(get_db)
+    _: User = Depends(taxonomy_view), db: AsyncSession = Depends(get_db)
 ) -> list[SlaPolicy]:
     return list((await db.scalars(select(SlaPolicy).order_by(SlaPolicy.priority))).all())
 
@@ -190,7 +195,7 @@ async def list_sla_policies(
 async def update_sla_policy(
     sla_id: uuid.UUID,
     payload: SlaPolicyUpdate,
-    actor: User = Depends(admin_only),
+    actor: User = Depends(taxonomy_edit),
     db: AsyncSession = Depends(get_db),
 ) -> SlaPolicy:
     sla = await db.get(SlaPolicy, sla_id)
@@ -204,7 +209,7 @@ async def update_sla_policy(
 
 
 @router.get("/vocabulary", response_model=VocabularyOut)
-async def get_vocabulary(_: User = Depends(require_roles(*STAFF_ROLES))) -> VocabularyOut:
+async def get_vocabulary(_: User = Depends(require_staff)) -> VocabularyOut:
     """Controlled values from `config/analysis.yaml` and `config/actions.yaml`, for filters
     and the rule editor (so the UI never hard-codes them)."""
     cfg = analysis_config()

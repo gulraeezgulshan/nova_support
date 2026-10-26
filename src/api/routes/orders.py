@@ -7,7 +7,12 @@ from sqlalchemy.ext.asyncio import AsyncSession
 from database import audit
 from database.models import Complaint, Order, User
 from database.session import get_db
-from security.dependencies import STAFF_ROLES, get_current_user, require_roles
+from security.dependencies import (
+    STAFF_ROLES,
+    ensure_access,
+    get_current_user,
+    require_access,
+)
 from src.api.schemas import (
     OrderActionIn,
     OrderEventOut,
@@ -40,6 +45,7 @@ def _conflict(exc: LifecycleError) -> HTTPException:
 async def _visible(db: AsyncSession, user: User, ref: str) -> Order:
     """Staff see any order; a customer only their own (others get 404)."""
     if user.role in STAFF_ROLES:
+        ensure_access(user, "orders", "view")
         order = await load_order(db, ref)
         if order is None:
             raise HTTPException(status.HTTP_404_NOT_FOUND, "Order not found")
@@ -105,7 +111,8 @@ async def order_receipt(
 
 # --- staff ---------------------------------------------------------------------------
 
-staff = require_roles(*STAFF_ROLES)
+orders_view = require_access("orders", "view")
+orders_edit = require_access("orders", "edit")
 
 
 def _staff_out(order: Order) -> StaffOrderOut:
@@ -124,7 +131,7 @@ async def staff_orders(
     needs_action: bool = False,
     limit: int = 50,
     offset: int = 0,
-    _: User = Depends(staff),
+    _: User = Depends(orders_view),
     db: AsyncSession = Depends(get_db),
 ) -> list[StaffOrderOut]:
     orders = await list_orders(
@@ -135,7 +142,7 @@ async def staff_orders(
 
 @router.get("/admin/orders/{ref}", response_model=StaffOrderDetailOut)
 async def staff_order(
-    ref: str, _: User = Depends(staff), db: AsyncSession = Depends(get_db)
+    ref: str, _: User = Depends(orders_view), db: AsyncSession = Depends(get_db)
 ) -> StaffOrderDetailOut:
     order = await load_order(db, ref)
     if order is None:
@@ -153,7 +160,7 @@ async def staff_order(
 async def staff_order_action(
     ref: str,
     payload: OrderActionIn,
-    user: User = Depends(staff),
+    user: User = Depends(orders_edit),
     db: AsyncSession = Depends(get_db),
 ) -> StaffOrderOut:
     try:

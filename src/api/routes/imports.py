@@ -11,13 +11,14 @@ from sqlalchemy.ext.asyncio import AsyncSession
 from bulk_import import service
 from bulk_import.reader import MAX_BYTES, ImportFileError, template_csv, template_xlsx
 from database import audit
-from database.models import ImportBatch, Role, User
+from database.models import ImportBatch, User
 from database.session import get_db
-from security.dependencies import require_roles
+from security.dependencies import require_access
 from src.api.schemas import ImportBatchOut, ImportDetailOut, ImportPreviewOut, ImportRowOut
 
 router = APIRouter(tags=["imports"])
-managers = require_roles(Role.MANAGER, Role.ADMIN)
+imports_view = require_access("imports", "view")
+imports_edit = require_access("imports", "edit")
 XLSX = "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
 
 
@@ -47,7 +48,7 @@ async def _batch(db: AsyncSession, batch_id: uuid.UUID) -> ImportBatch:
 
 
 @router.get("/imports/template.csv", response_class=Response)
-async def import_template_csv(_: User = Depends(managers)) -> Response:
+async def import_template_csv(_: User = Depends(imports_view)) -> Response:
     return Response(
         template_csv(),
         media_type="text/csv",
@@ -56,7 +57,7 @@ async def import_template_csv(_: User = Depends(managers)) -> Response:
 
 
 @router.get("/imports/template.xlsx", response_class=Response)
-async def import_template_xlsx(_: User = Depends(managers)) -> Response:
+async def import_template_xlsx(_: User = Depends(imports_view)) -> Response:
     return Response(
         template_xlsx(),
         media_type=XLSX,
@@ -69,7 +70,7 @@ async def import_template_xlsx(_: User = Depends(managers)) -> Response:
 )
 async def preview_import(
     file: UploadFile = File(...),
-    user: User = Depends(managers),
+    user: User = Depends(imports_edit),
     db: AsyncSession = Depends(get_db),
 ) -> ImportPreviewOut:
     """Check every row with the intake's own rules; nothing is filed yet."""
@@ -92,7 +93,7 @@ async def preview_import(
     "/imports/{batch_id}/run", response_model=ImportBatchOut, status_code=status.HTTP_202_ACCEPTED
 )
 async def run_import(
-    batch_id: uuid.UUID, user: User = Depends(managers), db: AsyncSession = Depends(get_db)
+    batch_id: uuid.UUID, user: User = Depends(imports_edit), db: AsyncSession = Depends(get_db)
 ) -> ImportBatchOut:
     """Import the ready and warning rows in the background."""
     batch = await _batch(db, batch_id)
@@ -129,7 +130,7 @@ async def run_import(
 
 @router.get("/imports", response_model=list[ImportBatchOut])
 async def list_imports(
-    _: User = Depends(managers), db: AsyncSession = Depends(get_db)
+    _: User = Depends(imports_view), db: AsyncSession = Depends(get_db)
 ) -> list[ImportBatchOut]:
     batches = await db.scalars(
         select(ImportBatch).order_by(ImportBatch.created_at.desc()).limit(50)
@@ -139,7 +140,7 @@ async def list_imports(
 
 @router.get("/imports/{batch_id}", response_model=ImportDetailOut)
 async def get_import(
-    batch_id: uuid.UUID, _: User = Depends(managers), db: AsyncSession = Depends(get_db)
+    batch_id: uuid.UUID, _: User = Depends(imports_view), db: AsyncSession = Depends(get_db)
 ) -> ImportDetailOut:
     batch = await _batch(db, batch_id)
     return ImportDetailOut(**_summary(batch), rows=_rows(batch))
@@ -147,7 +148,7 @@ async def get_import(
 
 @router.get("/imports/{batch_id}/result.csv", response_class=Response)
 async def import_result(
-    batch_id: uuid.UUID, _: User = Depends(managers), db: AsyncSession = Depends(get_db)
+    batch_id: uuid.UUID, _: User = Depends(imports_view), db: AsyncSession = Depends(get_db)
 ) -> Response:
     batch = await _batch(db, batch_id)
     name = f"import-{batch.created_at:%Y%m%d-%H%M}-result.csv"

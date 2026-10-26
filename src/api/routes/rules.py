@@ -21,14 +21,14 @@ from complaint_rules.matrix import (
     export_rows,
 )
 from database import audit
-from database.models import Category, Department, Role, Rule, User
+from database.models import Category, Department, Rule, User
 from database.session import get_db
-from security.dependencies import STAFF_ROLES, require_roles
+from security.dependencies import require_access
 from src.api.schemas import ErrorResponse, FactOut, RuleOut, RuleWrite
 
 router = APIRouter(prefix="/rules", tags=["rules"])
-staff = require_roles(*STAFF_ROLES)
-admin_only = require_roles(Role.ADMIN)
+rules_view = require_access("rules", "view")
+rules_edit = require_access("rules", "edit")
 
 
 async def _validated(db: AsyncSession, payload: RuleWrite) -> RuleRecord:
@@ -48,17 +48,21 @@ async def _validated(db: AsyncSession, payload: RuleWrite) -> RuleRecord:
 
 
 @router.get("", response_model=list[RuleOut])
-async def list_rules(_: User = Depends(staff), db: AsyncSession = Depends(get_db)) -> list[Rule]:
+async def list_rules(
+    _: User = Depends(rules_view), db: AsyncSession = Depends(get_db)
+) -> list[Rule]:
     return list((await db.scalars(select(Rule).order_by(Rule.rule_type, Rule.rule_id))).all())
 
 
 @router.get("/facts", response_model=list[FactOut])
-async def list_facts(_: User = Depends(staff)) -> list[FactOut]:
+async def list_facts(_: User = Depends(rules_view)) -> list[FactOut]:
     return [FactOut(name=name, type=f.type, description=f.description) for name, f in FACTS.items()]
 
 
 @router.get("/export.csv", response_class=Response)
-async def export_rules(_: User = Depends(staff), db: AsyncSession = Depends(get_db)) -> Response:
+async def export_rules(
+    _: User = Depends(rules_view), db: AsyncSession = Depends(get_db)
+) -> Response:
     rules = (await db.scalars(select(Rule).order_by(Rule.rule_type, Rule.rule_id))).all()
     buffer = io.StringIO()
     writer = csv.DictWriter(buffer, fieldnames=EXPORT_COLUMNS)
@@ -78,7 +82,7 @@ async def export_rules(_: User = Depends(staff), db: AsyncSession = Depends(get_
     responses={409: {"model": ErrorResponse}, 422: {"model": ErrorResponse}},
 )
 async def create_rule(
-    payload: RuleWrite, actor: User = Depends(admin_only), db: AsyncSession = Depends(get_db)
+    payload: RuleWrite, actor: User = Depends(rules_edit), db: AsyncSession = Depends(get_db)
 ) -> Rule:
     record = await _validated(db, payload)
     if await db.scalar(select(Rule.id).where(Rule.rule_id == record.rule_id)):
@@ -103,7 +107,7 @@ async def create_rule(
 async def replace_rule(
     rule_id: str,
     payload: RuleWrite,
-    actor: User = Depends(admin_only),
+    actor: User = Depends(rules_edit),
     db: AsyncSession = Depends(get_db),
 ) -> Rule:
     rule = await db.scalar(select(Rule).where(Rule.rule_id == rule_id))

@@ -12,9 +12,9 @@ from fastapi import APIRouter, Depends, HTTPException, Query, Response, status
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy.orm import Session
 
-from database.models import AnalysisRun, Complaint, Role, User
+from database.models import AnalysisRun, Complaint, User
 from database.session import get_db
-from security.dependencies import STAFF_ROLES, require_roles
+from security.dependencies import require_access
 from src.analytics import metrics
 from src.analytics.export import EXPORTERS, cell
 from src.analytics.filters import Filters
@@ -31,8 +31,9 @@ from src.api.schemas import (
 from src.core.domain import analysis_config, analytics_config
 
 router = APIRouter(tags=["analytics"])
-staff = require_roles(*STAFF_ROLES)
-insight_roles = require_roles(Role.REVIEWER, Role.MANAGER, Role.ADMIN)
+dashboard_view = require_access("dashboard", "view")
+analytics_view = require_access("analytics", "view")
+reports_view = require_access("reports", "view")
 
 ADMIN_DIMENSIONS = (
     "category",
@@ -82,7 +83,7 @@ def analytics_filters(
 @router.get("/dashboard/admin", response_model=AdminDashboardOut)
 async def admin_dashboard(
     f: Filters = Depends(analytics_filters),
-    _: User = Depends(insight_roles),
+    _: User = Depends(analytics_view),
     db: AsyncSession = Depends(get_db),
 ) -> dict[str, Any]:
     limit = analytics_config()["dashboard"]["list_limit"]
@@ -113,7 +114,7 @@ async def admin_dashboard(
 async def analytics(
     f: Filters = Depends(analytics_filters),
     bucket: str = Query("day", pattern="^(day|week|month)$"),
-    _: User = Depends(insight_roles),
+    _: User = Depends(analytics_view),
     db: AsyncSession = Depends(get_db),
 ) -> dict[str, Any]:
     def build(s: Session) -> dict[str, Any]:
@@ -176,7 +177,7 @@ def _agent_item(complaint: Complaint, run: AnalysisRun | None) -> AgentQueueItem
 @router.get("/dashboard/agent", response_model=AgentDashboardOut)
 async def agent_dashboard(
     department: str | None = Query(None, description="Defaults to the agent's own department"),
-    user: User = Depends(staff),
+    user: User = Depends(dashboard_view),
     db: AsyncSession = Depends(get_db),
 ) -> AgentDashboardOut:
     code = department or (user.department.code if user.department else None)
@@ -185,7 +186,7 @@ async def agent_dashboard(
 
 
 @router.get("/reports", response_model=list[ReportSpecOut])
-async def list_reports(_: User = Depends(insight_roles)) -> list[ReportSpecOut]:
+async def list_reports(_: User = Depends(reports_view)) -> list[ReportSpecOut]:
     return [
         ReportSpecOut(code=s.code, title=s.title, description=s.description)
         for s in REPORTS.values()
@@ -202,7 +203,7 @@ async def _report(db: AsyncSession, code: str, f: Filters) -> Report:
 async def preview_report(
     code: str,
     f: Filters = Depends(analytics_filters),
-    _: User = Depends(insight_roles),
+    _: User = Depends(reports_view),
     db: AsyncSession = Depends(get_db),
 ) -> ReportOut:
     """The report as JSON; each table is cut to its first 100 rows (exports have them all)."""
@@ -239,7 +240,7 @@ async def export_report(
     code: str,
     format: str = Query("csv", pattern="^(csv|xlsx|pdf)$"),
     f: Filters = Depends(analytics_filters),
-    _: User = Depends(insight_roles),
+    _: User = Depends(reports_view),
     db: AsyncSession = Depends(get_db),
 ) -> Response:
     report = await _report(db, code, f)

@@ -18,13 +18,13 @@ from fastapi.concurrency import run_in_threadpool
 from sqlalchemy import select
 from sqlalchemy.ext.asyncio import AsyncSession
 
-from database.models import Chunk, Document, DocumentVersion, Role, User
+from database.models import Chunk, Document, DocumentVersion, User
 from database.session import get_db
 from knowledge_base import service
 from knowledge_base.config import get_kb_config
 from knowledge_base.embeddings import Embedder, get_embedder
 from knowledge_base.retrieval import search_chunks
-from security.dependencies import STAFF_ROLES, require_roles
+from security.dependencies import require_access
 from src.api.schemas import (
     ChunkOut,
     DocumentOut,
@@ -37,8 +37,8 @@ from src.core.config import Settings, get_settings
 from src.core.storage import Storage, get_storage, safe_filename
 
 router = APIRouter(tags=["knowledge-base"])
-staff = require_roles(*STAFF_ROLES)
-admin_only = require_roles(Role.ADMIN)
+kb_view = require_access("knowledge_base", "view")
+kb_edit = require_access("knowledge_base", "edit")
 
 
 async def _get_version(db: AsyncSession, version_id: uuid.UUID) -> DocumentVersion:
@@ -49,20 +49,20 @@ async def _get_version(db: AsyncSession, version_id: uuid.UUID) -> DocumentVersi
 
 
 @router.get("/documents/types", response_model=list[DocumentTypeOut])
-async def list_document_types(_: User = Depends(staff)) -> list[DocumentTypeOut]:
+async def list_document_types(_: User = Depends(kb_view)) -> list[DocumentTypeOut]:
     return [DocumentTypeOut(**t.model_dump()) for t in get_kb_config().document_types]
 
 
 @router.get("/documents", response_model=list[DocumentOut])
 async def list_documents(
-    _: User = Depends(staff), db: AsyncSession = Depends(get_db)
+    _: User = Depends(kb_view), db: AsyncSession = Depends(get_db)
 ) -> list[Document]:
     return list((await db.scalars(select(Document).order_by(Document.doc_code))).all())
 
 
 @router.get("/documents/{document_id}", response_model=DocumentOut)
 async def get_document(
-    document_id: uuid.UUID, _: User = Depends(staff), db: AsyncSession = Depends(get_db)
+    document_id: uuid.UUID, _: User = Depends(kb_view), db: AsyncSession = Depends(get_db)
 ) -> Document:
     document = await db.get(Document, document_id)
     if document is None:
@@ -85,7 +85,7 @@ async def upload_document(
     effective_date: date | None = Form(None),
     expiry_date: date | None = Form(None),
     activate: bool = Form(True, description="Make this the active version once processed"),
-    actor: User = Depends(admin_only),
+    actor: User = Depends(kb_edit),
     db: AsyncSession = Depends(get_db),
     storage: Storage = Depends(get_storage),
     settings: Settings = Depends(get_settings),
@@ -128,7 +128,7 @@ def content_disposition(media_type: str, file_name: str) -> str:
 )
 async def download_version_file(
     version_id: uuid.UUID,
-    _: User = Depends(staff),
+    _: User = Depends(kb_view),
     db: AsyncSession = Depends(get_db),
     storage: Storage = Depends(get_storage),
 ) -> Response:
@@ -148,7 +148,7 @@ async def download_version_file(
 
 @router.get("/document-versions/{version_id}/chunks", response_model=list[ChunkOut])
 async def list_version_chunks(
-    version_id: uuid.UUID, _: User = Depends(staff), db: AsyncSession = Depends(get_db)
+    version_id: uuid.UUID, _: User = Depends(kb_view), db: AsyncSession = Depends(get_db)
 ) -> list[Chunk]:
     await _get_version(db, version_id)
     return list(
@@ -162,7 +162,7 @@ async def list_version_chunks(
 
 @router.post("/document-versions/{version_id}/activate", response_model=DocumentVersionOut)
 async def activate_version(
-    version_id: uuid.UUID, actor: User = Depends(admin_only), db: AsyncSession = Depends(get_db)
+    version_id: uuid.UUID, actor: User = Depends(kb_edit), db: AsyncSession = Depends(get_db)
 ) -> DocumentVersion:
     version = await _get_version(db, version_id)
     await service.activate_version(db, version, actor)
@@ -171,7 +171,7 @@ async def activate_version(
 
 @router.post("/document-versions/{version_id}/retire", response_model=DocumentVersionOut)
 async def retire_version(
-    version_id: uuid.UUID, actor: User = Depends(admin_only), db: AsyncSession = Depends(get_db)
+    version_id: uuid.UUID, actor: User = Depends(kb_edit), db: AsyncSession = Depends(get_db)
 ) -> DocumentVersion:
     version = await _get_version(db, version_id)
     await service.retire_version(db, version, actor)
@@ -184,7 +184,7 @@ async def retire_version(
     status_code=status.HTTP_202_ACCEPTED,
 )
 async def reprocess_version(
-    version_id: uuid.UUID, actor: User = Depends(admin_only), db: AsyncSession = Depends(get_db)
+    version_id: uuid.UUID, actor: User = Depends(kb_edit), db: AsyncSession = Depends(get_db)
 ) -> DocumentVersion:
     version = await _get_version(db, version_id)
     await service.reprocess_version(db, version, actor)
@@ -195,7 +195,7 @@ async def reprocess_version(
 async def search_knowledge_base(
     q: str = Query(min_length=2, max_length=500),
     limit: int = Query(8, ge=1, le=25),
-    _: User = Depends(staff),
+    _: User = Depends(kb_view),
     db: AsyncSession = Depends(get_db),
     embedder: Embedder = Depends(get_embedder),
 ) -> list[SearchResultOut]:

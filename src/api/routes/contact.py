@@ -6,7 +6,7 @@ from sqlalchemy.ext.asyncio import AsyncSession
 
 from database.models import Complaint, Enquiry, EnquiryStatus, User
 from database.session import get_db
-from security.dependencies import STAFF_ROLES, get_optional_user, require_roles
+from security.dependencies import get_optional_user, require_access
 from src.api.schemas import (
     ContactIn,
     ContactOut,
@@ -18,7 +18,8 @@ from src.api.schemas import (
 from support_contact.service import ContactError, convert, set_status, submit_contact, subscribe
 
 router = APIRouter(tags=["contact"])
-staff = require_roles(*STAFF_ROLES)
+enquiries_view = require_access("enquiries", "view")
+enquiries_edit = require_access("enquiries", "edit")
 
 
 def _raise(exc: ContactError) -> HTTPException:
@@ -80,7 +81,7 @@ async def contact(
 async def list_enquiries(
     status_filter: EnquiryStatus | None = Query(None, alias="status"),
     topic: ContactTopic | None = Query(None),
-    _: User = Depends(staff),
+    _: User = Depends(enquiries_view),
     db: AsyncSession = Depends(get_db),
 ) -> list[EnquiryOut]:
     stmt = select(Enquiry).order_by(Enquiry.created_at.desc(), Enquiry.ref.desc()).limit(500)
@@ -95,7 +96,7 @@ async def list_enquiries(
 async def update_enquiry(
     ref: str,
     payload: EnquiryUpdate,
-    user: User = Depends(staff),
+    user: User = Depends(enquiries_edit),
     db: AsyncSession = Depends(get_db),
 ) -> EnquiryOut:
     enquiry = await _enquiry(db, ref)
@@ -105,7 +106,7 @@ async def update_enquiry(
 
 @router.post("/enquiries/{ref}/convert", response_model=EnquiryOut)
 async def convert_enquiry(
-    ref: str, user: User = Depends(staff), db: AsyncSession = Depends(get_db)
+    ref: str, user: User = Depends(enquiries_edit), db: AsyncSession = Depends(get_db)
 ) -> EnquiryOut:
     """Create a complaint from an enquiry sent by a signed-in customer (once)."""
     enquiry = await _enquiry(db, ref)

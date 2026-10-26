@@ -7,10 +7,11 @@ from sqlalchemy.ext.asyncio import AsyncSession
 from database import audit
 from database.models import Department, Role, User
 from database.session import get_db
-from security.dependencies import get_current_user, require_roles
+from security.dependencies import get_current_user, require_access, require_roles
 from src.api.schemas import UserOut, UserUpdate
 
 router = APIRouter(tags=["users"])
+users_view = require_access("users", "view")
 
 
 @router.get("/me", response_model=UserOut)
@@ -20,7 +21,7 @@ async def read_me(user: User = Depends(get_current_user)) -> User:
 
 @router.get("/users", response_model=list[UserOut])
 async def list_users(
-    _: User = Depends(require_roles(Role.ADMIN, Role.MANAGER)),
+    _: User = Depends(users_view),
     db: AsyncSession = Depends(get_db),
 ) -> list[User]:
     return list((await db.scalars(select(User).order_by(User.created_at))).all())

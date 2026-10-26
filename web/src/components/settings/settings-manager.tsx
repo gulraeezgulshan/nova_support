@@ -4,6 +4,7 @@ import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { useState } from "react";
 import { toast } from "sonner";
 
+import { DocumentTypesEditor } from "@/components/settings/document-types-editor";
 import { LogoUpload } from "@/components/settings/logo-upload";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -30,11 +31,19 @@ import {
   readSettingsOptions,
   readSettingsQueryKey,
   updateSettingsMutation,
+  listDocumentsOptions,
+  reprocessActiveDocumentsMutation,
 } from "@/lib/api/generated/@tanstack/react-query.gen";
-import type { SettingsOut, SettingsUpdate } from "@/lib/api/generated/types.gen";
+import type {
+  KnowledgeBaseSettings,
+  SettingsOut,
+  SettingsUpdate,
+} from "@/lib/api/generated/types.gen";
 import { apiErrorMessage } from "@/lib/api/errors";
 
-type Form = Omit<SettingsUpdate, "version">;
+type Form = Omit<SettingsUpdate, "version" | "knowledge_base"> & {
+  knowledge_base: KnowledgeBaseSettings;
+};
 const EFFORTS = ["none", "minimal", "low", "medium", "high", "xhigh", "max"] as const;
 
 function toForm(s: SettingsOut): Form {
@@ -53,10 +62,15 @@ function toForm(s: SettingsOut): Form {
 function Field({
   label,
   help,
+  defaultText,
+  onReset,
   children,
 }: {
   label: string;
   help?: string;
+  /** Shown as "Default: …" with a Reset link when given. */
+  defaultText?: string;
+  onReset?: () => void;
   children: React.ReactNode;
 }) {
   return (
@@ -64,6 +78,19 @@ function Field({
       <div>
         <Label>{label}</Label>
         {help ? <p className="mt-1 text-xs text-muted-foreground">{help}</p> : null}
+        {defaultText !== undefined ? (
+          <p className="mt-1 text-xs text-muted-foreground">
+            Default: {defaultText}
+            {onReset ? (
+              <>
+                {" · "}
+                <button type="button" className="underline hover:text-foreground" onClick={onReset}>
+                  Reset
+                </button>
+              </>
+            ) : null}
+          </p>
+        ) : null}
       </div>
       <div className="max-w-md">{children}</div>
     </div>
@@ -107,6 +134,13 @@ export function SettingsManager() {
     onError: (err) => toast.error(apiErrorMessage(err, "Settings were not saved.")),
   });
 
+  const documents = useQuery(listDocumentsOptions());
+  const reprocess = useMutation({
+    ...reprocessActiveDocumentsMutation(),
+    onSuccess: (r) => toast.success(`Reprocessing ${r.queued} documents…`),
+    onError: (err) => toast.error(apiErrorMessage(err, "Reprocessing did not start.")),
+  });
+
   if (settings.isPending) return <Skeleton className="h-96 w-full" />;
   if (settings.isError)
     return <p className="text-sm text-destructive">{apiErrorMessage(settings.error)}</p>;
@@ -117,6 +151,13 @@ export function SettingsManager() {
   const set = <G extends keyof Form>(group: G, patch: Partial<Form[G]>) =>
     setEdits({ ...form, [group]: { ...form[group], ...patch } });
   const models = data.suggested_models[form.ai.provider] ?? [];
+  const kb = form.knowledge_base;
+  const kbDefaults = data.defaults.knowledge_base;
+  const aiDefaults = data.defaults.ai;
+  const typesInUse: Record<string, string[]> = {};
+  for (const d of documents.data ?? []) {
+    (typesInUse[d.doc_type] ??= []).push(d.doc_code);
+  }
 
   const footer = (
     <div className="flex flex-wrap items-center justify-between gap-3 border-t pt-4">
@@ -146,6 +187,7 @@ export function SettingsManager() {
         <TabsTrigger value="ai">AI</TabsTrigger>
         <TabsTrigger value="operations">Operations</TabsTrigger>
         <TabsTrigger value="orders">Orders</TabsTrigger>
+        <TabsTrigger value="knowledge_base">Knowledge base</TabsTrigger>
         <TabsTrigger value="branding">Branding</TabsTrigger>
         <TabsTrigger value="policy">Policy facts</TabsTrigger>
       </TabsList>
@@ -266,6 +308,43 @@ export function SettingsManager() {
             onCheckedChange={(v) => set("ai", { auto_analysis: v })}
           />
         </Field>
+        <Field
+          label="Timeout (seconds)"
+          help="10 to 300. How long one AI call may take before it is given up."
+          defaultText={String(aiDefaults.timeout_seconds)}
+          onReset={() => set("ai", { timeout_seconds: aiDefaults.timeout_seconds })}
+        >
+          <NumberInput
+            value={form.ai.timeout_seconds}
+            min={10}
+            max={300}
+            onChange={(v) => set("ai", { timeout_seconds: v })}
+          />
+        </Field>
+        <Field
+          label="Attempts"
+          help="1 to 3: the first call plus repair retries when the answer is invalid."
+          defaultText={String(aiDefaults.max_attempts)}
+          onReset={() => set("ai", { max_attempts: aiDefaults.max_attempts })}
+        >
+          <NumberInput
+            value={form.ai.max_attempts}
+            min={1}
+            max={3}
+            onChange={(v) => set("ai", { max_attempts: v })}
+          />
+        </Field>
+        <Field
+          label="OpenAI reasoning"
+          help="Send the reasoning effort to OpenAI. Turn off for models without reasoning."
+          defaultText={aiDefaults.openai_reasoning ? "on" : "off"}
+          onReset={() => set("ai", { openai_reasoning: aiDefaults.openai_reasoning })}
+        >
+          <Switch
+            checked={form.ai.openai_reasoning}
+            onCheckedChange={(v) => set("ai", { openai_reasoning: v })}
+          />
+        </Field>
         {footer}
       </TabsContent>
 
@@ -361,6 +440,112 @@ export function SettingsManager() {
             min={1}
             max={10000}
             onChange={(v) => set("orders", { fallback_pkr_rate: v })}
+          />
+        </Field>
+        {footer}
+      </TabsContent>
+
+      <TabsContent value="knowledge_base" className="space-y-6 rounded-xl border p-6">
+        <Field
+          label="Chunk size (tokens)"
+          help="100 to 480. The embedding model reads at most 512 tokens per passage."
+          defaultText={String(kbDefaults.chunk_max_tokens)}
+          onReset={() => set("knowledge_base", { chunk_max_tokens: kbDefaults.chunk_max_tokens })}
+        >
+          <NumberInput
+            value={kb.chunk_max_tokens}
+            min={100}
+            max={480}
+            onChange={(v) => set("knowledge_base", { chunk_max_tokens: v })}
+          />
+        </Field>
+        <Field
+          label="Chunk overlap (tokens)"
+          help={`0 to ${kb.chunk_max_tokens - 50} (chunk size minus 50). Repeats the last sentences of a passage at the start of the next.`}
+          defaultText={String(kbDefaults.chunk_overlap_tokens)}
+          onReset={() =>
+            set("knowledge_base", { chunk_overlap_tokens: kbDefaults.chunk_overlap_tokens })
+          }
+        >
+          <NumberInput
+            value={kb.chunk_overlap_tokens}
+            min={0}
+            max={kb.chunk_max_tokens - 50}
+            onChange={(v) => set("knowledge_base", { chunk_overlap_tokens: v })}
+          />
+        </Field>
+        <div className="space-y-2 rounded-lg bg-muted/50 p-4 text-sm">
+          <p className="text-muted-foreground">
+            New uploads use these sizes immediately; existing documents keep their passages until
+            reprocessed.
+          </p>
+          <Button
+            variant="outline"
+            disabled={reprocess.isPending || dirty}
+            onClick={() => {
+              if (
+                window.confirm(
+                  "Re-chunk and re-embed every active document with the saved sizes? They stay searchable meanwhile.",
+                )
+              )
+                reprocess.mutate({});
+            }}
+          >
+            Reprocess all active documents
+          </Button>
+          {dirty ? <p className="text-xs text-muted-foreground">Save your changes first.</p> : null}
+        </div>
+        <Field
+          label="Upload size limit (MB)"
+          help="1 to 50."
+          defaultText={String(kbDefaults.max_upload_mb)}
+          onReset={() => set("knowledge_base", { max_upload_mb: kbDefaults.max_upload_mb })}
+        >
+          <NumberInput
+            value={kb.max_upload_mb}
+            min={1}
+            max={50}
+            onChange={(v) => set("knowledge_base", { max_upload_mb: v })}
+          />
+        </Field>
+        <Field
+          label="Candidates per search method"
+          help="5 to 100. Passages each search (meaning and keywords) brings before they are merged."
+          defaultText={String(kbDefaults.retrieval_candidates)}
+          onReset={() =>
+            set("knowledge_base", { retrieval_candidates: kbDefaults.retrieval_candidates })
+          }
+        >
+          <NumberInput
+            value={kb.retrieval_candidates}
+            min={5}
+            max={100}
+            onChange={(v) => set("knowledge_base", { retrieval_candidates: v })}
+          />
+        </Field>
+        <Field
+          label="Fusion constant (RRF k)"
+          help="1 to 200. Standard value 60; lower gives the top ranks more weight."
+          defaultText={String(kbDefaults.rrf_k)}
+          onReset={() => set("knowledge_base", { rrf_k: kbDefaults.rrf_k })}
+        >
+          <NumberInput
+            value={kb.rrf_k}
+            min={1}
+            max={200}
+            onChange={(v) => set("knowledge_base", { rrf_k: v })}
+          />
+        </Field>
+        <Field
+          label="Document types and precedence"
+          help="Which source wins when two documents disagree."
+          defaultText={`${kbDefaults.document_types.length} types`}
+          onReset={() => set("knowledge_base", { document_types: kbDefaults.document_types })}
+        >
+          <DocumentTypesEditor
+            value={kb.document_types}
+            onChange={(next) => set("knowledge_base", { document_types: next })}
+            inUse={typesInUse}
           />
         </Field>
         {footer}

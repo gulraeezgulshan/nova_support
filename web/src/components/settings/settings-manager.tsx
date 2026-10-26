@@ -5,10 +5,11 @@ import { useState } from "react";
 import { toast } from "sonner";
 
 import { DocumentTypesEditor } from "@/components/settings/document-types-editor";
+import { Field, NumberInput } from "@/components/settings/fields";
 import { LogoUpload } from "@/components/settings/logo-upload";
+import { ValidationSettingsForm } from "@/components/settings/validation-settings";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
 import {
   Select,
   SelectContent,
@@ -28,6 +29,8 @@ import {
 } from "@/components/ui/table";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import {
+  getVocabularyOptions,
+  listCategoriesOptions,
   readSettingsOptions,
   readSettingsQueryKey,
   updateSettingsMutation,
@@ -62,66 +65,6 @@ function toForm(s: SettingsOut): Form {
   };
 }
 
-function Field({
-  label,
-  help,
-  defaultText,
-  onReset,
-  children,
-}: {
-  label: string;
-  help?: string;
-  /** Shown as "Default: …" with a Reset link when given. */
-  defaultText?: string;
-  onReset?: () => void;
-  children: React.ReactNode;
-}) {
-  return (
-    <div className="grid gap-1.5 sm:grid-cols-[16rem_1fr] sm:items-start sm:gap-6">
-      <div>
-        <Label>{label}</Label>
-        {help ? <p className="mt-1 text-xs text-muted-foreground">{help}</p> : null}
-        {defaultText !== undefined ? (
-          <p className="mt-1 text-xs text-muted-foreground">
-            Default: {defaultText}
-            {onReset ? (
-              <>
-                {" · "}
-                <button type="button" className="underline hover:text-foreground" onClick={onReset}>
-                  Reset
-                </button>
-              </>
-            ) : null}
-          </p>
-        ) : null}
-      </div>
-      <div className="max-w-md">{children}</div>
-    </div>
-  );
-}
-
-function NumberInput({
-  value,
-  min,
-  max,
-  onChange,
-}: {
-  value: number;
-  min: number;
-  max: number;
-  onChange: (v: number) => void;
-}) {
-  return (
-    <Input
-      type="number"
-      min={min}
-      max={max}
-      value={value}
-      onChange={(e) => onChange(Number(e.target.value))}
-    />
-  );
-}
-
 export function SettingsManager() {
   const queryClient = useQueryClient();
   const settings = useQuery(readSettingsOptions());
@@ -138,6 +81,8 @@ export function SettingsManager() {
   });
 
   const documents = useQuery(listDocumentsOptions());
+  const vocabulary = useQuery(getVocabularyOptions());
+  const categories = useQuery(listCategoriesOptions());
   const reprocess = useMutation({
     ...reprocessActiveDocumentsMutation(),
     onSuccess: (r) => toast.success(`Reprocessing ${r.queued} documents…`),
@@ -191,6 +136,7 @@ export function SettingsManager() {
         <TabsTrigger value="operations">Operations</TabsTrigger>
         <TabsTrigger value="orders">Orders</TabsTrigger>
         <TabsTrigger value="knowledge_base">Knowledge base</TabsTrigger>
+        <TabsTrigger value="validation">Validation</TabsTrigger>
         <TabsTrigger value="branding">Branding</TabsTrigger>
         <TabsTrigger value="policy">Policy facts</TabsTrigger>
       </TabsList>
@@ -551,6 +497,21 @@ export function SettingsManager() {
             inUse={typesInUse}
           />
         </Field>
+        {footer}
+      </TabsContent>
+
+      <TabsContent value="validation" className="space-y-6 rounded-xl border p-6">
+        <ValidationSettingsForm
+          value={form.validation}
+          defaults={data.defaults.validation}
+          operations={form.operations}
+          operationsDefaults={data.defaults.operations}
+          onChange={(patch) => set("validation", patch)}
+          onOperationsChange={(patch) => set("operations", patch)}
+          actionCodes={(vocabulary.data?.actions ?? []).map((a) => a.code)}
+          categories={categories.data ?? []}
+          riskSignals={data.risk_signals}
+        />
         {footer}
       </TabsContent>
 

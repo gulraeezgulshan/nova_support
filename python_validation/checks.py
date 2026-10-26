@@ -129,10 +129,19 @@ def _escalation_level(analysis: ComplaintAnalysis, vocab: Vocabulary) -> int:
 
 
 def verdict_config() -> dict[str, Any]:
-    """validation.yaml with the two review thresholds from the Settings page."""
-    ops = app_settings.runtime().operations
+    """The validation values from the Settings page; promise patterns still from the YAML."""
+    current = app_settings.runtime()
+    ops, v = current.operations, current.validation
     return {
         **validation_config(),
+        "score_weights": v.score_weights.model_dump(),
+        # Limits left empty ("no limit") are omitted, exactly as in the YAML.
+        "compensation": {
+            kind: limit.model_dump(exclude_none=True) for kind, limit in v.compensation.items()
+        },
+        "never_allowed_actions": list(v.never_allowed_actions),
+        "orders_required_for": list(v.orders_required_for),
+        "escalation_action_levels": dict(v.escalation_action_levels),
         "verified_min_score": ops.verified_min_score,
         "always_review_escalation_level": ops.always_review_escalation_level,
     }

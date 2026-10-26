@@ -13,6 +13,7 @@ from typing import Any
 
 import yaml
 
+import app_settings
 from complaint_rules.engine import routing_config
 from src.core.config import ROOT_DIR
 
@@ -69,16 +70,9 @@ class _Pattern:
     regex: re.Pattern[str]
 
 
-@dataclass(frozen=True)
-class _Config:
-    confident: int
-    secondary: int
-    patterns: dict[tuple[str, str], list[_Pattern]]
-    boosts: dict[str, tuple[str, str, int]]
-
-
 @lru_cache
-def _config() -> _Config:
+def _patterns() -> dict[tuple[str, str], list[_Pattern]]:
+    """The weighted phrase lists, compiled once (they move to Settings in Part 3)."""
     with CONFIG_FILE.open(encoding="utf-8") as handle:
         data = yaml.safe_load(handle)
     patterns: dict[tuple[str, str], list[_Pattern]] = {}
@@ -88,10 +82,7 @@ def _config() -> _Config:
                 _Pattern(int(weight), re.compile(rf"(?<!\w)(?:{regex})(?!\w)", re.IGNORECASE))
                 for weight, regex in entries
             ]
-    boosts = {name: (c, s, int(w)) for name, (c, s, w) in data.get("signal_boosts", {}).items()}
-    return _Config(
-        data["thresholds"]["confident"], data["thresholds"]["secondary"], patterns, boosts
-    )
+    return patterns
 
 
 def _severity(category: str) -> int:
@@ -104,10 +95,10 @@ def _severity(category: str) -> int:
 
 def classify(text: str, signals: dict[str, Any], taxonomy: dict[str, list[str]]) -> Classification:
     """`taxonomy` maps active categories to their active subcategories."""
-    config = _config()
+    settings = app_settings.runtime().validation  # thresholds and boosts: Settings page
     scores: dict[tuple[str, str], int] = {}
     evidence: dict[tuple[str, str], list[str]] = {}
-    for key, patterns in config.patterns.items():
+    for key, patterns in _patterns().items():
         category, subcategory = key
         if subcategory not in taxonomy.get(category, []):
             continue  # deactivated or removed in the live taxonomy
@@ -116,7 +107,8 @@ def classify(text: str, signals: dict[str, Any], taxonomy: dict[str, list[str]])
             if match:
                 scores[key] = scores.get(key, 0) + pattern.weight
                 evidence.setdefault(key, []).append(match.group(0).lower())
-    for signal, (category, subcategory, weight) in config.boosts.items():
+    for signal, boost in settings.signal_boosts.items():
+        category, subcategory, weight = boost.category, boost.subcategory, boost.weight
         if signals.get(signal) and subcategory in taxonomy.get(category, []):
             key = (category, subcategory)
             scores[key] = scores.get(key, 0) + weight
@@ -130,7 +122,7 @@ def classify(text: str, signals: dict[str, Any], taxonomy: dict[str, list[str]])
     for cand in candidates:
         best_per_category.setdefault(cand.category, cand)
 
-    confident = [c for c in best_per_category.values() if c.score >= config.confident]
+    confident = [c for c in best_per_category.values() if c.score >= settings.classifier_confident]
     if not candidates:
         return Classification("unknown", None, [], [])
     if not confident:
@@ -141,6 +133,6 @@ def classify(text: str, signals: dict[str, Any], taxonomy: dict[str, list[str]])
     secondary = [
         c
         for c in best_per_category.values()
-        if c.category != primary.category and c.score >= config.secondary
+        if c.category != primary.category and c.score >= settings.classifier_secondary
     ]
     return Classification("confident", primary, secondary, candidates)

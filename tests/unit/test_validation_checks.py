@@ -348,3 +348,98 @@ def test_vague_complaint_is_not_guessed(vocab: Vocabulary, rules: list[RuleSpec]
     outcome = run(vocab, rules, a, text=text, facts={"has_order": False})
     assert check(outcome, "category") == CheckStatus.SKIP
     assert outcome.classification_source == "genai_fallback"
+
+
+# ------------------------------------------------------------------ values from the Settings page
+
+
+def _with_validation(**fields: Any) -> None:
+    import app_settings
+
+    app_settings.override(app_settings.load({"validation": fields}))
+
+
+def test_score_weight_from_settings(vocab: Vocabulary, rules: list[RuleSpec]) -> None:
+    a = analysis(resolution_steps=BASE_ANALYSIS["resolution_steps"])  # one major failure
+    default_score = run(vocab, rules, a).score
+    _with_validation(score_weights={"critical": 5, "major": 1, "minor": 1})
+    assert run(vocab, rules, a).score > default_score
+
+
+def test_compensation_cap_from_settings(vocab: Vocabulary, rules: list[RuleSpec]) -> None:
+    import app_settings
+
+    a = analysis(
+        compensation={
+            "offered": True,
+            "type": "store_credit",
+            "amount": 60.0,
+            "policy_chunk": DELIVERY_PASSAGE.chunk_code,
+        }
+    )
+    assert check(run(vocab, rules, a), "compensation") == CheckStatus.FAIL  # cap USD 50
+    comp = app_settings.defaults().validation.model_dump()["compensation"]
+    comp["store_credit"]["max_amount"] = 75
+    _with_validation(compensation=comp)
+    assert check(run(vocab, rules, a), "compensation") == CheckStatus.PASS
+    comp["store_credit"]["max_amount"] = None
+    comp["store_credit"]["max_pct_of_order"] = None
+    _with_validation(compensation=comp)
+    assert check(run(vocab, rules, a), "compensation") == CheckStatus.PASS
+
+
+def test_never_allowed_from_settings(vocab: Vocabulary, rules: list[RuleSpec]) -> None:
+    import app_settings
+
+    steps = [
+        *analysis().model_dump()["resolution_steps"],
+        {
+            "action_code": "DISCUSS_LIABILITY",
+            "description": "Discuss liability.",
+            "policy_chunk": None,
+        },
+    ]
+    a = analysis(resolution_steps=steps)
+    assert check(run(vocab, rules, a), "prohibited_actions") == CheckStatus.FAIL
+    never = [
+        c
+        for c in app_settings.defaults().validation.never_allowed_actions
+        if c != "DISCUSS_LIABILITY"
+    ]
+    _with_validation(never_allowed_actions=never)
+    assert check(run(vocab, rules, a), "prohibited_actions") == CheckStatus.PASS
+    _with_validation(never_allowed_actions=[])
+    assert run(vocab, rules, a).checks  # still validates with nothing never-allowed
+    _with_validation(never_allowed_actions=["CONFIRM_DELIVERY_DATE"])
+    assert check(run(vocab, rules, analysis()), "prohibited_actions") == CheckStatus.FAIL
+
+
+def test_orders_required_from_settings(vocab: Vocabulary, rules: list[RuleSpec]) -> None:
+    no_order = {**LATE_FACTS, "has_order": False}
+    a = analysis(missing_information=[], clarification_questions=[])
+    assert check(run(vocab, rules, a, facts=no_order), "missing_information") == CheckStatus.FAIL
+    _with_validation(orders_required_for=["PRODUCT_DEFECT"])
+    assert check(run(vocab, rules, a, facts=no_order), "missing_information") == CheckStatus.PASS
+    _with_validation(orders_required_for=["GHOST", "DELIVERY"])  # a removed category never breaks
+    assert check(run(vocab, rules, a, facts=no_order), "missing_information") == CheckStatus.FAIL
+
+
+def test_escalation_level_from_settings(vocab: Vocabulary) -> None:
+    from complaint_rules.engine import Decision
+    from python_validation.checks import _check_required_actions, verdict_config
+
+    decision = Decision(
+        department="LOGISTICS", supporting_departments=[], urgency="Medium", priority="P2",
+        escalation_level=1, required_actions=["ESCALATE_TO_SUPERVISOR"], prohibited_actions=[],
+        policy_refs=[], follow_up_type=None, follow_up_hours=None,
+    )  # fmt: skip
+    level_one = list(vocab.escalation_levels)[1]
+    a = analysis(
+        escalation={"required": True, "level": level_one, "reason": "Repeat.", "notes": None}
+    )
+    assert _check_required_actions(a, decision, vocab, verdict_config()).status == CheckStatus.PASS
+    import app_settings
+
+    levels = app_settings.defaults().validation.escalation_action_levels
+    _with_validation(escalation_action_levels={**levels, "ESCALATE_TO_SUPERVISOR": 2})
+    assert _check_required_actions(a, decision, vocab, verdict_config()).status == CheckStatus.FAIL

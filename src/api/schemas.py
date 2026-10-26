@@ -6,6 +6,7 @@ from typing import Any, Literal
 
 from pydantic import BaseModel, ConfigDict, Field, computed_field
 
+from app_settings.access import AccessSettings, PageAccess
 from app_settings.model import (
     AiSettings,
     BrandingText,
@@ -51,6 +52,12 @@ class UserOut(ORMModel):
     role: Role
     is_active: bool
     department: DepartmentRef | None
+
+
+class MeOut(UserOut):
+    """The signed-in user plus what they may open (Page access matrix)."""
+
+    permissions: dict[str, Literal["none", "view", "edit"]]
 
 
 class UserUpdate(BaseModel):
@@ -993,3 +1000,25 @@ class OrderActionIn(BaseModel):
     note: str | None = Field(default=None, max_length=500)
     new_date: date | None = None
     days_late: int = Field(default=0, ge=0, le=30)
+
+
+class AccessPageOut(BaseModel):
+    key: str
+    label: str
+    description: str
+    has_edit: bool
+    default: PageAccess
+
+
+class AccessOut(BaseModel):
+    pages: list[AccessPageOut]
+    matrix: AccessSettings
+    version: int
+    updated_at: datetime | None
+    updated_by: str | None
+
+
+class AccessUpdate(BaseModel):
+    model_config = ConfigDict(extra="forbid")
+    matrix: dict[str, dict[str, str]]
+    version: int

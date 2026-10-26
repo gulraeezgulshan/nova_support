@@ -8,6 +8,7 @@ from complaint_processing.service import ComplaintValidationError, DuplicateComp
 from document_processing.validation import DocumentValidationError
 from knowledge_base.service import DuplicateDocumentError
 from knowledge_base.versioning import VersionTransitionError
+from src.api.routes import access as access_routes
 from src.api.routes import (
     analytics,
     attachments,
@@ -69,6 +70,7 @@ def create_app() -> FastAPI:
         rules.router,
         webhooks.router,
         settings_routes.router,
+        access_routes.router,
         order_routes.router,
     ):
         app.include_router(router, prefix=settings.api_prefix)

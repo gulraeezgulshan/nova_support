@@ -71,7 +71,7 @@
             "content": {
               "application/json": {
                 "schema": {
-                  "$ref": "#/components/schemas/UserOut"
+                  "$ref": "#/components/schemas/MeOut"
                 }
               }
             }
@@ -5059,6 +5059,76 @@
         }
       }
     },
+    "/api/v1/access": {
+      "get": {
+        "tags": [
+          "access"
+        ],
+        "summary": "Read Access",
+        "operationId": "read_access",
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/AccessOut"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "HTTPBearer": []
+          }
+        ]
+      },
+      "put": {
+        "tags": [
+          "access"
+        ],
+        "summary": "Update Access",
+        "operationId": "update_access",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/AccessUpdate"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/AccessOut"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "HTTPBearer": []
+          }
+        ]
+      }
+    },
     "/api/v1/orders/{ref}/cancel": {
       "post": {
         "tags": [
@@ -5468,6 +5538,162 @@
   },
   "components": {
     "schemas": {
+      "AccessOut": {
+        "properties": {
+          "pages": {
+            "items": {
+              "$ref": "#/components/schemas/AccessPageOut"
+            },
+            "type": "array",
+            "title": "Pages"
+          },
+          "matrix": {
+            "$ref": "#/components/schemas/AccessSettings"
+          },
+          "version": {
+            "type": "integer",
+            "title": "Version"
+          },
+          "updated_at": {
+            "anyOf": [
+              {
+                "type": "string",
+                "format": "date-time"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Updated At"
+          },
+          "updated_by": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Updated By"
+          }
+        },
+        "type": "object",
+        "required": [
+          "pages",
+          "matrix",
+          "version",
+          "updated_at",
+          "updated_by"
+        ],
+        "title": "AccessOut"
+      },
+      "AccessPageOut": {
+        "properties": {
+          "key": {
+            "type": "string",
+            "title": "Key"
+          },
+          "label": {
+            "type": "string",
+            "title": "Label"
+          },
+          "description": {
+            "type": "string",
+            "title": "Description"
+          },
+          "has_edit": {
+            "type": "boolean",
+            "title": "Has Edit"
+          },
+          "default": {
+            "$ref": "#/components/schemas/PageAccess"
+          }
+        },
+        "type": "object",
+        "required": [
+          "key",
+          "label",
+          "description",
+          "has_edit",
+          "default"
+        ],
+        "title": "AccessPageOut"
+      },
+      "AccessSettings": {
+        "properties": {
+          "dashboard": {
+            "$ref": "#/components/schemas/PageAccess"
+          },
+          "complaints": {
+            "$ref": "#/components/schemas/PageAccess"
+          },
+          "review": {
+            "$ref": "#/components/schemas/PageAccess"
+          },
+          "enquiries": {
+            "$ref": "#/components/schemas/PageAccess"
+          },
+          "mailbox": {
+            "$ref": "#/components/schemas/PageAccess"
+          },
+          "orders": {
+            "$ref": "#/components/schemas/PageAccess"
+          },
+          "imports": {
+            "$ref": "#/components/schemas/PageAccess"
+          },
+          "analytics": {
+            "$ref": "#/components/schemas/PageAccess"
+          },
+          "reports": {
+            "$ref": "#/components/schemas/PageAccess"
+          },
+          "knowledge_base": {
+            "$ref": "#/components/schemas/PageAccess"
+          },
+          "taxonomy": {
+            "$ref": "#/components/schemas/PageAccess"
+          },
+          "rules": {
+            "$ref": "#/components/schemas/PageAccess"
+          },
+          "products": {
+            "$ref": "#/components/schemas/PageAccess"
+          },
+          "users": {
+            "$ref": "#/components/schemas/PageAccess"
+          }
+        },
+        "type": "object",
+        "title": "AccessSettings",
+        "description": "The stored matrix. Reading never fails: bad entries fall back per page and role."
+      },
+      "AccessUpdate": {
+        "properties": {
+          "matrix": {
+            "additionalProperties": {
+              "additionalProperties": {
+                "type": "string"
+              },
+              "type": "object"
+            },
+            "type": "object",
+            "title": "Matrix"
+          },
+          "version": {
+            "type": "integer",
+            "title": "Version"
+          }
+        },
+        "additionalProperties": false,
+        "type": "object",
+        "required": [
+          "matrix",
+          "version"
+        ],
+        "title": "AccessUpdate"
+      },
       "ActionOut": {
         "properties": {
           "code": {
@@ -9961,6 +10187,78 @@
         ],
         "title": "MailboxStatusOut"
       },
+      "MeOut": {
+        "properties": {
+          "id": {
+            "type": "string",
+            "format": "uuid",
+            "title": "Id"
+          },
+          "email": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Email"
+          },
+          "full_name": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Full Name"
+          },
+          "role": {
+            "$ref": "#/components/schemas/Role"
+          },
+          "is_active": {
+            "type": "boolean",
+            "title": "Is Active"
+          },
+          "department": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/DepartmentRef"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "permissions": {
+            "additionalProperties": {
+              "type": "string",
+              "enum": [
+                "none",
+                "view",
+                "edit"
+              ]
+            },
+            "type": "object",
+            "title": "Permissions"
+          }
+        },
+        "type": "object",
+        "required": [
+          "id",
+          "email",
+          "full_name",
+          "role",
+          "is_active",
+          "department",
+          "permissions"
+        ],
+        "title": "MeOut",
+        "description": "The signed-in user plus what they may open (Page access matrix)."
+      },
       "NewsletterIn": {
         "properties": {
           "email": {
@@ -10409,6 +10707,45 @@
           "open_reviews"
         ],
         "title": "OverviewOut"
+      },
+      "PageAccess": {
+        "properties": {
+          "agent": {
+            "type": "string",
+            "enum": [
+              "none",
+              "view",
+              "edit"
+            ],
+            "title": "Agent"
+          },
+          "reviewer": {
+            "type": "string",
+            "enum": [
+              "none",
+              "view",
+              "edit"
+            ],
+            "title": "Reviewer"
+          },
+          "manager": {
+            "type": "string",
+            "enum": [
+              "none",
+              "view",
+              "edit"
+            ],
+            "title": "Manager"
+          }
+        },
+        "additionalProperties": false,
+        "type": "object",
+        "required": [
+          "agent",
+          "reviewer",
+          "manager"
+        ],
+        "title": "PageAccess"
       },
       "PolicyFactOut": {
         "properties": {
@@ -11635,6 +11972,9 @@
           },
           "orders": {
             "$ref": "#/components/schemas/OrderSettings"
+          },
+          "access": {
+            "$ref": "#/components/schemas/AccessSettings"
           }
         },
         "additionalProperties": false,

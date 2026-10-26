@@ -5,6 +5,92 @@ export type ClientOptions = {
 };
 
 /**
+ * AccessOut
+ */
+export type AccessOut = {
+    /**
+     * Pages
+     */
+    pages: Array<AccessPageOut>;
+    matrix: AccessSettings;
+    /**
+     * Version
+     */
+    version: number;
+    /**
+     * Updated At
+     */
+    updated_at: string | null;
+    /**
+     * Updated By
+     */
+    updated_by: string | null;
+};
+
+/**
+ * AccessPageOut
+ */
+export type AccessPageOut = {
+    /**
+     * Key
+     */
+    key: string;
+    /**
+     * Label
+     */
+    label: string;
+    /**
+     * Description
+     */
+    description: string;
+    /**
+     * Has Edit
+     */
+    has_edit: boolean;
+    default: PageAccess;
+};
+
+/**
+ * AccessSettings
+ *
+ * The stored matrix. Reading never fails: bad entries fall back per page and role.
+ */
+export type AccessSettings = {
+    dashboard?: PageAccess;
+    complaints?: PageAccess;
+    review?: PageAccess;
+    enquiries?: PageAccess;
+    mailbox?: PageAccess;
+    orders?: PageAccess;
+    imports?: PageAccess;
+    analytics?: PageAccess;
+    reports?: PageAccess;
+    knowledge_base?: PageAccess;
+    taxonomy?: PageAccess;
+    rules?: PageAccess;
+    products?: PageAccess;
+    users?: PageAccess;
+};
+
+/**
+ * AccessUpdate
+ */
+export type AccessUpdate = {
+    /**
+     * Matrix
+     */
+    matrix: {
+        [key: string]: {
+            [key: string]: string;
+        };
+    };
+    /**
+     * Version
+     */
+    version: number;
+};
+
+/**
  * ActionOut
  */
 export type ActionOut = {
@@ -2454,6 +2540,38 @@ export type MailboxStatusOut = {
 };
 
 /**
+ * MeOut
+ *
+ * The signed-in user plus what they may open (Page access matrix).
+ */
+export type MeOut = {
+    /**
+     * Id
+     */
+    id: string;
+    /**
+     * Email
+     */
+    email: string | null;
+    /**
+     * Full Name
+     */
+    full_name: string | null;
+    role: Role;
+    /**
+     * Is Active
+     */
+    is_active: boolean;
+    department: DepartmentRef | null;
+    /**
+     * Permissions
+     */
+    permissions: {
+        [key: string]: 'none' | 'view' | 'edit';
+    };
+};
+
+/**
  * NewsletterIn
  */
 export type NewsletterIn = {
@@ -2727,6 +2845,24 @@ export type OverviewOut = {
      * Open Reviews
      */
     open_reviews: number;
+};
+
+/**
+ * PageAccess
+ */
+export type PageAccess = {
+    /**
+     * Agent
+     */
+    agent: 'none' | 'view' | 'edit';
+    /**
+     * Reviewer
+     */
+    reviewer: 'none' | 'view' | 'edit';
+    /**
+     * Manager
+     */
+    manager: 'none' | 'view' | 'edit';
 };
 
 /**
@@ -3428,6 +3564,7 @@ export type RuntimeSettings = {
     operations: OperationsSettings;
     branding: BrandingSettings;
     orders: OrderSettings;
+    access?: AccessSettings;
 };
 
 /**
@@ -4320,7 +4457,7 @@ export type ReadMeResponses = {
     /**
      * Successful Response
      */
-    200: UserOut;
+    200: MeOut;
 };
 
 export type ReadMeResponse = ReadMeResponses[keyof ReadMeResponses];
@@ -6995,6 +7132,47 @@ export type BrandingLogoResponses = {
      */
     200: unknown;
 };
+
+export type ReadAccessData = {
+    body?: never;
+    path?: never;
+    query?: never;
+    url: '/api/v1/access';
+};
+
+export type ReadAccessResponses = {
+    /**
+     * Successful Response
+     */
+    200: AccessOut;
+};
+
+export type ReadAccessResponse = ReadAccessResponses[keyof ReadAccessResponses];
+
+export type UpdateAccessData = {
+    body: AccessUpdate;
+    path?: never;
+    query?: never;
+    url: '/api/v1/access';
+};
+
+export type UpdateAccessErrors = {
+    /**
+     * Validation Error
+     */
+    422: HttpValidationError;
+};
+
+export type UpdateAccessError = UpdateAccessErrors[keyof UpdateAccessErrors];
+
+export type UpdateAccessResponses = {
+    /**
+     * Successful Response
+     */
+    200: AccessOut;
+};
+
+export type UpdateAccessResponse = UpdateAccessResponses[keyof UpdateAccessResponses];
 
 export type CancelOrderData = {
     body?: never;

@@ -4,19 +4,21 @@ from fastapi import APIRouter, Depends, HTTPException, status
 from sqlalchemy import select
 from sqlalchemy.ext.asyncio import AsyncSession
 
+from app_settings.access import permissions_for
 from database import audit
 from database.models import Department, Role, User
 from database.session import get_db
 from security.dependencies import get_current_user, require_access, require_roles
-from src.api.schemas import UserOut, UserUpdate
+from src.api.schemas import MeOut, UserOut, UserUpdate
 
 router = APIRouter(tags=["users"])
 users_view = require_access("users", "view")
 
 
-@router.get("/me", response_model=UserOut)
-async def read_me(user: User = Depends(get_current_user)) -> User:
-    return user
+@router.get("/me", response_model=MeOut)
+async def read_me(user: User = Depends(get_current_user)) -> MeOut:
+    base = UserOut.model_validate(user).model_dump()
+    return MeOut(**base, permissions=permissions_for(user.role))
 
 
 @router.get("/users", response_model=list[UserOut])

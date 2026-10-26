@@ -1095,6 +1095,24 @@ export type Compensation = {
 };
 
 /**
+ * CompensationLimit
+ */
+export type CompensationLimit = {
+    /**
+     * Requires Any
+     */
+    requires_any: Array<string>;
+    /**
+     * Max Pct Of Order
+     */
+    max_pct_of_order?: number | null;
+    /**
+     * Max Amount
+     */
+    max_amount?: number | null;
+};
+
+/**
  * ComplaintAnalysis
  */
 export type ComplaintAnalysis = {
@@ -3637,7 +3655,26 @@ export type RuntimeSettings = {
     branding: BrandingSettings;
     orders: OrderSettings;
     knowledge_base: KnowledgeBaseSettings;
+    validation: ValidationSettings;
     access?: AccessSettings;
+};
+
+/**
+ * ScoreWeights
+ */
+export type ScoreWeights = {
+    /**
+     * Critical
+     */
+    critical: number;
+    /**
+     * Major
+     */
+    major: number;
+    /**
+     * Minor
+     */
+    minor: number;
 };
 
 /**
@@ -3701,6 +3738,10 @@ export type SettingsOut = {
     settings: RuntimeSettings;
     defaults: RuntimeSettings;
     /**
+     * Risk Signals
+     */
+    risk_signals: Array<string>;
+    /**
      * Version
      */
     version: number;
@@ -3750,6 +3791,7 @@ export type SettingsUpdate = {
     orders: OrderSettings;
     branding: BrandingText;
     knowledge_base?: KnowledgeBaseSettings | null;
+    validation?: ValidationSettings | null;
 };
 
 /**
@@ -3866,6 +3908,24 @@ export type ShopOrderOut = {
      * Image Url
      */
     image_url?: string | null;
+};
+
+/**
+ * SignalBoost
+ */
+export type SignalBoost = {
+    /**
+     * Category
+     */
+    category: string;
+    /**
+     * Subcategory
+     */
+    subcategory: string;
+    /**
+     * Weight
+     */
+    weight: number;
 };
 
 /**
@@ -4344,6 +4404,49 @@ export type ValidationRunOut = {
      * Created At
      */
     created_at: string;
+};
+
+/**
+ * ValidationSettings
+ *
+ * Numbers and lists Python's validation and classifier use (patterns stay in YAML).
+ */
+export type ValidationSettings = {
+    score_weights: ScoreWeights;
+    /**
+     * Compensation
+     */
+    compensation: {
+        [key: string]: CompensationLimit;
+    };
+    /**
+     * Never Allowed Actions
+     */
+    never_allowed_actions: Array<string>;
+    /**
+     * Orders Required For
+     */
+    orders_required_for: Array<string>;
+    /**
+     * Escalation Action Levels
+     */
+    escalation_action_levels: {
+        [key: string]: number;
+    };
+    /**
+     * Classifier Confident
+     */
+    classifier_confident: number;
+    /**
+     * Classifier Secondary
+     */
+    classifier_secondary: number;
+    /**
+     * Signal Boosts
+     */
+    signal_boosts: {
+        [key: string]: SignalBoost;
+    };
 };
 
 /**

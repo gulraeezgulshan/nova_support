@@ -117,7 +117,8 @@ def _known_actions() -> set[str]:
     return set(actions())
 
 
-def _known_signals() -> set[str]:
+def known_signals() -> set[str]:
+    """Risk-signal names a signal boost may use (config/detectors.yaml)."""
     import yaml
 
     from src.core.config import ROOT_DIR
@@ -186,7 +187,7 @@ class ValidationSettings(_Group):
         bad_levels = [k for k, v in self.escalation_action_levels.items() if not 1 <= v <= 5]
         if bad_levels:
             raise ValueError(f"escalation levels must be 1 to 5: {', '.join(bad_levels)}")
-        unknown = sorted(set(self.signal_boosts) - _known_signals())
+        unknown = sorted(set(self.signal_boosts) - known_signals())
         if unknown:
             raise ValueError(f"signal boosts: unknown signal {', '.join(unknown)}")
         return self

@@ -37,12 +37,14 @@ import {
 import type {
   KnowledgeBaseSettings,
   SettingsOut,
+  ValidationSettings,
   SettingsUpdate,
 } from "@/lib/api/generated/types.gen";
 import { apiErrorMessage } from "@/lib/api/errors";
 
-type Form = Omit<SettingsUpdate, "version" | "knowledge_base"> & {
+type Form = Omit<SettingsUpdate, "version" | "knowledge_base" | "validation"> & {
   knowledge_base: KnowledgeBaseSettings;
+  validation: ValidationSettings;
 };
 const EFFORTS = ["none", "minimal", "low", "medium", "high", "xhigh", "max"] as const;
 
@@ -55,6 +57,7 @@ function toForm(s: SettingsOut): Form {
     operations: s.settings.operations,
     orders: s.settings.orders,
     knowledge_base: s.settings.knowledge_base,
+    validation: s.settings.validation,
     branding: { shop_name, shop_tagline, console_name, support_email, phone, address, hours },
   };
 }

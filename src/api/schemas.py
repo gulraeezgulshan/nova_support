@@ -15,6 +15,7 @@ from app_settings.model import (
     OperationsSettings,
     OrderSettings,
     RuntimeSettings,
+    ValidationSettings,
 )
 from database.models import (
     ComplaintStatus,
@@ -923,6 +924,7 @@ class PolicyFactOut(BaseModel):
 class SettingsOut(BaseModel):
     settings: RuntimeSettings
     defaults: RuntimeSettings
+    risk_signals: list[str]  # names a signal boost can use (config/detectors.yaml)
     version: int
     updated_at: datetime | None
     updated_by: str | None
@@ -943,6 +945,7 @@ class SettingsUpdate(BaseModel):
     branding: BrandingText
     # Optional so older clients keep working: left out = keep the stored values.
     knowledge_base: KnowledgeBaseSettings | None = None
+    validation: ValidationSettings | None = None
 
 
 class BrandingOut(BaseModel):

@@ -8,8 +8,14 @@ from sqlalchemy.ext.asyncio import AsyncSession
 import app_settings
 from app_settings import SUGGESTED_MODELS, RuntimeSettings, StaleSettingsError, logos
 from app_settings.facts import policy_facts
-from app_settings.model import BrandingSettings, KnowledgeBaseSettings, LogoTarget
-from database.models import Document, Role, User
+from app_settings.model import (
+    BrandingSettings,
+    KnowledgeBaseSettings,
+    LogoTarget,
+    ValidationSettings,
+    known_signals,
+)
+from database.models import Category, Document, Role, Subcategory, User
 from database.session import get_db
 from security.dependencies import require_roles
 from src.api.schemas import BrandingOut, SettingsOut, SettingsUpdate
@@ -34,6 +40,7 @@ async def _out(db: AsyncSession) -> SettingsOut:
     return SettingsOut(
         settings=current,
         defaults=app_settings.defaults(),
+        risk_signals=sorted(known_signals()),
         version=row.version if row else 0,
         updated_at=row.updated_at if row else None,
         updated_by=(who.full_name or who.email) if who else None,
@@ -71,6 +78,37 @@ async def _check_types_in_use(
         )
 
 
+async def _check_validation_codes(db: AsyncSession, v: ValidationSettings) -> None:
+    """Categories and subcategories in the validation settings must exist in the taxonomy."""
+    rows = (
+        await db.execute(
+            select(Category.code, Subcategory.code).outerjoin(
+                Subcategory, Subcategory.category_id == Category.id
+            )
+        )
+    ).all()
+    subs: dict[str, set[str]] = {}
+    for category, subcategory in rows:
+        subs.setdefault(category, set())
+        if subcategory:
+            subs[category].add(subcategory)
+    problems = [
+        f"Needs an order: category {code} does not exist."
+        for code in v.orders_required_for
+        if code not in subs
+    ]
+    for signal, boost in v.signal_boosts.items():
+        if boost.category not in subs:
+            problems.append(f"Signal boost {signal}: category {boost.category} does not exist.")
+        elif boost.subcategory not in subs[boost.category]:
+            problems.append(
+                f"Signal boost {signal}: subcategory {boost.subcategory} "
+                f"is not in category {boost.category}."
+            )
+    if problems:
+        raise HTTPException(status.HTTP_422_UNPROCESSABLE_CONTENT, " ".join(problems))
+
+
 @router.get("/settings", response_model=SettingsOut)
 async def read_settings(
     _: User = Depends(admin_only), db: AsyncSession = Depends(get_db)
@@ -93,7 +131,7 @@ async def update_settings(
     new = RuntimeSettings(
         access=stored.access,  # changed only on the Page access screen
         knowledge_base=payload.knowledge_base or stored.knowledge_base,
-        validation=stored.validation,  # editable from Task 2 on
+        validation=payload.validation or stored.validation,
         email=payload.email,
         ai=payload.ai,
         operations=payload.operations,
@@ -106,6 +144,8 @@ async def update_settings(
     )
     if payload.knowledge_base is not None:
         await _check_types_in_use(db, stored.knowledge_base, payload.knowledge_base)
+    if payload.validation is not None:
+        await _check_validation_codes(db, payload.validation)
     try:
         await app_settings.save(db, new, actor=actor, expected_version=payload.version)
     except StaleSettingsError as exc:

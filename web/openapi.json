@@ -7529,6 +7529,51 @@
         ],
         "title": "Compensation"
       },
+      "CompensationLimit": {
+        "properties": {
+          "requires_any": {
+            "items": {
+              "type": "string"
+            },
+            "type": "array",
+            "maxItems": 20,
+            "minItems": 1,
+            "title": "Requires Any"
+          },
+          "max_pct_of_order": {
+            "anyOf": [
+              {
+                "type": "number",
+                "maximum": 100.0,
+                "minimum": 0.0
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Max Pct Of Order"
+          },
+          "max_amount": {
+            "anyOf": [
+              {
+                "type": "number",
+                "maximum": 10000.0,
+                "minimum": 0.0
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Max Amount"
+          }
+        },
+        "additionalProperties": false,
+        "type": "object",
+        "required": [
+          "requires_any"
+        ],
+        "title": "CompensationLimit"
+      },
       "ComplaintAnalysis": {
         "properties": {
           "complaint_summary": {
@@ -12118,6 +12163,9 @@
           "knowledge_base": {
             "$ref": "#/components/schemas/KnowledgeBaseSettings"
           },
+          "validation": {
+            "$ref": "#/components/schemas/ValidationSettings"
+          },
           "access": {
             "$ref": "#/components/schemas/AccessSettings"
           }
@@ -12130,9 +12178,40 @@
           "operations",
           "branding",
           "orders",
-          "knowledge_base"
+          "knowledge_base",
+          "validation"
         ],
         "title": "RuntimeSettings"
+      },
+      "ScoreWeights": {
+        "properties": {
+          "critical": {
+            "type": "integer",
+            "maximum": 10.0,
+            "minimum": 1.0,
+            "title": "Critical"
+          },
+          "major": {
+            "type": "integer",
+            "maximum": 10.0,
+            "minimum": 1.0,
+            "title": "Major"
+          },
+          "minor": {
+            "type": "integer",
+            "maximum": 10.0,
+            "minimum": 1.0,
+            "title": "Minor"
+          }
+        },
+        "additionalProperties": false,
+        "type": "object",
+        "required": [
+          "critical",
+          "major",
+          "minor"
+        ],
+        "title": "ScoreWeights"
       },
       "SearchResultOut": {
         "properties": {
@@ -12238,6 +12317,13 @@
           "defaults": {
             "$ref": "#/components/schemas/RuntimeSettings"
           },
+          "risk_signals": {
+            "items": {
+              "type": "string"
+            },
+            "type": "array",
+            "title": "Risk Signals"
+          },
           "version": {
             "type": "integer",
             "title": "Version"
@@ -12316,6 +12402,7 @@
         "required": [
           "settings",
           "defaults",
+          "risk_signals",
           "version",
           "updated_at",
           "updated_by",
@@ -12352,6 +12439,16 @@
             "anyOf": [
               {
                 "$ref": "#/components/schemas/KnowledgeBaseSettings"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "validation": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/ValidationSettings"
               },
               {
                 "type": "null"
@@ -12562,6 +12659,36 @@
           "next_step_at"
         ],
         "title": "ShopOrderOut"
+      },
+      "SignalBoost": {
+        "properties": {
+          "category": {
+            "type": "string",
+            "maxLength": 40,
+            "minLength": 1,
+            "title": "Category"
+          },
+          "subcategory": {
+            "type": "string",
+            "maxLength": 60,
+            "minLength": 1,
+            "title": "Subcategory"
+          },
+          "weight": {
+            "type": "integer",
+            "maximum": 5.0,
+            "minimum": 1.0,
+            "title": "Weight"
+          }
+        },
+        "additionalProperties": false,
+        "type": "object",
+        "required": [
+          "category",
+          "subcategory",
+          "weight"
+        ],
+        "title": "SignalBoost"
       },
       "SlaPolicyOut": {
         "properties": {
@@ -13418,6 +13545,77 @@
           "created_at"
         ],
         "title": "ValidationRunOut"
+      },
+      "ValidationSettings": {
+        "properties": {
+          "score_weights": {
+            "$ref": "#/components/schemas/ScoreWeights"
+          },
+          "compensation": {
+            "additionalProperties": {
+              "$ref": "#/components/schemas/CompensationLimit"
+            },
+            "type": "object",
+            "title": "Compensation"
+          },
+          "never_allowed_actions": {
+            "items": {
+              "type": "string"
+            },
+            "type": "array",
+            "maxItems": 60,
+            "title": "Never Allowed Actions"
+          },
+          "orders_required_for": {
+            "items": {
+              "type": "string"
+            },
+            "type": "array",
+            "maxItems": 30,
+            "title": "Orders Required For"
+          },
+          "escalation_action_levels": {
+            "additionalProperties": {
+              "type": "integer"
+            },
+            "type": "object",
+            "title": "Escalation Action Levels"
+          },
+          "classifier_confident": {
+            "type": "integer",
+            "maximum": 10.0,
+            "minimum": 1.0,
+            "title": "Classifier Confident"
+          },
+          "classifier_secondary": {
+            "type": "integer",
+            "maximum": 10.0,
+            "minimum": 1.0,
+            "title": "Classifier Secondary"
+          },
+          "signal_boosts": {
+            "additionalProperties": {
+              "$ref": "#/components/schemas/SignalBoost"
+            },
+            "type": "object",
+            "maxProperties": 14,
+            "title": "Signal Boosts"
+          }
+        },
+        "additionalProperties": false,
+        "type": "object",
+        "required": [
+          "score_weights",
+          "compensation",
+          "never_allowed_actions",
+          "orders_required_for",
+          "escalation_action_levels",
+          "classifier_confident",
+          "classifier_secondary",
+          "signal_boosts"
+        ],
+        "title": "ValidationSettings",
+        "description": "Numbers and lists Python's validation and classifier use (patterns stay in YAML)."
       },
       "VersionStatus": {
         "type": "string",

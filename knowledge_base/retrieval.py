@@ -17,12 +17,10 @@ from sqlalchemy.dialects.postgresql import TSQUERY
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy.orm import Session
 
+import app_settings
 from database.models import Chunk, Document, DocumentVersion, IngestStatus, VersionStatus
 from knowledge_base.config import get_kb_config
 from knowledge_base.embeddings import Embedder
-
-RRF_K = 60
-CANDIDATES_PER_RANKER = 30
 
 
 @dataclass(frozen=True)
@@ -53,15 +51,15 @@ def _active_chunks_query() -> Select[int]:
     )
 
 
-def _semantic_stmt(query_vector: list[float]) -> Select[int]:
+def _semantic_stmt(query_vector: list[float], candidates: int) -> Select[int]:
     return (
         _active_chunks_query()
         .order_by(Chunk.embedding.cosine_distance(query_vector))
-        .limit(CANDIDATES_PER_RANKER)
+        .limit(candidates)
     )
 
 
-def _keyword_stmt(query: str) -> Select[int]:
+def _keyword_stmt(query: str, candidates: int) -> Select[int]:
     # OR the query terms together: complaints are prose, and requiring every word (AND)
     # would almost never match. ts_rank_cd still rewards chunks matching more terms.
     ts_query = cast(
@@ -71,16 +69,16 @@ def _keyword_stmt(query: str) -> Select[int]:
         _active_chunks_query()
         .where(Chunk.search_vector.op("@@")(ts_query))
         .order_by(func.ts_rank_cd(Chunk.search_vector, ts_query).desc())
-        .limit(CANDIDATES_PER_RANKER)
+        .limit(candidates)
     )
 
 
-def _fuse(rankings: Sequence[Sequence[int]], limit: int) -> dict[int, float]:
+def _fuse(rankings: Sequence[Sequence[int]], limit: int, k: int) -> dict[int, float]:
     """Reciprocal Rank Fusion: sum of 1 / (k + rank) across rankers; keep the top `limit`."""
     scores: dict[int, float] = {}
     for ranking in rankings:
         for rank, chunk_id in enumerate(ranking, start=1):
-            scores[chunk_id] = scores.get(chunk_id, 0.0) + 1.0 / (RRF_K + rank)
+            scores[chunk_id] = scores.get(chunk_id, 0.0) + 1.0 / (k + rank)
     top = sorted(scores, key=lambda cid: scores[cid], reverse=True)[:limit]
     return {cid: scores[cid] for cid in top}
 
@@ -123,9 +121,10 @@ async def search_chunks(
     if not query:
         return []
     query_vector = await run_in_threadpool(embedder.embed_query, query)
-    semantic = (await db.scalars(_semantic_stmt(query_vector))).all()
-    keyword = (await db.scalars(_keyword_stmt(query))).all()
-    scores = _fuse([semantic, keyword], limit)
+    tuning = app_settings.runtime().knowledge_base
+    semantic = (await db.scalars(_semantic_stmt(query_vector, tuning.retrieval_candidates))).all()
+    keyword = (await db.scalars(_keyword_stmt(query, tuning.retrieval_candidates))).all()
+    scores = _fuse([semantic, keyword], limit, tuning.rrf_k)
     if not scores:
         return []
     rows = (await db.execute(_details_stmt(list(scores)))).all()
@@ -140,9 +139,10 @@ def search_chunks_sync(
     if not query:
         return []
     query_vector = embedder.embed_query(query)
-    semantic = db.scalars(_semantic_stmt(query_vector)).all()
-    keyword = db.scalars(_keyword_stmt(query)).all()
-    scores = _fuse([semantic, keyword], limit)
+    tuning = app_settings.runtime().knowledge_base
+    semantic = db.scalars(_semantic_stmt(query_vector, tuning.retrieval_candidates)).all()
+    keyword = db.scalars(_keyword_stmt(query, tuning.retrieval_candidates)).all()
+    scores = _fuse([semantic, keyword], limit, tuning.rrf_k)
     if not scores:
         return []
     rows = db.execute(_details_stmt(list(scores))).all()

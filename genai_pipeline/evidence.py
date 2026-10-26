@@ -26,7 +26,7 @@ from sqlalchemy import func, select
 import app_settings
 from database.models import AnalysisRun, LlmCall, PromptVersion
 from database.session import sync_session
-from src.core.config import ROOT_DIR, get_settings
+from src.core.config import ROOT_DIR
 
 OUT = ROOT_DIR / "documentation" / "evidence"
 
@@ -56,7 +56,6 @@ def _write(name: str, data: Any) -> None:
 
 def export(out: Path = OUT) -> int:
     out.mkdir(parents=True, exist_ok=True)
-    settings = get_settings()
     with sync_session() as db:
         calls = db.scalar(select(func.count()).select_from(LlmCall)) or 0
         if not calls:
@@ -70,8 +69,8 @@ def export(out: Path = OUT) -> int:
                 "provider": ai.provider,
                 "model": ai.model,
                 "effort": ai.effort,
-                "max_attempts": settings.genai_max_attempts,
-                "timeout_seconds": settings.genai_timeout_seconds,
+                "max_attempts": ai.max_attempts,
+                "timeout_seconds": ai.timeout_seconds,
                 "structured_output": "JSON schema complaint_analysis.v1, generated from the live "
                 "taxonomy (schema fingerprints are stored per run in analysis_runs.schema_version)",
                 "schema_versions": sorted(

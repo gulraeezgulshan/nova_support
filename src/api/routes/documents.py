@@ -18,6 +18,7 @@ from fastapi.concurrency import run_in_threadpool
 from sqlalchemy import select
 from sqlalchemy.ext.asyncio import AsyncSession
 
+import app_settings
 from database.models import Chunk, Document, DocumentVersion, User
 from database.session import get_db
 from knowledge_base import service
@@ -91,7 +92,7 @@ async def upload_document(
     settings: Settings = Depends(get_settings),
 ) -> DocumentVersion:
     # Read one byte past the limit so oversized files are rejected without loading more.
-    data = await file.read(settings.max_upload_bytes + 1)
+    data = await file.read(app_settings.runtime().knowledge_base.max_upload_mb * 1024 * 1024 + 1)
     form = {
         "doc_code": doc_code,
         "title": title,

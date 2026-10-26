@@ -6,6 +6,7 @@ from datetime import UTC, date, datetime
 from sqlalchemy import delete, select
 from sqlalchemy.orm import Session
 
+import app_settings
 from complaint_processing.detectors import detect_signals
 from database.audit import record_sync
 from database.models import Chunk, DocumentVersion, IngestStatus
@@ -50,9 +51,8 @@ def ingest_version(
         parsed = parse_document(
             storage.get(version.storage_key), FILE_TYPE_BY_MEDIA_TYPE[version.media_type]
         )
-        drafts = chunk_sections(
-            parsed.sections, settings.chunk_max_tokens, settings.chunk_overlap_tokens
-        )
+        sizes = app_settings.runtime(fresh=True).knowledge_base  # a value saved a moment ago
+        drafts = chunk_sections(parsed.sections, sizes.chunk_max_tokens, sizes.chunk_overlap_tokens)
         if not drafts:
             raise IngestError("No extractable text found (scanned image PDFs need OCR).")
         vectors = embedder.embed_documents([d.embedding_text for d in drafts])

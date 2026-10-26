@@ -119,7 +119,7 @@ def run_analysis(
     errors: list[str] = []
     analysis: ComplaintAnalysis | None = None
     try:
-        for attempt in range(1, settings.genai_max_attempts + 1):
+        for attempt in range(1, app_settings.runtime().ai.max_attempts + 1):
             system, user = template.render(**context, previous_errors=errors)
             request = LLMRequest(
                 system=system,

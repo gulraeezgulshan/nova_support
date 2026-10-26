@@ -72,6 +72,7 @@ class AnthropicProvider:
 
     def __init__(self, model: str, effort: Effort, timeout_seconds: float, api_key: str | None):
         self.model = model
+        self.timeout_seconds = timeout_seconds
         # Claude's lowest effort is "low"; "none" and "minimal" exist only on OpenAI.
         self.effort: ClaudeEffort = "low" if effort == "none" or effort == "minimal" else effort
         self._client = anthropic.Anthropic(
@@ -162,6 +163,7 @@ class OpenAIProvider:
         self.model = model
         self.effort = effort
         self.reasoning = reasoning
+        self.timeout_seconds = timeout_seconds
         self._client = openai.OpenAI(
             api_key=api_key or None, timeout=timeout_seconds, max_retries=2
         )
@@ -240,20 +242,24 @@ class OpenAIProvider:
 def get_provider() -> LLMProvider:
     """The provider and model chosen on the Settings page; keys stay in the environment."""
     ai = app_settings.runtime().ai
-    return _build_provider(ai.provider, ai.model, ai.effort)
+    return _build_provider(
+        ai.provider, ai.model, ai.effort, ai.timeout_seconds, ai.openai_reasoning
+    )
 
 
 @lru_cache(maxsize=4)
-def _build_provider(provider: str, model: str, effort: Effort) -> LLMProvider:
+def _build_provider(
+    provider: str, model: str, effort: Effort, timeout_seconds: float, reasoning: bool
+) -> LLMProvider:
     settings = get_settings()
     if provider == "anthropic":
         return AnthropicProvider(
-            model=model, effort=effort, timeout_seconds=settings.genai_timeout_seconds,
+            model=model, effort=effort, timeout_seconds=timeout_seconds,
             api_key=settings.anthropic_api_key,
         )  # fmt: skip
     if provider == "openai":
         return OpenAIProvider(
-            model=model, effort=effort, timeout_seconds=settings.genai_timeout_seconds,
-            api_key=settings.openai_api_key, reasoning=settings.openai_reasoning,
+            model=model, effort=effort, timeout_seconds=timeout_seconds,
+            api_key=settings.openai_api_key, reasoning=reasoning,
         )  # fmt: skip
     raise ProviderRequestError(f"Unsupported GenAI provider: {provider}")

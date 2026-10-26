@@ -7,6 +7,7 @@ from fastapi.concurrency import run_in_threadpool
 from sqlalchemy import select
 from sqlalchemy.ext.asyncio import AsyncSession
 
+import app_settings
 from database import audit
 from database.models import Document, DocumentVersion, IngestStatus, User, VersionStatus
 from document_processing.parsers import ParseError, parse_document
@@ -59,7 +60,8 @@ async def upload_document(
     enqueue: bool = True,
 ) -> DocumentVersion:
     """Validate, store and register a new document version. `actor=None` = system import."""
-    file_type = detect_file_type(filename, data, settings.max_upload_bytes)
+    max_bytes = app_settings.runtime().knowledge_base.max_upload_mb * 1024 * 1024
+    file_type = detect_file_type(filename, data, max_bytes)
     digest = sha256_hex(data)
     existing = await db.scalar(select(DocumentVersion).where(DocumentVersion.sha256 == digest))
     if existing is not None:

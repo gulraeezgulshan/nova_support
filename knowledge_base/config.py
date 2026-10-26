@@ -1,13 +1,12 @@
-"""Knowledge-base configuration (document categories and precedence), read from YAML."""
+"""Knowledge-base document categories and their precedence, from the Settings page.
 
-from functools import lru_cache
+The defaults ship in config/knowledge_base.yaml; administrators change them under
+Settings → Knowledge base.
+"""
 
-import yaml
 from pydantic import BaseModel
 
-from src.core.config import ROOT_DIR
-
-CONFIG_FILE = ROOT_DIR / "config" / "knowledge_base.yaml"
+import app_settings
 
 
 class DocumentType(BaseModel):
@@ -25,7 +24,6 @@ class KnowledgeBaseConfig(BaseModel):
         return {t.code for t in self.document_types}
 
 
-@lru_cache
 def get_kb_config() -> KnowledgeBaseConfig:
-    with CONFIG_FILE.open(encoding="utf-8") as handle:
-        return KnowledgeBaseConfig.model_validate(yaml.safe_load(handle))
+    types = app_settings.runtime().knowledge_base.document_types
+    return KnowledgeBaseConfig(document_types=[DocumentType(**t.model_dump()) for t in types])

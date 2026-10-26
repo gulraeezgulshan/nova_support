@@ -60,8 +60,10 @@ async def update_settings(
             status.HTTP_422_UNPROCESSABLE_CONTENT, f"Add {name} on the server first."
         )
     row = await app_settings.current_row(db)
-    logos = app_settings.load(row.data if row else None).branding  # logos are set by upload only
+    stored = app_settings.load(row.data if row else None)
+    logos = stored.branding  # logos are set by upload only
     new = RuntimeSettings(
+        access=stored.access,  # changed only on the Page access screen
         email=payload.email,
         ai=payload.ai,
         operations=payload.operations,

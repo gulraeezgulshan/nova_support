@@ -68,37 +68,59 @@ from app_settings import access, load
 from database.models import Role
 
 TODAY = {  # spec section 1: agent, reviewer, manager
-    "dashboard": ("view", "view", "view"), "complaints": ("edit", "edit", "edit"),
-    "review": ("none", "edit", "edit"), "enquiries": ("edit", "edit", "edit"),
-    "mailbox": ("edit", "edit", "edit"), "orders": ("edit", "edit", "edit"),
-    "imports": ("none", "none", "edit"), "analytics": ("none", "view", "view"),
-    "reports": ("none", "view", "view"), "knowledge_base": ("view", "view", "view"),
-    "taxonomy": ("view", "view", "view"), "rules": ("view", "view", "view"),
-    "products": ("none", "none", "none"), "users": ("none", "none", "view"),
+    "dashboard": ("view", "view", "view"),
+    "complaints": ("edit", "edit", "edit"),
+    "review": ("none", "edit", "edit"),
+    "enquiries": ("edit", "edit", "edit"),
+    "mailbox": ("edit", "edit", "edit"),
+    "orders": ("edit", "edit", "edit"),
+    "imports": ("none", "none", "edit"),
+    "analytics": ("none", "view", "view"),
+    "reports": ("none", "view", "view"),
+    "knowledge_base": ("view", "view", "view"),
+    "taxonomy": ("view", "view", "view"),
+    "rules": ("view", "view", "view"),
+    "products": ("none", "none", "none"),
+    "users": ("none", "none", "view"),
 }
+
 
 def test_defaults_match_today() -> None:
     d = access.default_access().model_dump()
     assert {k: (v["agent"], v["reviewer"], v["manager"]) for k, v in d.items()} == TODAY
 
+
 def test_one_bad_page_falls_back_without_touching_others() -> None:
-    s = load({"access": {"rules": {"agent": "bogus"}, "orders": {"agent": "view"}},
-              "email": {"mailbox_check_seconds": 120}})
-    assert s.access.rules.agent == "view"            # default kept for the bad value
-    assert s.access.orders.agent == "view"           # valid change applied
-    assert s.access.orders.reviewer == "edit"        # missing role → page default
-    assert s.email.mailbox_check_seconds == 120      # other groups untouched
+    s = load(
+        {
+            "access": {"rules": {"agent": "bogus"}, "orders": {"agent": "view"}},
+            "email": {"mailbox_check_seconds": 120},
+        }
+    )
+    assert s.access.rules.agent == "view"  # default kept for the bad value
+    assert s.access.orders.agent == "view"  # valid change applied
+    assert s.access.orders.reviewer == "edit"  # missing role → page default
+    assert s.email.mailbox_check_seconds == 120  # other groups untouched
+
 
 def test_unknown_pages_and_roles_ignored_and_edit_on_view_only_page_is_view() -> None:
-    s = load({"access": {"nope": {"agent": "edit"},
-                         "analytics": {"agent": "edit", "customer": "edit", "admin": "none"}}})
+    s = load(
+        {
+            "access": {
+                "nope": {"agent": "edit"},
+                "analytics": {"agent": "edit", "customer": "edit", "admin": "none"},
+            }
+        }
+    )
     assert s.access.analytics.agent == "view"
+
 
 def test_admin_and_customer_ignore_the_matrix() -> None:
     assert access.level_for(Role.ADMIN, "products") == "edit"
     assert access.level_for(Role.ADMIN, "access") == "edit"
     assert access.level_for(Role.CUSTOMER, "complaints") == "none"
     assert access.level_for(Role.MANAGER, "settings") == "none"
+
 
 def test_allowed_and_permissions() -> None:
     assert access.allowed(Role.AGENT, "complaints", "edit")
@@ -108,13 +130,16 @@ def test_allowed_and_permissions() -> None:
     assert p["review"] == "edit" and p["imports"] == "none" and p["access"] == "none"
     assert set(p) == set(TODAY) | {"settings", "access"}
 
+
 def test_validate_update_is_strict() -> None:
     full = {k: dict(zip(access.EDITABLE_ROLES, v)) for k, v in TODAY.items()}
     assert access.validate_update(full).review.agent == "none"
-    for bad in ({**full, "analytics": {**full["analytics"], "agent": "edit"}},
-                {**full, "rules": {**full["rules"], "admin": "none"}},
-                {k: v for k, v in full.items() if k != "rules"},
-                {**full, "nope": full["rules"]}):
+    for bad in (
+        {**full, "analytics": {**full["analytics"], "agent": "edit"}},
+        {**full, "rules": {**full["rules"], "admin": "none"}},
+        {k: v for k, v in full.items() if k != "rules"},
+        {**full, "nope": full["rules"]},
+    ):
         with pytest.raises(ValueError):
             access.validate_update(bad)
 ```
@@ -123,16 +148,25 @@ Add to `tests/integration/test_settings_api.py`:
 
 ```python
 async def test_settings_save_keeps_the_access_matrix(
-    client: httpx.AsyncClient, auth_headers: Callable[[Role], dict[str, str]], async_db: AsyncSession
+    client: httpx.AsyncClient,
+    auth_headers: Callable[[Role], dict[str, str]],
+    async_db: AsyncSession,
 ) -> None:
     admin_headers = auth_headers(Role.ADMIN)
     admin = (await async_db.scalars(select(User).where(User.role == Role.ADMIN))).one()
     changed = app_settings.load({"access": {"analytics": {"agent": "view"}}})
-    await app_settings.save(async_db, changed, actor=admin, expected_version=None,
-                            action="access.updated", audit_group="access")
+    await app_settings.save(
+        async_db,
+        changed,
+        actor=admin,
+        expected_version=None,
+        action="access.updated",
+        audit_group="access",
+    )
     current = (await client.get(URL, headers=admin_headers)).json()
-    saved = await client.put(URL, headers=admin_headers,
-                             json=body(current, email={"mailbox_check_seconds": 300}))
+    saved = await client.put(
+        URL, headers=admin_headers, json=body(current, email={"mailbox_check_seconds": 300})
+    )
     assert saved.status_code == 200
     row = await app_settings.current_row(async_db)
     await async_db.refresh(row)
@@ -187,48 +221,84 @@ ADMIN = {"admin"}
 ID = "00000000-0000-0000-0000-000000000001"
 ROUTES = [  # (method, path under /api/v1, roles allowed today)
     ("GET", "/dashboard/agent", ALL),
-    ("GET", "/complaints/CMP-999999/analysis", ALL), ("POST", "/complaints/CMP-999999/analyze", ALL),
-    ("GET", "/complaints/CMP-999999/validation", ALL), ("POST", "/complaints/CMP-999999/validate", ALL),
-    ("GET", "/complaints/CMP-999999/decisions", ALL), ("PATCH", "/complaints/CMP-999999/status", ALL),
+    ("GET", "/complaints/CMP-999999/analysis", ALL),
+    ("POST", "/complaints/CMP-999999/analyze", ALL),
+    ("GET", "/complaints/CMP-999999/validation", ALL),
+    ("POST", "/complaints/CMP-999999/validate", ALL),
+    ("GET", "/complaints/CMP-999999/decisions", ALL),
+    ("PATCH", "/complaints/CMP-999999/status", ALL),
     ("GET", "/complaints/CMP-999999/chat", ALL),
-    ("GET", "/review-queue", INSIGHT), ("POST", "/complaints/CMP-999999/review", INSIGHT),
-    ("GET", "/enquiries", ALL), ("PATCH", "/enquiries/ENQ-999999", ALL),
+    ("GET", "/review-queue", INSIGHT),
+    ("POST", "/complaints/CMP-999999/review", INSIGHT),
+    ("GET", "/enquiries", ALL),
+    ("PATCH", "/enquiries/ENQ-999999", ALL),
     ("POST", "/enquiries/ENQ-999999/convert", ALL),
-    ("GET", "/mailbox", ALL), ("GET", "/mailbox/inbound", ALL), ("GET", "/mailbox/outbound", ALL),
+    ("GET", "/mailbox", ALL),
+    ("GET", "/mailbox/inbound", ALL),
+    ("GET", "/mailbox/outbound", ALL),
     ("POST", "/mailbox/process", ALL),
-    ("GET", "/admin/orders", ALL), ("GET", "/admin/orders/ORD-999999", ALL),
+    ("GET", "/admin/orders", ALL),
+    ("GET", "/admin/orders/ORD-999999", ALL),
     ("POST", "/admin/orders/ORD-999999/actions", ALL),
-    ("GET", "/imports", MGR), ("GET", f"/imports/{ID}", MGR), ("GET", f"/imports/{ID}/result.csv", MGR),
-    ("GET", "/imports/template.csv", MGR), ("GET", "/imports/template.xlsx", MGR),
-    ("POST", "/imports/preview", MGR), ("POST", f"/imports/{ID}/run", MGR),
-    ("GET", "/analytics", INSIGHT), ("GET", "/dashboard/admin", INSIGHT),
-    ("GET", "/reports", INSIGHT), ("GET", "/reports/x", INSIGHT), ("GET", "/reports/x/export", INSIGHT),
-    ("GET", "/documents", ALL), ("GET", "/documents/types", ALL), ("GET", f"/documents/{ID}", ALL),
-    ("GET", f"/document-versions/{ID}/file", ALL), ("GET", f"/document-versions/{ID}/chunks", ALL),
+    ("GET", "/imports", MGR),
+    ("GET", f"/imports/{ID}", MGR),
+    ("GET", f"/imports/{ID}/result.csv", MGR),
+    ("GET", "/imports/template.csv", MGR),
+    ("GET", "/imports/template.xlsx", MGR),
+    ("POST", "/imports/preview", MGR),
+    ("POST", f"/imports/{ID}/run", MGR),
+    ("GET", "/analytics", INSIGHT),
+    ("GET", "/dashboard/admin", INSIGHT),
+    ("GET", "/reports", INSIGHT),
+    ("GET", "/reports/x", INSIGHT),
+    ("GET", "/reports/x/export", INSIGHT),
+    ("GET", "/documents", ALL),
+    ("GET", "/documents/types", ALL),
+    ("GET", f"/documents/{ID}", ALL),
+    ("GET", f"/document-versions/{ID}/file", ALL),
+    ("GET", f"/document-versions/{ID}/chunks", ALL),
     ("GET", "/knowledge-base/search?q=late", ALL),
-    ("POST", "/documents/upload", ADMIN), ("POST", f"/document-versions/{ID}/activate", ADMIN),
-    ("POST", f"/document-versions/{ID}/retire", ADMIN), ("POST", f"/document-versions/{ID}/reprocess", ADMIN),
+    ("POST", "/documents/upload", ADMIN),
+    ("POST", f"/document-versions/{ID}/activate", ADMIN),
+    ("POST", f"/document-versions/{ID}/retire", ADMIN),
+    ("POST", f"/document-versions/{ID}/reprocess", ADMIN),
     ("GET", "/taxonomy/sla-policies", ALL),
-    ("POST", "/taxonomy/departments", ADMIN), ("PATCH", f"/taxonomy/departments/{ID}", ADMIN),
-    ("POST", "/taxonomy/categories", ADMIN), ("PATCH", f"/taxonomy/categories/{ID}", ADMIN),
-    ("POST", f"/taxonomy/categories/{ID}/subcategories", ADMIN), ("PATCH", f"/taxonomy/sla-policies/{ID}", ADMIN),
-    ("GET", "/rules", ALL), ("GET", "/rules/facts", ALL), ("GET", "/rules/export.csv", ALL),
-    ("POST", "/rules", ADMIN), ("PUT", "/rules/DEL-001", ADMIN),
-    ("GET", "/admin/products", ADMIN), ("POST", "/admin/products", ADMIN),
-    ("PATCH", "/admin/products/VH-NONE", ADMIN), ("POST", "/admin/products/VH-NONE/images", ADMIN),
+    ("POST", "/taxonomy/departments", ADMIN),
+    ("PATCH", f"/taxonomy/departments/{ID}", ADMIN),
+    ("POST", "/taxonomy/categories", ADMIN),
+    ("PATCH", f"/taxonomy/categories/{ID}", ADMIN),
+    ("POST", f"/taxonomy/categories/{ID}/subcategories", ADMIN),
+    ("PATCH", f"/taxonomy/sla-policies/{ID}", ADMIN),
+    ("GET", "/rules", ALL),
+    ("GET", "/rules/facts", ALL),
+    ("GET", "/rules/export.csv", ALL),
+    ("POST", "/rules", ADMIN),
+    ("PUT", "/rules/DEL-001", ADMIN),
+    ("GET", "/admin/products", ADMIN),
+    ("POST", "/admin/products", ADMIN),
+    ("PATCH", "/admin/products/VH-NONE", ADMIN),
+    ("POST", "/admin/products/VH-NONE/images", ADMIN),
     ("PUT", "/admin/products/VH-NONE/images/order", ADMIN),
     ("DELETE", f"/admin/products/VH-NONE/images/{ID}", ADMIN),
-    ("GET", "/users", MGR), ("PATCH", f"/users/{ID}", ADMIN),
-    ("GET", "/settings", ADMIN), ("PUT", "/settings", ADMIN),
-    ("GET", "/taxonomy/departments", ALL | {"customer"}), ("GET", "/taxonomy/categories", ALL | {"customer"}),
+    ("GET", "/users", MGR),
+    ("PATCH", f"/users/{ID}", ADMIN),
+    ("GET", "/settings", ADMIN),
+    ("PUT", "/settings", ADMIN),
+    ("GET", "/taxonomy/departments", ALL | {"customer"}),
+    ("GET", "/taxonomy/categories", ALL | {"customer"}),
     ("GET", "/taxonomy/vocabulary", ALL),
 ]
+
 
 @pytest.mark.parametrize("method,path,allowed", ROUTES)
 @pytest.mark.parametrize("role", ["customer", "agent", "reviewer", "manager", "admin"])
 async def test_default_access_matches_today(client, auth_headers, role, method, path, allowed):
-    r = await client.request(method, "/api/v1" + path, headers=auth_headers(Role(role)),
-                             json={} if method in ("POST", "PUT", "PATCH") else None)
+    r = await client.request(
+        method,
+        "/api/v1" + path,
+        headers=auth_headers(Role(role)),
+        json={} if method in ("POST", "PUT", "PATCH") else None,
+    )
     assert (r.status_code != 403) == (role in allowed), (role, method, path, r.status_code)
 ```
 
@@ -267,6 +337,7 @@ Mapping: follow the spec section 1 table exactly (view endpoints → `require_ac
 def matrix(**pages):  # e.g. matrix(analytics={"agent": "view"})
     return app_settings.load({"access": pages})
 
+
 async def test_matrix_grants_and_removes(client, auth_headers):
     agent = auth_headers(Role.AGENT)
     app_settings.override(matrix(analytics={"agent": "view"}, rules={"agent": "none"}))
@@ -274,27 +345,46 @@ async def test_matrix_grants_and_removes(client, auth_headers):
     r = await client.get("/api/v1/rules", headers=agent)
     assert r.status_code == 403 and r.json()["detail"] == NO_ACCESS
 
+
 async def test_view_is_not_edit(client, auth_headers):
     app_settings.override(matrix(orders={"agent": "view"}))
     agent = auth_headers(Role.AGENT)
     assert (await client.get("/api/v1/admin/orders", headers=agent)).status_code == 200
-    assert (await client.post("/api/v1/admin/orders/ORD-1/actions", headers=agent, json={})).status_code == 403
+    assert (
+        await client.post("/api/v1/admin/orders/ORD-1/actions", headers=agent, json={})
+    ).status_code == 403
+
 
 async def test_admin_cannot_be_locked_out_and_customer_cannot_be_let_in(client, auth_headers):
-    app_settings.override(matrix(**{k: {"agent": "none", "reviewer": "none", "manager": "none"} for k in PAGE_KEYS}))
+    app_settings.override(
+        matrix(**{k: {"agent": "none", "reviewer": "none", "manager": "none"} for k in PAGE_KEYS})
+    )
     assert (await client.get("/api/v1/rules", headers=auth_headers(Role.ADMIN))).status_code == 200
-    assert (await client.get("/api/v1/rules", headers=auth_headers(Role.CUSTOMER))).status_code == 403
+    assert (
+        await client.get("/api/v1/rules", headers=auth_headers(Role.CUSTOMER))
+    ).status_code == 403
+
 
 async def test_mixed_endpoints_gate_only_staff(client, auth_headers):
     app_settings.override(matrix(complaints={"agent": "none"}))
-    assert (await client.get("/api/v1/complaints", headers=auth_headers(Role.AGENT))).status_code == 403
-    assert (await client.get("/api/v1/complaints", headers=auth_headers(Role.CUSTOMER))).status_code == 200
-    assert (await client.get("/api/v1/complaints/CMP-999999", headers=auth_headers(Role.AGENT))).status_code == 403
+    assert (
+        await client.get("/api/v1/complaints", headers=auth_headers(Role.AGENT))
+    ).status_code == 403
+    assert (
+        await client.get("/api/v1/complaints", headers=auth_headers(Role.CUSTOMER))
+    ).status_code == 200
+    assert (
+        await client.get("/api/v1/complaints/CMP-999999", headers=auth_headers(Role.AGENT))
+    ).status_code == 403
+
 
 async def test_shared_lookups_stay_open(client, auth_headers):
     app_settings.override(matrix(taxonomy={"agent": "none"}))
     for p in ("/taxonomy/departments", "/taxonomy/categories", "/taxonomy/vocabulary"):
-        assert (await client.get("/api/v1" + p, headers=auth_headers(Role.AGENT))).status_code == 200
+        assert (
+            await client.get("/api/v1" + p, headers=auth_headers(Role.AGENT))
+        ).status_code == 200
+
 
 def test_every_staff_route_is_gated():
     """Route inventory: any route using require_roles must be admin-locked; staff routes use require_access."""

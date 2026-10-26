@@ -87,9 +87,18 @@ async def current_row(db: AsyncSession) -> AppSettingsRow | None:
 
 
 async def save(
-    db: AsyncSession, new: RuntimeSettings, *, actor: User, expected_version: int | None
+    db: AsyncSession,
+    new: RuntimeSettings,
+    *,
+    actor: User,
+    expected_version: int | None,
+    action: str = "settings.updated",
+    audit_group: str | None = None,
 ) -> AppSettingsRow:
-    """Store the changes from the defaults; `expected_version=None` skips the stale check."""
+    """Store the changes from the defaults; `expected_version=None` skips the stale check.
+
+    With `audit_group`, the audit entry holds only that group (e.g. the access matrix).
+    """
     row = await current_row(db)
     version = row.version if row else 0
     if expected_version is not None and expected_version != version:
@@ -102,9 +111,12 @@ async def save(
     row.version = version + 1
     row.updated_at = datetime.now(UTC)
     row.updated_by_id = actor.id
+    after = new.model_dump()
+    if audit_group is not None:
+        before, after = before[audit_group], after[audit_group]
     await audit.record(
-        db, "settings.updated", "settings", "runtime",
-        actor_user_id=actor.id, before=before, after=new.model_dump(),
+        db, action, "settings", "runtime",
+        actor_user_id=actor.id, before=before, after=after,
     )  # fmt: skip
     await db.commit()
     reset_cache()

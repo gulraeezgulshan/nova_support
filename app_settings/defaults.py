@@ -1,5 +1,6 @@
 """Today's behaviour, from environment variables and config files: the settings defaults."""
 
+from app_settings.access import default_access
 from app_settings.model import RuntimeSettings
 
 
@@ -31,6 +32,7 @@ def defaults() -> RuntimeSettings:
                 "verified_min_score": validation["verified_min_score"],
                 "always_review_escalation_level": validation["always_review_escalation_level"],
             },
+            "access": default_access().model_dump(),
             "orders": {
                 "auto_advance": True,
                 "step_minutes": 2,

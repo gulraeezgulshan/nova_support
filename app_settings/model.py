@@ -5,6 +5,8 @@ from typing import Annotated, Literal
 
 from pydantic import AfterValidator, BaseModel, ConfigDict, Field, model_validator
 
+from app_settings.access import AccessSettings, default_access
+
 Provider = Literal["openai", "anthropic"]
 Effort = Literal["none", "minimal", "low", "medium", "high", "xhigh", "max"]
 LogoTarget = Literal["shop", "console"]
@@ -95,3 +97,4 @@ class RuntimeSettings(_Group):
     operations: OperationsSettings
     branding: BrandingSettings
     orders: OrderSettings
+    access: AccessSettings = Field(default_factory=default_access)

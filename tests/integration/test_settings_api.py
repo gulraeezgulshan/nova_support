@@ -4,8 +4,11 @@ from collections.abc import Callable
 
 import httpx
 import pytest
+from sqlalchemy import select
+from sqlalchemy.ext.asyncio import AsyncSession
 
-from database.models import Role
+import app_settings
+from database.models import Role, User
 
 pytestmark = pytest.mark.db
 URL = "/api/v1/settings"
@@ -86,3 +89,32 @@ async def test_no_secret_is_ever_returned(
     text = (await client.get(URL, headers=auth_headers(Role.ADMIN))).text.lower()
     for word in ("api_key", "password", "database_url", "redis_url", "secret"):
         assert word not in text
+
+
+async def test_settings_save_keeps_the_access_matrix(
+    client: httpx.AsyncClient,
+    auth_headers: Callable[[Role], dict[str, str]],
+    async_db: AsyncSession,
+) -> None:
+    admin_headers = auth_headers(Role.ADMIN)
+    admin = (await async_db.scalars(select(User).where(User.role == Role.ADMIN))).one()
+    changed = app_settings.load({"access": {"analytics": {"agent": "view"}}})
+    await app_settings.save(
+        async_db,
+        changed,
+        actor=admin,
+        expected_version=None,
+        action="access.updated",
+        audit_group="access",
+    )
+    current = (await client.get(URL, headers=admin_headers)).json()
+    saved = await client.put(
+        URL, headers=admin_headers, json=body(current, email={"mailbox_check_seconds": 300})
+    )
+    assert saved.status_code == 200
+    row = await app_settings.current_row(async_db)
+    assert row is not None
+    await async_db.refresh(row)
+    stored = app_settings.load(row.data)
+    assert stored.access.analytics.agent == "view"
+    assert stored.email.mailbox_check_seconds == 300

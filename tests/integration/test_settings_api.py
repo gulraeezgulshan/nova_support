@@ -275,3 +275,12 @@ async def test_validation_left_out_keeps_stored_values(
     r = await client.put(URL, headers=admin, json=payload)
     assert r.status_code == 200
     assert r.json()["settings"]["validation"]["classifier_confident"] == 5
+
+
+async def test_settings_leave_out_the_text_patterns(
+    client: httpx.AsyncClient, auth_headers: Callable[[Role], dict[str, str]]
+) -> None:
+    """Patterns have their own page and endpoint; the general settings stay small."""
+    data = (await client.get(URL, headers=auth_headers(Role.ADMIN))).json()
+    assert "patterns" not in data["settings"]
+    assert "patterns" not in data["defaults"]

@@ -1,11 +1,13 @@
 """Settings administrators change at run time (the staff Settings page)."""
 
 import re
+from collections.abc import Sequence
 from typing import Annotated, Literal
 
 from pydantic import AfterValidator, BaseModel, ConfigDict, Field, model_validator
 
 from app_settings.access import AccessSettings, default_access
+from app_settings.patterns import PROMISE_KINDS, regex_problem
 
 Provider = Literal["openai", "anthropic"]
 Effort = Literal["none", "minimal", "low", "medium", "high", "xhigh", "max"]
@@ -193,6 +195,74 @@ class ValidationSettings(_Group):
         return self
 
 
+def _pattern_text(value: str) -> str:
+    value = _one_line(value)
+    if not 1 <= len(value) <= 300:
+        raise ValueError("must be 1 to 300 characters")
+    return value
+
+
+class PatternEntry(_Group):
+    """A plain phrase (matched literally) or a regular expression."""
+
+    text: Annotated[str, AfterValidator(_pattern_text)]
+    mode: Literal["phrase", "regex"]
+
+
+class WeightedEntry(PatternEntry):
+    weight: int = Field(ge=1, le=3)  # 3 decisive, 2 strong hint, 1 weak hint
+
+
+class PromisePatterns(_Group):
+    commitment: list[PatternEntry]
+    conditional: list[PatternEntry]
+    kinds: dict[str, list[PatternEntry]]
+    deadline: Annotated[str, Field(min_length=1, max_length=300)]  # regex with 3 groups
+
+
+def _check_list(where: str, entries: Sequence[PatternEntry], low: int, high: int) -> None:
+    if not low <= len(entries) <= high:
+        raise ValueError(f"{where}: {low} to {high} entries")
+    seen: set[tuple[str, str]] = set()
+    for number, entry in enumerate(entries, start=1):
+        if entry.mode == "regex" and (problem := regex_problem(entry.text)):
+            raise ValueError(f"{where}, entry {number}: {problem}")
+        if (entry.mode, entry.text) in seen:
+            raise ValueError(f"{where}: entry {number} is listed twice")
+        seen.add((entry.mode, entry.text))
+
+
+class PatternSettings(_Group):
+    """Risk-signal words, classifier phrases and promise wording (Settings → Patterns)."""
+
+    signals: dict[str, list[PatternEntry]]
+    classifier: dict[str, dict[str, list[WeightedEntry]]]
+    promises: PromisePatterns
+
+    @model_validator(mode="after")
+    def _consistent(self) -> "PatternSettings":
+        names = known_signals()
+        if set(self.signals) != names:
+            raise ValueError(f"signals must list exactly: {', '.join(sorted(names))}")
+        for name, entries in self.signals.items():
+            _check_list(name, entries, 1, 80)
+        for category, subs in self.classifier.items():
+            for subcategory, weighted in subs.items():
+                _check_list(f"Classifier {category}/{subcategory}", weighted, 0, 40)
+        p = self.promises
+        _check_list("Promises commitment", p.commitment, 1, 30)
+        _check_list("Promises conditional", p.conditional, 1, 30)
+        if set(p.kinds) != set(PROMISE_KINDS):
+            raise ValueError(f"promise kinds must be exactly: {', '.join(PROMISE_KINDS)}")
+        for kind, entries in p.kinds.items():
+            _check_list(f"Promises kind {kind}", entries, 1, 30)
+        if problem := regex_problem(p.deadline):
+            raise ValueError(f"Deadline: {problem}")
+        if re.compile(p.deadline).groups != 3:
+            raise ValueError("Deadline must keep its 3 groups (amount, business/working, unit).")
+        return self
+
+
 class OperationsSettings(_Group):
     sla_scan_minutes: int = Field(ge=1, le=60)
     verified_min_score: int = Field(ge=50, le=100)
@@ -231,4 +301,5 @@ class RuntimeSettings(_Group):
     orders: OrderSettings
     knowledge_base: KnowledgeBaseSettings
     validation: ValidationSettings
+    patterns: PatternSettings
     access: AccessSettings = Field(default_factory=default_access)

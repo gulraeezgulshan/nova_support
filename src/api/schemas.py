@@ -5,6 +5,7 @@ from datetime import date, datetime
 from typing import Any, Literal
 
 from pydantic import BaseModel, ConfigDict, Field, computed_field
+from pydantic.json_schema import SkipJsonSchema
 
 from app_settings.access import AccessSettings, PageAccess
 from app_settings.model import (
@@ -14,6 +15,7 @@ from app_settings.model import (
     KnowledgeBaseSettings,
     OperationsSettings,
     OrderSettings,
+    PatternSettings,
     RuntimeSettings,
     ValidationSettings,
 )
@@ -921,9 +923,19 @@ class PolicyFactOut(BaseModel):
     version: str | None  # active version, None if the document is not active
 
 
+class SettingsGroups(RuntimeSettings):
+    """The settings without the text patterns (they have their own page and endpoint)."""
+
+    patterns: SkipJsonSchema[PatternSettings | None] = Field(default=None, exclude=True)  # type: ignore[assignment]
+
+    @classmethod
+    def of(cls, settings: RuntimeSettings) -> "SettingsGroups":
+        return cls.model_validate(settings.model_dump(exclude={"patterns"}))
+
+
 class SettingsOut(BaseModel):
-    settings: RuntimeSettings
-    defaults: RuntimeSettings
+    settings: SettingsGroups
+    defaults: SettingsGroups
     risk_signals: list[str]  # names a signal boost can use (config/detectors.yaml)
     version: int
     updated_at: datetime | None

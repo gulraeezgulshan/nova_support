@@ -18,7 +18,7 @@ from app_settings.model import (
 from database.models import Category, Document, Role, Subcategory, User
 from database.session import get_db
 from security.dependencies import require_roles
-from src.api.schemas import BrandingOut, SettingsOut, SettingsUpdate
+from src.api.schemas import BrandingOut, SettingsGroups, SettingsOut, SettingsUpdate
 from src.core.config import get_settings
 from src.core.storage import Storage, get_storage
 from storefront.images import image_type
@@ -38,8 +38,8 @@ async def _out(db: AsyncSession) -> SettingsOut:
     who = await db.get(User, row.updated_by_id) if row and row.updated_by_id else None
     env = get_settings()
     return SettingsOut(
-        settings=current,
-        defaults=app_settings.defaults(),
+        settings=SettingsGroups.of(current),
+        defaults=SettingsGroups.of(app_settings.defaults()),
         risk_signals=sorted(known_signals()),
         version=row.version if row else 0,
         updated_at=row.updated_at if row else None,
@@ -130,6 +130,7 @@ async def update_settings(
     logos = stored.branding  # logos are set by upload only
     new = RuntimeSettings(
         access=stored.access,  # changed only on the Page access screen
+        patterns=stored.patterns,  # changed only on the Patterns page
         knowledge_base=payload.knowledge_base or stored.knowledge_base,
         validation=payload.validation or stored.validation,
         email=payload.email,

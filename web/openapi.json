@@ -10921,6 +10921,69 @@
         ],
         "title": "PageAccess"
       },
+      "PatternEntry": {
+        "properties": {
+          "text": {
+            "type": "string",
+            "title": "Text"
+          },
+          "mode": {
+            "type": "string",
+            "enum": [
+              "phrase",
+              "regex"
+            ],
+            "title": "Mode"
+          }
+        },
+        "additionalProperties": false,
+        "type": "object",
+        "required": [
+          "text",
+          "mode"
+        ],
+        "title": "PatternEntry",
+        "description": "A plain phrase (matched literally) or a regular expression."
+      },
+      "PatternSettings": {
+        "properties": {
+          "signals": {
+            "additionalProperties": {
+              "items": {
+                "$ref": "#/components/schemas/PatternEntry"
+              },
+              "type": "array"
+            },
+            "type": "object",
+            "title": "Signals"
+          },
+          "classifier": {
+            "additionalProperties": {
+              "additionalProperties": {
+                "items": {
+                  "$ref": "#/components/schemas/WeightedEntry"
+                },
+                "type": "array"
+              },
+              "type": "object"
+            },
+            "type": "object",
+            "title": "Classifier"
+          },
+          "promises": {
+            "$ref": "#/components/schemas/PromisePatterns"
+          }
+        },
+        "additionalProperties": false,
+        "type": "object",
+        "required": [
+          "signals",
+          "classifier",
+          "promises"
+        ],
+        "title": "PatternSettings",
+        "description": "Risk-signal words, classifier phrases and promise wording (Settings \u2192 Patterns)."
+      },
       "PolicyFactOut": {
         "properties": {
           "fact": {
@@ -11237,6 +11300,49 @@
         },
         "type": "object",
         "title": "ProductUpdate"
+      },
+      "PromisePatterns": {
+        "properties": {
+          "commitment": {
+            "items": {
+              "$ref": "#/components/schemas/PatternEntry"
+            },
+            "type": "array",
+            "title": "Commitment"
+          },
+          "conditional": {
+            "items": {
+              "$ref": "#/components/schemas/PatternEntry"
+            },
+            "type": "array",
+            "title": "Conditional"
+          },
+          "kinds": {
+            "additionalProperties": {
+              "items": {
+                "$ref": "#/components/schemas/PatternEntry"
+              },
+              "type": "array"
+            },
+            "type": "object",
+            "title": "Kinds"
+          },
+          "deadline": {
+            "type": "string",
+            "maxLength": 300,
+            "minLength": 1,
+            "title": "Deadline"
+          }
+        },
+        "additionalProperties": false,
+        "type": "object",
+        "required": [
+          "commitment",
+          "conditional",
+          "kinds",
+          "deadline"
+        ],
+        "title": "PromisePatterns"
       },
       "ReasonCount": {
         "properties": {
@@ -12143,46 +12249,6 @@
         ],
         "title": "RunStatus"
       },
-      "RuntimeSettings": {
-        "properties": {
-          "email": {
-            "$ref": "#/components/schemas/EmailSettings"
-          },
-          "ai": {
-            "$ref": "#/components/schemas/AiSettings"
-          },
-          "operations": {
-            "$ref": "#/components/schemas/OperationsSettings"
-          },
-          "branding": {
-            "$ref": "#/components/schemas/BrandingSettings"
-          },
-          "orders": {
-            "$ref": "#/components/schemas/OrderSettings"
-          },
-          "knowledge_base": {
-            "$ref": "#/components/schemas/KnowledgeBaseSettings"
-          },
-          "validation": {
-            "$ref": "#/components/schemas/ValidationSettings"
-          },
-          "access": {
-            "$ref": "#/components/schemas/AccessSettings"
-          }
-        },
-        "additionalProperties": false,
-        "type": "object",
-        "required": [
-          "email",
-          "ai",
-          "operations",
-          "branding",
-          "orders",
-          "knowledge_base",
-          "validation"
-        ],
-        "title": "RuntimeSettings"
-      },
       "ScoreWeights": {
         "properties": {
           "critical": {
@@ -12309,13 +12375,54 @@
         ],
         "title": "SearchResultOut"
       },
+      "SettingsGroups": {
+        "properties": {
+          "email": {
+            "$ref": "#/components/schemas/EmailSettings"
+          },
+          "ai": {
+            "$ref": "#/components/schemas/AiSettings"
+          },
+          "operations": {
+            "$ref": "#/components/schemas/OperationsSettings"
+          },
+          "branding": {
+            "$ref": "#/components/schemas/BrandingSettings"
+          },
+          "orders": {
+            "$ref": "#/components/schemas/OrderSettings"
+          },
+          "knowledge_base": {
+            "$ref": "#/components/schemas/KnowledgeBaseSettings"
+          },
+          "validation": {
+            "$ref": "#/components/schemas/ValidationSettings"
+          },
+          "access": {
+            "$ref": "#/components/schemas/AccessSettings"
+          }
+        },
+        "additionalProperties": false,
+        "type": "object",
+        "required": [
+          "email",
+          "ai",
+          "operations",
+          "branding",
+          "orders",
+          "knowledge_base",
+          "validation"
+        ],
+        "title": "SettingsGroups",
+        "description": "The settings without the text patterns (they have their own page and endpoint)."
+      },
       "SettingsOut": {
         "properties": {
           "settings": {
-            "$ref": "#/components/schemas/RuntimeSettings"
+            "$ref": "#/components/schemas/SettingsGroups"
           },
           "defaults": {
-            "$ref": "#/components/schemas/RuntimeSettings"
+            "$ref": "#/components/schemas/SettingsGroups"
           },
           "risk_signals": {
             "items": {
@@ -13751,6 +13858,36 @@
           "repair_days"
         ],
         "title": "Warranty"
+      },
+      "WeightedEntry": {
+        "properties": {
+          "text": {
+            "type": "string",
+            "title": "Text"
+          },
+          "mode": {
+            "type": "string",
+            "enum": [
+              "phrase",
+              "regex"
+            ],
+            "title": "Mode"
+          },
+          "weight": {
+            "type": "integer",
+            "maximum": 3.0,
+            "minimum": 1.0,
+            "title": "Weight"
+          }
+        },
+        "additionalProperties": false,
+        "type": "object",
+        "required": [
+          "text",
+          "mode",
+          "weight"
+        ],
+        "title": "WeightedEntry"
       }
     },
     "securitySchemes": {

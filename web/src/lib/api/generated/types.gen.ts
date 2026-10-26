@@ -2946,6 +2946,45 @@ export type PageAccess = {
 };
 
 /**
+ * PatternEntry
+ *
+ * A plain phrase (matched literally) or a regular expression.
+ */
+export type PatternEntry = {
+    /**
+     * Text
+     */
+    text: string;
+    /**
+     * Mode
+     */
+    mode: 'phrase' | 'regex';
+};
+
+/**
+ * PatternSettings
+ *
+ * Risk-signal words, classifier phrases and promise wording (Settings → Patterns).
+ */
+export type PatternSettings = {
+    /**
+     * Signals
+     */
+    signals: {
+        [key: string]: Array<PatternEntry>;
+    };
+    /**
+     * Classifier
+     */
+    classifier: {
+        [key: string]: {
+            [key: string]: Array<WeightedEntry>;
+        };
+    };
+    promises: PromisePatterns;
+};
+
+/**
  * PolicyFactOut
  */
 export type PolicyFactOut = {
@@ -3137,6 +3176,30 @@ export type ProductUpdate = {
      * Is Active
      */
     is_active?: boolean | null;
+};
+
+/**
+ * PromisePatterns
+ */
+export type PromisePatterns = {
+    /**
+     * Commitment
+     */
+    commitment: Array<PatternEntry>;
+    /**
+     * Conditional
+     */
+    conditional: Array<PatternEntry>;
+    /**
+     * Kinds
+     */
+    kinds: {
+        [key: string]: Array<PatternEntry>;
+    };
+    /**
+     * Deadline
+     */
+    deadline: string;
 };
 
 /**
@@ -3646,20 +3709,6 @@ export type RuleWrite = {
 export type RunStatus = 'queued' | 'running' | 'completed' | 'needs_review' | 'failed';
 
 /**
- * RuntimeSettings
- */
-export type RuntimeSettings = {
-    email: EmailSettings;
-    ai: AiSettings;
-    operations: OperationsSettings;
-    branding: BrandingSettings;
-    orders: OrderSettings;
-    knowledge_base: KnowledgeBaseSettings;
-    validation: ValidationSettings;
-    access?: AccessSettings;
-};
-
-/**
  * ScoreWeights
  */
 export type ScoreWeights = {
@@ -3732,11 +3781,27 @@ export type SearchResultOut = {
 };
 
 /**
+ * SettingsGroups
+ *
+ * The settings without the text patterns (they have their own page and endpoint).
+ */
+export type SettingsGroups = {
+    email: EmailSettings;
+    ai: AiSettings;
+    operations: OperationsSettings;
+    branding: BrandingSettings;
+    orders: OrderSettings;
+    knowledge_base: KnowledgeBaseSettings;
+    validation: ValidationSettings;
+    access?: AccessSettings;
+};
+
+/**
  * SettingsOut
  */
 export type SettingsOut = {
-    settings: RuntimeSettings;
-    defaults: RuntimeSettings;
+    settings: SettingsGroups;
+    defaults: SettingsGroups;
     /**
      * Risk Signals
      */
@@ -4534,6 +4599,24 @@ export type Warranty = {
      * Repair Days
      */
     repair_days: number;
+};
+
+/**
+ * WeightedEntry
+ */
+export type WeightedEntry = {
+    /**
+     * Text
+     */
+    text: string;
+    /**
+     * Mode
+     */
+    mode: 'phrase' | 'regex';
+    /**
+     * Weight
+     */
+    weight: number;
 };
 
 /**

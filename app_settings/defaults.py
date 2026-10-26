@@ -47,6 +47,35 @@ def _validation_defaults(validation: dict[str, Any]) -> dict[str, Any]:
     }
 
 
+def _pattern_defaults(validation: dict[str, Any]) -> dict[str, Any]:
+    """Today's word lists, phrase lists and promise wording, each pattern as a regex entry."""
+
+    def regex(text: str) -> dict[str, str]:
+        return {"text": text, "mode": "regex"}
+
+    with CLASSIFIER_FILE.open(encoding="utf-8") as handle:
+        classifier = yaml.safe_load(handle)["subcategories"]
+    with (ROOT_DIR / "config" / "detectors.yaml").open(encoding="utf-8") as handle:
+        signals = yaml.safe_load(handle)["signals"]
+    promises = validation["promises"]
+    return {
+        "signals": {name: [regex(p) for p in spec["patterns"]] for name, spec in signals.items()},
+        "classifier": {
+            category: {
+                sub: [{**regex(text), "weight": weight} for weight, text in entries]
+                for sub, entries in subs.items()
+            }
+            for category, subs in classifier.items()
+        },
+        "promises": {
+            "commitment": [regex(promises["commitment"])],
+            "conditional": [regex(promises["conditional"])],
+            "kinds": {k: [regex(spec["pattern"])] for k, spec in promises["kinds"].items()},
+            "deadline": promises["deadline"],
+        },
+    }
+
+
 def _clamp(value: float, low: float, high: float) -> float:
     return max(low, min(high, value))
 
@@ -94,6 +123,7 @@ def defaults() -> RuntimeSettings:
                 "always_review_escalation_level": validation["always_review_escalation_level"],
             },
             "validation": _validation_defaults(validation),
+            "patterns": _pattern_defaults(validation),
             "access": default_access().model_dump(),
             "orders": {
                 "auto_advance": True,

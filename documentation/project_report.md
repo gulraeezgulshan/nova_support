@@ -448,6 +448,11 @@ The independent classifier (`python_validation/classifier.py`) scores weighted p
 subcategory plus risk signals and reports confident, tentative or unknown; the category check
 is skipped when it is not confident, instead of guessing.
 
+The check weights, compensation limits, never-allowed actions, the categories that need an
+order, the escalation action levels and the classifier thresholds and signal boosts are
+run-time settings (Settings → Validation): defaults come from `config/validation.yaml` and
+`config/classification.yaml`, and an administrator's changes apply within 15 seconds.
+
 ## 24. Routing validation
 
 Python computes the expected primary department from the matching rules (most severe per

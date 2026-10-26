@@ -92,6 +92,7 @@ need the API and worker restarted (`make api`, `make worker`).
 | Add a dashboard filter | Add a field to `Filters` in `src/analytics/filters.py`, a query parameter in `analytics_filters()` (`src/api/routes/analytics.py`) and a control in `web/src/components/analytics/filter-bar.tsx`, then `make openapi` | Code |
 | Give a role access to a page | Page access → tick View or Edit for the role → Save (applies within 15 s) | Database (no code) |
 | Change chunk size or overlap | Settings → Knowledge base → chunk size / overlap → Save → **Reprocess all active documents** | Database (no code) |
+| Change a compensation limit | Settings → Validation → Compensation → Save | Database (no code) |
 
 ## 6. Deliberate defects
 

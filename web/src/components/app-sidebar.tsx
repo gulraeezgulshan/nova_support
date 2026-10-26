@@ -18,6 +18,7 @@ import {
   FileUp,
   Mail,
   Settings2,
+  ShieldCheck,
   Store,
   Truck,
 } from "lucide-react";
@@ -92,6 +93,7 @@ const NAV: { label: string; items: NavItem[] }[] = [
       { title: "Rule matrix", href: "/settings/rules", icon: ListChecks, page: "rules" },
       { title: "Products", href: "/settings/products", icon: Package, page: "products" },
       { title: "Users & roles", href: "/settings/users", icon: Users, page: "users" },
+      { title: "Page access", href: "/settings/access", icon: ShieldCheck, page: "access" },
       { title: "Settings", href: "/settings/general", icon: Settings2, page: "settings" },
     ],
   },

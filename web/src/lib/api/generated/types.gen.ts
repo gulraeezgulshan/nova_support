@@ -3226,6 +3226,16 @@ export type ReportTableOut = {
 };
 
 /**
+ * ReprocessAllOut
+ */
+export type ReprocessAllOut = {
+    /**
+     * Queued
+     */
+    queued: number;
+};
+
+/**
  * ResolutionStep
  */
 export type ResolutionStep = {
@@ -5031,6 +5041,22 @@ export type RetireVersionResponses = {
 };
 
 export type RetireVersionResponse = RetireVersionResponses[keyof RetireVersionResponses];
+
+export type ReprocessActiveDocumentsData = {
+    body?: never;
+    path?: never;
+    query?: never;
+    url: '/api/v1/documents/reprocess-active';
+};
+
+export type ReprocessActiveDocumentsResponses = {
+    /**
+     * Successful Response
+     */
+    202: ReprocessAllOut;
+};
+
+export type ReprocessActiveDocumentsResponse = ReprocessActiveDocumentsResponses[keyof ReprocessActiveDocumentsResponses];
 
 export type ReprocessVersionData = {
     body?: never;

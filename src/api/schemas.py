@@ -1026,3 +1026,7 @@ class AccessUpdate(BaseModel):
     model_config = ConfigDict(extra="forbid")
     matrix: dict[str, dict[str, str]]
     version: int
+
+
+class ReprocessAllOut(BaseModel):
+    queued: int

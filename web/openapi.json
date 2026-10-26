@@ -966,6 +966,33 @@
         }
       }
     },
+    "/api/v1/documents/reprocess-active": {
+      "post": {
+        "tags": [
+          "knowledge-base"
+        ],
+        "summary": "Reprocess Active Documents",
+        "description": "Re-chunk every active document with the chunk size and overlap from Settings.",
+        "operationId": "reprocess_active_documents",
+        "responses": {
+          "202": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ReprocessAllOut"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "HTTPBearer": []
+          }
+        ]
+      }
+    },
     "/api/v1/document-versions/{version_id}/reprocess": {
       "post": {
         "tags": [
@@ -11312,6 +11339,19 @@
           "total_rows"
         ],
         "title": "ReportTableOut"
+      },
+      "ReprocessAllOut": {
+        "properties": {
+          "queued": {
+            "type": "integer",
+            "title": "Queued"
+          }
+        },
+        "type": "object",
+        "required": [
+          "queued"
+        ],
+        "title": "ReprocessAllOut"
       },
       "ResolutionStep": {
         "properties": {

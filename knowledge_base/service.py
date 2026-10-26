@@ -201,3 +201,36 @@ async def reprocess_version(db: AsyncSession, version: DocumentVersion, actor: U
     )
     await db.commit()
     _safe_enqueue(version.id)
+
+
+async def reprocess_active(db: AsyncSession, actor: User) -> int:
+    """Re-chunk and re-embed every active version with the current settings.
+
+    Versions stay active and searchable; each one's passages are replaced in a single
+    transaction when its job finishes.
+    """
+    versions = (
+        await db.scalars(
+            select(DocumentVersion).where(DocumentVersion.status == VersionStatus.ACTIVE)
+        )
+    ).all()
+    for version in versions:
+        version.ingest_status = IngestStatus.PENDING
+        version.ingest_error = None
+    sizes = app_settings.runtime().knowledge_base
+    await audit.record(
+        db,
+        "knowledge_base.reprocess_all",
+        "knowledge_base",
+        "active_versions",
+        actor_user_id=actor.id,
+        after={
+            "queued": len(versions),
+            "chunk_max_tokens": sizes.chunk_max_tokens,
+            "chunk_overlap_tokens": sizes.chunk_overlap_tokens,
+        },
+    )
+    await db.commit()
+    for version in versions:
+        _safe_enqueue(version.id)
+    return len(versions)

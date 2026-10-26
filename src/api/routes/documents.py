@@ -32,6 +32,7 @@ from src.api.schemas import (
     DocumentTypeOut,
     DocumentVersionOut,
     ErrorResponse,
+    ReprocessAllOut,
     SearchResultOut,
 )
 from src.core.config import Settings, get_settings
@@ -177,6 +178,18 @@ async def retire_version(
     version = await _get_version(db, version_id)
     await service.retire_version(db, version, actor)
     return version
+
+
+@router.post(
+    "/documents/reprocess-active",
+    response_model=ReprocessAllOut,
+    status_code=status.HTTP_202_ACCEPTED,
+)
+async def reprocess_active_documents(
+    actor: User = Depends(kb_edit), db: AsyncSession = Depends(get_db)
+) -> ReprocessAllOut:
+    """Re-chunk every active document with the chunk size and overlap from Settings."""
+    return ReprocessAllOut(queued=await service.reprocess_active(db, actor))
 
 
 @router.post(

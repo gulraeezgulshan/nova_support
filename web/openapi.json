@@ -5156,6 +5156,194 @@
         ]
       }
     },
+    "/api/v1/settings/patterns": {
+      "get": {
+        "tags": [
+          "patterns"
+        ],
+        "summary": "Read Patterns",
+        "operationId": "read_patterns",
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/PatternsOut"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "HTTPBearer": []
+          }
+        ]
+      },
+      "put": {
+        "tags": [
+          "patterns"
+        ],
+        "summary": "Update Patterns",
+        "operationId": "update_patterns",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/PatternsUpdate"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/PatternsOut"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "HTTPBearer": []
+          }
+        ]
+      }
+    },
+    "/api/v1/settings/patterns/test": {
+      "post": {
+        "tags": [
+          "patterns"
+        ],
+        "summary": "Test Patterns",
+        "operationId": "test_patterns",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/PatternTestIn"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/TextTestOut"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "HTTPBearer": []
+          }
+        ]
+      }
+    },
+    "/api/v1/settings/patterns/dataset-check": {
+      "post": {
+        "tags": [
+          "patterns"
+        ],
+        "summary": "Check Patterns On Dataset",
+        "operationId": "check_patterns_on_dataset",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/DatasetCheckIn"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/DatasetCheckOut"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "HTTPBearer": []
+          }
+        ]
+      }
+    },
+    "/api/v1/settings/patterns/recompute-signals": {
+      "post": {
+        "tags": [
+          "patterns"
+        ],
+        "summary": "Recompute Signals",
+        "operationId": "recompute_signals",
+        "responses": {
+          "202": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/RecomputeQueuedOut"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "HTTPBearer": []
+          }
+        ]
+      }
+    },
     "/api/v1/orders/{ref}/cancel": {
       "post": {
         "tags": [
@@ -6939,6 +7127,29 @@
         ],
         "title": "BrandingText"
       },
+      "CandidateOut": {
+        "properties": {
+          "category": {
+            "type": "string",
+            "title": "Category"
+          },
+          "subcategory": {
+            "type": "string",
+            "title": "Subcategory"
+          },
+          "score": {
+            "type": "integer",
+            "title": "Score"
+          }
+        },
+        "type": "object",
+        "required": [
+          "category",
+          "subcategory",
+          "score"
+        ],
+        "title": "CandidateOut"
+      },
       "CategoryCreate": {
         "properties": {
           "code": {
@@ -7405,6 +7616,83 @@
         ],
         "title": "ChunkOut"
       },
+      "ClassificationOut": {
+        "properties": {
+          "status": {
+            "type": "string",
+            "title": "Status"
+          },
+          "primary": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Primary"
+          },
+          "candidates": {
+            "items": {
+              "$ref": "#/components/schemas/CandidateOut"
+            },
+            "type": "array",
+            "title": "Candidates"
+          }
+        },
+        "type": "object",
+        "required": [
+          "status",
+          "primary",
+          "candidates"
+        ],
+        "title": "ClassificationOut"
+      },
+      "ClassifierCompare": {
+        "properties": {
+          "saved_correct": {
+            "type": "integer",
+            "title": "Saved Correct"
+          },
+          "draft_correct": {
+            "type": "integer",
+            "title": "Draft Correct"
+          },
+          "saved_confident": {
+            "type": "integer",
+            "title": "Saved Confident"
+          },
+          "draft_confident": {
+            "type": "integer",
+            "title": "Draft Confident"
+          },
+          "right_to_wrong": {
+            "items": {
+              "type": "string"
+            },
+            "type": "array",
+            "title": "Right To Wrong"
+          },
+          "wrong_to_right": {
+            "items": {
+              "type": "string"
+            },
+            "type": "array",
+            "title": "Wrong To Right"
+          }
+        },
+        "type": "object",
+        "required": [
+          "saved_correct",
+          "draft_correct",
+          "saved_confident",
+          "draft_confident",
+          "right_to_wrong",
+          "wrong_to_right"
+        ],
+        "title": "ClassifierCompare"
+      },
       "Company": {
         "properties": {
           "name": {
@@ -7450,6 +7738,29 @@
           "socials"
         ],
         "title": "Company"
+      },
+      "Compare": {
+        "properties": {
+          "saved": {
+            "type": "integer",
+            "title": "Saved"
+          },
+          "draft": {
+            "type": "integer",
+            "title": "Draft"
+          },
+          "total": {
+            "type": "integer",
+            "title": "Total"
+          }
+        },
+        "type": "object",
+        "required": [
+          "saved",
+          "draft",
+          "total"
+        ],
+        "title": "Compare"
       },
       "ComparisonRowOut": {
         "properties": {
@@ -8907,6 +9218,76 @@
         ],
         "title": "CustomerResponse"
       },
+      "DatasetCheckIn": {
+        "properties": {
+          "draft": {
+            "$ref": "#/components/schemas/PatternSettings"
+          }
+        },
+        "type": "object",
+        "required": [
+          "draft"
+        ],
+        "title": "DatasetCheckIn"
+      },
+      "DatasetCheckOut": {
+        "properties": {
+          "total": {
+            "type": "integer",
+            "title": "Total"
+          },
+          "signals": {
+            "items": {
+              "$ref": "#/components/schemas/SignalDelta"
+            },
+            "type": "array",
+            "title": "Signals"
+          },
+          "classifier": {
+            "$ref": "#/components/schemas/ClassifierCompare"
+          },
+          "escalation": {
+            "$ref": "#/components/schemas/Compare"
+          },
+          "urgency": {
+            "$ref": "#/components/schemas/Compare"
+          },
+          "prompt_injection": {
+            "$ref": "#/components/schemas/InjectionCompare"
+          }
+        },
+        "type": "object",
+        "required": [
+          "total",
+          "signals",
+          "classifier",
+          "escalation",
+          "urgency",
+          "prompt_injection"
+        ],
+        "title": "DatasetCheckOut"
+      },
+      "DatasetHit": {
+        "properties": {
+          "dataset_id": {
+            "type": "string",
+            "title": "Dataset Id"
+          },
+          "phrases": {
+            "items": {
+              "type": "string"
+            },
+            "type": "array",
+            "title": "Phrases"
+          }
+        },
+        "type": "object",
+        "required": [
+          "dataset_id",
+          "phrases"
+        ],
+        "title": "DatasetHit"
+      },
       "DepartmentCreate": {
         "properties": {
           "code": {
@@ -9818,6 +10199,24 @@
         "type": "object",
         "title": "HTTPValidationError"
       },
+      "Hits": {
+        "properties": {
+          "true_positive": {
+            "type": "integer",
+            "title": "True Positive"
+          },
+          "false_positive": {
+            "type": "integer",
+            "title": "False Positive"
+          }
+        },
+        "type": "object",
+        "required": [
+          "true_positive",
+          "false_positive"
+        ],
+        "title": "Hits"
+      },
       "ImageOrderIn": {
         "properties": {
           "image_ids": {
@@ -10205,6 +10604,22 @@
           "failed"
         ],
         "title": "IngestStatus"
+      },
+      "InjectionCompare": {
+        "properties": {
+          "saved": {
+            "$ref": "#/components/schemas/Hits"
+          },
+          "draft": {
+            "$ref": "#/components/schemas/Hits"
+          }
+        },
+        "type": "object",
+        "required": [
+          "saved",
+          "draft"
+        ],
+        "title": "InjectionCompare"
       },
       "Issue": {
         "properties": {
@@ -10984,6 +11399,118 @@
         "title": "PatternSettings",
         "description": "Risk-signal words, classifier phrases and promise wording (Settings \u2192 Patterns)."
       },
+      "PatternTestIn": {
+        "properties": {
+          "draft": {
+            "$ref": "#/components/schemas/PatternSettings"
+          },
+          "text": {
+            "type": "string",
+            "maxLength": 5000,
+            "minLength": 1,
+            "title": "Text"
+          }
+        },
+        "type": "object",
+        "required": [
+          "draft",
+          "text"
+        ],
+        "title": "PatternTestIn"
+      },
+      "PatternsOut": {
+        "properties": {
+          "patterns": {
+            "$ref": "#/components/schemas/PatternSettings"
+          },
+          "defaults": {
+            "$ref": "#/components/schemas/PatternSettings"
+          },
+          "version": {
+            "type": "integer",
+            "title": "Version"
+          },
+          "updated_at": {
+            "anyOf": [
+              {
+                "type": "string",
+                "format": "date-time"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Updated At"
+          },
+          "updated_by": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Updated By"
+          },
+          "signal_descriptions": {
+            "additionalProperties": {
+              "type": "string"
+            },
+            "type": "object",
+            "title": "Signal Descriptions"
+          },
+          "supported_by": {
+            "additionalProperties": {
+              "items": {
+                "type": "string"
+              },
+              "type": "array"
+            },
+            "type": "object",
+            "title": "Supported By"
+          },
+          "last_recompute": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/RecomputeOut"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          }
+        },
+        "type": "object",
+        "required": [
+          "patterns",
+          "defaults",
+          "version",
+          "updated_at",
+          "updated_by",
+          "signal_descriptions",
+          "supported_by",
+          "last_recompute"
+        ],
+        "title": "PatternsOut"
+      },
+      "PatternsUpdate": {
+        "properties": {
+          "version": {
+            "type": "integer",
+            "title": "Version"
+          },
+          "patterns": {
+            "$ref": "#/components/schemas/PatternSettings"
+          }
+        },
+        "type": "object",
+        "required": [
+          "version",
+          "patterns"
+        ],
+        "title": "PatternsUpdate"
+      },
       "PolicyFactOut": {
         "properties": {
           "fact": {
@@ -11361,6 +11888,43 @@
           "count"
         ],
         "title": "ReasonCount"
+      },
+      "RecomputeOut": {
+        "properties": {
+          "at": {
+            "type": "string",
+            "format": "date-time",
+            "title": "At"
+          },
+          "changed": {
+            "type": "integer",
+            "title": "Changed"
+          },
+          "total": {
+            "type": "integer",
+            "title": "Total"
+          }
+        },
+        "type": "object",
+        "required": [
+          "at",
+          "changed",
+          "total"
+        ],
+        "title": "RecomputeOut"
+      },
+      "RecomputeQueuedOut": {
+        "properties": {
+          "queued": {
+            "type": "boolean",
+            "title": "Queued"
+          }
+        },
+        "type": "object",
+        "required": [
+          "queued"
+        ],
+        "title": "RecomputeQueuedOut"
       },
       "ReportColumn": {
         "properties": {
@@ -12375,6 +12939,37 @@
         ],
         "title": "SearchResultOut"
       },
+      "SentenceOut": {
+        "properties": {
+          "sentence": {
+            "type": "string",
+            "title": "Sentence"
+          },
+          "commitment": {
+            "type": "boolean",
+            "title": "Commitment"
+          },
+          "conditional": {
+            "type": "boolean",
+            "title": "Conditional"
+          },
+          "kinds": {
+            "items": {
+              "type": "string"
+            },
+            "type": "array",
+            "title": "Kinds"
+          }
+        },
+        "type": "object",
+        "required": [
+          "sentence",
+          "commitment",
+          "conditional",
+          "kinds"
+        ],
+        "title": "SentenceOut"
+      },
       "SettingsGroups": {
         "properties": {
           "email": {
@@ -12796,6 +13391,45 @@
           "weight"
         ],
         "title": "SignalBoost"
+      },
+      "SignalDelta": {
+        "properties": {
+          "signal": {
+            "type": "string",
+            "title": "Signal"
+          },
+          "saved": {
+            "type": "integer",
+            "title": "Saved"
+          },
+          "draft": {
+            "type": "integer",
+            "title": "Draft"
+          },
+          "gained": {
+            "items": {
+              "$ref": "#/components/schemas/DatasetHit"
+            },
+            "type": "array",
+            "title": "Gained"
+          },
+          "lost": {
+            "items": {
+              "$ref": "#/components/schemas/DatasetHit"
+            },
+            "type": "array",
+            "title": "Lost"
+          }
+        },
+        "type": "object",
+        "required": [
+          "signal",
+          "saved",
+          "draft",
+          "gained",
+          "lost"
+        ],
+        "title": "SignalDelta"
       },
       "SlaPolicyOut": {
         "properties": {
@@ -13373,6 +14007,53 @@
           "is_active"
         ],
         "title": "SubcategoryOut"
+      },
+      "TextSide": {
+        "properties": {
+          "signals": {
+            "additionalProperties": {
+              "items": {
+                "type": "string"
+              },
+              "type": "array"
+            },
+            "type": "object",
+            "title": "Signals"
+          },
+          "classification": {
+            "$ref": "#/components/schemas/ClassificationOut"
+          },
+          "sentences": {
+            "items": {
+              "$ref": "#/components/schemas/SentenceOut"
+            },
+            "type": "array",
+            "title": "Sentences"
+          }
+        },
+        "type": "object",
+        "required": [
+          "signals",
+          "classification",
+          "sentences"
+        ],
+        "title": "TextSide"
+      },
+      "TextTestOut": {
+        "properties": {
+          "saved": {
+            "$ref": "#/components/schemas/TextSide"
+          },
+          "draft": {
+            "$ref": "#/components/schemas/TextSide"
+          }
+        },
+        "type": "object",
+        "required": [
+          "saved",
+          "draft"
+        ],
+        "title": "TextTestOut"
       },
       "TrendOut": {
         "properties": {

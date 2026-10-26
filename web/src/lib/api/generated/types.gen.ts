@@ -731,6 +731,24 @@ export type BrandingText = {
 };
 
 /**
+ * CandidateOut
+ */
+export type CandidateOut = {
+    /**
+     * Category
+     */
+    category: string;
+    /**
+     * Subcategory
+     */
+    subcategory: string;
+    /**
+     * Score
+     */
+    score: number;
+};
+
+/**
  * CategoryCreate
  */
 export type CategoryCreate = {
@@ -1007,6 +1025,54 @@ export type ChunkOut = {
 };
 
 /**
+ * ClassificationOut
+ */
+export type ClassificationOut = {
+    /**
+     * Status
+     */
+    status: string;
+    /**
+     * Primary
+     */
+    primary: string | null;
+    /**
+     * Candidates
+     */
+    candidates: Array<CandidateOut>;
+};
+
+/**
+ * ClassifierCompare
+ */
+export type ClassifierCompare = {
+    /**
+     * Saved Correct
+     */
+    saved_correct: number;
+    /**
+     * Draft Correct
+     */
+    draft_correct: number;
+    /**
+     * Saved Confident
+     */
+    saved_confident: number;
+    /**
+     * Draft Confident
+     */
+    draft_confident: number;
+    /**
+     * Right To Wrong
+     */
+    right_to_wrong: Array<string>;
+    /**
+     * Wrong To Right
+     */
+    wrong_to_right: Array<string>;
+};
+
+/**
  * Company
  */
 export type Company = {
@@ -1038,6 +1104,24 @@ export type Company = {
      * Socials
      */
     socials: Array<Social>;
+};
+
+/**
+ * Compare
+ */
+export type Compare = {
+    /**
+     * Saved
+     */
+    saved: number;
+    /**
+     * Draft
+     */
+    draft: number;
+    /**
+     * Total
+     */
+    total: number;
 };
 
 /**
@@ -1742,6 +1826,45 @@ export type CustomerResponse = {
 };
 
 /**
+ * DatasetCheckIn
+ */
+export type DatasetCheckIn = {
+    draft: PatternSettings;
+};
+
+/**
+ * DatasetCheckOut
+ */
+export type DatasetCheckOut = {
+    /**
+     * Total
+     */
+    total: number;
+    /**
+     * Signals
+     */
+    signals: Array<SignalDelta>;
+    classifier: ClassifierCompare;
+    escalation: Compare;
+    urgency: Compare;
+    prompt_injection: InjectionCompare;
+};
+
+/**
+ * DatasetHit
+ */
+export type DatasetHit = {
+    /**
+     * Dataset Id
+     */
+    dataset_id: string;
+    /**
+     * Phrases
+     */
+    phrases: Array<string>;
+};
+
+/**
  * DepartmentCreate
  */
 export type DepartmentCreate = {
@@ -2295,6 +2418,20 @@ export type HttpValidationError = {
 };
 
 /**
+ * Hits
+ */
+export type Hits = {
+    /**
+     * True Positive
+     */
+    true_positive: number;
+    /**
+     * False Positive
+     */
+    false_positive: number;
+};
+
+/**
  * ImageOrderIn
  */
 export type ImageOrderIn = {
@@ -2528,6 +2665,14 @@ export type InboundEmailOut = {
  * IngestStatus
  */
 export type IngestStatus = 'pending' | 'processing' | 'ready' | 'failed';
+
+/**
+ * InjectionCompare
+ */
+export type InjectionCompare = {
+    saved: Hits;
+    draft: Hits;
+};
 
 /**
  * Issue
@@ -2985,6 +3130,61 @@ export type PatternSettings = {
 };
 
 /**
+ * PatternTestIn
+ */
+export type PatternTestIn = {
+    draft: PatternSettings;
+    /**
+     * Text
+     */
+    text: string;
+};
+
+/**
+ * PatternsOut
+ */
+export type PatternsOut = {
+    patterns: PatternSettings;
+    defaults: PatternSettings;
+    /**
+     * Version
+     */
+    version: number;
+    /**
+     * Updated At
+     */
+    updated_at: string | null;
+    /**
+     * Updated By
+     */
+    updated_by: string | null;
+    /**
+     * Signal Descriptions
+     */
+    signal_descriptions: {
+        [key: string]: string;
+    };
+    /**
+     * Supported By
+     */
+    supported_by: {
+        [key: string]: Array<string>;
+    };
+    last_recompute: RecomputeOut | null;
+};
+
+/**
+ * PatternsUpdate
+ */
+export type PatternsUpdate = {
+    /**
+     * Version
+     */
+    version: number;
+    patterns: PatternSettings;
+};
+
+/**
  * PolicyFactOut
  */
 export type PolicyFactOut = {
@@ -3214,6 +3414,34 @@ export type ReasonCount = {
      * Count
      */
     count: number;
+};
+
+/**
+ * RecomputeOut
+ */
+export type RecomputeOut = {
+    /**
+     * At
+     */
+    at: string;
+    /**
+     * Changed
+     */
+    changed: number;
+    /**
+     * Total
+     */
+    total: number;
+};
+
+/**
+ * RecomputeQueuedOut
+ */
+export type RecomputeQueuedOut = {
+    /**
+     * Queued
+     */
+    queued: boolean;
 };
 
 /**
@@ -3781,6 +4009,28 @@ export type SearchResultOut = {
 };
 
 /**
+ * SentenceOut
+ */
+export type SentenceOut = {
+    /**
+     * Sentence
+     */
+    sentence: string;
+    /**
+     * Commitment
+     */
+    commitment: boolean;
+    /**
+     * Conditional
+     */
+    conditional: boolean;
+    /**
+     * Kinds
+     */
+    kinds: Array<string>;
+};
+
+/**
  * SettingsGroups
  *
  * The settings without the text patterns (they have their own page and endpoint).
@@ -3991,6 +4241,32 @@ export type SignalBoost = {
      * Weight
      */
     weight: number;
+};
+
+/**
+ * SignalDelta
+ */
+export type SignalDelta = {
+    /**
+     * Signal
+     */
+    signal: string;
+    /**
+     * Saved
+     */
+    saved: number;
+    /**
+     * Draft
+     */
+    draft: number;
+    /**
+     * Gained
+     */
+    gained: Array<DatasetHit>;
+    /**
+     * Lost
+     */
+    lost: Array<DatasetHit>;
 };
 
 /**
@@ -4310,6 +4586,31 @@ export type SubcategoryOut = {
      * Is Active
      */
     is_active: boolean;
+};
+
+/**
+ * TextSide
+ */
+export type TextSide = {
+    /**
+     * Signals
+     */
+    signals: {
+        [key: string]: Array<string>;
+    };
+    classification: ClassificationOut;
+    /**
+     * Sentences
+     */
+    sentences: Array<SentenceOut>;
+};
+
+/**
+ * TextTestOut
+ */
+export type TextTestOut = {
+    saved: TextSide;
+    draft: TextSide;
 };
 
 /**
@@ -7450,6 +7751,113 @@ export type UpdateAccessResponses = {
 };
 
 export type UpdateAccessResponse = UpdateAccessResponses[keyof UpdateAccessResponses];
+
+export type ReadPatternsData = {
+    body?: never;
+    path?: never;
+    query?: never;
+    url: '/api/v1/settings/patterns';
+};
+
+export type ReadPatternsResponses = {
+    /**
+     * Successful Response
+     */
+    200: PatternsOut;
+};
+
+export type ReadPatternsResponse = ReadPatternsResponses[keyof ReadPatternsResponses];
+
+export type UpdatePatternsData = {
+    body: PatternsUpdate;
+    path?: never;
+    query?: never;
+    url: '/api/v1/settings/patterns';
+};
+
+export type UpdatePatternsErrors = {
+    /**
+     * Validation Error
+     */
+    422: HttpValidationError;
+};
+
+export type UpdatePatternsError = UpdatePatternsErrors[keyof UpdatePatternsErrors];
+
+export type UpdatePatternsResponses = {
+    /**
+     * Successful Response
+     */
+    200: PatternsOut;
+};
+
+export type UpdatePatternsResponse = UpdatePatternsResponses[keyof UpdatePatternsResponses];
+
+export type TestPatternsData = {
+    body: PatternTestIn;
+    path?: never;
+    query?: never;
+    url: '/api/v1/settings/patterns/test';
+};
+
+export type TestPatternsErrors = {
+    /**
+     * Validation Error
+     */
+    422: HttpValidationError;
+};
+
+export type TestPatternsError = TestPatternsErrors[keyof TestPatternsErrors];
+
+export type TestPatternsResponses = {
+    /**
+     * Successful Response
+     */
+    200: TextTestOut;
+};
+
+export type TestPatternsResponse = TestPatternsResponses[keyof TestPatternsResponses];
+
+export type CheckPatternsOnDatasetData = {
+    body: DatasetCheckIn;
+    path?: never;
+    query?: never;
+    url: '/api/v1/settings/patterns/dataset-check';
+};
+
+export type CheckPatternsOnDatasetErrors = {
+    /**
+     * Validation Error
+     */
+    422: HttpValidationError;
+};
+
+export type CheckPatternsOnDatasetError = CheckPatternsOnDatasetErrors[keyof CheckPatternsOnDatasetErrors];
+
+export type CheckPatternsOnDatasetResponses = {
+    /**
+     * Successful Response
+     */
+    200: DatasetCheckOut;
+};
+
+export type CheckPatternsOnDatasetResponse = CheckPatternsOnDatasetResponses[keyof CheckPatternsOnDatasetResponses];
+
+export type RecomputeSignalsData = {
+    body?: never;
+    path?: never;
+    query?: never;
+    url: '/api/v1/settings/patterns/recompute-signals';
+};
+
+export type RecomputeSignalsResponses = {
+    /**
+     * Successful Response
+     */
+    202: RecomputeQueuedOut;
+};
+
+export type RecomputeSignalsResponse = RecomputeSignalsResponses[keyof RecomputeSignalsResponses];
 
 export type CancelOrderData = {
     body?: never;

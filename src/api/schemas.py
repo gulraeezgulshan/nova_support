@@ -1045,3 +1045,38 @@ class AccessUpdate(BaseModel):
 
 class ReprocessAllOut(BaseModel):
     queued: int
+
+
+class RecomputeOut(BaseModel):
+    at: datetime
+    changed: int
+    total: int
+
+
+class PatternsOut(BaseModel):
+    patterns: PatternSettings
+    defaults: PatternSettings
+    version: int
+    updated_at: datetime | None
+    updated_by: str | None
+    signal_descriptions: dict[str, str]
+    supported_by: dict[str, list[str]]  # fixed actions behind each promise kind
+    last_recompute: RecomputeOut | None
+
+
+class PatternsUpdate(BaseModel):
+    version: int
+    patterns: PatternSettings
+
+
+class PatternTestIn(BaseModel):
+    draft: PatternSettings
+    text: str = Field(min_length=1, max_length=5000)
+
+
+class DatasetCheckIn(BaseModel):
+    draft: PatternSettings
+
+
+class RecomputeQueuedOut(BaseModel):
+    queued: bool

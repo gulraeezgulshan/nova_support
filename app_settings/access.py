@@ -173,7 +173,7 @@ def level_for(role: Role, page: AccessKey) -> Level:
         return "none"
     from app_settings.store import runtime  # store imports the model, which imports this
 
-    return runtime().access.level(page, role.value)  # type: ignore[arg-type]
+    return runtime().access.level(page, Role(role).value)  # type: ignore[arg-type]
 
 
 def allowed(role: Role, page: AccessKey, needed: Needed) -> bool:

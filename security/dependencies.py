@@ -13,6 +13,7 @@ from fastapi.concurrency import run_in_threadpool
 from fastapi.security import HTTPAuthorizationCredentials, HTTPBearer
 from sqlalchemy.ext.asyncio import AsyncSession
 
+from app_settings.access import Needed, PageKey, allowed
 from database.models import Role, User
 from database.session import get_db
 from security.clerk import ClerkTokenVerifier, TokenVerificationError
@@ -22,6 +23,7 @@ from src.core.config import get_settings
 bearer_scheme = HTTPBearer(auto_error=False, description="Clerk session token")
 
 STAFF_ROLES = (Role.AGENT, Role.REVIEWER, Role.MANAGER, Role.ADMIN)
+NO_ACCESS = "You don't have access to this page"
 
 
 @lru_cache
@@ -80,6 +82,22 @@ def require_roles(*roles: Role) -> Callable[..., Awaitable[User]]:
     async def dependency(user: User = Depends(get_current_user)) -> User:
         if user.role not in allowed:
             raise HTTPException(status.HTTP_403_FORBIDDEN, "Insufficient role for this action")
+        return user
+
+    return dependency
+
+
+def ensure_access(user: User, page: PageKey, level: Needed) -> None:
+    """403 unless the page access matrix lets this user's role view/edit the page."""
+    if not allowed(user.role, page, level):
+        raise HTTPException(status.HTTP_403_FORBIDDEN, NO_ACCESS)
+
+
+def require_access(page: PageKey, level: Needed) -> Callable[..., Awaitable[User]]:
+    """Dependency form of `ensure_access` for staff pages (the matrix on the Page access screen)."""
+
+    async def dependency(user: User = Depends(get_current_user)) -> User:
+        ensure_access(user, page, level)
         return user
 
     return dependency

@@ -1,9 +1,10 @@
 """Independent keyword classifier for the Ground-Truth Validation Pipeline.
 
 The GenAI category is never taken on trust: Python scores every subcategory with the
-weighted phrase lists in `config/classification.yaml` plus decisive risk signals, and the
-validation compares the two. When the text gives Python too little to go on, the result is
-`unknown` rather than a guess, and the check reports that honestly.
+weighted phrase lists (Settings → Patterns; defaults in `config/classification.yaml`) plus
+decisive risk signals, and the validation compares the two. When the text gives Python too
+little to go on, the result is `unknown` rather than a guess, and the check reports that
+honestly.
 """
 
 import re
@@ -11,13 +12,10 @@ from dataclasses import dataclass, field
 from functools import lru_cache
 from typing import Any
 
-import yaml
-
 import app_settings
+from app_settings.patterns import entry_source
 from complaint_rules.engine import routing_config
-from src.core.config import ROOT_DIR
 
-CONFIG_FILE = ROOT_DIR / "config" / "classification.yaml"
 # Issues that outrank everything else when choosing the primary issue (RTG-RUL-01 section 3).
 CRITICAL_CATEGORIES = ("SAFETY", "PRIVACY")
 
@@ -70,19 +68,29 @@ class _Pattern:
     regex: re.Pattern[str]
 
 
-@lru_cache
+_Key = tuple[tuple[str, str, tuple[tuple[int, str], ...]], ...]
+
+
+@lru_cache(maxsize=8)
+def _compiled(key: _Key) -> dict[tuple[str, str], list[_Pattern]]:
+    return {
+        (category, subcategory): [
+            _Pattern(weight, re.compile(rf"(?<!\w)(?:{source})(?!\w)", re.IGNORECASE))
+            for weight, source in entries
+        ]
+        for category, subcategory, entries in key
+    }
+
+
 def _patterns() -> dict[tuple[str, str], list[_Pattern]]:
-    """The weighted phrase lists, compiled once (they move to Settings in Part 3)."""
-    with CONFIG_FILE.open(encoding="utf-8") as handle:
-        data = yaml.safe_load(handle)
-    patterns: dict[tuple[str, str], list[_Pattern]] = {}
-    for category, subs in data["subcategories"].items():
-        for subcategory, entries in subs.items():
-            patterns[(category, subcategory)] = [
-                _Pattern(int(weight), re.compile(rf"(?<!\w)(?:{regex})(?!\w)", re.IGNORECASE))
-                for weight, regex in entries
-            ]
-    return patterns
+    """The weighted phrase lists (Settings → Patterns), compiled once per change."""
+    classifier = app_settings.runtime().patterns.classifier
+    key = tuple(
+        (category, subcategory, tuple((e.weight, entry_source(e)) for e in entries))
+        for category, subs in classifier.items()
+        for subcategory, entries in subs.items()
+    )
+    return _compiled(key)
 
 
 def _severity(category: str) -> int:

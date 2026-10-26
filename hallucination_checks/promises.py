@@ -12,6 +12,8 @@ from dataclasses import dataclass
 from functools import lru_cache
 from typing import Any
 
+import app_settings
+from app_settings.patterns import joined
 from python_validation.types import validation_config
 
 SENTENCE = re.compile(r"(?<=[.!?])\s+|\n+")
@@ -24,25 +26,70 @@ class Promise:
     detail: str
 
 
-@lru_cache
-def _patterns() -> dict[str, Any]:
-    cfg = validation_config()["promises"]
+@dataclass(frozen=True)
+class SentenceCheck:
+    """How one sentence was read (the Patterns page test panel shows this)."""
+
+    sentence: str
+    commitment: bool
+    conditional: bool
+    kinds: list[str]
+
+
+@lru_cache(maxsize=8)
+def _compiled(
+    commitment: str, conditional: str, deadline: str, kinds: tuple[tuple[str, str], ...]
+) -> dict[str, Any]:
+    supported = validation_config()["promises"]["kinds"]
     return {
-        "commitment": re.compile(cfg["commitment"], re.IGNORECASE),
-        "conditional": re.compile(cfg["conditional"], re.IGNORECASE),
-        "deadline": re.compile(cfg["deadline"], re.IGNORECASE),
+        "commitment": re.compile(commitment, re.IGNORECASE),
+        "conditional": re.compile(conditional, re.IGNORECASE),
+        "deadline": re.compile(deadline, re.IGNORECASE),
         "kinds": {
-            kind: (re.compile(spec["pattern"], re.IGNORECASE), tuple(spec["supported_by"]))
-            for kind, spec in cfg["kinds"].items()
+            kind: (re.compile(source, re.IGNORECASE), tuple(supported[kind]["supported_by"]))
+            for kind, source in kinds
         },
     }
+
+
+def _patterns() -> dict[str, Any]:
+    """The promise wording from Settings → Patterns; `supported_by` stays in the YAML."""
+    p = app_settings.runtime().patterns.promises
+    return _compiled(
+        joined(p.commitment, bounded=True),
+        joined(p.conditional, bounded=True),
+        p.deadline,
+        tuple((kind, joined(entries, bounded=True)) for kind, entries in p.kinds.items()),
+    )
+
+
+def _sentences(text: str) -> list[str]:
+    return [s for s in (s.strip() for s in SENTENCE.split(text or "")) if s]
+
+
+def sentence_checks(text: str) -> list[SentenceCheck]:
+    patterns = _patterns()
+    checks = []
+    for sentence in _sentences(text):
+        kinds = [k for k, (pattern, _) in patterns["kinds"].items() if pattern.search(sentence)]
+        if patterns["deadline"].search(sentence):
+            kinds.append("deadline")
+        checks.append(
+            SentenceCheck(
+                sentence,
+                bool(patterns["commitment"].search(sentence)),
+                bool(patterns["conditional"].search(sentence)),
+                kinds,
+            )
+        )
+    return checks
 
 
 def find_promises(text: str) -> list[Promise]:
     patterns = _patterns()
     promises: list[Promise] = []
-    for sentence in (s.strip() for s in SENTENCE.split(text or "")):
-        if not sentence or not patterns["commitment"].search(sentence):
+    for sentence in _sentences(text):
+        if not patterns["commitment"].search(sentence):
             continue
         if patterns["conditional"].search(sentence):
             continue

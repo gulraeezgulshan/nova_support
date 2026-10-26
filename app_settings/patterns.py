@@ -18,11 +18,11 @@ _UNBOUNDED = re.compile(r"[+*]|\{\d+,\}")
 
 
 def entry_source(entry: "PatternEntry", *, bounded: bool = False) -> str:
-    """The regex source of one entry; `bounded` wraps a phrase in word boundaries."""
+    """The regex source of one entry; `bounded` keeps a phrase from matching inside a word."""
     if entry.mode == "regex":
         return entry.text
     escaped = re.escape(entry.text)
-    return rf"\b{escaped}\b" if bounded else escaped
+    return rf"(?<!\w){escaped}(?!\w)" if bounded else escaped
 
 
 def joined(entries: Sequence["PatternEntry"], *, bounded: bool = False) -> str:

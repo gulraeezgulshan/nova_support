@@ -114,7 +114,7 @@ def test_error_names_the_place() -> None:
 def test_entry_source() -> None:
     assert entry_source(PatternEntry(text="a.b", mode="phrase")) == "a\\.b"
     assert entry_source(PatternEntry(text="money back", mode="phrase"), bounded=True) == (
-        r"\bmoney\ back\b"
+        r"(?<!\w)money\ back(?!\w)"
     )
     assert entry_source(PatternEntry(text="fire\\w*", mode="regex")) == "fire\\w*"
 

@@ -9,10 +9,12 @@ import json
 import re
 from dataclasses import dataclass, field
 from difflib import SequenceMatcher
+from functools import lru_cache
 from typing import Any, Literal
 
 from pydantic import ValidationError
 
+import app_settings
 from genai_pipeline.output_schema import strict_schema
 from genai_pipeline.prompts import load_template
 from genai_pipeline.providers import (
@@ -22,7 +24,6 @@ from genai_pipeline.providers import (
     ProviderUnavailableError,
 )
 from hallucination_checks.promises import find_promises
-from python_validation.types import validation_config
 from schemas.chat_intake import IntakeTurn
 from src.core.logging import get_logger
 
@@ -43,9 +44,14 @@ REPEAT_SIMILARITY = 0.75
 Role = Literal["customer", "assistant"]
 
 
+@lru_cache(maxsize=4)
+def _deadline(source: str) -> re.Pattern[str]:
+    return re.compile(source, re.IGNORECASE)
+
+
 def deadline_pattern() -> re.Pattern[str]:
     """Any timeline ("within 24 hours", "by Friday") — the chat never commits to one."""
-    return re.compile(validation_config()["promises"]["deadline"], re.IGNORECASE)
+    return _deadline(app_settings.runtime().patterns.promises.deadline)
 
 
 @dataclass(frozen=True)

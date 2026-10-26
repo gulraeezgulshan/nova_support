@@ -61,7 +61,14 @@ function display(value: unknown): string {
   return humanize(String(value)).replace(/^P(\d)$/, "P$1");
 }
 
-export function ValidationPanel({ complaintRef }: { complaintRef: string }) {
+export function ValidationPanel({
+  complaintRef,
+  canEdit,
+}: {
+  complaintRef: string;
+  /** Re-run validation needs edit on the Complaint queue. */
+  canEdit: boolean;
+}) {
   const queryClient = useQueryClient();
   const validation = useQuery(getValidationOptions({ path: { ref: complaintRef } }));
   const revalidate = useMutation({
@@ -90,14 +97,16 @@ export function ValidationPanel({ complaintRef }: { complaintRef: string }) {
               involved.
             </CardDescription>
           </div>
-          <Button
-            variant="outline"
-            size="sm"
-            onClick={() => revalidate.mutate({ path: { ref: complaintRef } })}
-            disabled={revalidate.isPending}
-          >
-            <RefreshCw /> Re-validate
-          </Button>
+          {canEdit ? (
+            <Button
+              variant="outline"
+              size="sm"
+              onClick={() => revalidate.mutate({ path: { ref: complaintRef } })}
+              disabled={revalidate.isPending}
+            >
+              <RefreshCw /> Re-validate
+            </Button>
+          ) : null}
         </div>
       </CardHeader>
       <CardContent>

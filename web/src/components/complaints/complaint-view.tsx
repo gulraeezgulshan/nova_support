@@ -150,7 +150,7 @@ export function ComplaintView({
             staff={staff}
             canEdit={!staff || canEdit}
           />
-          {staff ? <ValidationPanel complaintRef={complaintRef} /> : null}
+          {staff ? <ValidationPanel complaintRef={complaintRef} canEdit={canEdit} /> : null}
           {staff && c.channel === "live_chat" ? (
             <ChatTranscript complaintRef={complaintRef} />
           ) : null}

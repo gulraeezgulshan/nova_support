@@ -119,18 +119,19 @@ def test_document_types_from_settings() -> None:
 
 
 def test_provider_rebuilt_when_timeout_or_reasoning_changes() -> None:
-    from genai_pipeline.providers import get_provider
+    from genai_pipeline.providers import OpenAIProvider, get_provider
 
     ai = app_settings.defaults().ai.model_dump()
     app_settings.override(settings_with(ai={**ai, "provider": "openai", "timeout_seconds": 30}))
     first = get_provider()
-    assert first.timeout_seconds == 30
+    assert isinstance(first, OpenAIProvider) and first.timeout_seconds == 30
     app_settings.override(
         settings_with(
             ai={**ai, "provider": "openai", "timeout_seconds": 90, "openai_reasoning": False}
         )
     )
     second = get_provider()
+    assert isinstance(second, OpenAIProvider)
     assert second.timeout_seconds == 90 and second.reasoning is False
 
 

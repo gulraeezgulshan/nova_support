@@ -91,7 +91,7 @@ ROUTES: list[tuple[str, str, set[str]]] = [
 
 
 async def call(client: httpx.AsyncClient, method: str, path: str, headers: dict[str, str]) -> int:
-    body = {} if method in ("POST", "PUT", "PATCH") else None
+    body: dict[str, object] | None = {} if method in ("POST", "PUT", "PATCH") else None
     r = await client.request(method, "/api/v1" + path, headers=headers, json=body)
     return r.status_code
 

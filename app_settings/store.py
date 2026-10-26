@@ -1,6 +1,8 @@
 """Load, cache and save run-time settings. Readers call `runtime()`."""
 
 import time
+from collections.abc import Iterator
+from contextlib import contextmanager
 from datetime import UTC, datetime
 from typing import Any
 
@@ -52,6 +54,18 @@ def override(settings: RuntimeSettings | None) -> None:
     """Tests: use these settings instead of the database (None to stop)."""
     global _override
     _override = settings
+
+
+@contextmanager
+def using(settings: RuntimeSettings) -> Iterator[None]:
+    """Run a block with these settings, then restore whatever was in force before."""
+    global _override
+    previous = _override
+    _override = settings
+    try:
+        yield
+    finally:
+        _override = previous
 
 
 def reset_cache() -> None:

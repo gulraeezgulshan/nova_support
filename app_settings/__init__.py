@@ -12,6 +12,7 @@ from app_settings.store import (
     reset_cache,
     runtime,
     save,
+    using,
 )
 
 __all__ = [
@@ -29,4 +30,5 @@ __all__ = [
     "reset_cache",
     "runtime",
     "save",
+    "using",
 ]

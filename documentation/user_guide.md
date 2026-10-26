@@ -309,3 +309,21 @@ back to the simulation. Every action is audited and sends the customer the match
 e-mail. The chat, the AI and the Python rules see the order's status (processing, shipped,
 delivered, lost, returned or cancelled) exactly as before.
 
+
+## 21. Page access (administrators)
+
+**Page access** (Administration in the sidebar, after Users & roles) decides which staff roles
+can open each page of the staff console, and which can change things on it.
+
+1. Each row is a page (Complaint queue, Orders, Rule matrix...). Each staff role (Support
+   Agent, Reviewer, Support Manager) has two boxes: **View** (open the page) and **Edit**
+   (use its buttons: change status, edit rules, order actions...). Ticking Edit also ticks
+   View; unticking View also unticks Edit. Pages with nothing to change have only View.
+2. The Administrator column is always ticked and cannot be changed, so an administrator can
+   never be locked out.
+3. **Save**. The change applies within 15 seconds: the menu and the buttons follow it on the
+   person's next page load, and the server refuses anything not allowed.
+4. **Reset to defaults** puts back the original access (it is saved only when you press Save).
+
+Settings, Page access and changing a person's role are always for administrators only.
+Customers never see staff pages. Every change is recorded in the audit trail.

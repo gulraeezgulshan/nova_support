@@ -95,7 +95,7 @@ automatically, multiple languages.
 | Reports and export (67–68) | 9 reports; CSV, Excel, PDF |
 | SLA (55–56) | Deadlines per priority, SLA status, periodic risk scan |
 | Orders and currency | Shop orders move through placed → packed → shipped → out for delivery → delivered (or lost, cancelled, returned) automatically and by staff, with a full history, order e-mails, customer cancel and return, PDF receipts, and prices in the visitor's currency (PKR in Pakistan; rates refreshed twice a day); the rule-facing order status is unchanged |
-| Administration | Settings page: e-mail timing, automatic replies, AI provider/model/effort, auto-analysis, review thresholds, SLA scan interval, shop and console branding with logos; changes apply within 15 s without a redeploy and are audited |
+| Administration | Settings page: e-mail timing, automatic replies, AI provider/model/effort, auto-analysis, review thresholds, SLA scan interval, shop and console branding with logos; changes apply within 15 s without a redeploy and are audited. Page access: administrators choose which staff roles can view or edit each console page; the API enforces it |
 
 ## 8. Non-functional requirements
 

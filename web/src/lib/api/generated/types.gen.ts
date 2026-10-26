@@ -282,6 +282,18 @@ export type AiSettings = {
      * Auto Analysis
      */
     auto_analysis: boolean;
+    /**
+     * Timeout Seconds
+     */
+    timeout_seconds: number;
+    /**
+     * Max Attempts
+     */
+    max_attempts: number;
+    /**
+     * Openai Reasoning
+     */
+    openai_reasoning: boolean;
 };
 
 /**
@@ -1912,6 +1924,26 @@ export type DocumentTypeOut = {
 };
 
 /**
+ * DocumentTypeSetting
+ *
+ * A knowledge-base document category; lower precedence wins when sources disagree.
+ */
+export type DocumentTypeSetting = {
+    /**
+     * Code
+     */
+    code: string;
+    /**
+     * Name
+     */
+    name: string;
+    /**
+     * Precedence
+     */
+    precedence: number;
+};
+
+/**
  * DocumentVersionOut
  */
 export type DocumentVersionOut = {
@@ -2501,6 +2533,36 @@ export type Issue = {
      * One sentence describing this issue
      */
     description: string;
+};
+
+/**
+ * KnowledgeBaseSettings
+ */
+export type KnowledgeBaseSettings = {
+    /**
+     * Chunk Max Tokens
+     */
+    chunk_max_tokens: number;
+    /**
+     * Chunk Overlap Tokens
+     */
+    chunk_overlap_tokens: number;
+    /**
+     * Max Upload Mb
+     */
+    max_upload_mb: number;
+    /**
+     * Retrieval Candidates
+     */
+    retrieval_candidates: number;
+    /**
+     * Rrf K
+     */
+    rrf_k: number;
+    /**
+     * Document Types
+     */
+    document_types: Array<DocumentTypeSetting>;
 };
 
 /**
@@ -3564,6 +3626,7 @@ export type RuntimeSettings = {
     operations: OperationsSettings;
     branding: BrandingSettings;
     orders: OrderSettings;
+    knowledge_base: KnowledgeBaseSettings;
     access?: AccessSettings;
 };
 
@@ -3626,6 +3689,7 @@ export type SearchResultOut = {
  */
 export type SettingsOut = {
     settings: RuntimeSettings;
+    defaults: RuntimeSettings;
     /**
      * Version
      */
@@ -3675,6 +3739,7 @@ export type SettingsUpdate = {
     operations: OperationsSettings;
     orders: OrderSettings;
     branding: BrandingText;
+    knowledge_base?: KnowledgeBaseSettings | null;
 };
 
 /**

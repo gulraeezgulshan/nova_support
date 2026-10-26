@@ -2,13 +2,14 @@
 
 from fastapi import APIRouter, Depends, File, HTTPException, Response, UploadFile, status
 from fastapi.concurrency import run_in_threadpool
+from sqlalchemy import select
 from sqlalchemy.ext.asyncio import AsyncSession
 
 import app_settings
 from app_settings import SUGGESTED_MODELS, RuntimeSettings, StaleSettingsError, logos
 from app_settings.facts import policy_facts
-from app_settings.model import BrandingSettings, LogoTarget
-from database.models import Role, User
+from app_settings.model import BrandingSettings, KnowledgeBaseSettings, LogoTarget
+from database.models import Document, Role, User
 from database.session import get_db
 from security.dependencies import require_roles
 from src.api.schemas import BrandingOut, SettingsOut, SettingsUpdate
@@ -32,6 +33,7 @@ async def _out(db: AsyncSession) -> SettingsOut:
     env = get_settings()
     return SettingsOut(
         settings=current,
+        defaults=app_settings.defaults(),
         version=row.version if row else 0,
         updated_at=row.updated_at if row else None,
         updated_by=(who.full_name or who.email) if who else None,
@@ -41,6 +43,32 @@ async def _out(db: AsyncSession) -> SettingsOut:
         shop_logo_url=logo_url("shop", current.branding.shop_logo_key),
         console_logo_url=logo_url("console", current.branding.console_logo_key),
     )
+
+
+async def _check_types_in_use(
+    db: AsyncSession, before: KnowledgeBaseSettings, after: KnowledgeBaseSettings
+) -> None:
+    """A document type may only be removed when no document uses it."""
+    removed = {t.code for t in before.document_types} - {t.code for t in after.document_types}
+    if not removed:
+        return
+    rows = (
+        await db.execute(
+            select(Document.doc_type, Document.doc_code).where(Document.doc_type.in_(removed))
+        )
+    ).all()
+    used: dict[str, list[str]] = {}
+    for doc_type, doc_code in rows:
+        used.setdefault(doc_type, []).append(doc_code)
+    if used:
+        raise HTTPException(
+            status.HTTP_422_UNPROCESSABLE_CONTENT,
+            " ".join(
+                f"{code} is used by {len(docs)} documents ({', '.join(sorted(docs))}); "
+                "retire or re-type them first."
+                for code, docs in sorted(used.items())
+            ),
+        )
 
 
 @router.get("/settings", response_model=SettingsOut)
@@ -64,7 +92,7 @@ async def update_settings(
     logos = stored.branding  # logos are set by upload only
     new = RuntimeSettings(
         access=stored.access,  # changed only on the Page access screen
-        knowledge_base=stored.knowledge_base,
+        knowledge_base=payload.knowledge_base or stored.knowledge_base,
         email=payload.email,
         ai=payload.ai,
         operations=payload.operations,
@@ -75,6 +103,8 @@ async def update_settings(
             console_logo_key=logos.console_logo_key,
         ),
     )
+    if payload.knowledge_base is not None:
+        await _check_types_in_use(db, stored.knowledge_base, payload.knowledge_base)
     try:
         await app_settings.save(db, new, actor=actor, expected_version=payload.version)
     except StaleSettingsError as exc:

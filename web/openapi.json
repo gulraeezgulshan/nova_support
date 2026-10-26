@@ -6071,6 +6071,22 @@
           "auto_analysis": {
             "type": "boolean",
             "title": "Auto Analysis"
+          },
+          "timeout_seconds": {
+            "type": "number",
+            "maximum": 300.0,
+            "minimum": 10.0,
+            "title": "Timeout Seconds"
+          },
+          "max_attempts": {
+            "type": "integer",
+            "maximum": 3.0,
+            "minimum": 1.0,
+            "title": "Max Attempts"
+          },
+          "openai_reasoning": {
+            "type": "boolean",
+            "title": "Openai Reasoning"
           }
         },
         "additionalProperties": false,
@@ -6080,7 +6096,10 @@
           "model",
           "effort",
           "retrieval_limit",
-          "auto_analysis"
+          "auto_analysis",
+          "timeout_seconds",
+          "max_attempts",
+          "openai_reasoning"
         ],
         "title": "AiSettings"
       },
@@ -9131,6 +9150,36 @@
         ],
         "title": "DocumentTypeOut"
       },
+      "DocumentTypeSetting": {
+        "properties": {
+          "code": {
+            "type": "string",
+            "pattern": "^[a-z][a-z0-9_]{1,39}$",
+            "title": "Code"
+          },
+          "name": {
+            "type": "string",
+            "maxLength": 60,
+            "minLength": 3,
+            "title": "Name"
+          },
+          "precedence": {
+            "type": "integer",
+            "maximum": 9.0,
+            "minimum": 1.0,
+            "title": "Precedence"
+          }
+        },
+        "additionalProperties": false,
+        "type": "object",
+        "required": [
+          "code",
+          "name",
+          "precedence"
+        ],
+        "title": "DocumentTypeSetting",
+        "description": "A knowledge-base document category; lower precedence wins when sources disagree."
+      },
       "DocumentVersionOut": {
         "properties": {
           "id": {
@@ -10111,6 +10160,59 @@
           "description"
         ],
         "title": "Issue"
+      },
+      "KnowledgeBaseSettings": {
+        "properties": {
+          "chunk_max_tokens": {
+            "type": "integer",
+            "maximum": 480.0,
+            "minimum": 100.0,
+            "title": "Chunk Max Tokens"
+          },
+          "chunk_overlap_tokens": {
+            "type": "integer",
+            "minimum": 0.0,
+            "title": "Chunk Overlap Tokens"
+          },
+          "max_upload_mb": {
+            "type": "integer",
+            "maximum": 50.0,
+            "minimum": 1.0,
+            "title": "Max Upload Mb"
+          },
+          "retrieval_candidates": {
+            "type": "integer",
+            "maximum": 100.0,
+            "minimum": 5.0,
+            "title": "Retrieval Candidates"
+          },
+          "rrf_k": {
+            "type": "integer",
+            "maximum": 200.0,
+            "minimum": 1.0,
+            "title": "Rrf K"
+          },
+          "document_types": {
+            "items": {
+              "$ref": "#/components/schemas/DocumentTypeSetting"
+            },
+            "type": "array",
+            "maxItems": 30,
+            "minItems": 1,
+            "title": "Document Types"
+          }
+        },
+        "additionalProperties": false,
+        "type": "object",
+        "required": [
+          "chunk_max_tokens",
+          "chunk_overlap_tokens",
+          "max_upload_mb",
+          "retrieval_candidates",
+          "rrf_k",
+          "document_types"
+        ],
+        "title": "KnowledgeBaseSettings"
       },
       "LabelValue": {
         "properties": {
@@ -11973,6 +12075,9 @@
           "orders": {
             "$ref": "#/components/schemas/OrderSettings"
           },
+          "knowledge_base": {
+            "$ref": "#/components/schemas/KnowledgeBaseSettings"
+          },
           "access": {
             "$ref": "#/components/schemas/AccessSettings"
           }
@@ -11984,7 +12089,8 @@
           "ai",
           "operations",
           "branding",
-          "orders"
+          "orders",
+          "knowledge_base"
         ],
         "title": "RuntimeSettings"
       },
@@ -12089,6 +12195,9 @@
           "settings": {
             "$ref": "#/components/schemas/RuntimeSettings"
           },
+          "defaults": {
+            "$ref": "#/components/schemas/RuntimeSettings"
+          },
           "version": {
             "type": "integer",
             "title": "Version"
@@ -12166,6 +12275,7 @@
         "type": "object",
         "required": [
           "settings",
+          "defaults",
           "version",
           "updated_at",
           "updated_by",
@@ -12197,6 +12307,16 @@
           },
           "branding": {
             "$ref": "#/components/schemas/BrandingText"
+          },
+          "knowledge_base": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/KnowledgeBaseSettings"
+              },
+              {
+                "type": "null"
+              }
+            ]
           }
         },
         "additionalProperties": false,

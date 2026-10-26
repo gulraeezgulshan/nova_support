@@ -45,6 +45,7 @@ function toForm(s: SettingsOut): Form {
     ai: s.settings.ai,
     operations: s.settings.operations,
     orders: s.settings.orders,
+    knowledge_base: s.settings.knowledge_base,
     branding: { shop_name, shop_tagline, console_name, support_email, phone, address, hours },
   };
 }

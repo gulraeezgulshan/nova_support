@@ -17,7 +17,8 @@ URL = "/api/v1/settings"
 def body(current: dict, **group_changes: dict) -> dict:  # type: ignore[type-arg]
     s = current["settings"]
     update = {
-        g: {**s[g], **group_changes.get(g, {})} for g in ("email", "ai", "operations", "orders")
+        g: {**s[g], **group_changes.get(g, {})}
+        for g in ("email", "ai", "operations", "orders", "knowledge_base")
     }
     branding = {k: v for k, v in s["branding"].items() if not k.endswith("_logo_key")}
     return {
@@ -118,3 +119,72 @@ async def test_settings_save_keeps_the_access_matrix(
     stored = app_settings.load(row.data)
     assert stored.access.analytics.agent == "view"
     assert stored.email.mailbox_check_seconds == 300
+
+
+# ------------------------------------------------------------------ knowledge base settings
+
+
+def _seed_document(doc_code: str, doc_type: str) -> None:
+    from database.models import Document
+    from database.session import sync_session
+
+    with sync_session() as db:
+        db.add(Document(doc_code=doc_code, title=f"{doc_code} title", doc_type=doc_type))
+
+
+async def test_admin_saves_knowledge_base_values(
+    client: httpx.AsyncClient, auth_headers: Callable[[Role], dict[str, str]]
+) -> None:
+    admin = auth_headers(Role.ADMIN)
+    current = (await client.get(URL, headers=admin)).json()
+    assert current["defaults"]["knowledge_base"]["chunk_max_tokens"] == 450
+    changes = {"chunk_max_tokens": 300, "chunk_overlap_tokens": 40}
+    saved = await client.put(URL, headers=admin, json=body(current, knowledge_base=changes))
+    assert saved.status_code == 200
+    kb = saved.json()["settings"]["knowledge_base"]
+    assert (kb["chunk_max_tokens"], kb["chunk_overlap_tokens"]) == (300, 40)
+    assert saved.json()["defaults"]["knowledge_base"]["chunk_max_tokens"] == 450
+
+
+async def test_removing_a_type_in_use_is_refused(
+    client: httpx.AsyncClient, auth_headers: Callable[[Role], dict[str, str]]
+) -> None:
+    _seed_document("FAQ-GEN-01", "faq")
+    admin = auth_headers(Role.ADMIN)
+    current = (await client.get(URL, headers=admin)).json()
+    types = [
+        t for t in current["settings"]["knowledge_base"]["document_types"] if t["code"] != "faq"
+    ]
+    r = await client.put(
+        URL, headers=admin, json=body(current, knowledge_base={"document_types": types})
+    )
+    assert r.status_code == 422
+    assert "faq is used by 1 documents (FAQ-GEN-01); retire or re-type them first." in r.text
+
+
+async def test_removing_an_unused_type_is_allowed(
+    client: httpx.AsyncClient, auth_headers: Callable[[Role], dict[str, str]]
+) -> None:
+    admin = auth_headers(Role.ADMIN)
+    current = (await client.get(URL, headers=admin)).json()
+    types = [
+        t for t in current["settings"]["knowledge_base"]["document_types"] if t["code"] != "sla"
+    ]
+    r = await client.put(
+        URL, headers=admin, json=body(current, knowledge_base={"document_types": types})
+    )
+    assert r.status_code == 200
+    assert "sla" not in {
+        t["code"] for t in r.json()["settings"]["knowledge_base"]["document_types"]
+    }
+
+
+async def test_invalid_knowledge_base_value_is_rejected(
+    client: httpx.AsyncClient, auth_headers: Callable[[Role], dict[str, str]]
+) -> None:
+    admin = auth_headers(Role.ADMIN)
+    current = (await client.get(URL, headers=admin)).json()
+    r = await client.put(
+        URL, headers=admin, json=body(current, knowledge_base={"chunk_max_tokens": 999})
+    )
+    assert r.status_code == 422

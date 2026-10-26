@@ -11,6 +11,7 @@ from app_settings.model import (
     AiSettings,
     BrandingText,
     EmailSettings,
+    KnowledgeBaseSettings,
     OperationsSettings,
     OrderSettings,
     RuntimeSettings,
@@ -921,6 +922,7 @@ class PolicyFactOut(BaseModel):
 
 class SettingsOut(BaseModel):
     settings: RuntimeSettings
+    defaults: RuntimeSettings
     version: int
     updated_at: datetime | None
     updated_by: str | None
@@ -939,6 +941,8 @@ class SettingsUpdate(BaseModel):
     operations: OperationsSettings
     orders: OrderSettings
     branding: BrandingText
+    # Optional so older clients keep working: left out = keep the stored values.
+    knowledge_base: KnowledgeBaseSettings | None = None
 
 
 class BrandingOut(BaseModel):

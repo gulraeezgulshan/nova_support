@@ -5,15 +5,17 @@ import { SearchPanel } from "@/components/knowledge-base/search-panel";
 import { UploadDialog } from "@/components/knowledge-base/upload-dialog";
 import { PageHeader } from "@/components/page-header";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import { NoAccess } from "@/components/no-access";
 import { getCurrentUser } from "@/lib/api/server";
-import { isStaff } from "@/lib/roles";
+import { can } from "@/lib/access";
 
 export const metadata = { title: "Knowledge base" };
 
 export default async function KnowledgeBasePage() {
   const result = await getCurrentUser();
-  if (result.status !== "ok" || !isStaff(result.user.role)) redirect("/dashboard");
-  const canManage = result.user.role === "admin";
+  if (result.status !== "ok") redirect("/dashboard");
+  if (!can(result.user, "knowledge_base")) return <NoAccess />;
+  const canManage = can(result.user, "knowledge_base", "edit");
 
   return (
     <>

@@ -77,7 +77,7 @@ const ACTIONS: Record<string, { action: Action; text: string }[]> = {
   ],
 };
 
-export function OrdersManager() {
+export function OrdersManager({ canEdit }: { canEdit: boolean }) {
   const queryClient = useQueryClient();
   const [stage, setStage] = useState("all");
   const [q, setQ] = useState("");
@@ -254,7 +254,7 @@ export function OrdersManager() {
                 ))}
               </ul>
               <div className="space-y-2">
-                {o.stage === "out_for_delivery" ? (
+                {canEdit && o.stage === "out_for_delivery" ? (
                   <label className="flex items-center gap-2 text-xs">
                     Deliver
                     <Input
@@ -268,7 +268,7 @@ export function OrdersManager() {
                     business days late (demo)
                   </label>
                 ) : null}
-                {o.stage === "shipped" || o.stage === "out_for_delivery" ? (
+                {canEdit && (o.stage === "shipped" || o.stage === "out_for_delivery") ? (
                   <label className="flex items-center gap-2 text-xs">
                     New expected date
                     <Input
@@ -280,7 +280,7 @@ export function OrdersManager() {
                   </label>
                 ) : null}
                 <div className="flex flex-wrap gap-2">
-                  {(ACTIONS[o.stage] ?? []).map((a) => (
+                  {(canEdit ? (ACTIONS[o.stage] ?? []) : []).map((a) => (
                     <Button
                       key={a.action}
                       size="sm"
@@ -291,7 +291,7 @@ export function OrdersManager() {
                       {a.text}
                     </Button>
                   ))}
-                  {o.manual_hold ? (
+                  {canEdit && o.manual_hold ? (
                     <Button size="sm" variant="ghost" onClick={() => run("resume_auto")}>
                       Resume automatic progress
                     </Button>

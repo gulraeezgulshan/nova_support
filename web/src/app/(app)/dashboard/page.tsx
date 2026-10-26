@@ -6,6 +6,8 @@ import { AdminDashboard } from "@/components/dashboard/admin-dashboard";
 import { AgentDashboard } from "@/components/dashboard/agent-dashboard";
 import { PageHeader } from "@/components/page-header";
 import { Button } from "@/components/ui/button";
+import { NoAccess } from "@/components/no-access";
+import { can } from "@/lib/access";
 import { getCurrentUser } from "@/lib/api/server";
 import { ROLE_LABELS } from "@/lib/roles";
 
@@ -37,7 +39,9 @@ export default async function DashboardPage() {
     );
   }
 
-  if (user.role === "agent") {
+  if (!can(user, "dashboard")) return <NoAccess backToDashboard={false} />;
+
+  if (!can(user, "analytics")) {
     return (
       <>
         <PageHeader
@@ -59,9 +63,11 @@ export default async function DashboardPage() {
             <Button asChild variant="outline">
               <Link href="/analytics">Analytics</Link>
             </Button>
-            <Button asChild variant="outline">
-              <Link href="/reports">Reports</Link>
-            </Button>
+            {can(user, "reports") ? (
+              <Button asChild variant="outline">
+                <Link href="/reports">Reports</Link>
+              </Button>
+            ) : null}
           </>
         }
       />

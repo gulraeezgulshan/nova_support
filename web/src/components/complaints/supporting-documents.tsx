@@ -73,9 +73,12 @@ function Thumbnail({
 export function SupportingDocuments({
   complaintRef,
   staff,
+  canEdit = true,
 }: {
   complaintRef: string;
   staff: boolean;
+  /** False for staff who may only view the Complaint queue: no adding or removing files. */
+  canEdit?: boolean;
 }) {
   const queryClient = useQueryClient();
   const input = useRef<HTMLInputElement>(null);
@@ -131,14 +134,16 @@ export function SupportingDocuments({
             ({items.length}/{MAX_ATTACHMENTS})
           </span>
         </CardTitle>
-        <Button
-          size="sm"
-          variant="outline"
-          disabled={upload.isPending || items.length >= MAX_ATTACHMENTS}
-          onClick={() => input.current?.click()}
-        >
-          <Paperclip /> {upload.isPending ? "Uploading…" : "Add file"}
-        </Button>
+        {canEdit ? (
+          <Button
+            size="sm"
+            variant="outline"
+            disabled={upload.isPending || items.length >= MAX_ATTACHMENTS}
+            onClick={() => input.current?.click()}
+          >
+            <Paperclip /> {upload.isPending ? "Uploading…" : "Add file"}
+          </Button>
+        ) : null}
         <input
           ref={input}
           type="file"
@@ -179,7 +184,7 @@ export function SupportingDocuments({
                   >
                     <Download />
                   </Button>
-                  {staff ? (
+                  {staff && canEdit ? (
                     <Button
                       size="icon"
                       variant="ghost"

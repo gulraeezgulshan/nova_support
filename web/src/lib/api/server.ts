@@ -2,13 +2,13 @@ import { auth } from "@clerk/nextjs/server";
 import { cache } from "react";
 
 import { readMe } from "./generated";
-import type { UserOut } from "./generated/types.gen";
+import type { MeOut } from "./generated/types.gen";
 
 const SERVER_API_URL =
   process.env.API_URL ?? process.env.NEXT_PUBLIC_API_URL ?? "http://localhost:8000";
 
 export type CurrentUserResult =
-  | { status: "ok"; user: UserOut }
+  | { status: "ok"; user: MeOut }
   | { status: "signed-out" }
   | { status: "unavailable"; message: string };
 

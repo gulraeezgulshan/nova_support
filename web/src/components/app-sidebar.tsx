@@ -36,92 +36,83 @@ import {
   SidebarMenuButton,
   SidebarMenuItem,
 } from "@/components/ui/sidebar";
-import type { Role, UserOut } from "@/lib/api/generated/types.gen";
+import type { MeOut } from "@/lib/api/generated/types.gen";
+import { type AccessKey, can } from "@/lib/access";
 import { BrandMark, useBranding } from "@/lib/branding";
 import { ROLE_LABELS } from "@/lib/roles";
 
-type NavItem = { title: string; href: string; icon: LucideIcon; roles: Role[]; soon?: boolean };
-
-const ALL: Role[] = ["customer", "agent", "reviewer", "manager", "admin"];
-const STAFF: Role[] = ["agent", "reviewer", "manager", "admin"];
+// Staff items follow the Page access matrix (`page`); `customer` items show to customers.
+type NavItem = {
+  title: string;
+  href: string;
+  icon: LucideIcon;
+  page?: AccessKey;
+  customer?: boolean;
+  soon?: boolean;
+};
 
 const NAV: { label: string; items: NavItem[] }[] = [
   {
     label: "Overview",
-    items: [{ title: "Dashboard", href: "/dashboard", icon: LayoutDashboard, roles: ALL }],
+    items: [
+      {
+        title: "Dashboard",
+        href: "/dashboard",
+        icon: LayoutDashboard,
+        page: "dashboard",
+        customer: true,
+      },
+    ],
   },
   {
     label: "Complaints",
     items: [
-      {
-        title: "Submit a complaint",
-        href: "/complaints/new",
-        icon: FilePlus2,
-        roles: ["customer"],
-      },
-      {
-        title: "My complaints",
-        href: "/complaints",
-        icon: ClipboardList,
-        roles: ["customer"],
-      },
-      { title: "Complaint queue", href: "/complaints", icon: Inbox, roles: STAFF },
-      { title: "Enquiries", href: "/enquiries", icon: Mail, roles: STAFF },
-      { title: "Mailbox", href: "/mailbox", icon: AtSign, roles: STAFF },
-      { title: "Orders", href: "/fulfilment", icon: Truck, roles: STAFF },
-      {
-        title: "Import complaints",
-        href: "/imports",
-        icon: FileUp,
-        roles: ["manager", "admin"],
-      },
-      {
-        title: "Manual review",
-        href: "/review",
-        icon: Scale,
-        roles: ["reviewer", "manager", "admin"],
-      },
-      {
-        title: "Analytics",
-        href: "/analytics",
-        icon: BarChart3,
-        roles: ["reviewer", "manager", "admin"],
-      },
-      {
-        title: "Reports",
-        href: "/reports",
-        icon: FileBarChart,
-        roles: ["reviewer", "manager", "admin"],
-      },
+      { title: "Submit a complaint", href: "/complaints/new", icon: FilePlus2, customer: true },
+      { title: "My complaints", href: "/complaints", icon: ClipboardList, customer: true },
+      { title: "Complaint queue", href: "/complaints", icon: Inbox, page: "complaints" },
+      { title: "Enquiries", href: "/enquiries", icon: Mail, page: "enquiries" },
+      { title: "Mailbox", href: "/mailbox", icon: AtSign, page: "mailbox" },
+      { title: "Orders", href: "/fulfilment", icon: Truck, page: "orders" },
+      { title: "Import complaints", href: "/imports", icon: FileUp, page: "imports" },
+      { title: "Manual review", href: "/review", icon: Scale, page: "review" },
+      { title: "Analytics", href: "/analytics", icon: BarChart3, page: "analytics" },
+      { title: "Reports", href: "/reports", icon: FileBarChart, page: "reports" },
     ],
   },
   {
     label: "Knowledge",
-    items: [{ title: "Knowledge base", href: "/knowledge-base", icon: BookOpen, roles: STAFF }],
+    items: [
+      { title: "Knowledge base", href: "/knowledge-base", icon: BookOpen, page: "knowledge_base" },
+    ],
   },
   {
     label: "Administration",
     items: [
-      { title: "Taxonomy & SLAs", href: "/settings/taxonomy", icon: Tags, roles: STAFF },
-      { title: "Rule matrix", href: "/settings/rules", icon: ListChecks, roles: STAFF },
-      { title: "Products", href: "/settings/products", icon: Package, roles: ["admin"] },
-      { title: "Users & roles", href: "/settings/users", icon: Users, roles: ["manager", "admin"] },
-      { title: "Settings", href: "/settings/general", icon: Settings2, roles: ["admin"] },
+      { title: "Taxonomy & SLAs", href: "/settings/taxonomy", icon: Tags, page: "taxonomy" },
+      { title: "Rule matrix", href: "/settings/rules", icon: ListChecks, page: "rules" },
+      { title: "Products", href: "/settings/products", icon: Package, page: "products" },
+      { title: "Users & roles", href: "/settings/users", icon: Users, page: "users" },
+      { title: "Settings", href: "/settings/general", icon: Settings2, page: "settings" },
     ],
   },
 ];
+
+function visible(item: NavItem, user: MeOut): boolean {
+  if (user.role === "customer") return Boolean(item.customer);
+  return item.page !== undefined && can(user, item.page);
+}
 
 function isActive(pathname: string, href: string) {
   if (href === "/complaints") return pathname === href || /^\/complaints\/CMP-/i.test(pathname);
   return pathname === href || pathname.startsWith(`${href}/`);
 }
 
-export function AppSidebar({ user }: { user: UserOut }) {
+export function AppSidebar({ user }: { user: MeOut }) {
   const pathname = usePathname();
   const consoleName = useBranding().data?.console_name ?? "SupportNova";
   const groups = NAV.map((group) => ({
     ...group,
-    items: group.items.filter((item) => item.roles.includes(user.role)),
+    items: group.items.filter((item) => visible(item, user)),
   })).filter((group) => group.items.length > 0);
 
   return (

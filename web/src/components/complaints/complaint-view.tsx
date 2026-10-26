@@ -57,10 +57,13 @@ const RISK_SIGNALS = new Set([
 export function ComplaintView({
   complaintRef,
   staff,
+  canEdit,
   canReview,
 }: {
   complaintRef: string;
   staff: boolean;
+  /** Staff with edit on the Complaint queue: status, re-run analysis, documents. */
+  canEdit: boolean;
   canReview: boolean;
 }) {
   const queryClient = useQueryClient();
@@ -97,7 +100,7 @@ export function ComplaintView({
         title={c.title}
         description={`${c.complaint_ref} · submitted ${formatDateTime(c.created_at)}`}
         actions={
-          staff ? (
+          staff && canEdit ? (
             <Button
               variant="outline"
               onClick={() => reanalyze.mutate({ path: { ref: complaintRef } })}
@@ -142,7 +145,11 @@ export function ComplaintView({
               </CardContent>
             </Card>
           ) : null}
-          <SupportingDocuments complaintRef={complaintRef} staff={staff} />
+          <SupportingDocuments
+            complaintRef={complaintRef}
+            staff={staff}
+            canEdit={!staff || canEdit}
+          />
           {staff ? <ValidationPanel complaintRef={complaintRef} /> : null}
           {staff && c.channel === "live_chat" ? (
             <ChatTranscript complaintRef={complaintRef} />
@@ -181,7 +188,7 @@ export function ComplaintView({
                 {staff ? <EscalationBadge level={c.escalation_level} /> : null}
                 {staff ? <VerdictBadge verdict={c.verification} /> : null}
               </div>
-              {staff ? <StatusControl complaint={c} /> : null}
+              {staff && canEdit ? <StatusControl complaint={c} /> : null}
               <dl className="space-y-2">
                 <Row label="Department">{humanize(c.department_code)}</Row>
                 {staff ? (

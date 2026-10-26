@@ -187,14 +187,14 @@ function Sent() {
   );
 }
 
-export function MailboxConsole() {
+export function MailboxConsole({ canEdit }: { canEdit: boolean }) {
   return (
     <div className="space-y-4">
       <div className="flex flex-wrap items-start justify-between gap-3">
         <div className="min-w-0 flex-1">
           <MailboxStatus />
         </div>
-        <ProcessEmailDialog />
+        {canEdit ? <ProcessEmailDialog /> : null}
       </div>
       <Tabs defaultValue="received">
         <TabsList>

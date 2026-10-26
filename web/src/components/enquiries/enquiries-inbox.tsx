@@ -47,7 +47,7 @@ const ALL = "all";
 type Topic = NonNullable<NonNullable<ListEnquiriesData["query"]>["topic"]>;
 
 /** Contact-form messages that are not complaints: read, mark handled, or turn into a complaint. */
-export function EnquiriesInbox() {
+export function EnquiriesInbox({ canEdit }: { canEdit: boolean }) {
   const [status, setStatus] = useState<"new" | "handled" | typeof ALL>("new");
   const [topic, setTopic] = useState<Topic | typeof ALL>(ALL);
   const [open, setOpen] = useState<string | null>(null);
@@ -154,7 +154,7 @@ export function EnquiriesInbox() {
                     <TableRow className="bg-muted/30 hover:bg-muted/30">
                       <TableCell />
                       <TableCell colSpan={6} className="whitespace-normal">
-                        <EnquiryDetail enquiry={e} />
+                        <EnquiryDetail enquiry={e} canEdit={canEdit} />
                       </TableCell>
                     </TableRow>
                   ) : null}
@@ -168,7 +168,7 @@ export function EnquiriesInbox() {
   );
 }
 
-function EnquiryDetail({ enquiry: e }: { enquiry: EnquiryOut }) {
+function EnquiryDetail({ enquiry: e, canEdit }: { enquiry: EnquiryOut; canEdit: boolean }) {
   const queryClient = useQueryClient();
   const refresh = () => queryClient.invalidateQueries({ queryKey: listEnquiriesQueryKey() });
   const update = useMutation({
@@ -200,25 +200,27 @@ function EnquiryDetail({ enquiry: e }: { enquiry: EnquiryOut }) {
             <Mail /> Reply by e-mail
           </a>
         </Button>
-        <Button
-          size="sm"
-          variant="outline"
-          disabled={update.isPending}
-          onClick={() =>
-            update.mutate({
-              path: { ref: e.ref },
-              body: { status: e.status === "new" ? "handled" : "new" },
-            })
-          }
-        >
-          {e.status === "new" ? <Check /> : <RotateCcw />}
-          {e.status === "new" ? "Mark handled" : "Reopen"}
-        </Button>
+        {canEdit ? (
+          <Button
+            size="sm"
+            variant="outline"
+            disabled={update.isPending}
+            onClick={() =>
+              update.mutate({
+                path: { ref: e.ref },
+                body: { status: e.status === "new" ? "handled" : "new" },
+              })
+            }
+          >
+            {e.status === "new" ? <Check /> : <RotateCcw />}
+            {e.status === "new" ? "Mark handled" : "Reopen"}
+          </Button>
+        ) : null}
         {e.complaint_ref ? (
           <Button asChild size="sm" variant="secondary">
             <Link href={`/complaints/${e.complaint_ref}`}>Open {e.complaint_ref}</Link>
           </Button>
-        ) : (
+        ) : canEdit ? (
           <Tooltip>
             <TooltipTrigger asChild>
               <span tabIndex={e.can_convert ? undefined : 0}>
@@ -237,7 +239,7 @@ function EnquiryDetail({ enquiry: e }: { enquiry: EnquiryOut }) {
               </TooltipContent>
             )}
           </Tooltip>
-        )}
+        ) : null}
       </div>
     </div>
   );

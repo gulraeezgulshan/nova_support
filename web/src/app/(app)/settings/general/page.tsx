@@ -2,13 +2,16 @@ import { redirect } from "next/navigation";
 
 import { PageHeader } from "@/components/page-header";
 import { SettingsManager } from "@/components/settings/settings-manager";
+import { NoAccess } from "@/components/no-access";
+import { can } from "@/lib/access";
 import { getCurrentUser } from "@/lib/api/server";
 
 export const metadata = { title: "Settings" };
 
 export default async function SettingsPage() {
   const result = await getCurrentUser();
-  if (result.status !== "ok" || result.user.role !== "admin") redirect("/dashboard");
+  if (result.status !== "ok") redirect("/dashboard");
+  if (!can(result.user, "settings")) return <NoAccess />;
   return (
     <>
       <PageHeader

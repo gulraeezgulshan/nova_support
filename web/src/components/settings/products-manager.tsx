@@ -50,7 +50,7 @@ import { ProductImages } from "./product-images";
 
 const LINE_LABELS = Object.fromEntries(PRODUCT_LINES.map((l) => [l.code, l.label]));
 
-export function ProductsManager() {
+export function ProductsManager({ canEdit }: { canEdit: boolean }) {
   const products = useQuery(adminListProductsOptions());
   const [search, setSearch] = useState("");
   const [editing, setEditing] = useState<string | null>(null); // SKU, or "new"
@@ -75,9 +75,11 @@ export function ProductsManager() {
           value={search}
           onChange={(e) => setSearch(e.target.value)}
         />
-        <Button onClick={() => setEditing("new")}>
-          <Plus /> New product
-        </Button>
+        {canEdit ? (
+          <Button onClick={() => setEditing("new")}>
+            <Plus /> New product
+          </Button>
+        ) : null}
         <span className="self-center text-sm text-muted-foreground">
           {visible.length} of {products.data.length} products
         </span>
@@ -119,14 +121,16 @@ export function ProductsManager() {
                   </Badge>
                 </TableCell>
                 <TableCell>
-                  <Button
-                    variant="ghost"
-                    size="icon"
-                    aria-label={`Edit ${p.name}`}
-                    onClick={() => setEditing(p.sku)}
-                  >
-                    <Pencil />
-                  </Button>
+                  {canEdit ? (
+                    <Button
+                      variant="ghost"
+                      size="icon"
+                      aria-label={`Edit ${p.name}`}
+                      onClick={() => setEditing(p.sku)}
+                    >
+                      <Pencil />
+                    </Button>
+                  ) : null}
                 </TableCell>
               </TableRow>
             ))}

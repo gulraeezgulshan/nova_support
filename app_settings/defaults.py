@@ -1,5 +1,7 @@
 """Today's behaviour, from environment variables and config files: the settings defaults."""
 
+from typing import Any
+
 import yaml
 
 from app_settings.access import default_access
@@ -14,6 +16,35 @@ def _document_types_file() -> list[dict[str, object]]:
     with KB_TYPES_FILE.open(encoding="utf-8") as handle:
         types: list[dict[str, object]] = yaml.safe_load(handle)["document_types"]
     return types
+
+
+CLASSIFIER_FILE = ROOT_DIR / "config" / "classification.yaml"
+
+
+def _validation_defaults(validation: dict[str, Any]) -> dict[str, Any]:
+    """The numbers and lists from validation.yaml and classification.yaml (patterns stay there)."""
+    with CLASSIFIER_FILE.open(encoding="utf-8") as handle:
+        classifier = yaml.safe_load(handle)
+    return {
+        "score_weights": validation["score_weights"],
+        "compensation": {
+            kind: {
+                "requires_any": rule["requires_any"],
+                "max_pct_of_order": rule.get("max_pct_of_order"),
+                "max_amount": rule.get("max_amount"),
+            }
+            for kind, rule in validation["compensation"].items()
+        },
+        "never_allowed_actions": validation["never_allowed_actions"],
+        "orders_required_for": validation["orders_required_for"],
+        "escalation_action_levels": validation["escalation_action_levels"],
+        "classifier_confident": classifier["thresholds"]["confident"],
+        "classifier_secondary": classifier["thresholds"]["secondary"],
+        "signal_boosts": {
+            signal: {"category": c, "subcategory": sub, "weight": w}
+            for signal, (c, sub, w) in classifier.get("signal_boosts", {}).items()
+        },
+    }
 
 
 def _clamp(value: float, low: float, high: float) -> float:
@@ -62,6 +93,7 @@ def defaults() -> RuntimeSettings:
                 "verified_min_score": validation["verified_min_score"],
                 "always_review_escalation_level": validation["always_review_escalation_level"],
             },
+            "validation": _validation_defaults(validation),
             "access": default_access().model_dump(),
             "orders": {
                 "auto_advance": True,

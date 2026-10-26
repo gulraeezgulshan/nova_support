@@ -93,6 +93,7 @@ async def update_settings(
     new = RuntimeSettings(
         access=stored.access,  # changed only on the Page access screen
         knowledge_base=payload.knowledge_base or stored.knowledge_base,
+        validation=stored.validation,  # editable from Task 2 on
         email=payload.email,
         ai=payload.ai,
         operations=payload.operations,

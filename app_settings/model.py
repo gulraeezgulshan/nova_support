@@ -93,6 +93,105 @@ class KnowledgeBaseSettings(_Group):
         return self
 
 
+COMPENSATION_TYPES: tuple[str, ...] = (
+    "store_credit",
+    "shipping_fee_refund",
+    "partial_refund",
+    "full_refund",
+    "replacement",
+    "repair",
+    "voucher",
+)
+ESCALATION_ACTIONS: tuple[str, ...] = (
+    "ESCALATE_TO_SUPERVISOR",
+    "ESCALATE_TO_MANAGER",
+    "ESCALATE_TO_SPECIALIST",
+    "ESCALATE_TO_COMPLIANCE",
+    "ESCALATE_TO_CRITICAL_MANAGEMENT",
+)
+
+
+def _known_actions() -> set[str]:
+    from src.core.domain import actions  # local: domain is loaded after the settings model
+
+    return set(actions())
+
+
+def _known_signals() -> set[str]:
+    import yaml
+
+    from src.core.config import ROOT_DIR
+
+    with (ROOT_DIR / "config" / "detectors.yaml").open(encoding="utf-8") as handle:
+        return set(yaml.safe_load(handle)["signals"])
+
+
+def _check_actions(codes: list[str], where: str) -> None:
+    unknown = sorted(set(codes) - _known_actions())
+    if unknown:
+        raise ValueError(f"{where}: unknown action {', '.join(unknown)}")
+    if len(set(codes)) != len(codes):
+        raise ValueError(f"{where}: each action only once")
+
+
+class ScoreWeights(_Group):
+    critical: int = Field(ge=1, le=10)
+    major: int = Field(ge=1, le=10)
+    minor: int = Field(ge=1, le=10)
+
+    @model_validator(mode="after")
+    def _ordered(self) -> "ScoreWeights":
+        if not self.critical >= self.major >= self.minor:
+            raise ValueError("weights must be critical ≥ major ≥ minor")
+        return self
+
+
+class CompensationLimit(_Group):
+    requires_any: list[str] = Field(min_length=1, max_length=20)
+    max_pct_of_order: float | None = Field(default=None, ge=0, le=100)
+    max_amount: float | None = Field(default=None, ge=0, le=10000)
+
+
+class SignalBoost(_Group):
+    category: Annotated[str, Field(min_length=1, max_length=40)]
+    subcategory: Annotated[str, Field(min_length=1, max_length=60)]
+    weight: int = Field(ge=1, le=5)
+
+
+class ValidationSettings(_Group):
+    """Numbers and lists Python's validation and classifier use (patterns stay in YAML)."""
+
+    score_weights: ScoreWeights
+    compensation: dict[str, CompensationLimit]
+    never_allowed_actions: list[str] = Field(max_length=60)
+    orders_required_for: list[str] = Field(max_length=30)
+    escalation_action_levels: dict[str, int]
+    classifier_confident: int = Field(ge=1, le=10)
+    classifier_secondary: int = Field(ge=1, le=10)
+    signal_boosts: dict[str, SignalBoost] = Field(max_length=14)
+
+    @model_validator(mode="after")
+    def _consistent(self) -> "ValidationSettings":
+        if set(self.compensation) != set(COMPENSATION_TYPES):
+            raise ValueError(f"compensation must list exactly: {', '.join(COMPENSATION_TYPES)}")
+        for kind, limit in self.compensation.items():
+            _check_actions(limit.requires_any, f"compensation {kind}")
+        _check_actions(self.never_allowed_actions, "never-allowed actions")
+        if len(set(self.orders_required_for)) != len(self.orders_required_for):
+            raise ValueError("needs an order: each category only once")
+        if set(self.escalation_action_levels) != set(ESCALATION_ACTIONS):
+            raise ValueError(
+                f"escalation levels must list exactly: {', '.join(ESCALATION_ACTIONS)}"
+            )
+        bad_levels = [k for k, v in self.escalation_action_levels.items() if not 1 <= v <= 5]
+        if bad_levels:
+            raise ValueError(f"escalation levels must be 1 to 5: {', '.join(bad_levels)}")
+        unknown = sorted(set(self.signal_boosts) - _known_signals())
+        if unknown:
+            raise ValueError(f"signal boosts: unknown signal {', '.join(unknown)}")
+        return self
+
+
 class OperationsSettings(_Group):
     sla_scan_minutes: int = Field(ge=1, le=60)
     verified_min_score: int = Field(ge=50, le=100)
@@ -130,4 +229,5 @@ class RuntimeSettings(_Group):
     branding: BrandingSettings
     orders: OrderSettings
     knowledge_base: KnowledgeBaseSettings
+    validation: ValidationSettings
     access: AccessSettings = Field(default_factory=default_access)

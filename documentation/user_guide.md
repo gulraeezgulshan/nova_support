@@ -281,11 +281,14 @@ values before and after. API keys and passwords are not here: they stay on the s
 | Tab | What you can change |
 |---|---|
 | E-mail & timing | How often the mailbox is checked (60–3600 s) and queued e-mails are sent (15–600 s), the sender name, and whether automatic replies are sent. With automatic replies off, even verified replies go to **Manual review** and are sent when a reviewer approves them; the customer gets a holding message meanwhile. |
-| AI | Provider (only those with an API key on the server), model, reasoning effort, policy passages read per complaint (3–20), and whether new complaints are analysed automatically. When off, start an analysis with **Re-run analysis**. |
+| AI | Provider (only those with an API key on the server), model, reasoning effort, policy passages read per complaint (3–20), and whether new complaints are analysed automatically (when off, start an analysis with **Re-run analysis**). Also the timeout per AI call (10–300 s), attempts (1–3: the first call plus repair retries) and whether OpenAI gets the reasoning effort. |
+| Knowledge base | Chunk size (100–480 tokens) and overlap (0 to chunk size − 50), the upload size limit (1–50 MB), search tuning (candidates per search method 5–100, fusion constant RRF k 1–200) and the document types with their precedence (lower wins when documents disagree; a type used by documents cannot be removed). New uploads use new chunk sizes at once; press **Reprocess all active documents** to re-chunk the existing ones (they stay searchable meanwhile). |
 | Orders | Advance orders automatically, minutes per step (1–1440), chance of a delay (0–100%) and of a loss (0–20%), order e-mails on/off, and the fallback PKR rate used until the first exchange-rate refresh. |
 | Operations | How often the SLA risk scan runs (1–60 min), the minimum score for *verified* (50–100) and the escalation level that always needs a human review (1–5). |
 | Branding | Shop and console logos (PNG, JPEG or WebP, up to 1 MB; square works best; the shop logo is also the browser-tab icon), shop name and tagline, console name, support e-mail, phone, address and opening hours shown on the shop. |
 | Policy facts | Read-only: warranty, returns and delivery numbers with the policy document they come from. To change one, upload a new version of that document in the **Knowledge base**, so the shop, the AI and the rules always agree. |
+
+Every new field shows its default with a **Reset** link.
 
 If two administrators edit at once, the second save is refused with *Someone else changed the
 settings; reload*.

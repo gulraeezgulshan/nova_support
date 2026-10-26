@@ -338,7 +338,8 @@ is verified or corrected, otherwise a holding message; reviewer approvals are po
    format, category, version, dates) from the form or header lines.
 2. Parsing: PDF (PyMuPDF, font-size and bold heuristics for headings, pages), DOCX (heading
    styles), Markdown/TXT; ligatures and full-width characters normalised.
-3. Chunking: by section, split to ≤ 450 tokens with 60-token overlap; chunk code
+3. Chunking: by section, split to ≤ 450 tokens with 60-token overlap (both changeable under
+   Settings → Knowledge base, with a one-click reprocess of active documents); chunk code
    `DOC@VERSION#NNN` with section, heading and pages.
 4. Embedding: fastembed bge-small-en-v1.5 (384-d); full-text vector computed by PostgreSQL.
 5. Safety: passages containing instructions aimed at the AI are quarantined.

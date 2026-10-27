@@ -18,6 +18,7 @@ import {
   AtSign,
   FileUp,
   Mail,
+  MessageSquareText,
   Settings2,
   ShieldCheck,
   Store,
@@ -97,6 +98,12 @@ const NAV: { label: string; items: NavItem[] }[] = [
       { title: "Page access", href: "/settings/access", icon: ShieldCheck, page: "access" },
       { title: "Settings", href: "/settings/general", icon: Settings2, page: "settings" },
       { title: "Patterns", href: "/settings/patterns", icon: Regex, page: "settings" },
+      {
+        title: "Customer texts",
+        href: "/settings/texts",
+        icon: MessageSquareText,
+        page: "settings",
+      },
     ],
   },
 ];

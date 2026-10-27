@@ -8,6 +8,9 @@ import { DocumentTypesEditor } from "@/components/settings/document-types-editor
 import { Field, NumberInput } from "@/components/settings/fields";
 import { LogoUpload } from "@/components/settings/logo-upload";
 import { ValidationSettingsForm } from "@/components/settings/validation-settings";
+import { AnalyticsSettingsForm } from "@/components/settings/analytics-settings";
+import { IntakeSettingsForm } from "@/components/settings/intake-settings";
+import { ShopSettingsForm } from "@/components/settings/shop-settings";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import {
@@ -142,13 +145,16 @@ export function SettingsManager() {
 
   return (
     <Tabs defaultValue="email" className="space-y-6">
-      <TabsList className="flex-wrap">
+      <TabsList className="flex-wrap group-data-horizontal/tabs:h-auto">
         <TabsTrigger value="email">E-mail & timing</TabsTrigger>
         <TabsTrigger value="ai">AI</TabsTrigger>
         <TabsTrigger value="operations">Operations</TabsTrigger>
         <TabsTrigger value="orders">Orders</TabsTrigger>
         <TabsTrigger value="knowledge_base">Knowledge base</TabsTrigger>
         <TabsTrigger value="validation">Validation</TabsTrigger>
+        <TabsTrigger value="analytics">Analytics</TabsTrigger>
+        <TabsTrigger value="intake">Intake</TabsTrigger>
+        <TabsTrigger value="shop">Shop</TabsTrigger>
         <TabsTrigger value="branding">Branding</TabsTrigger>
         <TabsTrigger value="policy">Policy facts</TabsTrigger>
       </TabsList>
@@ -403,6 +409,21 @@ export function SettingsManager() {
             onChange={(v) => set("orders", { fallback_pkr_rate: v })}
           />
         </Field>
+        <Field
+          label="Steps a delayed order waits"
+          help="1 to 20. After a simulated delay, the order waits this many steps before moving on."
+          defaultText={String(data.defaults.orders.delay_wait_steps ?? 3)}
+          onReset={() =>
+            set("orders", { delay_wait_steps: data.defaults.orders.delay_wait_steps ?? 3 })
+          }
+        >
+          <NumberInput
+            value={form.orders.delay_wait_steps ?? 3}
+            min={1}
+            max={20}
+            onChange={(v) => set("orders", { delay_wait_steps: v })}
+          />
+        </Field>
         {footer}
       </TabsContent>
 
@@ -523,6 +544,36 @@ export function SettingsManager() {
           actionCodes={(vocabulary.data?.actions ?? []).map((a) => a.code)}
           categories={categories.data ?? []}
           riskSignals={data.risk_signals}
+        />
+        {footer}
+      </TabsContent>
+
+      <TabsContent value="analytics" className="space-y-6 rounded-xl border p-6">
+        <AnalyticsSettingsForm
+          value={form.analytics}
+          defaults={data.defaults.analytics}
+          onChange={(patch) => set("analytics", patch)}
+          categories={(categories.data ?? []).map((c) => c.code)}
+          statuses={data.complaint_statuses}
+        />
+        {footer}
+      </TabsContent>
+
+      <TabsContent value="intake" className="space-y-6 rounded-xl border p-6">
+        <IntakeSettingsForm
+          value={form.intake}
+          defaults={data.defaults.intake}
+          onChange={(patch) => set("intake", patch)}
+        />
+        {footer}
+      </TabsContent>
+
+      <TabsContent value="shop" className="space-y-6 rounded-xl border p-6">
+        <ShopSettingsForm
+          value={form.shop}
+          defaults={data.defaults.shop}
+          onChange={(patch) => set("shop", patch)}
+          policyValues={data.policy_values}
         />
         {footer}
       </TabsContent>

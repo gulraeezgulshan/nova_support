@@ -47,11 +47,14 @@ export function NumberInput({
   value,
   min,
   max,
+  step,
   onChange,
 }: {
   value: number;
   min: number;
   max: number;
+  /** Set for decimals, e.g. 0.01. */
+  step?: number;
   onChange: (v: number) => void;
 }) {
   return (
@@ -59,6 +62,7 @@ export function NumberInput({
       type="number"
       min={min}
       max={max}
+      step={step}
       value={value}
       onChange={(e) => onChange(Number(e.target.value))}
     />

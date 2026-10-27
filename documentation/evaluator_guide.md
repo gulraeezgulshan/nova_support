@@ -95,6 +95,7 @@ need the API and worker restarted (`make api`, `make worker`).
 | Change a compensation limit | Settings → Validation → Compensation → Save | Database (no code) |
 | Add a risk keyword | Settings → Patterns → Risk signals → Save → Recompute signals | Database (no code) |
 | Change the complaint length limit | Settings → Intake → Save | Database (no code) |
+| Change an order e-mail | Settings → Customer texts → Order e-mails → Save | Database (no code) |
 
 ## 6. Deliberate defects
 

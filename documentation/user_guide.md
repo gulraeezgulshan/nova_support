@@ -323,6 +323,26 @@ texts is refused with the list and entry named. New analyses use saved changes w
 seconds; press **Recompute signals** to update the risk signals of complaints already stored
 (the page shows the last run's result).
 
+### Customer texts
+
+**Settings → Customer texts** (administrators) holds the wording customers receive, in three
+tabs:
+
+- **Order e-mails**: subject and body of the seven order e-mails (placed, shipped, delayed,
+  delivered, cancelled, return approved, return refused).
+- **Complaint e-mails**: complaint received, under review, could not open a complaint and
+  duplicate, plus the **signature** added to every complaint e-mail, including approved
+  replies.
+- **Chat**: the assistant's fixed lines (greeting, first question, follow-ups, the message when
+  a complaint is filed) and the three questions it asks when no AI key is set.
+
+Placeholders in braces, such as `{name}`, `{order_ref}` or `{ref}`, are filled in when a message
+is sent; `{shop}` is the shop name from Branding. Each text lists the placeholders it may use as
+buttons that insert them at the cursor, and shows a live preview with sample values (Ayesha,
+ORD-240001, AeroBook 14, …). An unknown placeholder is marked in red and refused on save; texts
+that carry a reference (complaint received, under review, duplicate, the chat confirmations)
+must keep `{ref}`. Changes apply to the next e-mail or chat within about 15 seconds.
+
 ## 20. Orders (staff)
 
 **Orders** (Complaints group in the sidebar) lists shop orders with their stage, promised date

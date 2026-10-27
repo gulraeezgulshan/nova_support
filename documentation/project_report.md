@@ -461,6 +461,11 @@ regexes (they must compile and may not nest unlimited repeats). Before saving, a
 tries the draft on a pasted text and on the 536 labelled complaints; the draft runs in a
 separate process with a time limit, so a slow pattern is refused instead of slowing the API.
 
+Customer-facing texts are settings as well (Settings → Customer texts): the order e-mails,
+the complaint e-mails with their signature, and the chat assistant's fixed lines. One placeholder
+registry decides which placeholders each text may use and which it must keep (e.g. `{ref}` in an
+acknowledgement); values are inserted literally, so customer data can never break a message.
+
 ## 24. Routing validation
 
 Python computes the expected primary department from the matching rules (most severe per

@@ -6,6 +6,8 @@ import zipfile
 
 from openpyxl import Workbook, load_workbook
 
+import app_settings
+
 COLUMNS = [
     "customer_email",
     "customer_name",
@@ -19,7 +21,6 @@ COLUMNS = [
 ]
 REQUIRED = ["customer_email", "title", "description"]
 MAX_BYTES = 5 * 1024 * 1024
-MAX_ROWS = 1000
 EXAMPLE = [
     "sara@example.com",
     "Sara Khan",
@@ -77,8 +78,9 @@ def read_rows(filename: str, data: bytes) -> tuple[list[dict[str, str]], list[st
     if missing:
         raise ImportFileError(f"Missing required column(s): {', '.join(missing)}.")
     body = table[1:]
-    if len(body) > MAX_ROWS:
-        raise ImportFileError(f"At most {MAX_ROWS:,} rows per file.")
+    max_rows = app_settings.runtime().intake.import_max_rows  # Settings → Intake
+    if len(body) > max_rows:
+        raise ImportFileError(f"At most {max_rows:,} rows per file.")
     unknown = [h for h in header if h and h not in COLUMNS]
     rows = [
         {

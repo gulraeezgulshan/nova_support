@@ -16,11 +16,10 @@ from rapidfuzz import fuzz
 from sqlalchemy import select
 from sqlalchemy.ext.asyncio import AsyncSession
 
+import app_settings
 from database.models import Complaint
 
-NEAR_DUPLICATE_MIN_RATIO = 88.0  # rapidfuzz token_set_ratio, 0-100
-RELATED_MIN_SIMILARITY = 0.80  # cosine similarity of embeddings
-DUPLICATE_WINDOW = timedelta(days=30)
+# Thresholds and the duplicate window: Settings → Intake.
 RELATED_WINDOW = timedelta(days=120)
 
 
@@ -41,13 +40,14 @@ async def find_similar(
     exclude_id: uuid.UUID | None = None,
 ) -> Match | None:
     """Best earlier match from the same customer, or None."""
+    limits = app_settings.runtime().intake
     exclude = [Complaint.id != exclude_id] if exclude_id else []
     earlier = (
         await db.execute(
             select(Complaint.id, Complaint.complaint_ref, Complaint.normalized_text)
             .where(
                 Complaint.customer_id == customer_id,
-                Complaint.created_at >= now - DUPLICATE_WINDOW,
+                Complaint.created_at >= now - timedelta(days=limits.duplicate_window_days),
                 Complaint.created_at <= now,
                 *exclude,
             )
@@ -58,7 +58,9 @@ async def find_similar(
     best: Match | None = None
     for complaint_id, ref, text in earlier:
         ratio = fuzz.token_set_ratio(normalized_text, text)
-        if ratio >= NEAR_DUPLICATE_MIN_RATIO and (best is None or ratio / 100 > best.similarity):
+        if ratio >= limits.near_duplicate_min_ratio and (
+            best is None or ratio / 100 > best.similarity
+        ):
             best = Match(complaint_id, ref, round(ratio / 100, 3), "near_duplicate")
     if best is not None or embedding is None:
         return best
@@ -78,6 +80,6 @@ async def find_similar(
             .limit(1)
         )
     ).first()
-    if row is not None and 1 - row.distance >= RELATED_MIN_SIMILARITY:
+    if row is not None and 1 - row.distance >= limits.related_min_similarity:
         return Match(row.id, row.complaint_ref, round(1 - row.distance, 3), "related")
     return None

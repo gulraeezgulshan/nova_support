@@ -38,11 +38,6 @@ from src.core.logging import get_logger
 
 log = get_logger(__name__)
 
-MIN_TITLE_CHARS = 5
-MIN_DESCRIPTION_CHARS = 20
-MIN_DESCRIPTION_WORDS = 5
-MAX_DESCRIPTION_CHARS = 5000
-DUPLICATE_WINDOW_DAYS = 30
 ORDER_REF_FORMAT = re.compile(r"^ORD-\d{6}$")
 COMPLAINT_REF_FORMAT = re.compile(r"^CMP-\d{6}$")
 ORDER_WORDS = re.compile(r"\b(order|parcel|package|delivery|delivered|charged|refund|invoice)\b")
@@ -129,20 +124,22 @@ def validate_input(data: ComplaintInput) -> tuple[ComplaintInput, list[str]]:
     title, description, requested = (r.text for r in redactions)
     removed = list(dict.fromkeys(kind for r in redactions for kind in r.kinds))
     config = analysis_config()
+    limits = app_settings.runtime().intake  # Settings → Intake
 
-    if len(title) < MIN_TITLE_CHARS:
-        issues.append(f"Title must be at least {MIN_TITLE_CHARS} characters.")
+    if len(title) < limits.min_title_chars:
+        issues.append(f"Title must be at least {limits.min_title_chars} characters.")
     if not description:
         issues.append("Description is required.")
     elif (
-        len(description) < MIN_DESCRIPTION_CHARS or len(description.split()) < MIN_DESCRIPTION_WORDS
+        len(description) < limits.min_description_chars
+        or len(description.split()) < limits.min_description_words
     ):
         issues.append(
             "Description is too short to act on. Please describe what happened, "
             "when, and what you would like us to do."
         )
-    if len(description) > MAX_DESCRIPTION_CHARS:
-        issues.append(f"Description must be at most {MAX_DESCRIPTION_CHARS} characters.")
+    if len(description) > limits.max_description_chars:
+        issues.append(f"Description must be at most {limits.max_description_chars} characters.")
     order_ref = (data.order_ref or "").strip().upper() or None
     if order_ref and not ORDER_REF_FORMAT.match(order_ref):
         issues.append("Order reference must look like ORD-240001.")
@@ -217,7 +214,8 @@ async def submit_complaint(
         select(Complaint.complaint_ref).where(
             Complaint.customer_id == customer.id,
             Complaint.content_hash == digest,
-            Complaint.created_at >= now - timedelta(days=DUPLICATE_WINDOW_DAYS),
+            Complaint.created_at
+            >= now - timedelta(days=app_settings.runtime().intake.duplicate_window_days),
             Complaint.status != ComplaintStatus.CLOSED,
         )
     )

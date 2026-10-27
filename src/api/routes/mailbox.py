@@ -8,7 +8,7 @@ from fastapi import APIRouter, Depends, File, Form, HTTPException, Query, Upload
 from sqlalchemy import select
 from sqlalchemy.ext.asyncio import AsyncSession
 
-from complaint_processing.attachments import MAX_ATTACHMENT_BYTES
+from complaint_processing.attachments import max_attachment_bytes
 from database.models import Complaint, InboundEmail, MailboxState, OutboundEmail, User
 from database.session import get_db
 from email_channel.inbound import process_email
@@ -148,7 +148,7 @@ async def process_manual_email(
         message["Message-ID"] = make_msgid(domain="manual.supportnova")
         message.set_content(body or "")
         for upload in files:
-            data = await upload.read(MAX_ATTACHMENT_BYTES + 1)
+            data = await upload.read(max_attachment_bytes() + 1)
             maintype, _sep, subtype = (upload.content_type or "application/octet-stream").partition(
                 "/"
             )

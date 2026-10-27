@@ -7,9 +7,9 @@ from sqlalchemy.ext.asyncio import AsyncSession
 
 from app_settings.access import Needed
 from complaint_processing.attachments import (
-    MAX_ATTACHMENT_BYTES,
     AttachmentError,
     add_attachment,
+    max_attachment_bytes,
     remove_attachment,
 )
 from database.models import ComplaintAttachment, User
@@ -53,7 +53,7 @@ async def upload_complaint_attachment(
 ) -> ComplaintAttachment:
     """Add a photo or PDF (the complaint's customer, or staff)."""
     complaint = await _load_for(db, ref, user, "edit")
-    data = await file.read(MAX_ATTACHMENT_BYTES + 1)
+    data = await file.read(max_attachment_bytes() + 1)
     try:
         attachment = await add_attachment(
             db,

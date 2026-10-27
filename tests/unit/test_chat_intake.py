@@ -2,10 +2,10 @@
 
 import json
 
+import app_settings
 from genai_pipeline.providers import ProviderUnavailableError
 from support_chat.intake import (
     FALLBACK_QUESTIONS,
-    MAX_QUESTIONS,
     NEUTRAL_QUESTION,
     SUMMARY_LEAD,
     FaqEntry,
@@ -79,7 +79,7 @@ def test_outage_or_missing_key_uses_fixed_questions() -> None:
 
 def test_summary_is_forced_after_the_question_limit() -> None:
     provider = ScriptedProvider(turn())
-    messages = [f"detail {i}" for i in range(MAX_QUESTIONS + 1)]
+    messages = [f"detail {i}" for i in range(app_settings.runtime().intake.chat_max_questions + 1)]
     result = next_turn(provider, order=ORDER, customer_messages=messages)
     assert result.ready
     assert "set ready_to_confirm to true now" in provider.requests[0].user

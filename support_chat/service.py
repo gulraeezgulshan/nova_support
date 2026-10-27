@@ -12,10 +12,10 @@ from fastapi.concurrency import run_in_threadpool
 from sqlalchemy import and_, or_, select, update
 from sqlalchemy.ext.asyncio import AsyncSession
 
+import app_settings
 from complaint_processing.preprocessing import sanitize_text
 from complaint_processing.sensitive import redact
 from complaint_processing.service import (
-    MAX_DESCRIPTION_CHARS,
     ComplaintInput,
     ComplaintValidationError,
     DuplicateComplaintError,
@@ -37,8 +37,6 @@ from genai_pipeline.providers import LLMProvider, get_provider
 from src.core.config import get_settings
 from support_chat.intake import Role, faq_entries, next_turn
 
-MAX_MESSAGE_CHARS = 2000
-MAX_CUSTOMER_MESSAGES = 30
 GREETING = "Hi, I'm the VoltHaven support assistant. Which order is this about?"
 ASK_WHAT_HAPPENED = "Sorry to hear there's a problem with your {product}. What happened?"
 ACKNOWLEDGEMENT = "Added to your complaint {ref}. To ask something new, tap New question."
@@ -223,9 +221,10 @@ async def _history(db: AsyncSession, conversation: ChatConversation) -> list[tup
 async def post_customer_message(
     db: AsyncSession, conversation: ChatConversation, text: str, provider: LLMProvider | None
 ) -> None:
-    if len(text) > MAX_MESSAGE_CHARS:
-        raise ChatError(422, f"Messages are limited to {MAX_MESSAGE_CHARS} characters.")
-    if conversation.customer_messages >= MAX_CUSTOMER_MESSAGES:
+    limits = app_settings.runtime().intake  # Settings → Intake
+    if len(text) > limits.chat_max_message_chars:
+        raise ChatError(422, f"Messages are limited to {limits.chat_max_message_chars} characters.")
+    if conversation.customer_messages >= limits.chat_max_customer_messages:
         raise ChatError(422, "This conversation has reached its message limit.")
     if conversation.state in (ChatState.CLOSED, ChatState.SUBMITTING):
         raise ChatError(409, "This conversation is closed or being submitted.")
@@ -258,10 +257,11 @@ async def post_customer_message(
         return
 
     earlier = await _customer_texts(db, conversation)
-    if sum(len(t) + 1 for t in earlier) + len(clean) > MAX_DESCRIPTION_CHARS:
+    max_chars = app_settings.runtime().intake.max_description_chars
+    if sum(len(t) + 1 for t in earlier) + len(clean) > max_chars:
         raise ChatError(
             422,
-            f"Your messages are too long in total for one complaint ({MAX_DESCRIPTION_CHARS} "
+            f"Your messages are too long in total for one complaint ({max_chars} "
             "characters). Please start over with a shorter description.",
         )
     conversation.state = ChatState.GATHERING  # a message while confirming = "change something"

@@ -9,12 +9,12 @@ from typing import Literal
 from sqlalchemy import select
 from sqlalchemy.ext.asyncio import AsyncSession
 
+import app_settings
 from complaint_processing.attachments import AttachmentError, add_attachment
 from complaint_processing.customers import customer_for_email
 from complaint_processing.preprocessing import sanitize_text
 from complaint_processing.sensitive import redact
 from complaint_processing.service import (
-    MIN_TITLE_CHARS,
     ComplaintInput,
     ComplaintValidationError,
     DuplicateComplaintError,
@@ -46,7 +46,7 @@ def new_record(parsed: ParsedEmail, via: Via) -> InboundEmail:
 def _title(parsed: ParsedEmail) -> str:
     """The subject, or the body's first line when the subject is missing or too short."""
     subject = clean_subject(parsed.subject)
-    if len(subject) >= MIN_TITLE_CHARS:
+    if len(subject) >= app_settings.runtime().intake.min_title_chars:
         return subject[:200]
     first_line = next((line.strip() for line in parsed.body.split("\n") if line.strip()), "")
     return (first_line[:80].rsplit(" ", 1)[0] if len(first_line) > 80 else first_line) or subject

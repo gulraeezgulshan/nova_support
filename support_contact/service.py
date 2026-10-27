@@ -6,10 +6,10 @@ from typing import Literal
 from sqlalchemy.dialects.postgresql import insert
 from sqlalchemy.ext.asyncio import AsyncSession
 
+import app_settings
 from complaint_processing.preprocessing import sanitize_text
 from complaint_processing.sensitive import redact
 from complaint_processing.service import (
-    MIN_TITLE_CHARS,
     ComplaintInput,
     get_or_create_customer,
     next_ref,
@@ -49,11 +49,19 @@ def _title(message: str) -> str:
     the whole message when that line is too short, cut at a word boundary."""
     text = clean(message).strip()
     first_line = text.split("\n")[0].strip()
-    source = first_line if len(first_line) >= MIN_TITLE_CHARS else " ".join(text.split())
+    source = (
+        first_line
+        if len(first_line) >= app_settings.runtime().intake.min_title_chars
+        else " ".join(text.split())
+    )
     if len(source) > TITLE_CHARS:
         cut = source[:TITLE_CHARS]
         source = cut.rsplit(" ", 1)[0] if " " in cut else cut
-    return source if len(source) >= MIN_TITLE_CHARS else "Problem with an order"
+    return (
+        source
+        if len(source) >= app_settings.runtime().intake.min_title_chars
+        else "Problem with an order"
+    )
 
 
 async def submit_contact(

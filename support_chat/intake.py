@@ -29,7 +29,6 @@ from src.core.logging import get_logger
 
 log = get_logger(__name__)
 
-MAX_QUESTIONS = 6
 FALLBACK_QUESTIONS = [
     "What happened? Please describe the problem.",
     "When did this happen?",
@@ -84,7 +83,9 @@ class IntakeResult:
     details: dict[str, Any] = field(default_factory=dict)
 
 
-MIN_TITLE_CHARS = 5  # the intake's minimum (complaint_processing.service)
+def _min_title() -> int:
+    """The intake's minimum title length (Settings → Intake)."""
+    return app_settings.runtime().intake.min_title_chars
 
 
 def _fallback_title(customer_messages: list[str], order: dict[str, str] | None) -> str:
@@ -93,12 +94,12 @@ def _fallback_title(customer_messages: list[str], order: dict[str, str] | None) 
     title = (
         words if len(words) >= 20 or not order else f"Problem with {order['product_name']}: {words}"
     )
-    return title[:80] if len(title) >= MIN_TITLE_CHARS else f"Customer complaint: {title}"[:80]
+    return title[:80] if len(title) >= _min_title() else f"Customer complaint: {title}"[:80]
 
 
 def _safe_title(title: str, customer_messages: list[str], order: dict[str, str] | None) -> str:
     title = title.strip()[:80]
-    return title if len(title) >= MIN_TITLE_CHARS else _fallback_title(customer_messages, order)
+    return title if len(title) >= _min_title() else _fallback_title(customer_messages, order)
 
 
 def fallback_turn(
@@ -144,7 +145,8 @@ def next_turn(
         return fallback_turn(customer_messages, "no GenAI provider configured", order)
     template = load_template("chat_intake")
     questions_asked = max(0, len(customer_messages) - 1)
-    must_summarise = questions_asked >= MAX_QUESTIONS
+    max_questions = app_settings.runtime().intake.chat_max_questions
+    must_summarise = questions_asked >= max_questions
     history = history or [("customer", m) for m in customer_messages]
     faq = faq or []
     system, user = template.render(
@@ -152,7 +154,7 @@ def next_turn(
         faq=faq,
         history=history,
         questions_asked=questions_asked,
-        max_questions=MAX_QUESTIONS,
+        max_questions=max_questions,
         must_summarise=must_summarise,
     )
     request = LLMRequest(

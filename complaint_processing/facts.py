@@ -3,11 +3,10 @@
 from datetime import date, timedelta
 from typing import Any
 
+import app_settings
 from complaint_rules.facts import FACTS
 from database.models import Complaint, CustomerType, Order
 
-REPEAT_WINDOW_DAYS = 60
-REPEAT_MIN_GAP_HOURS = 24
 CLOSED_STATUSES = {"resolved", "closed"}
 
 
@@ -44,13 +43,15 @@ def build_facts(
     complaint: Complaint, prior_complaints: list[Complaint], today: date
 ) -> dict[str, Any]:
     customer = complaint.customer
-    window_start = today - timedelta(days=REPEAT_WINDOW_DAYS)
-    # A resend within 24 hours is a duplicate submission, not a repeated complaint.
+    limits = app_settings.runtime().intake  # Settings → Intake
+    window_start = today - timedelta(days=limits.repeat_window_days)
+    # A resend within the minimum gap (24 hours by default) is a duplicate submission, not a
+    # repeated complaint.
     recent = [
         c
         for c in prior_complaints
         if c.created_at.date() >= window_start
-        and complaint.created_at - c.created_at >= timedelta(hours=REPEAT_MIN_GAP_HOURS)
+        and complaint.created_at - c.created_at >= timedelta(hours=limits.repeat_min_gap_hours)
     ]
     signals = complaint.signals or {}
     amounts = (complaint.entities or {}).get("amounts") or []

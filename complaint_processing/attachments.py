@@ -7,13 +7,12 @@ from typing import Literal
 from sqlalchemy import func, select
 from sqlalchemy.ext.asyncio import AsyncSession
 
+import app_settings
 from database import audit
 from database.models import Complaint, ComplaintAttachment, User
 from src.core.storage import Storage, safe_filename
 from storefront.images import image_type
 
-MAX_ATTACHMENT_BYTES = 5 * 1024 * 1024
-MAX_ATTACHMENTS = 5
 EXTENSIONS = {
     "image/jpeg": "jpg",
     "image/png": "png",
@@ -21,6 +20,11 @@ EXTENSIONS = {
     "application/pdf": "pdf",
 }
 Source = Literal["email", "customer", "staff"]
+
+
+def max_attachment_bytes() -> int:
+    """The size limit of one file (Settings → Intake)."""
+    return app_settings.runtime().intake.max_attachment_mb * 1024 * 1024
 
 
 class AttachmentError(ValueError):
@@ -58,8 +62,9 @@ async def add_attachment(
     """Check and store one file; flushes and audits, the caller commits."""
     if not data:
         raise AttachmentError("The file is empty.")
-    if len(data) > MAX_ATTACHMENT_BYTES:
-        raise AttachmentError("Files must be 5 MB or smaller.")
+    limits = app_settings.runtime().intake
+    if len(data) > max_attachment_bytes():
+        raise AttachmentError(f"Files must be {limits.max_attachment_mb} MB or smaller.")
     media_type = file_type(data)
     if media_type is None:
         raise AttachmentError("Only photos (JPG, PNG, WebP) and PDF files can be attached.")
@@ -68,8 +73,8 @@ async def add_attachment(
         .select_from(ComplaintAttachment)
         .where(ComplaintAttachment.complaint_id == complaint.id)
     )
-    if (count or 0) >= MAX_ATTACHMENTS:
-        raise AttachmentError(f"A complaint can have at most {MAX_ATTACHMENTS} attachments.")
+    if (count or 0) >= limits.max_attachments:
+        raise AttachmentError(f"A complaint can have at most {limits.max_attachments} attachments.")
     attachment_id = uuid.uuid4()
     key = f"complaints/{complaint.id}/{attachment_id}.{EXTENSIONS[media_type]}"
     storage.put(key, data, media_type)

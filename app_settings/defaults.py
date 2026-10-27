@@ -76,6 +76,47 @@ def _pattern_defaults(validation: dict[str, Any]) -> dict[str, Any]:
     }
 
 
+# Today's limits (they were constants in the intake, chat and import modules).
+INTAKE_DEFAULTS: dict[str, Any] = {
+    "near_duplicate_min_ratio": 88,
+    "related_min_similarity": 0.80,
+    "duplicate_window_days": 30,
+    "repeat_window_days": 60,
+    "repeat_min_gap_hours": 24,
+    "min_title_chars": 5,
+    "min_description_chars": 20,
+    "min_description_words": 5,
+    "max_description_chars": 5000,
+    "max_attachments": 5,
+    "max_attachment_mb": 5,
+    "chat_max_questions": 6,
+    "chat_max_message_chars": 2000,
+    "chat_max_customer_messages": 30,
+    "import_max_rows": 1000,
+}
+
+
+def _analytics_defaults(cfg: dict[str, Any]) -> dict[str, Any]:
+    trends = cfg["trends"]
+    return {
+        "trend_window_days": trends["window_days"],
+        "trend_min_count": trends["min_count"],
+        "trend_rise_ratio": trends["rise_ratio"],
+        "recurring_min_count": trends["recurring_min_count"],
+        "watched_categories": trends["watched_categories"],
+        "dashboard_list_limit": cfg["dashboard"]["list_limit"],
+        "first_response_statuses": cfg["sla"]["first_response_statuses"],
+        "resolved_statuses": cfg["sla"]["resolved_statuses"],
+    }
+
+
+def _shop_defaults() -> dict[str, Any]:
+    """Socials and the FAQ as written in storefront.yaml (answers keep their placeholders)."""
+    with (ROOT_DIR / "config" / "storefront.yaml").open(encoding="utf-8") as handle:
+        raw = yaml.safe_load(handle)
+    return {"best_seller_days": 90, "socials": raw["company"]["socials"], "faq": raw["faq"]}
+
+
 def _clamp(value: float, low: float, high: float) -> float:
     return max(low, min(high, value))
 
@@ -122,6 +163,9 @@ def defaults() -> RuntimeSettings:
                 "verified_min_score": validation["verified_min_score"],
                 "always_review_escalation_level": validation["always_review_escalation_level"],
             },
+            "analytics": _analytics_defaults(analytics_config()),
+            "intake": INTAKE_DEFAULTS,
+            "shop": _shop_defaults(),
             "validation": _validation_defaults(validation),
             "patterns": _pattern_defaults(validation),
             "access": default_access().model_dump(),

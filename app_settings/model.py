@@ -291,6 +291,90 @@ class OrderSettings(_Group):
     lost_chance_pct: int = Field(ge=0, le=20)
     emails: bool
     fallback_pkr_rate: float = Field(ge=1, le=10000)
+    delay_wait_steps: int = Field(default=3, ge=1, le=20)  # steps a delayed order waits
+
+
+def _unique(values: list[str], where: str) -> None:
+    if len(set(values)) != len(values):
+        raise ValueError(f"{where}: each value only once")
+
+
+def _statuses(values: list[str], where: str) -> None:
+    from database.models import ComplaintStatus  # local: the model loads before the database
+
+    unknown = sorted(set(values) - {s.value for s in ComplaintStatus})
+    if unknown:
+        raise ValueError(f"{where}: unknown status {', '.join(unknown)}")
+    _unique(values, where)
+
+
+class AnalyticsSettings(_Group):
+    trend_window_days: int = Field(ge=1, le=90)
+    trend_min_count: int = Field(ge=1, le=100)
+    trend_rise_ratio: float = Field(ge=1.0, le=10.0)
+    recurring_min_count: int = Field(ge=1, le=100)
+    watched_categories: list[str] = Field(max_length=20)
+    dashboard_list_limit: int = Field(ge=5, le=50)
+    first_response_statuses: list[str] = Field(min_length=1, max_length=9)
+    resolved_statuses: list[str] = Field(min_length=1, max_length=9)
+
+    @model_validator(mode="after")
+    def _lists(self) -> "AnalyticsSettings":
+        _unique(self.watched_categories, "watched categories")
+        _statuses(self.first_response_statuses, "first-response statuses")
+        _statuses(self.resolved_statuses, "resolved statuses")
+        return self
+
+
+class IntakeSettings(_Group):
+    """Complaint, chat and import limits. Upper bounds stay within the API's fixed caps."""
+
+    near_duplicate_min_ratio: float = Field(ge=70, le=100)
+    related_min_similarity: float = Field(ge=0.5, le=0.99)
+    duplicate_window_days: int = Field(ge=1, le=365)
+    repeat_window_days: int = Field(ge=1, le=365)
+    repeat_min_gap_hours: int = Field(ge=0, le=168)
+    min_title_chars: int = Field(ge=3, le=20)
+    min_description_chars: int = Field(ge=10, le=200)
+    min_description_words: int = Field(ge=1, le=30)
+    max_description_chars: int = Field(ge=500, le=5000)  # the contact form accepts 5,000
+    max_attachments: int = Field(ge=0, le=10)
+    max_attachment_mb: int = Field(ge=1, le=10)
+    chat_max_questions: int = Field(ge=2, le=12)
+    chat_max_message_chars: int = Field(ge=200, le=2000)  # the chat API accepts 2,000
+    chat_max_customer_messages: int = Field(ge=5, le=100)
+    import_max_rows: int = Field(ge=10, le=5000)
+
+
+def _https(value: str) -> str:
+    if not value.startswith("https://"):
+        raise ValueError("must start with https://")
+    return value
+
+
+class SocialLink(_Group):
+    name: Annotated[Line, Field(min_length=1, max_length=30)]
+    url: Annotated[Line, Field(max_length=200), AfterValidator(_https)]
+
+
+class FaqEntrySetting(_Group):
+    question: Annotated[Line, Field(min_length=5, max_length=200)]
+    answer: Annotated[str, Field(min_length=10, max_length=1000)]
+
+
+class ShopSettings(_Group):
+    best_seller_days: int = Field(ge=7, le=365)
+    socials: list[SocialLink] = Field(max_length=8)
+    faq: list[FaqEntrySetting] = Field(min_length=1, max_length=20)
+
+    @model_validator(mode="after")
+    def _placeholders(self) -> "ShopSettings":
+        from storefront.faq import placeholder_problem
+
+        for number, item in enumerate(self.faq, start=1):
+            if problem := placeholder_problem(item.answer):
+                raise ValueError(f"FAQ {number}: {problem}")
+        return self
 
 
 class RuntimeSettings(_Group):
@@ -302,4 +386,7 @@ class RuntimeSettings(_Group):
     knowledge_base: KnowledgeBaseSettings
     validation: ValidationSettings
     patterns: PatternSettings
+    analytics: AnalyticsSettings
+    intake: IntakeSettings
+    shop: ShopSettings
     access: AccessSettings = Field(default_factory=default_access)

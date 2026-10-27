@@ -131,6 +131,9 @@ async def update_settings(
     new = RuntimeSettings(
         access=stored.access,  # changed only on the Page access screen
         patterns=stored.patterns,  # changed only on the Patterns page
+        analytics=stored.analytics,
+        intake=stored.intake,
+        shop=stored.shop,
         knowledge_base=payload.knowledge_base or stored.knowledge_base,
         validation=payload.validation or stored.validation,
         email=payload.email,

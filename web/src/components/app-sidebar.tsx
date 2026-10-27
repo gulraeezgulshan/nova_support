@@ -9,6 +9,7 @@ import {
   Inbox,
   ListChecks,
   Package,
+  Regex,
   LayoutDashboard,
   type LucideIcon,
   Scale,
@@ -95,6 +96,7 @@ const NAV: { label: string; items: NavItem[] }[] = [
       { title: "Users & roles", href: "/settings/users", icon: Users, page: "users" },
       { title: "Page access", href: "/settings/access", icon: ShieldCheck, page: "access" },
       { title: "Settings", href: "/settings/general", icon: Settings2, page: "settings" },
+      { title: "Patterns", href: "/settings/patterns", icon: Regex, page: "settings" },
     ],
   },
 ];

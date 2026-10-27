@@ -8,7 +8,7 @@ from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy.orm import Session
 
 from database.models import Complaint, InboundEmail, OutboundEmail
-from email_channel.outbound import SIGNATURE, compose, queue, reply_subject
+from email_channel.outbound import compose, queue, reply_subject, signature
 
 AUTO_REPLY_VERDICTS = {"verified", "corrected"}
 
@@ -51,7 +51,7 @@ def after_validation(
     if "reply" in kinds or complaint.approved_response:
         return  # the customer already has (or will get) the approved reply
     if auto_reply and verdict in AUTO_REPLY_VERDICTS and draft:
-        _queue(db, complaint, origin, "reply", draft + SIGNATURE)
+        _queue(db, complaint, origin, "reply", draft + signature())
     elif (verdict not in AUTO_REPLY_VERDICTS or not auto_reply) and "holding" not in kinds:
         body = compose("holding", name=origin.from_name, ref=complaint.complaint_ref)
         _queue(db, complaint, origin, "holding", body)
@@ -63,7 +63,7 @@ async def after_approval(db: AsyncSession, complaint: Complaint) -> None:
     origin = await db.scalar(_origin(complaint))
     if origin is None:
         return
-    body = complaint.approved_response + SIGNATURE
+    body = complaint.approved_response + signature()
     sent = await db.scalar(
         select(OutboundEmail.id).where(
             OutboundEmail.complaint_id == complaint.id,

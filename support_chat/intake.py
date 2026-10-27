@@ -15,6 +15,7 @@ from typing import Any, Literal
 from pydantic import ValidationError
 
 import app_settings
+from app_settings.model import ChatTexts
 from genai_pipeline.output_schema import strict_schema
 from genai_pipeline.prompts import load_template
 from genai_pipeline.providers import (
@@ -29,13 +30,6 @@ from src.core.logging import get_logger
 
 log = get_logger(__name__)
 
-FALLBACK_QUESTIONS = [
-    "What happened? Please describe the problem.",
-    "When did this happen?",
-    "What would you like us to do about it?",
-]
-NEUTRAL_QUESTION = "Thanks. Is there anything else about the problem we should know?"
-SUMMARY_LEAD = "Thanks, here is what I'll send to our team:"
 ATTEMPTS = 2
 # A reply this similar to an earlier question counts as asking it again.
 REPEAT_SIMILARITY = 0.75
@@ -70,7 +64,9 @@ def faq_entries() -> list[FaqEntry]:
     ]
 
 
-FAQ_FOLLOW_UP = "Is there anything else I can help with, or would you like to report a problem?"
+def _chat() -> ChatTexts:
+    """The assistant's fixed lines (Settings → Customer texts); none take placeholders."""
+    return app_settings.runtime().texts.chat
 
 
 @dataclass
@@ -105,11 +101,13 @@ def _safe_title(title: str, customer_messages: list[str], order: dict[str, str] 
 def fallback_turn(
     customer_messages: list[str], reason: str, order: dict[str, str] | None = None
 ) -> IntakeResult:
+    texts = _chat()
+    questions = texts.fallback_questions
     answered = len(customer_messages)  # the first message answers "what happened"
-    ready = answered >= len(FALLBACK_QUESTIONS)
-    reply = SUMMARY_LEAD if ready else FALLBACK_QUESTIONS[answered]
+    ready = answered >= len(questions)
+    reply = texts.summary_lead if ready else questions[answered]
     # The third message answers "What would you like us to do?"; later ones are corrections.
-    wanted = customer_messages[len(FALLBACK_QUESTIONS) - 1] if ready else None
+    wanted = customer_messages[len(questions) - 1] if ready else None
     return IntakeResult(
         reply,
         _fallback_title(customer_messages, order),
@@ -195,7 +193,7 @@ def next_turn(
             # model's own text, so no policy number can be invented.
             details["faq_id"] = answer.id
             return IntakeResult(
-                f"{answer.answer}\n\n{FAQ_FOLLOW_UP}",
+                f"{answer.answer}\n\n{_chat().faq_follow_up}",
                 _safe_title(parsed.title, customer_messages, order),
                 parsed.requested_resolution,
                 False,
@@ -205,13 +203,13 @@ def next_turn(
         reply = parsed.reply.strip()
         ready = parsed.ready_to_confirm or must_summarise
         if find_promises(reply) or deadline_pattern().search(reply):
-            reply, details["promise_removed"] = NEUTRAL_QUESTION, True
+            reply, details["promise_removed"] = _chat().neutral_question, True
         elif not ready and _repeats(reply, [text for role, text in history if role == "assistant"]):
             # Asking again what the customer has already been asked frustrates them: once they
             # have answered something, summarise with what we have; otherwise ask neutrally.
             details["repeat_prevented"] = True
             ready = len(customer_messages) >= 2
-            reply = SUMMARY_LEAD if ready else NEUTRAL_QUESTION
+            reply = _chat().summary_lead if ready else _chat().neutral_question
         return IntakeResult(
             reply,
             _safe_title(parsed.title, customer_messages, order),

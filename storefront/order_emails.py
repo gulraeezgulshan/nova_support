@@ -1,16 +1,12 @@
 """E-mails to customers when their order moves (through the outbox, like complaint replies)."""
 
-from functools import lru_cache
-from typing import Any
-
-import yaml
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy.orm import Session
 
 import app_settings
+from app_settings.texts import render
 from database.models import Customer, Order, OutboundEmail
 from email_channel.outbound import queue
-from src.core.config import ROOT_DIR
 from storefront.currency import CURRENCIES
 
 EMAIL_KINDS = (
@@ -22,13 +18,6 @@ EMAIL_KINDS = (
     "returned",
     "return_refused",
 )
-
-
-@lru_cache
-def _texts() -> dict[str, dict[str, str]]:
-    with (ROOT_DIR / "config" / "order_emails.yaml").open(encoding="utf-8") as handle:
-        data: dict[str, Any] = yaml.safe_load(handle)
-    return data
 
 
 def format_amount(order: Order) -> str:
@@ -59,7 +48,7 @@ def queue_order_email(
         "date": f"{when:%d %b %Y}" if when else "",
         "shop": settings.branding.shop_name,
     }
-    text = _texts()[kind]
+    text = settings.texts.order_emails[kind]  # Settings → Customer texts
     order.emails_sent = [*(order.emails_sent or []), kind]
     return queue(
         db,
@@ -67,8 +56,8 @@ def queue_order_email(
         order_id=order.id,
         to=customer.email,
         kind=f"order_{kind}",
-        subject=text["subject"].format(**values),
-        body=text["body"].format(**values),
+        subject=render(text.subject, **values),
+        body=render(text.body, **values),
         in_reply_to=None,
         references=[],
     )

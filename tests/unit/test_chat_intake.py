@@ -3,12 +3,9 @@
 import json
 
 import app_settings
-from app_settings.model import FaqEntrySetting
+from app_settings.model import ChatTexts, FaqEntrySetting
 from genai_pipeline.providers import ProviderUnavailableError
 from support_chat.intake import (
-    FALLBACK_QUESTIONS,
-    NEUTRAL_QUESTION,
-    SUMMARY_LEAD,
     FaqEntry,
     Role,
     faq_entries,
@@ -16,6 +13,11 @@ from support_chat.intake import (
 )
 from tests.fixtures.genai import ScriptedProvider
 from tests.fixtures.settings import use_settings
+
+
+def chat_texts() -> ChatTexts:
+    return app_settings.runtime().texts.chat
+
 
 ORDER = {
     "order_ref": "ORD-800001",
@@ -61,21 +63,21 @@ def test_customer_text_cannot_close_the_conversation_tag() -> None:
 def test_a_promising_reply_is_replaced() -> None:
     provider = ScriptedProvider(turn(reply="We will refund you in full today."))
     result = next_turn(provider, order=ORDER, customer_messages=["I want my money back"])
-    assert result.reply == NEUTRAL_QUESTION
+    assert result.reply == chat_texts().neutral_question
     assert result.details["promise_removed"]
 
 
 def test_invalid_output_is_retried_then_falls_back() -> None:
     provider = ScriptedProvider("not json", '{"reply": 1}')
     result = next_turn(provider, order=None, customer_messages=["Broken"])
-    assert result.source == "fallback" and result.reply == FALLBACK_QUESTIONS[1]
+    assert result.source == "fallback" and result.reply == chat_texts().fallback_questions[1]
 
 
 def test_outage_or_missing_key_uses_fixed_questions() -> None:
     down = ScriptedProvider(ProviderUnavailableError("overloaded"))
     first = next_turn(down, order=None, customer_messages=["My charger broke"])
-    assert (first.source, first.reply) == ("fallback", FALLBACK_QUESTIONS[1])
-    messages = ["My charger broke"] + ["answer"] * len(FALLBACK_QUESTIONS)
+    assert (first.source, first.reply) == ("fallback", chat_texts().fallback_questions[1])
+    messages = ["My charger broke"] + ["answer"] * len(chat_texts().fallback_questions)
     done = next_turn(None, order=None, customer_messages=messages)
     assert done.ready and done.title.startswith("My charger broke")
 
@@ -119,7 +121,7 @@ def test_timelines_in_bot_messages_are_removed() -> None:
         turn(reply="Our team will review this and get back to you within 24 hours.")
     )
     result = next_turn(provider, order=None, customer_messages=["My order is broken"])
-    assert result.reply == NEUTRAL_QUESTION
+    assert result.reply == chat_texts().neutral_question
 
 
 def test_unexpected_provider_errors_fall_back() -> None:
@@ -167,7 +169,7 @@ def test_a_repeated_question_is_not_asked_again_but_summarised() -> None:
     result = next_turn(
         provider, order=None, customer_messages=[GENERAL, "general asking"], history=history
     )
-    assert result.ready and result.reply == SUMMARY_LEAD
+    assert result.ready and result.reply == chat_texts().summary_lead
     assert result.details["repeat_prevented"]
 
 
@@ -175,7 +177,7 @@ def test_a_repeat_before_any_answer_becomes_the_neutral_question() -> None:
     provider = ScriptedProvider(turn(reply=ASKED))
     history: list[tuple[Role, str]] = [("assistant", ASKED), ("customer", GENERAL)]
     result = next_turn(provider, order=None, customer_messages=[GENERAL], history=history)
-    assert not result.ready and result.reply == NEUTRAL_QUESTION
+    assert not result.ready and result.reply == chat_texts().neutral_question
 
 
 def test_a_new_question_is_kept() -> None:

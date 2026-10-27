@@ -6,39 +6,32 @@ from email.utils import make_msgid
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy.orm import Session
 
+import app_settings
+from app_settings.texts import render
 from database.models import OutboundEmail
 from email_channel.parsing import clean_subject
 
-SIGNATURE = "\n\nKind regards,\nVoltHaven Customer Care"
-TEXTS = {
-    "acknowledgement": (
-        "Hello {name},\n\nThank you for contacting VoltHaven. We have received your complaint "
-        "and its reference is {ref}. Our team is looking into it and we will reply in this "
-        "e-mail thread. If you have photos or documents, reply to this e-mail with them "
-        "attached."
-    ),
-    "holding": (
-        "Hello {name},\n\nA specialist is reviewing your complaint {ref}. We will reply in "
-        "this thread as soon as the review is complete."
-    ),
-    "rejected": (
-        "Hello {name},\n\nThank you for your e-mail. We could not open a complaint yet: "
-        "{reason}\n\nPlease reply with what happened, when it happened and what you would "
-        "like us to do."
-    ),
-    "duplicate": (
-        "Hello {name},\n\nThis matches a complaint you already sent us, reference {ref}. We "
-        "are working on it and will reply in that thread."
-    ),
-}
+
+def signature() -> str:
+    """The closing added to every complaint e-mail (Settings → Customer texts)."""
+    settings = app_settings.runtime()
+    text = render(settings.texts.complaint_emails.signature, shop=settings.branding.shop_name)
+    return f"\n\n{text}" if text else ""
 
 
 def compose(
     kind: str, *, name: str | None, ref: str | None = None, reason: str | None = None
 ) -> str:
-    return TEXTS[kind].format(name=name or "there", ref=ref or "", reason=reason or "") + (
-        SIGNATURE
+    """acknowledgement | holding | rejected | duplicate, with the signature."""
+    settings = app_settings.runtime()
+    body = render(
+        getattr(settings.texts.complaint_emails, kind),
+        name=name or "there",
+        ref=ref or "",
+        reason=reason or "",
+        shop=settings.branding.shop_name,
     )
+    return body + signature()
 
 
 def reply_subject(original: str, ref: str | None) -> str:

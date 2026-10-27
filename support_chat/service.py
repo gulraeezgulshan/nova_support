@@ -13,6 +13,7 @@ from sqlalchemy import and_, or_, select, update
 from sqlalchemy.ext.asyncio import AsyncSession
 
 import app_settings
+from app_settings.texts import render
 from complaint_processing.preprocessing import sanitize_text
 from complaint_processing.sensitive import redact
 from complaint_processing.service import (
@@ -37,9 +38,12 @@ from genai_pipeline.providers import LLMProvider, get_provider
 from src.core.config import get_settings
 from support_chat.intake import Role, faq_entries, next_turn
 
-GREETING = "Hi, I'm the VoltHaven support assistant. Which order is this about?"
-ASK_WHAT_HAPPENED = "Sorry to hear there's a problem with your {product}. What happened?"
-ACKNOWLEDGEMENT = "Added to your complaint {ref}. To ask something new, tap New question."
+
+def _line(name: str, **values: str) -> str:
+    """A fixed chat line from Settings → Customer texts, filled in."""
+    settings = app_settings.runtime()
+    text: str = getattr(settings.texts.chat, name)
+    return render(text, shop=settings.branding.shop_name, **values)
 
 
 class ChatError(Exception):
@@ -130,7 +134,7 @@ async def start_conversation(
     db.add(conversation)
     await db.flush()
     if order is not None:
-        _add(db, conversation, "assistant", ASK_WHAT_HAPPENED.format(product=order.product_name))
+        _add(db, conversation, "assistant", _line("ask_what_happened", product=order.product_name))
     else:
         recent = (
             await db.scalars(
@@ -144,7 +148,7 @@ async def start_conversation(
             db,
             conversation,
             "assistant",
-            GREETING,
+            _line("greeting"),
             "order_options",
             {
                 "orders": [
@@ -182,7 +186,7 @@ async def select_order(
     order = await _own_order(db, customer, order_ref) if order_ref else None
     conversation.order_id = order.id if order else None
     product = order.product_name if order else "order"
-    _add(db, conversation, "assistant", ASK_WHAT_HAPPENED.format(product=product))
+    _add(db, conversation, "assistant", _line("ask_what_happened", product=product))
     await db.commit()
 
 
@@ -250,7 +254,7 @@ async def post_customer_message(
             db,
             conversation,
             "assistant",
-            ACKNOWLEDGEMENT.format(ref=complaint.complaint_ref),
+            _line("added_to_complaint", ref=complaint.complaint_ref),
             "acknowledgement",
         )
         await db.commit()
@@ -381,9 +385,7 @@ async def confirm(db: AsyncSession, conversation: ChatConversation, user: User) 
         db,
         submitted,
         "assistant",
-        f"Thanks, I've sent this to our team. Your complaint reference is "
-        f"{complaint.complaint_ref}. I'll post the reply here as soon as it's ready. "
-        "You can add photos or documents to it from My complaints.",
+        _line("submitted", ref=complaint.complaint_ref),
         "reference",
         {"complaint_ref": complaint.complaint_ref},
     )

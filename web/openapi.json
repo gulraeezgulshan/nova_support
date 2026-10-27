@@ -5344,6 +5344,76 @@
         ]
       }
     },
+    "/api/v1/settings/texts": {
+      "get": {
+        "tags": [
+          "texts"
+        ],
+        "summary": "Read Texts",
+        "operationId": "read_texts",
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/TextsOut"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "HTTPBearer": []
+          }
+        ]
+      },
+      "put": {
+        "tags": [
+          "texts"
+        ],
+        "summary": "Update Texts",
+        "operationId": "update_texts",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/TextsUpdate"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/TextsOut"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "HTTPBearer": []
+          }
+        ]
+      }
+    },
     "/api/v1/orders/{ref}/cancel": {
       "post": {
         "tags": [
@@ -7502,6 +7572,76 @@
         "type": "object",
         "title": "ChatStartIn"
       },
+      "ChatTexts": {
+        "properties": {
+          "greeting": {
+            "type": "string",
+            "maxLength": 500,
+            "minLength": 5,
+            "title": "Greeting"
+          },
+          "ask_what_happened": {
+            "type": "string",
+            "maxLength": 500,
+            "minLength": 5,
+            "title": "Ask What Happened"
+          },
+          "fallback_questions": {
+            "items": {
+              "type": "string",
+              "maxLength": 500,
+              "minLength": 5
+            },
+            "type": "array",
+            "maxItems": 3,
+            "minItems": 3,
+            "title": "Fallback Questions"
+          },
+          "neutral_question": {
+            "type": "string",
+            "maxLength": 500,
+            "minLength": 5,
+            "title": "Neutral Question"
+          },
+          "summary_lead": {
+            "type": "string",
+            "maxLength": 500,
+            "minLength": 5,
+            "title": "Summary Lead"
+          },
+          "faq_follow_up": {
+            "type": "string",
+            "maxLength": 500,
+            "minLength": 5,
+            "title": "Faq Follow Up"
+          },
+          "added_to_complaint": {
+            "type": "string",
+            "maxLength": 500,
+            "minLength": 5,
+            "title": "Added To Complaint"
+          },
+          "submitted": {
+            "type": "string",
+            "maxLength": 500,
+            "minLength": 5,
+            "title": "Submitted"
+          }
+        },
+        "additionalProperties": false,
+        "type": "object",
+        "required": [
+          "greeting",
+          "ask_what_happened",
+          "fallback_questions",
+          "neutral_question",
+          "summary_lead",
+          "faq_follow_up",
+          "added_to_complaint",
+          "submitted"
+        ],
+        "title": "ChatTexts"
+      },
       "CheckResultOut": {
         "properties": {
           "code": {
@@ -8640,6 +8780,49 @@
           "events"
         ],
         "title": "ComplaintDetail"
+      },
+      "ComplaintEmailTexts": {
+        "properties": {
+          "acknowledgement": {
+            "type": "string",
+            "maxLength": 2000,
+            "minLength": 20,
+            "title": "Acknowledgement"
+          },
+          "holding": {
+            "type": "string",
+            "maxLength": 2000,
+            "minLength": 20,
+            "title": "Holding"
+          },
+          "rejected": {
+            "type": "string",
+            "maxLength": 2000,
+            "minLength": 20,
+            "title": "Rejected"
+          },
+          "duplicate": {
+            "type": "string",
+            "maxLength": 2000,
+            "minLength": 20,
+            "title": "Duplicate"
+          },
+          "signature": {
+            "type": "string",
+            "maxLength": 300,
+            "title": "Signature"
+          }
+        },
+        "additionalProperties": false,
+        "type": "object",
+        "required": [
+          "acknowledgement",
+          "holding",
+          "rejected",
+          "duplicate",
+          "signature"
+        ],
+        "title": "ComplaintEmailTexts"
       },
       "ComplaintEventOut": {
         "properties": {
@@ -11163,6 +11346,29 @@
         ],
         "title": "OrderActionIn"
       },
+      "OrderEmailText": {
+        "properties": {
+          "subject": {
+            "type": "string",
+            "maxLength": 150,
+            "minLength": 5,
+            "title": "Subject"
+          },
+          "body": {
+            "type": "string",
+            "maxLength": 2000,
+            "minLength": 20,
+            "title": "Body"
+          }
+        },
+        "additionalProperties": false,
+        "type": "object",
+        "required": [
+          "subject",
+          "body"
+        ],
+        "title": "OrderEmailText"
+      },
       "OrderEventOut": {
         "properties": {
           "stage": {
@@ -11728,6 +11934,30 @@
           "patterns"
         ],
         "title": "PatternsUpdate"
+      },
+      "PlaceholderRule": {
+        "properties": {
+          "allowed": {
+            "items": {
+              "type": "string"
+            },
+            "type": "array",
+            "title": "Allowed"
+          },
+          "required": {
+            "items": {
+              "type": "string"
+            },
+            "type": "array",
+            "title": "Required"
+          }
+        },
+        "type": "object",
+        "required": [
+          "allowed",
+          "required"
+        ],
+        "title": "PlaceholderRule"
       },
       "PolicyFactOut": {
         "properties": {
@@ -13239,7 +13469,7 @@
           "shop"
         ],
         "title": "SettingsGroups",
-        "description": "The settings without the text patterns (they have their own page and endpoint)."
+        "description": "The settings without the text patterns and customer texts (each has its own page)."
       },
       "SettingsOut": {
         "properties": {
@@ -14341,6 +14571,32 @@
         ],
         "title": "SubcategoryOut"
       },
+      "TextSettings": {
+        "properties": {
+          "order_emails": {
+            "additionalProperties": {
+              "$ref": "#/components/schemas/OrderEmailText"
+            },
+            "type": "object",
+            "title": "Order Emails"
+          },
+          "complaint_emails": {
+            "$ref": "#/components/schemas/ComplaintEmailTexts"
+          },
+          "chat": {
+            "$ref": "#/components/schemas/ChatTexts"
+          }
+        },
+        "additionalProperties": false,
+        "type": "object",
+        "required": [
+          "order_emails",
+          "complaint_emails",
+          "chat"
+        ],
+        "title": "TextSettings",
+        "description": "E-mails and chat lines customers receive (Settings \u2192 Customer texts)."
+      },
       "TextSide": {
         "properties": {
           "signals": {
@@ -14387,6 +14643,85 @@
           "draft"
         ],
         "title": "TextTestOut"
+      },
+      "TextsOut": {
+        "properties": {
+          "texts": {
+            "$ref": "#/components/schemas/TextSettings"
+          },
+          "defaults": {
+            "$ref": "#/components/schemas/TextSettings"
+          },
+          "version": {
+            "type": "integer",
+            "title": "Version"
+          },
+          "updated_at": {
+            "anyOf": [
+              {
+                "type": "string",
+                "format": "date-time"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Updated At"
+          },
+          "updated_by": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Updated By"
+          },
+          "placeholders": {
+            "additionalProperties": {
+              "$ref": "#/components/schemas/PlaceholderRule"
+            },
+            "type": "object",
+            "title": "Placeholders"
+          },
+          "samples": {
+            "additionalProperties": {
+              "type": "string"
+            },
+            "type": "object",
+            "title": "Samples"
+          }
+        },
+        "type": "object",
+        "required": [
+          "texts",
+          "defaults",
+          "version",
+          "updated_at",
+          "updated_by",
+          "placeholders",
+          "samples"
+        ],
+        "title": "TextsOut"
+      },
+      "TextsUpdate": {
+        "properties": {
+          "version": {
+            "type": "integer",
+            "title": "Version"
+          },
+          "texts": {
+            "$ref": "#/components/schemas/TextSettings"
+          }
+        },
+        "type": "object",
+        "required": [
+          "version",
+          "texts"
+        ],
+        "title": "TextsUpdate"
       },
       "TrendOut": {
         "properties": {

@@ -20,6 +20,7 @@ from app_settings.model import (
     PatternSettings,
     RuntimeSettings,
     ShopSettings,
+    TextSettings,
     ValidationSettings,
 )
 from database.models import (
@@ -927,13 +928,14 @@ class PolicyFactOut(BaseModel):
 
 
 class SettingsGroups(RuntimeSettings):
-    """The settings without the text patterns (they have their own page and endpoint)."""
+    """The settings without the text patterns and customer texts (each has its own page)."""
 
     patterns: SkipJsonSchema[PatternSettings | None] = Field(default=None, exclude=True)  # type: ignore[assignment]
+    texts: SkipJsonSchema[TextSettings | None] = Field(default=None, exclude=True)  # type: ignore[assignment]
 
     @classmethod
     def of(cls, settings: RuntimeSettings) -> "SettingsGroups":
-        return cls.model_validate(settings.model_dump(exclude={"patterns"}))
+        return cls.model_validate(settings.model_dump(exclude={"patterns", "texts"}))
 
 
 class SettingsOut(BaseModel):
@@ -1088,3 +1090,23 @@ class DatasetCheckIn(BaseModel):
 
 class RecomputeQueuedOut(BaseModel):
     queued: bool
+
+
+class PlaceholderRule(BaseModel):
+    allowed: list[str]
+    required: list[str]
+
+
+class TextsOut(BaseModel):
+    texts: TextSettings
+    defaults: TextSettings
+    version: int
+    updated_at: datetime | None
+    updated_by: str | None
+    placeholders: dict[str, PlaceholderRule]  # text path → allowed and required names
+    samples: dict[str, str]  # placeholder → value used in the page preview
+
+
+class TextsUpdate(BaseModel):
+    version: int
+    texts: TextSettings

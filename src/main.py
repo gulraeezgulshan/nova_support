@@ -29,6 +29,7 @@ from src.api.routes import (
 from src.api.routes import orders as order_routes
 from src.api.routes import patterns as pattern_routes
 from src.api.routes import settings as settings_routes
+from src.api.routes import texts as text_routes
 from src.core.config import get_settings
 from src.core.logging import configure_logging
 
@@ -73,6 +74,7 @@ def create_app() -> FastAPI:
         settings_routes.router,
         access_routes.router,
         pattern_routes.router,
+        text_routes.router,
         order_routes.router,
     ):
         app.include_router(router, prefix=settings.api_prefix)

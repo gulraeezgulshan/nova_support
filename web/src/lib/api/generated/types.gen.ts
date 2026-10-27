@@ -951,6 +951,48 @@ export type ChatStartIn = {
 };
 
 /**
+ * ChatTexts
+ */
+export type ChatTexts = {
+    /**
+     * Greeting
+     */
+    greeting: string;
+    /**
+     * Ask What Happened
+     */
+    ask_what_happened: string;
+    /**
+     * Fallback Questions
+     */
+    fallback_questions: [
+        string,
+        string,
+        string
+    ];
+    /**
+     * Neutral Question
+     */
+    neutral_question: string;
+    /**
+     * Summary Lead
+     */
+    summary_lead: string;
+    /**
+     * Faq Follow Up
+     */
+    faq_follow_up: string;
+    /**
+     * Added To Complaint
+     */
+    added_to_complaint: string;
+    /**
+     * Submitted
+     */
+    submitted: string;
+};
+
+/**
  * CheckResultOut
  */
 export type CheckResultOut = {
@@ -1537,6 +1579,32 @@ export type ComplaintDetail = {
      * Approved Response
      */
     approved_response?: string | null;
+};
+
+/**
+ * ComplaintEmailTexts
+ */
+export type ComplaintEmailTexts = {
+    /**
+     * Acknowledgement
+     */
+    acknowledgement: string;
+    /**
+     * Holding
+     */
+    holding: string;
+    /**
+     * Rejected
+     */
+    rejected: string;
+    /**
+     * Duplicate
+     */
+    duplicate: string;
+    /**
+     * Signature
+     */
+    signature: string;
 };
 
 /**
@@ -2971,6 +3039,20 @@ export type OrderActionIn = {
 };
 
 /**
+ * OrderEmailText
+ */
+export type OrderEmailText = {
+    /**
+     * Subject
+     */
+    subject: string;
+    /**
+     * Body
+     */
+    body: string;
+};
+
+/**
  * OrderEventOut
  */
 export type OrderEventOut = {
@@ -3306,6 +3388,20 @@ export type PatternsUpdate = {
      */
     version: number;
     patterns: PatternSettings;
+};
+
+/**
+ * PlaceholderRule
+ */
+export type PlaceholderRule = {
+    /**
+     * Allowed
+     */
+    allowed: Array<string>;
+    /**
+     * Required
+     */
+    required: Array<string>;
 };
 
 /**
@@ -4157,7 +4253,7 @@ export type SentenceOut = {
 /**
  * SettingsGroups
  *
- * The settings without the text patterns (they have their own page and endpoint).
+ * The settings without the text patterns and customer texts (each has its own page).
  */
 export type SettingsGroups = {
     email: EmailSettings;
@@ -4761,6 +4857,22 @@ export type SubcategoryOut = {
 };
 
 /**
+ * TextSettings
+ *
+ * E-mails and chat lines customers receive (Settings → Customer texts).
+ */
+export type TextSettings = {
+    /**
+     * Order Emails
+     */
+    order_emails: {
+        [key: string]: OrderEmailText;
+    };
+    complaint_emails: ComplaintEmailTexts;
+    chat: ChatTexts;
+};
+
+/**
  * TextSide
  */
 export type TextSide = {
@@ -4783,6 +4895,49 @@ export type TextSide = {
 export type TextTestOut = {
     saved: TextSide;
     draft: TextSide;
+};
+
+/**
+ * TextsOut
+ */
+export type TextsOut = {
+    texts: TextSettings;
+    defaults: TextSettings;
+    /**
+     * Version
+     */
+    version: number;
+    /**
+     * Updated At
+     */
+    updated_at: string | null;
+    /**
+     * Updated By
+     */
+    updated_by: string | null;
+    /**
+     * Placeholders
+     */
+    placeholders: {
+        [key: string]: PlaceholderRule;
+    };
+    /**
+     * Samples
+     */
+    samples: {
+        [key: string]: string;
+    };
+};
+
+/**
+ * TextsUpdate
+ */
+export type TextsUpdate = {
+    /**
+     * Version
+     */
+    version: number;
+    texts: TextSettings;
 };
 
 /**
@@ -8030,6 +8185,47 @@ export type RecomputeSignalsResponses = {
 };
 
 export type RecomputeSignalsResponse = RecomputeSignalsResponses[keyof RecomputeSignalsResponses];
+
+export type ReadTextsData = {
+    body?: never;
+    path?: never;
+    query?: never;
+    url: '/api/v1/settings/texts';
+};
+
+export type ReadTextsResponses = {
+    /**
+     * Successful Response
+     */
+    200: TextsOut;
+};
+
+export type ReadTextsResponse = ReadTextsResponses[keyof ReadTextsResponses];
+
+export type UpdateTextsData = {
+    body: TextsUpdate;
+    path?: never;
+    query?: never;
+    url: '/api/v1/settings/texts';
+};
+
+export type UpdateTextsErrors = {
+    /**
+     * Validation Error
+     */
+    422: HttpValidationError;
+};
+
+export type UpdateTextsError = UpdateTextsErrors[keyof UpdateTextsErrors];
+
+export type UpdateTextsResponses = {
+    /**
+     * Successful Response
+     */
+    200: TextsOut;
+};
+
+export type UpdateTextsResponse = UpdateTextsResponses[keyof UpdateTextsResponses];
 
 export type CancelOrderData = {
     body?: never;

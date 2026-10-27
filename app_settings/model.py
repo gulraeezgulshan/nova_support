@@ -8,6 +8,7 @@ from pydantic import AfterValidator, BaseModel, ConfigDict, Field, model_validat
 
 from app_settings.access import AccessSettings, default_access
 from app_settings.patterns import PROMISE_KINDS, regex_problem
+from app_settings.texts import ORDER_EMAIL_KINDS, PLACEHOLDERS, label, placeholder_problem
 
 Provider = Literal["openai", "anthropic"]
 Effort = Literal["none", "minimal", "low", "medium", "high", "xhigh", "max"]
@@ -377,6 +378,70 @@ class ShopSettings(_Group):
         return self
 
 
+def _check_text(path: str, text: str, index: int | None = None) -> None:
+    allowed, required = PLACEHOLDERS[path]
+    where = label(path, index)
+    if problem := placeholder_problem(text, allowed):
+        raise ValueError(f"{where}: {problem}")
+    for name in required:
+        if f"{{{name}}}" not in text:
+            raise ValueError(f"{where} must include {{{name}}}.")
+
+
+ChatLine = Annotated[str, Field(min_length=5, max_length=500)]
+EmailBody = Annotated[str, Field(min_length=20, max_length=2000)]
+
+
+class OrderEmailText(_Group):
+    subject: Annotated[Line, Field(min_length=5, max_length=150)]
+    body: EmailBody
+
+
+class ComplaintEmailTexts(_Group):
+    acknowledgement: EmailBody
+    holding: EmailBody
+    rejected: EmailBody
+    duplicate: EmailBody
+    signature: Annotated[str, Field(max_length=300)]  # added to every complaint e-mail
+
+
+class ChatTexts(_Group):
+    greeting: ChatLine
+    ask_what_happened: ChatLine
+    # In order: what happened, when, what the customer wants (that answer is the resolution).
+    fallback_questions: list[ChatLine] = Field(min_length=3, max_length=3)
+    neutral_question: ChatLine
+    summary_lead: ChatLine
+    faq_follow_up: ChatLine
+    added_to_complaint: ChatLine
+    submitted: ChatLine
+
+
+class TextSettings(_Group):
+    """E-mails and chat lines customers receive (Settings → Customer texts)."""
+
+    order_emails: dict[str, OrderEmailText]
+    complaint_emails: ComplaintEmailTexts
+    chat: ChatTexts
+
+    @model_validator(mode="after")
+    def _placeholders(self) -> "TextSettings":
+        if set(self.order_emails) != set(ORDER_EMAIL_KINDS):
+            raise ValueError(f"order e-mails must be exactly: {', '.join(ORDER_EMAIL_KINDS)}")
+        for kind, text in self.order_emails.items():
+            _check_text(f"order_emails.{kind}.subject", text.subject)
+            _check_text(f"order_emails.{kind}.body", text.body)
+        for name, value in self.complaint_emails.model_dump().items():
+            _check_text(f"complaint_emails.{name}", value)
+        for name, value in self.chat.model_dump().items():
+            if name == "fallback_questions":
+                for number, question in enumerate(value, start=1):
+                    _check_text("chat.fallback_questions", question, number)
+            else:
+                _check_text(f"chat.{name}", value)
+        return self
+
+
 class RuntimeSettings(_Group):
     email: EmailSettings
     ai: AiSettings
@@ -389,4 +454,5 @@ class RuntimeSettings(_Group):
     analytics: AnalyticsSettings
     intake: IntakeSettings
     shop: ShopSettings
+    texts: TextSettings
     access: AccessSettings = Field(default_factory=default_access)

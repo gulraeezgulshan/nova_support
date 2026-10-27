@@ -117,6 +117,61 @@ def _shop_defaults() -> dict[str, Any]:
     return {"best_seller_days": 90, "socials": raw["company"]["socials"], "faq": raw["faq"]}
 
 
+# Today's chat lines and complaint e-mails; "{shop}" is the Branding shop name.
+COMPLAINT_EMAIL_DEFAULTS: dict[str, str] = {
+    "acknowledgement": (
+        "Hello {name},\n\nThank you for contacting {shop}. We have received your complaint "
+        "and its reference is {ref}. Our team is looking into it and we will reply in this "
+        "e-mail thread. If you have photos or documents, reply to this e-mail with them "
+        "attached."
+    ),
+    "holding": (
+        "Hello {name},\n\nA specialist is reviewing your complaint {ref}. We will reply in "
+        "this thread as soon as the review is complete."
+    ),
+    "rejected": (
+        "Hello {name},\n\nThank you for your e-mail. We could not open a complaint yet: "
+        "{reason}\n\nPlease reply with what happened, when it happened and what you would "
+        "like us to do."
+    ),
+    "duplicate": (
+        "Hello {name},\n\nThis matches a complaint you already sent us, reference {ref}. We "
+        "are working on it and will reply in that thread."
+    ),
+    "signature": "Kind regards,\n{shop} Customer Care",
+}
+CHAT_DEFAULTS: dict[str, Any] = {
+    "greeting": "Hi, I'm the {shop} support assistant. Which order is this about?",
+    "ask_what_happened": "Sorry to hear there's a problem with your {product}. What happened?",
+    "fallback_questions": [
+        "What happened? Please describe the problem.",
+        "When did this happen?",
+        "What would you like us to do about it?",
+    ],
+    "neutral_question": "Thanks. Is there anything else about the problem we should know?",
+    "summary_lead": "Thanks, here is what I'll send to our team:",
+    "faq_follow_up": (
+        "Is there anything else I can help with, or would you like to report a problem?"
+    ),
+    "added_to_complaint": "Added to your complaint {ref}. To ask something new, tap New question.",
+    "submitted": (
+        "Thanks, I've sent this to our team. Your complaint reference is {ref}. I'll post the "
+        "reply here as soon as it's ready. You can add photos or documents to it from My "
+        "complaints."
+    ),
+}
+
+
+def _text_defaults() -> dict[str, Any]:
+    with (ROOT_DIR / "config" / "order_emails.yaml").open(encoding="utf-8") as handle:
+        order_emails = yaml.safe_load(handle)
+    return {
+        "order_emails": order_emails,
+        "complaint_emails": COMPLAINT_EMAIL_DEFAULTS,
+        "chat": CHAT_DEFAULTS,
+    }
+
+
 def _clamp(value: float, low: float, high: float) -> float:
     return max(low, min(high, value))
 
@@ -166,6 +221,7 @@ def defaults() -> RuntimeSettings:
             "analytics": _analytics_defaults(analytics_config()),
             "intake": INTAKE_DEFAULTS,
             "shop": _shop_defaults(),
+            "texts": _text_defaults(),
             "validation": _validation_defaults(validation),
             "patterns": _pattern_defaults(validation),
             "access": default_access().model_dump(),

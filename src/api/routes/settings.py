@@ -144,6 +144,7 @@ async def update_settings(
     new = RuntimeSettings(
         access=stored.access,  # changed only on the Page access screen
         patterns=stored.patterns,  # changed only on the Patterns page
+        texts=stored.texts,  # changed only on the Customer texts page
         analytics=payload.analytics or stored.analytics,
         intake=payload.intake or stored.intake,
         shop=payload.shop or stored.shop,

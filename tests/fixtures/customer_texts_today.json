@@ -1,0 +1,53 @@
+{
+  "order_emails": {
+    "placed": {
+      "subject": "Your VoltHaven order ORD-240001",
+      "body": "Hello Ayesha,\n\nThank you for your order ORD-240001: AeroBook 14, PKR 249,999. We will e-mail you when it ships.\n\nVoltHaven"
+    },
+    "shipped": {
+      "subject": "Your order ORD-240001 has shipped",
+      "body": "Hello Ayesha,\n\nAeroBook 14 is on its way. It is due by 12 Nov 2026.\n\nVoltHaven"
+    },
+    "delayed": {
+      "subject": "Your order ORD-240001 is delayed",
+      "body": "Hello Ayesha,\n\nSorry, AeroBook 14 is delayed and is now expected by 12 Nov 2026. If it arrives late you may be entitled to compensation under our delivery policy.\n\nVoltHaven"
+    },
+    "delivered": {
+      "subject": "Your order ORD-240001 was delivered",
+      "body": "Hello Ayesha,\n\nAeroBook 14 was delivered on 12 Nov 2026. If anything is wrong, reply to this e-mail or use Get help on the order.\n\nVoltHaven"
+    },
+    "cancelled": {
+      "subject": "Your order ORD-240001 is cancelled",
+      "body": "Hello Ayesha,\n\nYour order ORD-240001 (AeroBook 14, PKR 249,999) is cancelled. Any payment is refunded to the original method.\n\nVoltHaven"
+    },
+    "returned": {
+      "subject": "Your return for ORD-240001 is approved",
+      "body": "Hello Ayesha,\n\nWe have approved the return of AeroBook 14. The refund of PKR 249,999 follows our refund policy.\n\nVoltHaven"
+    },
+    "return_refused": {
+      "subject": "About your return for ORD-240001",
+      "body": "Hello Ayesha,\n\nWe could not approve the return of AeroBook 14. Reply to this e-mail if you have questions.\n\nVoltHaven"
+    }
+  },
+  "complaint_emails": {
+    "acknowledgement": "Hello Ayesha,\n\nThank you for contacting VoltHaven. We have received your complaint and its reference is CMP-000123. Our team is looking into it and we will reply in this e-mail thread. If you have photos or documents, reply to this e-mail with them attached.\n\nKind regards,\nVoltHaven Customer Care",
+    "holding": "Hello Ayesha,\n\nA specialist is reviewing your complaint CMP-000123. We will reply in this thread as soon as the review is complete.\n\nKind regards,\nVoltHaven Customer Care",
+    "rejected": "Hello Ayesha,\n\nThank you for your e-mail. We could not open a complaint yet: Description is too short to act on.\n\nPlease reply with what happened, when it happened and what you would like us to do.\n\nKind regards,\nVoltHaven Customer Care",
+    "duplicate": "Hello Ayesha,\n\nThis matches a complaint you already sent us, reference CMP-000123. We are working on it and will reply in that thread.\n\nKind regards,\nVoltHaven Customer Care"
+  },
+  "signature": "\n\nKind regards,\nVoltHaven Customer Care",
+  "chat": {
+    "greeting": "Hi, I'm the VoltHaven support assistant. Which order is this about?",
+    "ask_what_happened": "Sorry to hear there's a problem with your AeroBook 14. What happened?",
+    "added_to_complaint": "Added to your complaint CMP-000123. To ask something new, tap New question.",
+    "submitted": "Thanks, I've sent this to our team. Your complaint reference is CMP-000123. I'll post the reply here as soon as it's ready. You can add photos or documents to it from My complaints.",
+    "fallback_questions": [
+      "What happened? Please describe the problem.",
+      "When did this happen?",
+      "What would you like us to do about it?"
+    ],
+    "neutral_question": "Thanks. Is there anything else about the problem we should know?",
+    "summary_lead": "Thanks, here is what I'll send to our team:",
+    "faq_follow_up": "Is there anything else I can help with, or would you like to report a problem?"
+  }
+}

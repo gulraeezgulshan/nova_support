@@ -294,6 +294,32 @@ Every new field shows its default with a **Reset** link.
 If two administrators edit at once, the second save is refused with *Someone else changed the
 settings; reload*.
 
+### Patterns
+
+**Settings → Patterns** (administrators) holds the wording Python reads in complaints and
+replies, in three tabs:
+
+- **Risk signals**: the words for each of the 14 signals (safety hazard, injury, legal threat,
+  prompt injection, …). Signals feed the rule matrix, so they drive urgency and escalation.
+- **Classifier**: for each subcategory, phrases with a weight (3 decisive, 2 strong hint, 1
+  weak hint). Python uses them to check the AI's category; a subcategory without phrases is
+  never named by Python.
+- **Promises**: the wording that makes a reply sentence a commitment or only conditional, the
+  wording of each promise kind (refund, replacement, compensation, policy exception) and the
+  deadline pattern.
+
+Each entry is a **Phrase** (typed words, matched literally; the safe choice) or a **Regex**
+(regular expression, for advanced use). Before saving, use the panel on the right: **Try a
+text** shows what fires with the saved patterns and with your draft, side by side; **Run
+dataset check** runs both over the 536 labelled sample complaints and shows what changes
+(signals gained or lost, category accuracy, escalation and urgency against the labels,
+prompt-injection hits). Saving is allowed whatever the results.
+
+A regex that does not compile, nests unlimited repeats such as `(a+)+`, or is too slow on long
+texts is refused with the list and entry named. New analyses use saved changes within about 15
+seconds; press **Recompute signals** to update the risk signals of complaints already stored
+(the page shows the last run's result).
+
 ## 20. Orders (staff)
 
 **Orders** (Complaints group in the sidebar) lists shop orders with their stage, promised date

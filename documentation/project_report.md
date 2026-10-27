@@ -315,7 +315,8 @@ sequenceDiagram
    characters removed; card numbers, passwords, PINs, ID and bank numbers redacted; length,
    channel and order-ownership checks; entities (orders, amounts, dates, e-mails); exact
    duplicates rejected (content hash); near-duplicates (fuzzy ≥ 88%) and reworded repeats
-   (embedding ≥ 0.80) linked; risk signals from `config/detectors.yaml`.
+   (embedding ≥ 0.80) linked; risk signals from the signal word lists (Settings → Patterns;
+   defaults in `config/detectors.yaml`).
 2. **Facts** (`complaint_processing/facts.py`): days late (business days), order amount,
    shipping method, days since delivery, customer type, repeat count (complaints at least 24
    hours earlier), unresolved repeats, signals.
@@ -452,6 +453,12 @@ The check weights, compensation limits, never-allowed actions, the categories th
 order, the escalation action levels and the classifier thresholds and signal boosts are
 run-time settings (Settings → Validation): defaults come from `config/validation.yaml` and
 `config/classification.yaml`, and an administrator's changes apply within 15 seconds.
+
+The text patterns themselves (risk-signal words, the classifier's weighted phrases and the
+promise wording) are settings too (Settings → Patterns). Entries are plain phrases or checked
+regexes (they must compile and may not nest unlimited repeats). Before saving, an administrator
+tries the draft on a pasted text and on the 536 labelled complaints; the draft runs in a
+separate process with a time limit, so a slow pattern is refused instead of slowing the API.
 
 ## 24. Routing validation
 

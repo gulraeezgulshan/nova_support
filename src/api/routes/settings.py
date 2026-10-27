@@ -15,12 +15,13 @@ from app_settings.model import (
     ValidationSettings,
     known_signals,
 )
-from database.models import Category, Document, Role, Subcategory, User
+from database.models import Category, ComplaintStatus, Document, Role, Subcategory, User
 from database.session import get_db
 from security.dependencies import require_roles
 from src.api.schemas import BrandingOut, SettingsGroups, SettingsOut, SettingsUpdate
 from src.core.config import get_settings
 from src.core.storage import Storage, get_storage
+from storefront.faq import policy_values
 from storefront.images import image_type
 
 router = APIRouter(tags=["settings"])
@@ -41,6 +42,8 @@ async def _out(db: AsyncSession) -> SettingsOut:
         settings=SettingsGroups.of(current),
         defaults=SettingsGroups.of(app_settings.defaults()),
         risk_signals=sorted(known_signals()),
+        complaint_statuses=[s.value for s in ComplaintStatus],
+        policy_values=policy_values(),
         version=row.version if row else 0,
         updated_at=row.updated_at if row else None,
         updated_by=(who.full_name or who.email) if who else None,
@@ -109,6 +112,16 @@ async def _check_validation_codes(db: AsyncSession, v: ValidationSettings) -> No
         raise HTTPException(status.HTTP_422_UNPROCESSABLE_CONTENT, " ".join(problems))
 
 
+async def _check_watched_categories(db: AsyncSession, codes: list[str]) -> None:
+    known = set(await db.scalars(select(Category.code)))
+    missing = [code for code in codes if code not in known]
+    if missing:
+        raise HTTPException(
+            status.HTTP_422_UNPROCESSABLE_CONTENT,
+            " ".join(f"Watched categories: category {c} does not exist." for c in missing),
+        )
+
+
 @router.get("/settings", response_model=SettingsOut)
 async def read_settings(
     _: User = Depends(admin_only), db: AsyncSession = Depends(get_db)
@@ -131,9 +144,9 @@ async def update_settings(
     new = RuntimeSettings(
         access=stored.access,  # changed only on the Page access screen
         patterns=stored.patterns,  # changed only on the Patterns page
-        analytics=stored.analytics,
-        intake=stored.intake,
-        shop=stored.shop,
+        analytics=payload.analytics or stored.analytics,
+        intake=payload.intake or stored.intake,
+        shop=payload.shop or stored.shop,
         knowledge_base=payload.knowledge_base or stored.knowledge_base,
         validation=payload.validation or stored.validation,
         email=payload.email,
@@ -150,6 +163,8 @@ async def update_settings(
         await _check_types_in_use(db, stored.knowledge_base, payload.knowledge_base)
     if payload.validation is not None:
         await _check_validation_codes(db, payload.validation)
+    if payload.analytics is not None:
+        await _check_watched_categories(db, payload.analytics.watched_categories)
     try:
         await app_settings.save(db, new, actor=actor, expected_version=payload.version)
     except StaleSettingsError as exc:

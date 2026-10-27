@@ -6674,6 +6674,79 @@
         ],
         "title": "AnalyticsOut"
       },
+      "AnalyticsSettings": {
+        "properties": {
+          "trend_window_days": {
+            "type": "integer",
+            "maximum": 90.0,
+            "minimum": 1.0,
+            "title": "Trend Window Days"
+          },
+          "trend_min_count": {
+            "type": "integer",
+            "maximum": 100.0,
+            "minimum": 1.0,
+            "title": "Trend Min Count"
+          },
+          "trend_rise_ratio": {
+            "type": "number",
+            "maximum": 10.0,
+            "minimum": 1.0,
+            "title": "Trend Rise Ratio"
+          },
+          "recurring_min_count": {
+            "type": "integer",
+            "maximum": 100.0,
+            "minimum": 1.0,
+            "title": "Recurring Min Count"
+          },
+          "watched_categories": {
+            "items": {
+              "type": "string"
+            },
+            "type": "array",
+            "maxItems": 20,
+            "title": "Watched Categories"
+          },
+          "dashboard_list_limit": {
+            "type": "integer",
+            "maximum": 50.0,
+            "minimum": 5.0,
+            "title": "Dashboard List Limit"
+          },
+          "first_response_statuses": {
+            "items": {
+              "type": "string"
+            },
+            "type": "array",
+            "maxItems": 9,
+            "minItems": 1,
+            "title": "First Response Statuses"
+          },
+          "resolved_statuses": {
+            "items": {
+              "type": "string"
+            },
+            "type": "array",
+            "maxItems": 9,
+            "minItems": 1,
+            "title": "Resolved Statuses"
+          }
+        },
+        "additionalProperties": false,
+        "type": "object",
+        "required": [
+          "trend_window_days",
+          "trend_min_count",
+          "trend_rise_ratio",
+          "recurring_min_count",
+          "watched_categories",
+          "dashboard_list_limit",
+          "first_response_statuses",
+          "resolved_statuses"
+        ],
+        "title": "AnalyticsSettings"
+      },
       "AttachmentOut": {
         "properties": {
           "id": {
@@ -10115,6 +10188,29 @@
         ],
         "title": "FactOut"
       },
+      "FaqEntrySetting": {
+        "properties": {
+          "question": {
+            "type": "string",
+            "maxLength": 200,
+            "minLength": 5,
+            "title": "Question"
+          },
+          "answer": {
+            "type": "string",
+            "maxLength": 1000,
+            "minLength": 10,
+            "title": "Answer"
+          }
+        },
+        "additionalProperties": false,
+        "type": "object",
+        "required": [
+          "question",
+          "answer"
+        ],
+        "title": "FaqEntrySetting"
+      },
       "FaqItem": {
         "properties": {
           "question": {
@@ -10621,6 +10717,121 @@
         ],
         "title": "InjectionCompare"
       },
+      "IntakeSettings": {
+        "properties": {
+          "near_duplicate_min_ratio": {
+            "type": "number",
+            "maximum": 100.0,
+            "minimum": 70.0,
+            "title": "Near Duplicate Min Ratio"
+          },
+          "related_min_similarity": {
+            "type": "number",
+            "maximum": 0.99,
+            "minimum": 0.5,
+            "title": "Related Min Similarity"
+          },
+          "duplicate_window_days": {
+            "type": "integer",
+            "maximum": 365.0,
+            "minimum": 1.0,
+            "title": "Duplicate Window Days"
+          },
+          "repeat_window_days": {
+            "type": "integer",
+            "maximum": 365.0,
+            "minimum": 1.0,
+            "title": "Repeat Window Days"
+          },
+          "repeat_min_gap_hours": {
+            "type": "integer",
+            "maximum": 168.0,
+            "minimum": 0.0,
+            "title": "Repeat Min Gap Hours"
+          },
+          "min_title_chars": {
+            "type": "integer",
+            "maximum": 20.0,
+            "minimum": 3.0,
+            "title": "Min Title Chars"
+          },
+          "min_description_chars": {
+            "type": "integer",
+            "maximum": 200.0,
+            "minimum": 10.0,
+            "title": "Min Description Chars"
+          },
+          "min_description_words": {
+            "type": "integer",
+            "maximum": 30.0,
+            "minimum": 1.0,
+            "title": "Min Description Words"
+          },
+          "max_description_chars": {
+            "type": "integer",
+            "maximum": 5000.0,
+            "minimum": 500.0,
+            "title": "Max Description Chars"
+          },
+          "max_attachments": {
+            "type": "integer",
+            "maximum": 10.0,
+            "minimum": 0.0,
+            "title": "Max Attachments"
+          },
+          "max_attachment_mb": {
+            "type": "integer",
+            "maximum": 10.0,
+            "minimum": 1.0,
+            "title": "Max Attachment Mb"
+          },
+          "chat_max_questions": {
+            "type": "integer",
+            "maximum": 12.0,
+            "minimum": 2.0,
+            "title": "Chat Max Questions"
+          },
+          "chat_max_message_chars": {
+            "type": "integer",
+            "maximum": 2000.0,
+            "minimum": 200.0,
+            "title": "Chat Max Message Chars"
+          },
+          "chat_max_customer_messages": {
+            "type": "integer",
+            "maximum": 100.0,
+            "minimum": 5.0,
+            "title": "Chat Max Customer Messages"
+          },
+          "import_max_rows": {
+            "type": "integer",
+            "maximum": 5000.0,
+            "minimum": 10.0,
+            "title": "Import Max Rows"
+          }
+        },
+        "additionalProperties": false,
+        "type": "object",
+        "required": [
+          "near_duplicate_min_ratio",
+          "related_min_similarity",
+          "duplicate_window_days",
+          "repeat_window_days",
+          "repeat_min_gap_hours",
+          "min_title_chars",
+          "min_description_chars",
+          "min_description_words",
+          "max_description_chars",
+          "max_attachments",
+          "max_attachment_mb",
+          "chat_max_questions",
+          "chat_max_message_chars",
+          "chat_max_customer_messages",
+          "import_max_rows"
+        ],
+        "title": "IntakeSettings",
+        "description": "Complaint, chat and import limits. Upper bounds stay within the API's fixed caps."
+      },
       "Issue": {
         "properties": {
           "category": {
@@ -11084,6 +11295,13 @@
             "maximum": 10000.0,
             "minimum": 1.0,
             "title": "Fallback Pkr Rate"
+          },
+          "delay_wait_steps": {
+            "type": "integer",
+            "maximum": 20.0,
+            "minimum": 1.0,
+            "title": "Delay Wait Steps",
+            "default": 3
           }
         },
         "additionalProperties": false,
@@ -12993,6 +13211,15 @@
           "validation": {
             "$ref": "#/components/schemas/ValidationSettings"
           },
+          "analytics": {
+            "$ref": "#/components/schemas/AnalyticsSettings"
+          },
+          "intake": {
+            "$ref": "#/components/schemas/IntakeSettings"
+          },
+          "shop": {
+            "$ref": "#/components/schemas/ShopSettings"
+          },
           "access": {
             "$ref": "#/components/schemas/AccessSettings"
           }
@@ -13006,7 +13233,10 @@
           "branding",
           "orders",
           "knowledge_base",
-          "validation"
+          "validation",
+          "analytics",
+          "intake",
+          "shop"
         ],
         "title": "SettingsGroups",
         "description": "The settings without the text patterns (they have their own page and endpoint)."
@@ -13025,6 +13255,20 @@
             },
             "type": "array",
             "title": "Risk Signals"
+          },
+          "complaint_statuses": {
+            "items": {
+              "type": "string"
+            },
+            "type": "array",
+            "title": "Complaint Statuses"
+          },
+          "policy_values": {
+            "additionalProperties": {
+              "type": "integer"
+            },
+            "type": "object",
+            "title": "Policy Values"
           },
           "version": {
             "type": "integer",
@@ -13105,6 +13349,8 @@
           "settings",
           "defaults",
           "risk_signals",
+          "complaint_statuses",
+          "policy_values",
           "version",
           "updated_at",
           "updated_by",
@@ -13151,6 +13397,36 @@
             "anyOf": [
               {
                 "$ref": "#/components/schemas/ValidationSettings"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "analytics": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/AnalyticsSettings"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "intake": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/IntakeSettings"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "shop": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/ShopSettings"
               },
               {
                 "type": "null"
@@ -13362,6 +13638,41 @@
         ],
         "title": "ShopOrderOut"
       },
+      "ShopSettings": {
+        "properties": {
+          "best_seller_days": {
+            "type": "integer",
+            "maximum": 365.0,
+            "minimum": 7.0,
+            "title": "Best Seller Days"
+          },
+          "socials": {
+            "items": {
+              "$ref": "#/components/schemas/SocialLink"
+            },
+            "type": "array",
+            "maxItems": 8,
+            "title": "Socials"
+          },
+          "faq": {
+            "items": {
+              "$ref": "#/components/schemas/FaqEntrySetting"
+            },
+            "type": "array",
+            "maxItems": 20,
+            "minItems": 1,
+            "title": "Faq"
+          }
+        },
+        "additionalProperties": false,
+        "type": "object",
+        "required": [
+          "best_seller_days",
+          "socials",
+          "faq"
+        ],
+        "title": "ShopSettings"
+      },
       "SignalBoost": {
         "properties": {
           "category": {
@@ -13530,6 +13841,28 @@
           "url"
         ],
         "title": "Social"
+      },
+      "SocialLink": {
+        "properties": {
+          "name": {
+            "type": "string",
+            "maxLength": 30,
+            "minLength": 1,
+            "title": "Name"
+          },
+          "url": {
+            "type": "string",
+            "maxLength": 200,
+            "title": "Url"
+          }
+        },
+        "additionalProperties": false,
+        "type": "object",
+        "required": [
+          "name",
+          "url"
+        ],
+        "title": "SocialLink"
       },
       "StaffOrderDetailOut": {
         "properties": {

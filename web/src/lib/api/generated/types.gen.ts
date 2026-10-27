@@ -469,6 +469,44 @@ export type AnalyticsOut = {
 };
 
 /**
+ * AnalyticsSettings
+ */
+export type AnalyticsSettings = {
+    /**
+     * Trend Window Days
+     */
+    trend_window_days: number;
+    /**
+     * Trend Min Count
+     */
+    trend_min_count: number;
+    /**
+     * Trend Rise Ratio
+     */
+    trend_rise_ratio: number;
+    /**
+     * Recurring Min Count
+     */
+    recurring_min_count: number;
+    /**
+     * Watched Categories
+     */
+    watched_categories: Array<string>;
+    /**
+     * Dashboard List Limit
+     */
+    dashboard_list_limit: number;
+    /**
+     * First Response Statuses
+     */
+    first_response_statuses: Array<string>;
+    /**
+     * Resolved Statuses
+     */
+    resolved_statuses: Array<string>;
+};
+
+/**
  * AttachmentOut
  */
 export type AttachmentOut = {
@@ -2366,6 +2404,20 @@ export type FactOut = {
 };
 
 /**
+ * FaqEntrySetting
+ */
+export type FaqEntrySetting = {
+    /**
+     * Question
+     */
+    question: string;
+    /**
+     * Answer
+     */
+    answer: string;
+};
+
+/**
  * FaqItem
  */
 export type FaqItem = {
@@ -2675,6 +2727,74 @@ export type InjectionCompare = {
 };
 
 /**
+ * IntakeSettings
+ *
+ * Complaint, chat and import limits. Upper bounds stay within the API's fixed caps.
+ */
+export type IntakeSettings = {
+    /**
+     * Near Duplicate Min Ratio
+     */
+    near_duplicate_min_ratio: number;
+    /**
+     * Related Min Similarity
+     */
+    related_min_similarity: number;
+    /**
+     * Duplicate Window Days
+     */
+    duplicate_window_days: number;
+    /**
+     * Repeat Window Days
+     */
+    repeat_window_days: number;
+    /**
+     * Repeat Min Gap Hours
+     */
+    repeat_min_gap_hours: number;
+    /**
+     * Min Title Chars
+     */
+    min_title_chars: number;
+    /**
+     * Min Description Chars
+     */
+    min_description_chars: number;
+    /**
+     * Min Description Words
+     */
+    min_description_words: number;
+    /**
+     * Max Description Chars
+     */
+    max_description_chars: number;
+    /**
+     * Max Attachments
+     */
+    max_attachments: number;
+    /**
+     * Max Attachment Mb
+     */
+    max_attachment_mb: number;
+    /**
+     * Chat Max Questions
+     */
+    chat_max_questions: number;
+    /**
+     * Chat Max Message Chars
+     */
+    chat_max_message_chars: number;
+    /**
+     * Chat Max Customer Messages
+     */
+    chat_max_customer_messages: number;
+    /**
+     * Import Max Rows
+     */
+    import_max_rows: number;
+};
+
+/**
  * Issue
  */
 export type Issue = {
@@ -2942,6 +3062,10 @@ export type OrderSettings = {
      * Fallback Pkr Rate
      */
     fallback_pkr_rate: number;
+    /**
+     * Delay Wait Steps
+     */
+    delay_wait_steps?: number;
 };
 
 /**
@@ -4043,6 +4167,9 @@ export type SettingsGroups = {
     orders: OrderSettings;
     knowledge_base: KnowledgeBaseSettings;
     validation: ValidationSettings;
+    analytics: AnalyticsSettings;
+    intake: IntakeSettings;
+    shop: ShopSettings;
     access?: AccessSettings;
 };
 
@@ -4056,6 +4183,16 @@ export type SettingsOut = {
      * Risk Signals
      */
     risk_signals: Array<string>;
+    /**
+     * Complaint Statuses
+     */
+    complaint_statuses: Array<string>;
+    /**
+     * Policy Values
+     */
+    policy_values: {
+        [key: string]: number;
+    };
     /**
      * Version
      */
@@ -4107,6 +4244,9 @@ export type SettingsUpdate = {
     branding: BrandingText;
     knowledge_base?: KnowledgeBaseSettings | null;
     validation?: ValidationSettings | null;
+    analytics?: AnalyticsSettings | null;
+    intake?: IntakeSettings | null;
+    shop?: ShopSettings | null;
 };
 
 /**
@@ -4226,6 +4366,24 @@ export type ShopOrderOut = {
 };
 
 /**
+ * ShopSettings
+ */
+export type ShopSettings = {
+    /**
+     * Best Seller Days
+     */
+    best_seller_days: number;
+    /**
+     * Socials
+     */
+    socials: Array<SocialLink>;
+    /**
+     * Faq
+     */
+    faq: Array<FaqEntrySetting>;
+};
+
+/**
  * SignalBoost
  */
 export type SignalBoost = {
@@ -4321,6 +4479,20 @@ export type SlaPolicyUpdate = {
  * Social
  */
 export type Social = {
+    /**
+     * Name
+     */
+    name: string;
+    /**
+     * Url
+     */
+    url: string;
+};
+
+/**
+ * SocialLink
+ */
+export type SocialLink = {
     /**
      * Name
      */

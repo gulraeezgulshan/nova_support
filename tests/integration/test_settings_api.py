@@ -18,7 +18,17 @@ def body(current: dict, **group_changes: dict) -> dict:  # type: ignore[type-arg
     s = current["settings"]
     update = {
         g: {**s[g], **group_changes.get(g, {})}
-        for g in ("email", "ai", "operations", "orders", "knowledge_base", "validation")
+        for g in (
+            "email",
+            "ai",
+            "operations",
+            "orders",
+            "knowledge_base",
+            "validation",
+            "analytics",
+            "intake",
+            "shop",
+        )
     }
     branding = {k: v for k, v in s["branding"].items() if not k.endswith("_logo_key")}
     return {
@@ -284,3 +294,53 @@ async def test_settings_leave_out_the_text_patterns(
     data = (await client.get(URL, headers=auth_headers(Role.ADMIN))).json()
     assert "patterns" not in data["settings"]
     assert "patterns" not in data["defaults"]
+
+
+async def test_watched_category_must_exist(
+    client: httpx.AsyncClient, auth_headers: Callable[[Role], dict[str, str]]
+) -> None:
+    admin = auth_headers(Role.ADMIN)
+    current = (await client.get(URL, headers=admin)).json()
+    r = await client.put(
+        URL, headers=admin, json=body(current, analytics={"watched_categories": ["FOO"]})
+    )
+    assert r.status_code == 422
+    assert r.json()["detail"] == "Watched categories: category FOO does not exist."
+
+
+async def test_new_groups_left_out_keep_stored(
+    client: httpx.AsyncClient, auth_headers: Callable[[Role], dict[str, str]]
+) -> None:
+    admin = auth_headers(Role.ADMIN)
+    current = (await client.get(URL, headers=admin)).json()
+    saved = await client.put(
+        URL, headers=admin, json=body(current, intake={"max_description_chars": 3000})
+    )
+    assert saved.status_code == 200, saved.text
+    without = body(saved.json())
+    for group in ("analytics", "intake", "shop"):
+        del without[group]
+    again = await client.put(URL, headers=admin, json=without)
+    assert again.status_code == 200, again.text
+    assert again.json()["settings"]["intake"]["max_description_chars"] == 3000
+
+
+async def test_settings_list_statuses_and_policy_values(
+    client: httpx.AsyncClient, auth_headers: Callable[[Role], dict[str, str]]
+) -> None:
+    data = (await client.get(URL, headers=auth_headers(Role.ADMIN))).json()
+    assert "closed" in data["complaint_statuses"]
+    assert data["policy_values"]["standard_days"] == 5
+    assert data["defaults"]["intake"]["max_description_chars"] == 5000
+
+
+async def test_delay_wait_steps_optional(
+    client: httpx.AsyncClient, auth_headers: Callable[[Role], dict[str, str]]
+) -> None:
+    admin = auth_headers(Role.ADMIN)
+    current = (await client.get(URL, headers=admin)).json()
+    payload = body(current)
+    del payload["orders"]["delay_wait_steps"]
+    r = await client.put(URL, headers=admin, json=payload)
+    assert r.status_code == 200, r.text
+    assert r.json()["settings"]["orders"]["delay_wait_steps"] == 3

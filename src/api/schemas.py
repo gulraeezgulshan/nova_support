@@ -10,13 +10,16 @@ from pydantic.json_schema import SkipJsonSchema
 from app_settings.access import AccessSettings, PageAccess
 from app_settings.model import (
     AiSettings,
+    AnalyticsSettings,
     BrandingText,
     EmailSettings,
+    IntakeSettings,
     KnowledgeBaseSettings,
     OperationsSettings,
     OrderSettings,
     PatternSettings,
     RuntimeSettings,
+    ShopSettings,
     ValidationSettings,
 )
 from database.models import (
@@ -937,6 +940,8 @@ class SettingsOut(BaseModel):
     settings: SettingsGroups
     defaults: SettingsGroups
     risk_signals: list[str]  # names a signal boost can use (config/detectors.yaml)
+    complaint_statuses: list[str]  # for the SLA status lists on the Analytics tab
+    policy_values: dict[str, int]  # FAQ placeholders and their values
     version: int
     updated_at: datetime | None
     updated_by: str | None
@@ -958,6 +963,9 @@ class SettingsUpdate(BaseModel):
     # Optional so older clients keep working: left out = keep the stored values.
     knowledge_base: KnowledgeBaseSettings | None = None
     validation: ValidationSettings | None = None
+    analytics: AnalyticsSettings | None = None
+    intake: IntakeSettings | None = None
+    shop: ShopSettings | None = None
 
 
 class BrandingOut(BaseModel):

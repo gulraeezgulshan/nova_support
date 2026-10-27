@@ -38,16 +38,25 @@ import {
   reprocessActiveDocumentsMutation,
 } from "@/lib/api/generated/@tanstack/react-query.gen";
 import type {
+  AnalyticsSettings,
+  IntakeSettings,
   KnowledgeBaseSettings,
+  ShopSettings,
   SettingsOut,
   ValidationSettings,
   SettingsUpdate,
 } from "@/lib/api/generated/types.gen";
 import { apiErrorMessage } from "@/lib/api/errors";
 
-type Form = Omit<SettingsUpdate, "version" | "knowledge_base" | "validation"> & {
+type Form = Omit<
+  SettingsUpdate,
+  "version" | "knowledge_base" | "validation" | "analytics" | "intake" | "shop"
+> & {
   knowledge_base: KnowledgeBaseSettings;
   validation: ValidationSettings;
+  analytics: AnalyticsSettings;
+  intake: IntakeSettings;
+  shop: ShopSettings;
 };
 const EFFORTS = ["none", "minimal", "low", "medium", "high", "xhigh", "max"] as const;
 
@@ -61,6 +70,9 @@ function toForm(s: SettingsOut): Form {
     orders: s.settings.orders,
     knowledge_base: s.settings.knowledge_base,
     validation: s.settings.validation,
+    analytics: s.settings.analytics,
+    intake: s.settings.intake,
+    shop: s.settings.shop,
     branding: { shop_name, shop_tagline, console_name, support_email, phone, address, hours },
   };
 }

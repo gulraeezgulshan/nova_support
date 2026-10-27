@@ -94,6 +94,7 @@ need the API and worker restarted (`make api`, `make worker`).
 | Change chunk size or overlap | Settings → Knowledge base → chunk size / overlap → Save → **Reprocess all active documents** | Database (no code) |
 | Change a compensation limit | Settings → Validation → Compensation → Save | Database (no code) |
 | Add a risk keyword | Settings → Patterns → Risk signals → Save → Recompute signals | Database (no code) |
+| Change the complaint length limit | Settings → Intake → Save | Database (no code) |
 
 ## 6. Deliberate defects
 

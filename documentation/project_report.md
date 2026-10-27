@@ -315,7 +315,8 @@ sequenceDiagram
    characters removed; card numbers, passwords, PINs, ID and bank numbers redacted; length,
    channel and order-ownership checks; entities (orders, amounts, dates, e-mails); exact
    duplicates rejected (content hash); near-duplicates (fuzzy ≥ 88%) and reworded repeats
-   (embedding ≥ 0.80) linked; risk signals from the signal word lists (Settings → Patterns;
+   (embedding ≥ 0.80) linked (these thresholds, the length limits and the repeat window are
+   run-time settings under Settings → Intake); risk signals from the signal word lists (Settings → Patterns;
    defaults in `config/detectors.yaml`).
 2. **Facts** (`complaint_processing/facts.py`): days late (business days), order amount,
    shipping method, days since delivery, customer type, repeat count (complaints at least 24

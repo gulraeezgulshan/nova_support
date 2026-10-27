@@ -13,6 +13,7 @@ from complaint_processing.sla import (
     schedule,
 )
 from database.models import Complaint, SlaPolicy
+from tests.fixtures.settings import use_settings
 
 START = datetime(2026, 9, 1, 9, 0, tzinfo=UTC)
 # P1: first response in 2 h, resolution in 24 h, at risk after 70% of a window.
@@ -90,3 +91,10 @@ def test_refresh_reports_only_changes() -> None:
     assert refresh(c, P1, START + timedelta(hours=3)) == SlaState.BREACHED
     assert refresh(c, P1, START + timedelta(hours=4)) is None
     assert c.sla_status == SlaState.BREACHED
+
+
+def test_resolved_statuses_from_settings() -> None:
+    use_settings(analytics={"resolved_statuses": ["resolved"]})
+    c = complaint()
+    on_status_change(c, "closed", START + timedelta(hours=2))
+    assert c.resolved_at is None

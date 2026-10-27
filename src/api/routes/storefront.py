@@ -27,8 +27,9 @@ from src.api.schemas import (
 )
 from src.core.storage import Storage, get_storage
 from storefront.catalogue import PRODUCT_LINES
-from storefront.config import StorefrontConfig, storefront_config
+from storefront.config import FaqItem, Social, StorefrontConfig, storefront_config
 from storefront.currency import CURRENCIES, current_rates_async
+from storefront.faq import filled
 from storefront.images import ImageError, add_image, remove, reorder
 from storefront.orders import CheckoutError, CheckoutLine, checkout
 from storefront.queries import Sort, product_query
@@ -68,7 +69,12 @@ async def get_storefront_config() -> StorefrontConfig:
         update={"name": b.shop_name, "tagline": b.shop_tagline, "address": b.address,
                 "phone": b.phone, "support_email": b.support_email, "hours": b.hours}
     )  # fmt: skip
-    return config.model_copy(update={"company": company})
+    shop = app_settings.runtime().shop  # Settings → Shop
+    company = company.model_copy(
+        update={"socials": [Social(**s.model_dump()) for s in shop.socials]}
+    )
+    faq = [FaqItem(question=item.question, answer=filled(item.answer)) for item in shop.faq]
+    return config.model_copy(update={"company": company, "faq": faq})
 
 
 @router.get("/currency", response_model=CurrencyOut)

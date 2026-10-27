@@ -12,6 +12,7 @@ from fastapi import APIRouter, Depends, HTTPException, Query, Response, status
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy.orm import Session
 
+import app_settings
 from database.models import AnalysisRun, Complaint, User
 from database.session import get_db
 from security.dependencies import require_access
@@ -28,7 +29,7 @@ from src.api.schemas import (
     ReportOut,
     ReportSpecOut,
 )
-from src.core.domain import analysis_config, analytics_config
+from src.core.domain import analysis_config
 
 router = APIRouter(tags=["analytics"])
 dashboard_view = require_access("dashboard", "view")
@@ -86,7 +87,7 @@ async def admin_dashboard(
     _: User = Depends(analytics_view),
     db: AsyncSession = Depends(get_db),
 ) -> dict[str, Any]:
-    limit = analytics_config()["dashboard"]["list_limit"]
+    limit = app_settings.runtime().analytics.dashboard_list_limit
 
     def build(s: Session) -> dict[str, Any]:
         reviews = metrics.manual_reviews(s, f)

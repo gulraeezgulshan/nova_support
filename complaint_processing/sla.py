@@ -27,9 +27,9 @@ from sqlalchemy import select
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy.orm import Session
 
+import app_settings
 from database import audit
 from database.models import Complaint, ComplaintEvent, SlaPolicy
-from src.core.domain import analytics_config
 from src.core.logging import get_logger
 
 log = get_logger(__name__)
@@ -49,8 +49,12 @@ ALERT_STATES = {SlaState.AT_RISK, SlaState.BREACHED}
 
 
 def sla_config() -> dict[str, Any]:
-    data: dict[str, Any] = analytics_config()["sla"]
-    return data
+    """Which statuses start the first response and stop the clock (Settings → Analytics)."""
+    a = app_settings.runtime().analytics
+    return {
+        "first_response_statuses": a.first_response_statuses,
+        "resolved_statuses": a.resolved_statuses,
+    }
 
 
 def _aware(value: datetime) -> datetime:

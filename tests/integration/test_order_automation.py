@@ -59,3 +59,27 @@ async def test_seeded_delay_then_delivery(
         order = db.scalars(select(Order).where(Order.order_ref == ref)).one()
         assert order.stage == "delivered" and order.expected_delivery_date is not None
         assert "delayed" in [e.stage for e in order.events]
+
+
+async def test_delay_wait_from_settings(
+    client: httpx.AsyncClient, create_user: Callable[..., User], make_token: Callable[..., str]
+) -> None:
+    use_settings(
+        orders={
+            "delay_chance_pct": 100,
+            "lost_chance_pct": 0,
+            "step_minutes": 1,
+            "delay_wait_steps": 20,
+        }
+    )
+    ref = (await place_order(client, shopper(create_user, make_token)))["order_ref"]
+    now = LATER
+    for _ in range(10):
+        advance_due_orders(now, random.Random(1))  # noqa: S311 - seeded simulation
+        with sync_session() as db:
+            order = db.scalars(select(Order).where(Order.order_ref == ref)).one()
+            if order.expected_delivery_date is not None:
+                break
+        now += timedelta(minutes=1)
+    assert order.expected_delivery_date is not None
+    assert order.next_step_at == now + timedelta(minutes=20)

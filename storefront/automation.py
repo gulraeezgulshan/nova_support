@@ -15,7 +15,6 @@ from storefront.orders import add_business_days
 
 log = get_logger(__name__)
 BATCH = 50
-DELAY_WAIT_STEPS = 3
 
 
 def advance_due_orders(now: datetime | None = None, rng: random.Random | None = None) -> list[str]:
@@ -52,7 +51,7 @@ def advance_due_orders(now: datetime | None = None, rng: random.Random | None = 
                         )
                         delay(db, order, expected, "system", now=now)
                         queue_order_email(db, order, order.customer, "delayed")
-                        wait = step * DELAY_WAIT_STEPS
+                        wait = step * cfg.delay_wait_steps
                     target = FORWARD[order.stage]
                     if (
                         order.stage == "out_for_delivery"

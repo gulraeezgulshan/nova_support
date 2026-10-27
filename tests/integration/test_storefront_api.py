@@ -6,7 +6,9 @@ from typing import Any
 import httpx
 import pytest
 
+from app_settings.model import FaqEntrySetting, SocialLink
 from database.models import Role
+from tests.fixtures.settings import use_settings
 
 pytestmark = pytest.mark.db
 
@@ -63,3 +65,17 @@ async def test_invalid_checkouts_are_rejected(
 async def test_checkout_needs_sign_in(client: httpx.AsyncClient) -> None:
     body = {"lines": [{"sku": "VH-PHN-NX5", "quantity": 1}]}
     assert (await client.post("/api/v1/checkout", json=body)).status_code == 401
+
+
+async def test_storefront_config_uses_settings(client: httpx.AsyncClient) -> None:
+    use_settings(
+        shop={
+            "faq": [
+                FaqEntrySetting(question="How fast is it?", answer="Ships in {standard_days} days.")
+            ],
+            "socials": [SocialLink(name="Mastodon", url="https://mastodon.social/")],
+        }
+    )
+    data = (await client.get("/api/v1/storefront/config")).json()
+    assert data["faq"] == [{"question": "How fast is it?", "answer": "Ships in 5 days."}]
+    assert data["company"]["socials"] == [{"name": "Mastodon", "url": "https://mastodon.social/"}]

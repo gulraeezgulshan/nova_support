@@ -3,6 +3,7 @@
 import json
 
 import app_settings
+from app_settings.model import FaqEntrySetting
 from genai_pipeline.providers import ProviderUnavailableError
 from support_chat.intake import (
     FALLBACK_QUESTIONS,
@@ -10,9 +11,11 @@ from support_chat.intake import (
     SUMMARY_LEAD,
     FaqEntry,
     Role,
+    faq_entries,
     next_turn,
 )
 from tests.fixtures.genai import ScriptedProvider
+from tests.fixtures.settings import use_settings
 
 ORDER = {
     "order_ref": "ORD-800001",
@@ -247,3 +250,11 @@ def test_the_same_faq_can_be_answered_twice() -> None:
         faq=FAQ,
     )
     assert result.reply.startswith(first) and not result.details["repeat_prevented"]
+
+
+def test_chat_faq_uses_settings() -> None:
+    item = FaqEntrySetting(question="How fast is it?", answer="Ships in {standard_days} days.")
+    use_settings(shop={"faq": [item]})
+    assert [(e.question, e.answer) for e in faq_entries()] == [
+        ("How fast is it?", "Ships in 5 days.")
+    ]

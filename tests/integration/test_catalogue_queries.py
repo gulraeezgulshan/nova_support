@@ -9,6 +9,7 @@ from sqlalchemy import select
 
 from database.models import Order, Role
 from database.session import sync_session
+from tests.fixtures.settings import use_settings
 
 pytestmark = pytest.mark.db
 
@@ -91,3 +92,19 @@ async def test_hidden_products_are_never_listed(
     )
     for sort in ["featured", "best_selling", "newest"]:
         assert "VH-AUD-PBP" not in await skus(client, sort=sort, q="earbuds")
+
+
+async def test_best_seller_window_from_settings(
+    client: httpx.AsyncClient, auth_headers: Callable[[Role], dict[str, str]]
+) -> None:
+    buyer = auth_headers(Role.CUSTOMER)
+    for sku, quantity in (("VH-AUD-PBP", 3), ("VH-WEA-ST3", 1)):
+        body = {"lines": [{"sku": sku, "quantity": quantity}]}
+        assert (await client.post("/api/v1/checkout", headers=buyer, json=body)).status_code == 201
+    with sync_session() as db:
+        earbuds = db.scalars(select(Order).where(Order.quantity == 3)).one()
+        earbuds.order_date = date.today() - timedelta(days=30)
+        db.commit()
+    assert (await skus(client, sort="best_selling"))[0] == "VH-AUD-PBP"
+    use_settings(shop={"best_seller_days": 7})
+    assert (await skus(client, sort="best_selling"))[0] == "VH-WEA-ST3"

@@ -28,6 +28,7 @@ from python_validation.pipeline import run_validation
 from src.analytics import metrics
 from src.analytics.filters import Filters
 from src.analytics.trends import detect_trends
+from tests.fixtures.settings import use_settings
 
 pytestmark = pytest.mark.db
 
@@ -291,3 +292,31 @@ async def test_vocabulary_comes_from_configuration(
     assert {"code": "ISSUE_FULL_REFUND", "kind": "remedy"}.items() <= next(
         a for a in body["actions"] if a["code"] == "ISSUE_FULL_REFUND"
     ).items()
+
+
+def test_trend_min_count_from_settings(clean_db: None) -> None:
+    add_complaints([{"created_at": NOW - timedelta(days=1)}])  # one delivery complaint
+    with sync_session() as db:
+        assert ("rising_category", "DELIVERY") not in {(t.kind, t.key) for t in detect_trends(db)}
+    use_settings(analytics={"trend_min_count": 1})
+    with sync_session() as db:
+        assert ("rising_category", "DELIVERY") in {(t.kind, t.key) for t in detect_trends(db)}
+
+
+async def test_dashboard_limit_from_settings(
+    client: httpx.AsyncClient,
+    auth_headers: Callable[[Role], dict[str, str]],
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    limits: list[int] = []
+    original = metrics.sla_risks
+
+    def spy(db: Any, f: Filters, limit: int = 10) -> Any:
+        limits.append(limit)
+        return original(db, f, limit)
+
+    monkeypatch.setattr(metrics, "sla_risks", spy)
+    use_settings(analytics={"dashboard_list_limit": 5})
+    r = await client.get("/api/v1/dashboard/admin", headers=auth_headers(Role.ADMIN))
+    assert r.status_code == 200, r.text
+    assert limits == [5]

@@ -12,10 +12,10 @@ from typing import Any
 from sqlalchemy import func, literal
 from sqlalchemy.orm import Session
 
+import app_settings
 from database.models import Complaint
 from src.analytics.filters import Filters
 from src.analytics.metrics import IS_ESCALATED, IS_REPEAT, PRODUCT, labels, scoped
-from src.core.domain import analytics_config
 
 
 @dataclass
@@ -66,7 +66,14 @@ def _describe(current: int, previous: int, days: int) -> str:
 def detect_trends(
     db: Session, f: Filters | None = None, now: datetime | None = None
 ) -> list[Trend]:
-    cfg = analytics_config()["trends"]
+    a = app_settings.runtime().analytics  # Settings → Analytics
+    cfg: dict[str, Any] = {
+        "window_days": a.trend_window_days,
+        "min_count": a.trend_min_count,
+        "rise_ratio": a.trend_rise_ratio,
+        "recurring_min_count": a.recurring_min_count,
+        "watched_categories": a.watched_categories,
+    }
     now = now or datetime.now(UTC)
     days = int(cfg["window_days"])
     window = timedelta(days=days)

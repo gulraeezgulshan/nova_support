@@ -62,11 +62,11 @@ class FaqEntry:
 
 def faq_entries() -> list[FaqEntry]:
     """The Help-centre FAQ (approved wording, numbers from the policy documents)."""
-    from storefront.config import storefront_config
+    from storefront.faq import filled
 
     return [
-        FaqEntry(f"faq-{i}", item.question, item.answer)
-        for i, item in enumerate(storefront_config().faq, 1)
+        FaqEntry(f"faq-{i}", item.question, filled(item.answer))
+        for i, item in enumerate(app_settings.runtime().shop.faq, 1)
     ]
 
 

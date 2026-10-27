@@ -1,7 +1,9 @@
 """Shop facts match the knowledge-base policy documents, word for word where it matters."""
 
+import app_settings
 from src.core.config import ROOT_DIR
 from storefront.config import storefront_config
+from storefront.faq import filled
 
 SOURCES = ROOT_DIR / "sample_documents" / "sources"
 
@@ -45,10 +47,10 @@ def test_warranty_numbers_match_the_warranty_policy() -> None:
 
 
 def test_faq_placeholders_are_filled() -> None:
-    faq = storefront_config().faq
+    faq = app_settings.defaults().shop.faq
     assert faq
     for item in faq:
-        assert "{" not in item.answer, item.question
+        assert "{" not in filled(item.answer), item.question
 
 
 def test_checkout_uses_the_configured_delivery_days() -> None:

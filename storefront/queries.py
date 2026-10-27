@@ -5,10 +5,10 @@ from typing import Literal
 
 from sqlalchemy import Select, func, or_, select
 
+import app_settings
 from database.models import Order, Product
 
 Sort = Literal["featured", "price_asc", "price_desc", "newest", "best_selling"]
-BEST_SELLER_DAYS = 90
 
 
 def _contains(term: str) -> str:
@@ -55,7 +55,8 @@ def product_query(
                 select(Order.product_id, func.sum(Order.quantity).label("sold"))
                 .where(
                     Order.status != "lost",
-                    Order.order_date >= today - timedelta(days=BEST_SELLER_DAYS),
+                    Order.order_date
+                    >= today - timedelta(days=app_settings.runtime().shop.best_seller_days),
                 )
                 .group_by(Order.product_id)
                 .subquery()
